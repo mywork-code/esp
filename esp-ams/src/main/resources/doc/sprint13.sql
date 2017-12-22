@@ -23,7 +23,8 @@ CREATE TABLE `t_esp_limit_goods_sku` (
 `limit_num` bigint(20) NOT NULL COMMENT '该商品每人限购数量',
  `limit_curr_total`  bigint(20) NOT NULL COMMENT '该商品的限购剩余量',
 `sort_no` bigint(20) NOT NULL COMMENT '该商品限时购排序',
-`url` varchar(20) NOT NULL DEFAULT '' COMMENT '限时购缩略图URL',
+`url` varchar(128) NOT NULL DEFAULT '' COMMENT '限时购缩略图URL',
+ `up_load_status` tinyint not null DEFAULT 1 COMMENT '商品上传成功标志 1：成功；0：失败    默认为1',
 `create_user`  varchar(20)  NOT NULL DEFAULT '' COMMENT '创建人' ,
 `update_user`  varchar(20)  NOT NULL DEFAULT '' COMMENT '修改人' ,
 `created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
@@ -59,10 +60,10 @@ CREATE TABLE `t_esp_limit_user_message` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='限时购活动用户抢购提醒记录表';
 
-alter table t_esp_goods_base_info add column main_goods_code varchar(20) not null default '' comment '主商品编号';
-alter table t_esp_limit_goods_sku add up_load_status tinyint not null DEFAULT 1 COMMENT '商品上传成功标志 1：成功；0：失败    默认为1';
+alter table t_esp_goods_base_info add column main_goods_code varchar(30) not null default '' comment '主商品编号';
 
-ALTER TABLE `t_esp_limit_goods_sku`
-MODIFY COLUMN `url`  varchar(128)  NOT NULL DEFAULT '' COMMENT '限时购缩略图URL';
+ALTER TABLE `t_esp_pro_group_goods`
+MODIFY COLUMN `goods_code`  varchar(30)  NOT NULL DEFAULT '' COMMENT '商品编号';
+
 
 
