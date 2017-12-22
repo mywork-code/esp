@@ -197,23 +197,21 @@ public class ShopHomeController {
                 ActivityInfoEntity param = new ActivityInfoEntity();
                 param.setGoodsId(goods.getGoodId());
                 param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
-                List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
-                Map<String, Object> result = new HashMap<>();
-                if (null != activitys && activitys.size() > 0) {
-                    result = goodService.getMinPriceGoods(goods.getGoodId());
-                    BigDecimal price = (BigDecimal) result.get("minPrice");
-                    Long minPriceStockId = (Long) result.get("minPriceStockId");
-                    goods.setGoodsPrice(price);
-                    goods.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                            BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
-                    goods.setGoodsStockId(minPriceStockId);
-                } else {
-                    BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId(),
-                            goods.getGoodsStockId());
-                    goods.setGoodsPrice(price);
-                    goods.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                            BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+
+                Map<String,Object> result= goodsService.getMinPriceNotJdGoods(goods.getGoodId());
+                GoodsStockInfoEntity defaultGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
+                BigDecimal price=(BigDecimal) result.get("minPrice");
+
+                //判断是否参加限时购活动
+                LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(null,goods.getExternalId());
+                if(limitGS != null){
+                    price = limitGS.getActivityPrice();
+
                 }
+                goods.setGoodsPrice(price);
+                goods.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+                        BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+
                 if (SourceType.JD.getCode().equals(goods.getSource())) {
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
                     if (goods.getGoodsSiftUrl().contains("eshop")) {
@@ -1000,7 +998,7 @@ public class ShopHomeController {
                 LOGGER.error("商品信息不存在:{}", goodsId);
                 throw new BusinessException("商品信息不存在");
             }
-            //对所有的（wz，jd，非第三方）进行校验
+            //对所有的（wz，jd，第三方）进行校验
             Date now = new Date();
             if (now.before(goodsInfo.getListTime())
                     || (null != goodsInfo.getDelistTime() && now.after(goodsInfo.getDelistTime()))

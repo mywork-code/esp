@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
@@ -152,8 +153,8 @@ public class GoodsService {
     		 BigDecimal goodsPrice=(BigDecimal) map.get("goodsPrice");
     		 goodsBasicInfoEntity.setGoodsStockId(goodsStockId);
     		 goodsBasicInfoEntity.setGoodsPrice(goodsPrice);
-		}
-    		return result;
+		 }
+    	 return result;
   }
 
   /**
@@ -405,12 +406,22 @@ public class GoodsService {
 	       throw new BusinessException("商品规格信息不存在");
 	    }
 	    //获取参加了限时购的规格集合
-		Map<Long,Object> LimitMap=new HashMap<>();
+		TreeMap<Long, Object> mapOn = new TreeMap<>();//正在进行中的活动
+		TreeMap<Long, Object> mapNo = new TreeMap<>();//还没有开始的活动
 	    for (GoodsStockInfoEntity goodsStockInfoEntity : goodsList) {
+			Map<Long,Object> LimitMap=new HashMap<>();
+ 	    	LimitMap.put(goodsStockInfoEntity.getId(), goodsStockInfoEntity);
 			//根据skuId查询该规格是否参加了限时购活动
-	    	LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsStockInfoEntity.getSkuId());
-			if(null !=limitGS){
-				LimitMap.put(goodsStockInfoEntity.getId(), goodsStockInfoEntity);
+	    	Map<String, Object> limitGSMap=limitCommonService.selectLimitByGoodsId2(userId,goodsStockInfoEntity.getSkuId());
+	    	if (null !=limitGSMap && !limitGSMap.isEmpty()) {
+				String falge = (String) limitGSMap.get("falge");
+				if (StringUtils.equals("on", falge)) {
+					long key = (long) limitGSMap.get("key");
+					mapOn.put(key, LimitMap);
+				} else {
+					long key = (long) limitGSMap.get("key");
+					mapNo.put(key, LimitMap);
+				}
 			}
 		}
 	    boolean offShelfFlag = true;
@@ -439,32 +450,26 @@ public class GoodsService {
 	        defaultPrice=(BigDecimal) result.get("minPrice");
 	    }
 		// 判断该商品中是否有规格参加了限时购活动
-		if (!LimitMap.isEmpty()) {
-			if (null == LimitMap.get(defaultGoodsPriceStock.getId())) {
-				for (Map.Entry<Long, Object> entry : LimitMap.entrySet()) {
-					defaultGoodsPriceStock = (GoodsStockInfoEntity) entry.getValue();
-					break;
-				}
+	     Map<Long,Object> LimitMap2=new HashMap<>();
+		  if(!mapOn.isEmpty()){
+			 LimitMap2 = (Map<Long,Object>) mapOn.get(mapOn.firstKey());
+		  }
+		  if(LimitMap2.isEmpty() && !mapNo.isEmpty()){
+			  LimitMap2 = (Map<Long,Object>) mapNo.get(mapNo.firstKey());
+		  }
+		if (!LimitMap2.isEmpty()) {
+			for (Map.Entry<Long, Object> entry : LimitMap2.entrySet()) {
+				defaultGoodsPriceStock = (GoodsStockInfoEntity) entry.getValue();
+				break;
 			}
-			
-			LimitGoodsSkuVo limitGS = limitCommonService.selectLimitByGoodsId(userId,defaultGoodsPriceStock.getSkuId());
-			defaultPrice = commonService.calculateGoodsPrice(goodsId,defaultGoodsPriceStock.getId());
-			BigDecimal activityPrice = limitGS.getActivityPrice();
-			activityPrice.setScale(2, BigDecimal.ROUND_DOWN);
-			returnMap.put("goodsPrice", activityPrice);
-			if (null != defaultPrice) {
-				returnMap.put("goodsPriceFirstPayment",
-						(new BigDecimal("0.1").multiply(activityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
-			}
-			returnMap.put("priceOriginal", defaultPrice);
-		} else {
+		} 
+		
+		defaultPrice = commonService.calculateGoodsPrice(goodsId,defaultGoodsPriceStock.getId());
+		if (null != defaultPrice) {
 			returnMap.put("goodsPrice", defaultPrice);
-			if (null != defaultPrice) {
-				returnMap.put("goodsPriceFirstPayment",
-						(new BigDecimal("0.1").multiply(defaultPrice)).setScale(2, BigDecimal.ROUND_DOWN));
-			}
+			returnMap.put("goodsPriceFirstPayment",
+					(new BigDecimal("0.1").multiply(defaultPrice)).setScale(2, BigDecimal.ROUND_DOWN));
 		}
-
 	    returnMap.put("unSupportProvince", goodsBasicInfo.getUnSupportProvince());// 不配送区域
 		returnMap.put("googsDetail", goodsBasicInfo.getGoogsDetail());
 		returnMap.put("goodsTitle", goodsBasicInfo.getGoodsTitle());
