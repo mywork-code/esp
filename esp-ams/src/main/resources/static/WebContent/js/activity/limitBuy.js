@@ -334,28 +334,28 @@ $(function () {
 			});
 			thisForm.submit();
 		}else{
-			//只有未开始活动弹窗价格变动，进行中活动价格已经不可修改无需弹窗
+			//新增弹窗，编辑时只有只有未开始活动弹窗价格变动弹窗，进行中活动价格已经不可修改无需弹窗
 			var actStatus = $("#actStatus").val();
-			if(actStatus=="1"){
+			if(actStatus=="1"||actStatus==""){
 				$.messager.alert("<font color='black'>提示</font>","该商品了修改单人限购和限购总量！", "info");
-				if(addedit==1){
-					$('#uploadGoodsListAdd').datagrid('updateRow',{
-						index: editindex,
-						row:{
-							"limitNumTotal":limitNumTotalAdd,
-							"limitNum":limitNumAdd,
-							}
-					});
-				}
-				if(addedit==2){
-					$('#uploadGoodsListEdit').datagrid('updateRow',{
-						index: editindex,
-						row:{
-							"limitNumTotal":limitNumTotalAdd,
-							"limitNum":limitNumAdd,
-							}
-					});
-				}
+			}
+			if(addedit==1){
+				$('#uploadGoodsListAdd').datagrid('updateRow',{
+					index: editindex,
+					row:{
+						"limitNumTotal":limitNumTotalAdd,
+						"limitNum":limitNumAdd,
+						}
+				});
+			}
+			if(addedit==2){
+				$('#uploadGoodsListEdit').datagrid('updateRow',{
+					index: editindex,
+					row:{
+						"limitNumTotal":limitNumTotalAdd,
+						"limitNum":limitNumAdd,
+						}
+				});
 			}
 			$('#editGoods').window('close');
 		}
@@ -773,6 +773,7 @@ function editGoods(target,num){
 		$("#limitGoodsSkuUrl").attr("src",'');
 	}
 	if(limitGoodsSkuId==""||limitGoodsSkuId==null){//新增编辑
+		$("#actStatus").val("");
 		if(rowentity.limitNumTotal!=null&&rowentity.limitNum!=null){
 			$("#limitNumTotalAdd").textbox('setValue',rowentity.limitNumTotal);
 			$("#limitNumAdd").textbox('setValue',rowentity.limitNum);

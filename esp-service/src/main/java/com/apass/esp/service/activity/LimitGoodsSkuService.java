@@ -175,14 +175,25 @@ public class LimitGoodsSkuService {
                 List<String> strlist = new ArrayList<String>();
                 strlist.add(skuId);
                 List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
-                goods = goodsList.get(0);
-                stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
+                if(goodsList!=null&&goodsList.size()>0){
+                    goods = goodsList.get(0);
+                    stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
+                }else{
+                    //是否跑出异常  待上传商品列表  skuid查询商品失败
+                    underfindlist.add(entity);
+                    continue;
+                }
             }
-            
-            Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(goods.getId());  
-            if(!result){
-                //是否跑出异常  待上传商品列表含有有效满减活动中的商品
-                flist.add(entity);
+            if(goods!=null&&goods.getId()!=null){
+                Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(goods.getId());  
+                if(!result){
+                    //是否跑出异常  待上传商品列表含有有效满减活动中的商品
+                    flist.add(entity);
+                    continue;
+                }
+            }else{
+                //是否跑出异常  待上传商品列表  skuid查询商品失败
+                underfindlist.add(entity);
                 continue;
             }
             Boolean fwz = StringUtils.equals("wz", goods.getSource());
@@ -305,7 +316,7 @@ public class LimitGoodsSkuService {
      * @param skuId
      * @return
      */
-    private Boolean checkoutSkuId(String skuId) {
+    public Boolean checkoutSkuId(String skuId) {
         try{
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
             List<String> strlist = new ArrayList<String>();

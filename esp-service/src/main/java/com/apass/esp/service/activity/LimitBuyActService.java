@@ -221,6 +221,12 @@ public class LimitBuyActService {
         }
         Long sortNo = 0L;
         for(LimitGoodsSku sku : skulist){
+            String skuId = sku.getSkuId();
+            Boolean fskuid = limitGoodsSkuService.checkoutSkuId(skuId);
+            if(fskuid){
+                //是否跑出异常   待保存列表SKUID错误   直接不保存
+                continue;
+            }
             sku.setLimitBuyActId(actId);
             sku.setLimitCurrTotal(sku.getLimitNumTotal());//新增的限时购活动商品  初始限购剩余量等于限购总量
             sku.setSortNo(++sortNo);
