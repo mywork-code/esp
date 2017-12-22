@@ -651,7 +651,7 @@ public class PaymentService {
 	            	boolean bl = limitCommonService.validateLimitGoodsNumsByGoodsIdAndStockId(new LimitBuyParam(limitActivityId, userId+"",
 	            			detail.getGoodsNum().intValue(), detail.getGoodsId(), detail.getGoodsStockId()));
 	            	if(!bl){
-	            		throw new BusinessException("商品价格已变动，请重新下单");
+	            		throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
 	            	}
 	            }
 	            
