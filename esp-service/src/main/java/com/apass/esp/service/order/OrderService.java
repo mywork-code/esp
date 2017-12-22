@@ -845,19 +845,19 @@ public class OrderService {
 	 * @throws Exception
 	 */
 	public Boolean checkGoodsSalesOrNot(String skuId) {
-		Boolean falge = false;
+		Boolean flag = false;
 		try {
 			CheckSale checkSale = productApi.getWeiZhiCheckSale(skuId);
 			if (null != checkSale.getResult() && checkSale.getResult().size() > 0) {
 				WZCheckSale wZCheckSale = checkSale.getResult().get(0);
 				if (1 == wZCheckSale.getSaleState()) {
-					falge = true;
+					flag = true;
 				}
 			}
-			return falge;
+			return flag;
 		} catch (Exception e) {
 			LOGGER.error("getWeiZhiCheckSale is fail:{}", e);
-			return falge;
+			return flag;
 		}
 	}
     /**
