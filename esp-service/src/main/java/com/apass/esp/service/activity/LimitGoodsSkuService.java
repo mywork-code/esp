@@ -305,7 +305,7 @@ public class LimitGoodsSkuService {
      * @param skuId
      * @return
      */
-    private Boolean checkoutSkuId(String skuId) {
+    public Boolean checkoutSkuId(String skuId) {
         try{
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
             List<String> strlist = new ArrayList<String>();
