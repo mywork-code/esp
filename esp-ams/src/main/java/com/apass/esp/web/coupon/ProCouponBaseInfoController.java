@@ -294,7 +294,7 @@ public class ProCouponBaseInfoController {
         }
         
         /**
-         * 如果是活动商品的优惠券
+         * 如果是活动商品的优惠券,则要判断优惠范围，根据优惠范围，判断是否需要传值
          */
         if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_HDSP.getCode())){
         	
@@ -311,25 +311,20 @@ public class ProCouponBaseInfoController {
 				case 2 :
 					if(StringUtils.isBlank(proCoupon.getCategoryId1()) &&
 							StringUtils.isBlank(proCoupon.getCategoryId2()) && 
-							StringUtils.isBlank(proCoupon.getCategoryId1())){
+							StringUtils.isBlank(proCoupon.getCategoryId3())){
 						throw new RuntimeException("类目不能为空!");
 					}
 					break;
 				case 3 :
-					if(StringUtils.isBlank(proCoupon.getGoodsCode())){
-						
+					if(StringUtils.isBlank(proCoupon.getSkuId())){
+						throw new RuntimeException("商品SKUID不能为空!");
 					}
 					break;
 				default :
 					throw new RuntimeException("优惠范围传入值不合法!");
 			}
         }
-        
         return true;
     }
-
-
-
-
 
 }
