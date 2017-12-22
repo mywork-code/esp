@@ -170,20 +170,17 @@ public class PaymentService {
         }
         //更新库存
         for (OrderInfoEntity order : orderInfoList) {
-            if(!StringUtils.equals(order.getSource(), SourceType.WZ.getCode())){
-            	GoodsStockLogEntity stockLog = goodsStockLogDao.loadByOrderId(order.getOrderId());
-                LOG.info(requestId + "_" + order.getOrderId(), "库存记录日志表:",stockLog == null ? null : GsonUtils.toJson(order));
-                if (null == stockLog) {
-                    //减库存
-                    modifyGoodsStock(requestId, userId, order);
-                    //插入库存日志
-                    GoodsStockLogEntity goodStockLog = new GoodsStockLogEntity();
-                    goodStockLog.setOrderId(order.getOrderId());
-                    goodStockLog.setUserId(userId);
-                    goodsStockLogDao.insert(goodStockLog);
-                }
+        	GoodsStockLogEntity stockLog = goodsStockLogDao.loadByOrderId(order.getOrderId());
+            LOG.info(requestId + "_" + order.getOrderId(), "库存记录日志表:",stockLog == null ? null : GsonUtils.toJson(order));
+            if (null == stockLog) {
+                //减库存
+                modifyGoodsStock(requestId, userId, order);
+                //插入库存日志
+                GoodsStockLogEntity goodStockLog = new GoodsStockLogEntity();
+                goodStockLog.setOrderId(order.getOrderId());
+                goodStockLog.setUserId(userId);
+                goodsStockLogDao.insert(goodStockLog);
             }
-        	
         }
         
         /**

@@ -1802,8 +1802,7 @@ public class OrderService {
         // 加库存
         for (OrderDetailInfoEntity orderDetail : orderDetailList) {
             try {
-            	GoodsInfoEntity goods = goodsDao.select(orderDetail.getGoodsId());
-            	if(StringUtils.isNotBlank(goods.getSource())){
+            	if(StringUtils.equals(orderDetail.getSource(), SourceType.WZ.getCode())){
             		continue;
             	}
                 for (int i = 0; i < errorNum; i++) {
