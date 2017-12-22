@@ -146,10 +146,7 @@ public class ProCouponBaseInfoController {
                 proCoupon.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                 proCoupon.setCreatedTime(new Date());
                 proCoupon.setUpdatedTime(new Date());
-                if(proCoupon.getEffectiveTime() == null){
-                    proCoupon.setEffectiveTime(-1);
-                }
-                Integer count = proCouponService.inserProcoupon(proCoupon);
+                proCouponService.inserProcoupon(proCoupon);
             }
 
         }catch (Exception e){
