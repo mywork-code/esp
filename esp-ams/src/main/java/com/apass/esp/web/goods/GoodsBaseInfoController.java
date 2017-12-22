@@ -1167,6 +1167,7 @@ public class GoodsBaseInfoController {
             }
             respBody.setStatus(CommonCode.SUCCESS_CODE);
         } catch (Exception e) {
+            LOGGER.error("根据商品 ID 属性规格组合 排列 组合 列表 失败,异常信息：{}",e);
             respBody.setMsg("根据商品 ID 属性规格组合 排列 组合 列表 失败");
         }
         return respBody;

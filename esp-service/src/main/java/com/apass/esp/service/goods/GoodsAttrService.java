@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+
+import com.apass.esp.service.common.CommonService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,8 @@ public class GoodsAttrService {//450
     private GoodsRepository goodsRepository;
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
+    @Autowired
+    private CommonService commonService;
     /**
      * 商品属性查询
      * @param entity
@@ -604,6 +608,8 @@ public class GoodsAttrService {//450
                     skuIdList.add(set);
                     GoodsInfoEntity goo = goodsService.getGoodsListBySkuIds(skuIdList).get(0);
                     GoodsStockInfoEntity s = goodsStockInfoService.getGoodsStock(goo.getId()).get(0);
+                    BigDecimal goodsPrice = commonService.calculateGoodsPrice(s.getGoodsId(),s.getId());
+                    s.setGoodsPrice(goodsPrice);
                     s.setSkuId(goo.getExternalId());
                     listold.add(s);
                 }

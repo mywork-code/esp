@@ -845,19 +845,19 @@ public class OrderService {
 	 * @throws Exception
 	 */
 	public Boolean checkGoodsSalesOrNot(String skuId) {
-		Boolean falge = false;
+		Boolean flag = false;
 		try {
 			CheckSale checkSale = productApi.getWeiZhiCheckSale(skuId);
 			if (null != checkSale.getResult() && checkSale.getResult().size() > 0) {
 				WZCheckSale wZCheckSale = checkSale.getResult().get(0);
 				if (1 == wZCheckSale.getSaleState()) {
-					falge = true;
+					flag = true;
 				}
 			}
-			return falge;
+			return flag;
 		} catch (Exception e) {
 			LOGGER.error("getWeiZhiCheckSale is fail:{}", e);
-			return falge;
+			return flag;
 		}
 	}
     /**
@@ -2412,7 +2412,7 @@ public class OrderService {
             goodInfo.setProActivityId(proGroupGoodsService.getActivityId(orderDetail.getGoodsId()));
             goodsList.add(goodInfo);
             //根据skuId查询该规格是否参加了限时购活动
-            LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId.toString(),goodsStock.getSkuId());
+            LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId.toString(),orderDetail.getSkuId());
             if(null !=limitGS  && StringUtils.equals("InProgress", limitGS.getLimitFalg())){
                 goodInfo.setLimitFalg(true);
                 goodInfo.setGoodsLimitPrice(limitGS.getActivityPrice());
