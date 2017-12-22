@@ -1795,7 +1795,7 @@ public class OrderService {
      * @param orderId
      * @throws BusinessException
      */
-    @Transactional(rollbackFor = {Exception.class,BusinessException.class})
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
     public void addGoodsStock(String requestId, String orderId) throws BusinessException {
         Integer errorNum = errorNo;
         List<OrderDetailInfoEntity> orderDetailList = orderDetailInfoRepository.queryOrderDetailInfo(orderId);
