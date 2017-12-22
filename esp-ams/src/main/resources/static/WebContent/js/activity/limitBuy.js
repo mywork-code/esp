@@ -332,7 +332,7 @@ $(function () {
 					}
 			    }
 			});
-			thisForm.submit();
+			thisForm.submit(); 
 		}else{
 			var actStatus = $("#actStatus").val();
 			if(actStatus=="1"){
