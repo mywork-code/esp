@@ -291,7 +291,19 @@ public class ProCouponBaseInfoController {
         if(proCoupon.getDiscountAmonut() == null){
             throw new RuntimeException("优惠金额不能为空");
         }
-
+        
+        /**
+         * 如果是活动商品的优惠券
+         */
+        if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_HDSP.getCode())){
+        	 if(proCoupon.getOfferRange() == null){
+        		 throw new RuntimeException("优惠范围不能为空!");
+        	 }
+        	 if(proCoupon.getBrandId() == null){
+        		 throw new RuntimeException("");
+        	 }
+        }
+        
         return true;
     }
 

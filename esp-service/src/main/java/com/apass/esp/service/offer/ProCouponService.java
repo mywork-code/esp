@@ -76,6 +76,9 @@ public class ProCouponService {
     }
 
     public Integer inserProcoupon(ProCoupon proCoupon) {
+    	/**
+    	 * 如果是指定商品的优惠券
+    	 */
         if(StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDSP.getCode())){
             GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByGoodsCode(proCoupon.getGoodsCode());
             if(goodsInfoEntity == null){
@@ -104,6 +107,13 @@ public class ProCouponService {
                 //非京东商品把goods_code填充进similarGoodsCode
                 proCoupon.setSimilarGoodsCode(proCoupon.getGoodsCode());
             }
+        }
+        /**
+         * 如果是活动商品
+         */
+        if(StringUtils.equals(proCoupon.getType(), CouponType.COUPON_HDSP.getCode())){
+        	
+        	
         }
 
         ProCoupon coupon2 = new ProCoupon();

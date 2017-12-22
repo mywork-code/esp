@@ -1,10 +1,8 @@
 package com.apass.esp.mapper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.query.ProCouponQuery;
 import com.apass.gfb.framework.mybatis.GenericMapper;
