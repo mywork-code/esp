@@ -1,5 +1,7 @@
 package com.apass.esp.domain.enums;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -8,8 +10,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum OfferRangeType {
     RANGE_ZDPP("1","品牌"),
-    range_ZDPL("2","品类"),
-    range_ZDSP("3","指定商品");
+    RANGE_ZDPL("2","品类"),
+    RANGE_ZDSP("3","指定商品");
 
     private String code;
     private String message;
@@ -42,5 +44,11 @@ public enum OfferRangeType {
 			}
 		}
     	return "";
+    }
+    
+    public static boolean validateCodeExsits(String code){
+    	return Arrays.asList(new String[]{OfferRangeType.RANGE_ZDPL.getCode(),
+    			OfferRangeType.RANGE_ZDPP.getCode(),
+    			OfferRangeType.RANGE_ZDSP.getCode()}).contains(code);
     }
 }

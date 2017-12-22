@@ -29,6 +29,7 @@ import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.domain.enums.CouponSillType;
 import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.enums.OfferRangeType;
 import com.apass.esp.domain.query.ProCouponQuery;
 import com.apass.esp.domain.vo.ActivityCfgQuery;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
@@ -296,12 +297,32 @@ public class ProCouponBaseInfoController {
          * 如果是活动商品的优惠券
          */
         if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_HDSP.getCode())){
+        	
         	 if(proCoupon.getOfferRange() == null){
         		 throw new RuntimeException("优惠范围不能为空!");
         	 }
-        	 if(proCoupon.getBrandId() == null){
-        		 throw new RuntimeException("");
-        	 }
+        	 int offerRange = proCoupon.getOfferRange().intValue();
+        	 switch (offerRange) {
+				case 1 :
+					if(proCoupon.getBrandId() == null){
+		        		 throw new RuntimeException("品牌不能为空!");
+		        	}
+					break;
+				case 2 :
+					if(StringUtils.isBlank(proCoupon.getCategoryId1()) &&
+							StringUtils.isBlank(proCoupon.getCategoryId2()) && 
+							StringUtils.isBlank(proCoupon.getCategoryId1())){
+						throw new RuntimeException("类目不能为空!");
+					}
+					break;
+				case 3 :
+					if(StringUtils.isBlank(proCoupon.getGoodsCode())){
+						
+					}
+					break;
+				default :
+					throw new RuntimeException("优惠范围传入值不合法!");
+			}
         }
         
         return true;
