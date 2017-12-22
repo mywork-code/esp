@@ -1,7 +1,9 @@
 package com.apass.esp.service.activity;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -73,65 +75,69 @@ public class LimitCommonService {
 	 * 2.将活动开始时间与服务器时间的时间差（）
 	 * @return
 	 */
-	public LimitGoodsSkuVo selectLimitByGoodsId(String userId,String skuId) {
+	public LimitGoodsSkuVo selectLimitByGoodsId(String userId, String skuId) {
 		LimitGoodsSkuVo lgs = null;
-		if(StringUtils.isBlank(skuId)){
+		if (StringUtils.isBlank(skuId)) {
 			return null;
 		}
 		LimitGoodsSku entity = new LimitGoodsSku();
 		entity.setSkuId(skuId);
-		entity.setUpLoadStatus((byte)1);
+		entity.setUpLoadStatus((byte) 1);
 		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
 		if (null == LimitGoodsSkuList || LimitGoodsSkuList.size() == 0) {
 			return null;
 		}
-		TreeMap<Long, Object> mapOn = new TreeMap<>();//正在进行中的活动
-		TreeMap<Long, Object> mapNo = new TreeMap<>();//还没有开始的活动
+		TreeMap<Long, Object> mapOn = new TreeMap<>();// 正在进行中的活动
+		TreeMap<Long, Object> mapNo = new TreeMap<>();// 还没有开始的活动
 
 		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
-			//判断限时购当前剩余数量
-			if(limitGoodsSku.getLimitCurrTotal()<=0){
+			// 判断限时购当前剩余数量
+			if (limitGoodsSku.getLimitCurrTotal() <= 0) {
 				continue;
 			}
 			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
+			if (null == limitBuyAct) {
+				continue;
+			}
 			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
-			LimitGoodsSkuVo limitGoodsSkuVo =getLimitGoodsSkuToLimitGoodsSkuVo(limitGoodsSku);
+			LimitGoodsSkuVo limitGoodsSkuVo = getLimitGoodsSkuToLimitGoodsSkuVo(limitGoodsSku);
 			limitGoodsSkuVo.setLimitBuyActId(limitBuyAct.getId());
 			limitGoodsSkuVo.setStartTime(limitBuyAct.getStartDate());
 			limitGoodsSkuVo.setEndTime(limitBuyAct.getEndDate());
+
 			/**
 			 * 根据限时购的活动ID和用户ID和skuID,查询某一用户在某一活动下，购买某一件商品的数量
 			 */
-			if(StringUtils.isNoneBlank(userId)){
-				LimitBuyParam limitBuyParam=new LimitBuyParam();
+			if (StringUtils.isNoneBlank(userId)) {
+				LimitBuyParam limitBuyParam = new LimitBuyParam();
 				limitBuyParam.setUserId(userId);
-				limitBuyParam.setLimitBuyActId(limitBuyAct.getId()+"");
-				limitBuyParam.setSkuId(limitGoodsSku.getId()+"");
+				limitBuyParam.setLimitBuyActId(limitBuyAct.getId() + "");
+				limitBuyParam.setSkuId(limitGoodsSku.getId() + "");
 				List<LimitBuyDetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(limitBuyParam);
 				/**
 				 * 计算用户购买了同一个活动同一商品的件数
 				 */
 				long goodsSum = 0l;
-				long limitPersonNum=01;
+				long limitPersonNum = 01;
 				for (LimitBuyDetail limitBuydetail : buyDetails) {
 					goodsSum += limitBuydetail.getBuyNo();
 				}
-				limitPersonNum=limitGoodsSkuVo.getLimitNum()-goodsSum;
-				if(limitPersonNum>0){
+				limitPersonNum = limitGoodsSkuVo.getLimitNum() - goodsSum;
+				if (limitPersonNum > 0) {
 					limitGoodsSkuVo.setLimitPersonNum(limitPersonNum);
-				}else{
+				} else {
 					limitGoodsSkuVo.setLimitPersonNum(0l);
 				}
 			}
 			if (ActivityStatus.PROCESSING == activityStatus) {
-				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();//已经开始了多少时间
-				long time2 = limitBuyAct.getEndDate().getTime()-new Date().getTime();//离结束还有多少时间
+				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();// 已经开始了多少时间
+				long time2 = limitBuyAct.getEndDate().getTime() - new Date().getTime();// 离结束还有多少时间
 				limitGoodsSkuVo.setTime(time2);
 				limitGoodsSkuVo.setLimitFalg("InProgress");
 				mapOn.put(time, limitGoodsSkuVo);
 			}
 			if (ActivityStatus.NO == activityStatus) {
-				long time = limitBuyAct.getStartDate().getTime() - new Date().getTime();//离限时购开始还有多少时间
+				long time = limitBuyAct.getStartDate().getTime() - new Date().getTime();// 离限时购开始还有多少时间
 				limitGoodsSkuVo.setTime(time);
 				limitGoodsSkuVo.setLimitFalg("NotBeginning");
 				mapNo.put(time, limitGoodsSkuVo);
@@ -139,13 +145,102 @@ public class LimitCommonService {
 		}
 		if (!mapOn.isEmpty()) {
 			lgs = (LimitGoodsSkuVo) mapOn.get(mapOn.firstKey());
-		} 
-		 if(null ==lgs && !mapNo.isEmpty()) {
+		}
+		if (null == lgs && !mapNo.isEmpty()) {
 			lgs = (LimitGoodsSkuVo) mapNo.get(mapNo.firstKey());
 		}
 		return lgs;
 	}
-	
+
+	/**
+	 * 根据商品id查询限时购的相关信息 当返回值为null时，代表该商品没有参加限时购或者参加了已经结束
+	 * 1.首先判断该商品存在多少个进行的活动中或者还未开始的活动中 2.将活动开始时间与服务器时间的时间差（）
+	 * 
+	 * @return
+	 */
+	public Map<String, Object> selectLimitByGoodsId2(String userId, String skuId) {
+		Map<String, Object> resultMap = new HashMap<>();
+		LimitGoodsSkuVo lgs = null;
+		if (StringUtils.isBlank(skuId)) {
+			return null;
+		}
+		LimitGoodsSku entity = new LimitGoodsSku();
+		entity.setSkuId(skuId);
+		entity.setUpLoadStatus((byte) 1);
+		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
+		if (null == LimitGoodsSkuList || LimitGoodsSkuList.size() == 0) {
+			return null;
+		}
+		TreeMap<Long, Object> mapOn = new TreeMap<>();// 正在进行中的活动
+		TreeMap<Long, Object> mapNo = new TreeMap<>();// 还没有开始的活动
+
+		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
+			// 判断限时购当前剩余数量
+			if (limitGoodsSku.getLimitCurrTotal() <= 0) {
+				continue;
+			}
+			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
+			if (null == limitBuyAct) {
+				continue;
+			}
+			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
+			LimitGoodsSkuVo limitGoodsSkuVo = getLimitGoodsSkuToLimitGoodsSkuVo(limitGoodsSku);
+			limitGoodsSkuVo.setLimitBuyActId(limitBuyAct.getId());
+			limitGoodsSkuVo.setStartTime(limitBuyAct.getStartDate());
+			limitGoodsSkuVo.setEndTime(limitBuyAct.getEndDate());
+
+			/**
+			 * 根据限时购的活动ID和用户ID和skuID,查询某一用户在某一活动下，购买某一件商品的数量
+			 */
+			if (StringUtils.isNoneBlank(userId)) {
+				LimitBuyParam limitBuyParam = new LimitBuyParam();
+				limitBuyParam.setUserId(userId);
+				limitBuyParam.setLimitBuyActId(limitBuyAct.getId() + "");
+				limitBuyParam.setSkuId(limitGoodsSku.getId() + "");
+				List<LimitBuyDetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(limitBuyParam);
+				/**
+				 * 计算用户购买了同一个活动同一商品的件数
+				 */
+				long goodsSum = 0l;
+				long limitPersonNum = 01;
+				for (LimitBuyDetail limitBuydetail : buyDetails) {
+					goodsSum += limitBuydetail.getBuyNo();
+				}
+				limitPersonNum = limitGoodsSkuVo.getLimitNum() - goodsSum;
+				if (limitPersonNum > 0) {
+					limitGoodsSkuVo.setLimitPersonNum(limitPersonNum);
+				} else {
+					limitGoodsSkuVo.setLimitPersonNum(0l);
+				}
+			}
+			if (ActivityStatus.PROCESSING == activityStatus) {
+				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();// 已经开始了多少时间
+				long time2 = limitBuyAct.getEndDate().getTime() - new Date().getTime();// 离结束还有多少时间
+				limitGoodsSkuVo.setTime(time2);
+				limitGoodsSkuVo.setLimitFalg("InProgress");
+				mapOn.put(time, limitGoodsSkuVo);
+			}
+			if (ActivityStatus.NO == activityStatus) {
+				long time = limitBuyAct.getStartDate().getTime() - new Date().getTime();// 离限时购开始还有多少时间
+				limitGoodsSkuVo.setTime(time);
+				limitGoodsSkuVo.setLimitFalg("NotBeginning");
+				mapNo.put(time, limitGoodsSkuVo);
+			}
+		}
+		if (!mapOn.isEmpty()) {
+			lgs = (LimitGoodsSkuVo) mapOn.get(mapOn.firstKey());
+			long key = mapOn.firstKey();
+			resultMap.put("falge", "on");
+			resultMap.put("key", key);
+		}
+		if (null == lgs && !mapNo.isEmpty()) {
+			lgs = (LimitGoodsSkuVo) mapNo.get(mapNo.firstKey());
+			long key = mapOn.firstKey();
+			resultMap.put("falge", "no");
+			resultMap.put("key", key);
+		}
+		return resultMap;
+	}
 	public LimitGoodsSkuVo getLimitGoodsSkuToLimitGoodsSkuVo(LimitGoodsSku lgs){
 		LimitGoodsSkuVo lgsv=new LimitGoodsSkuVo();
 		lgsv.setId(lgs.getId());
