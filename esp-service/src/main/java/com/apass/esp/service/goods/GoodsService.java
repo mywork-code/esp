@@ -406,14 +406,14 @@ public class GoodsService {
 	       throw new BusinessException("商品规格信息不存在");
 	    }
 	    //获取参加了限时购的规格集合
-		Map<Long,Object> LimitMap=new HashMap<>();
 		TreeMap<Long, Object> mapOn = new TreeMap<>();//正在进行中的活动
 		TreeMap<Long, Object> mapNo = new TreeMap<>();//还没有开始的活动
 	    for (GoodsStockInfoEntity goodsStockInfoEntity : goodsList) {
-	    	LimitMap.put(goodsStockInfoEntity.getId(), goodsStockInfoEntity);
+			Map<Long,Object> LimitMap=new HashMap<>();
+ 	    	LimitMap.put(goodsStockInfoEntity.getId(), goodsStockInfoEntity);
 			//根据skuId查询该规格是否参加了限时购活动
 	    	Map<String, Object> limitGSMap=limitCommonService.selectLimitByGoodsId2(userId,goodsStockInfoEntity.getSkuId());
-	    	if (!limitGSMap.isEmpty()) {
+	    	if (null !=limitGSMap && !limitGSMap.isEmpty()) {
 				String falge = (String) limitGSMap.get("falge");
 				if (StringUtils.equals("on", falge)) {
 					long key = (long) limitGSMap.get("key");
@@ -458,30 +458,18 @@ public class GoodsService {
 			  LimitMap2 = (Map<Long,Object>) mapNo.get(mapNo.firstKey());
 		  }
 		if (!LimitMap2.isEmpty()) {
-			if (null == LimitMap.get(defaultGoodsPriceStock.getId())) {
-				for (Map.Entry<Long, Object> entry : LimitMap.entrySet()) {
-					defaultGoodsPriceStock = (GoodsStockInfoEntity) entry.getValue();
-					break;
-				}
+			for (Map.Entry<Long, Object> entry : LimitMap2.entrySet()) {
+				defaultGoodsPriceStock = (GoodsStockInfoEntity) entry.getValue();
+				break;
 			}
-			LimitGoodsSkuVo limitGS = limitCommonService.selectLimitByGoodsId(userId,defaultGoodsPriceStock.getSkuId());
-			defaultPrice = commonService.calculateGoodsPrice(goodsId,defaultGoodsPriceStock.getId());
-			BigDecimal activityPrice = limitGS.getActivityPrice();
-			activityPrice.setScale(2, BigDecimal.ROUND_DOWN);
-			returnMap.put("goodsPrice", activityPrice);
-			if (null != defaultPrice) {
-				returnMap.put("goodsPriceFirstPayment",
-						(new BigDecimal("0.1").multiply(activityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
-			}
-			returnMap.put("priceOriginal", defaultPrice);
-		} else {
+		} 
+		
+		defaultPrice = commonService.calculateGoodsPrice(goodsId,defaultGoodsPriceStock.getId());
+		if (null != defaultPrice) {
 			returnMap.put("goodsPrice", defaultPrice);
-			if (null != defaultPrice) {
-				returnMap.put("goodsPriceFirstPayment",
-						(new BigDecimal("0.1").multiply(defaultPrice)).setScale(2, BigDecimal.ROUND_DOWN));
-			}
+			returnMap.put("goodsPriceFirstPayment",
+					(new BigDecimal("0.1").multiply(defaultPrice)).setScale(2, BigDecimal.ROUND_DOWN));
 		}
-
 	    returnMap.put("unSupportProvince", goodsBasicInfo.getUnSupportProvince());// 不配送区域
 		returnMap.put("googsDetail", goodsBasicInfo.getGoogsDetail());
 		returnMap.put("goodsTitle", goodsBasicInfo.getGoodsTitle());

@@ -235,7 +235,7 @@ public class LimitCommonService {
 		}
 		if (null == lgs && !mapNo.isEmpty()) {
 			lgs = (LimitGoodsSkuVo) mapNo.get(mapNo.firstKey());
-			long key = mapOn.firstKey();
+			long key = mapNo.firstKey();
 			resultMap.put("falge", "no");
 			resultMap.put("key", key);
 		}
