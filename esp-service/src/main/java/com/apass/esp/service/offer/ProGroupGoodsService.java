@@ -180,9 +180,11 @@ public class ProGroupGoodsService {
 						limitStartDate = limitBuyAct.getStartDate();
 						limitEndDate = limitBuyAct.getEndDate();
 					}
-					//满减活动和限时购活动的时间交叉了
-					if(!(proActivityEndDate.before(limitStartDate) || limitEndDate.before(proActivityStartDate) ) ){
-						return false;
+					if(null !=limitStartDate && null !=limitEndDate && null !=proActivityStartDate && null !=proActivityEndDate){
+						//满减活动和限时购活动的时间交叉了
+						if(!(proActivityEndDate.before(limitStartDate) || limitEndDate.before(proActivityStartDate) ) ){
+							return false;
+						}
 					}
 				}
 			}
