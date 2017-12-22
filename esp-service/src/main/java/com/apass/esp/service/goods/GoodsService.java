@@ -152,8 +152,8 @@ public class GoodsService {
     		 BigDecimal goodsPrice=(BigDecimal) map.get("goodsPrice");
     		 goodsBasicInfoEntity.setGoodsStockId(goodsStockId);
     		 goodsBasicInfoEntity.setGoodsPrice(goodsPrice);
-		}
-    		return result;
+		 }
+    	 return result;
   }
 
   /**
