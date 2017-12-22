@@ -1,8 +1,5 @@
 package com.apass.esp.domain.entity;
 
-import com.apass.esp.domain.enums.CouponExtendType;
-import org.apache.commons.lang3.StringUtils;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -42,6 +39,10 @@ public class ProCoupon {
     private Date updatedTime;
 
     private String isDelete;
+    
+    private Long brandId;
+
+    private Long offerRange;
 
     public Long getId() {
         return id;
@@ -185,5 +186,21 @@ public class ProCoupon {
 
     public void setIsDelete(String isDelete) {
         this.isDelete = isDelete;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public Long getOfferRange() {
+        return offerRange;
+    }
+
+    public void setOfferRange(Long offerRange) {
+        this.offerRange = offerRange;
     }
 }
