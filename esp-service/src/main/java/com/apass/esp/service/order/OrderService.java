@@ -1795,13 +1795,17 @@ public class OrderService {
      * @param orderId
      * @throws BusinessException
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = {Exception.class,BusinessException.class})
     public void addGoodsStock(String requestId, String orderId) throws BusinessException {
         Integer errorNum = errorNo;
         List<OrderDetailInfoEntity> orderDetailList = orderDetailInfoRepository.queryOrderDetailInfo(orderId);
         // 加库存
         for (OrderDetailInfoEntity orderDetail : orderDetailList) {
             try {
+            	GoodsInfoEntity goods = goodsDao.select(orderDetail.getGoodsId());
+            	if(StringUtils.isNotBlank(goods.getSource())){
+            		continue;
+            	}
                 for (int i = 0; i < errorNum; i++) {
                     GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
                     if (null == goodsStock) {
@@ -1832,7 +1836,6 @@ public class OrderService {
                     } else if (successFlag == 1) {
                         break;
                     }
-
                 }
 
             } catch (Exception e) {
@@ -1840,9 +1843,9 @@ public class OrderService {
                 LOGGER.error("加库存操作失败", e);
                 continue;
             }
-            goodsStcokLogDao.deleteByOrderId(orderId);
-            rebackLimitActivityNum(orderId);
         }
+        goodsStcokLogDao.deleteByOrderId(orderId);
+        rebackLimitActivityNum(orderId);
     }
     
     
