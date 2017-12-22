@@ -219,10 +219,6 @@ $(function () {
 	});
 	//导入商品  弹窗
 	$(".upload-btn-add").click(function() {
-		if(status!=""){
-			$.messager.alert("<font color='black'>提示</font>", "编辑商品不能上传商品列表,请点击新增活动!", "info");
-			return;
-		}
 		$("#upLoadGoodsFile").val('');
 		$('#upLoadGoods').window({modal: true});
 		$('#upLoadGoods').window('open');
@@ -338,7 +334,11 @@ $(function () {
 			});
 			thisForm.submit();
 		}else{
-			$.messager.alert("<font color='black'>提示</font>","该商品了修改单人限购和限购总量！", "info");
+			//新增弹窗，编辑时只有只有未开始活动弹窗价格变动弹窗，进行中活动价格已经不可修改无需弹窗
+			var actStatus = $("#actStatus").val();
+			if(actStatus=="1"||actStatus==""){
+				$.messager.alert("<font color='black'>提示</font>","该商品了修改单人限购和限购总量！", "info");
+			}
 			if(addedit==1){
 				$('#uploadGoodsListAdd').datagrid('updateRow',{
 					index: editindex,
@@ -756,8 +756,8 @@ var limitGoodsSkuId ;//商品ID
 var stockCurrAmt ;//商品库存剩余
 var editindex;//商品表行号
 var skuId ;//商品skuID
-var addedit;//新增活动or修改活动
-var source;//新增活动or修改活动
+var addedit;//新增活动or修改活动  修改行号
+var source;//新增活动or修改活动 商品来源
 //编辑商品弹框
 function editGoods(target,num){
 	addedit=num;
@@ -773,6 +773,7 @@ function editGoods(target,num){
 		$("#limitGoodsSkuUrl").attr("src",'');
 	}
 	if(limitGoodsSkuId==""||limitGoodsSkuId==null){//新增编辑
+		$("#actStatus").val("");
 		if(rowentity.limitNumTotal!=null&&rowentity.limitNum!=null){
 			$("#limitNumTotalAdd").textbox('setValue',rowentity.limitNumTotal);
 			$("#limitNumAdd").textbox('setValue',rowentity.limitNum);
@@ -803,6 +804,7 @@ function editGoods(target,num){
             success : function(data) {
 				ifLogout(data);
             	var sta = data.data;
+            	$("#actStatus").val(sta);
             	if(sta=="1"){//未开始 可编辑
             		//有问题需要解决   有微调器失效BUG
             		$("#limitNumTotalAdd").textbox({'disabled':false});

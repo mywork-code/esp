@@ -1393,6 +1393,7 @@ public class GoodsService {
             entity.setGoodsCode(sb.toString());
             entity.setMainGoodsCode(sb.toString());
             goodsDao.insert(entity);
+            entity.setGoodId(entity.getId());
             LOGGER.info("保存商品成功,保存内容：{}", entity);
             return entity;
         }else{
@@ -1908,11 +1909,11 @@ public class GoodsService {
    */
   public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode(String param,SourceType sourceType) {
     GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
-    entity.setGoodsCode(Long.parseLong(param));
+//    entity.setGoodsCode(Long.parseLong(param));
     entity.setExternalId(param);
     entity.setSource(sourceType.getCode());
     List<GoodsBasicInfoEntity> result=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity);
-    if(null !=result && result.size()==1){
+    if(CollectionUtils.isNotEmpty(result) && result.size()==1){
         return result.get(0);
     }
     return null;

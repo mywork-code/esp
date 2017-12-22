@@ -114,5 +114,8 @@ public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEn
 		return this.getSqlSession().selectList("getRemainderGoodsNew", param);
 	}
 
+	public int deleteRepeatSku(){
+		return this.getSqlSession().delete("deleteRepeatSku");
+	}
 
 }

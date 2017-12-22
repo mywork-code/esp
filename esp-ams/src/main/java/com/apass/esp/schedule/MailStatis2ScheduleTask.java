@@ -7,6 +7,7 @@ import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.ExportDomain;
 import com.apass.esp.utils.ExportDomain1;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -73,6 +75,10 @@ public class MailStatis2ScheduleTask {
 
     @Autowired
     private GoodsService goodsService;
+
+    @Autowired
+    private GoodsStockInfoService goodsStockInfoService;
+
 
     @Scheduled(cron = "0 0 8 * * ?")
     public void mailStatisSchedule() {
@@ -159,13 +165,11 @@ public class MailStatis2ScheduleTask {
     }
 
     private HashMap<String,BigDecimal> convert(List<OrderInfoEntity> orderInfoEntityList){
-        BigDecimal amt = new BigDecimal(0);
         BigDecimal totalPrice = new BigDecimal(0);
         BigDecimal xieYiPrice = new BigDecimal(0);
         HashMap<String,BigDecimal> map = new HashMap<>();
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList
                 ) {
-            amt = amt.add(orderInfoEntity.getOrderAmt());
             OrderDetailInfoDto orderDetailInfoDto = null;
             try {
                 orderDetailInfoDto = orderService.getOrderDetailInfoDto("", orderInfoEntity.getOrderId());
@@ -181,35 +185,26 @@ public class MailStatis2ScheduleTask {
                 LOGGER.info("goodsInfoInOrderDtoList is empty ,orderId {}", orderInfoEntity.getOrderId());
                 continue;
             }
+
+
             for (GoodsInfoInOrderDto goodsInfoInOrderDto :
                     goodsInfoInOrderDtoList) {
                 List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoInOrderDto.getGoodsId());
                 if (CollectionUtils.isEmpty(goodsStockInfoEntityList)) {
                     continue;
                 }
-                try {
-                    //成本价
-                    totalPrice = totalPrice.add(goodsInfoInOrderDto.getGoodsPrice().multiply(new BigDecimal(goodsInfoInOrderDto.getBuyNum())));
-                    //判断是否存在使用优惠券的情况
-                    if(goodsInfoInOrderDto.getOrderDetailCouponDisCountAmt() != null){
-                    	totalPrice = totalPrice.subtract(goodsInfoInOrderDto.getOrderDetailCouponDisCountAmt());
-                    }
-                    //判断是否是参加优惠活动的情况
-                    if(goodsInfoInOrderDto.getOrderDetailDisCountAmt() != null){
-                    	totalPrice = totalPrice.subtract(goodsInfoInOrderDto.getOrderDetailDisCountAmt());
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("totalPrice cul error goodsInfoInOrderDto {}", JSONObject.toJSONString(goodsInfoInOrderDto));
+                GoodsStockInfoEntity  goodsStockInfoEntity = goodsStockInfoService.getById(goodsInfoInOrderDto.getGoodsStockId());
+                //协议价
+                xieYiPrice = xieYiPrice.add(goodsStockInfoEntity.getGoodsCostPrice().multiply(new BigDecimal(goodsInfoInOrderDto.getBuyNum())));
+                //成交价
+                totalPrice = totalPrice.add(goodsInfoInOrderDto.getGoodsPrice().multiply(new BigDecimal(goodsInfoInOrderDto.getBuyNum())));
+                //判断是否存在使用优惠券的情况
+                if(goodsInfoInOrderDto.getOrderDetailCouponDisCountAmt() != null){
+                    totalPrice = totalPrice.subtract(goodsInfoInOrderDto.getOrderDetailCouponDisCountAmt());
                 }
-                try {
-                    for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockInfoEntityList) {
-                        if (goodsStockInfoEntity.getGoodsStockId().equals(goodsInfoInOrderDto.getGoodsStockId())) {
-                            //协议价
-                            xieYiPrice = xieYiPrice.add(goodsStockInfoEntity.getGoodsCostPrice().multiply(new BigDecimal(goodsInfoInOrderDto.getBuyNum())));
-                        }
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("xieYiPrice cul error goodsInfoInOrderDto {}", JSONObject.toJSONString(goodsInfoInOrderDto));
+                //判断是否是参加优惠活动的情况
+                if(goodsInfoInOrderDto.getOrderDetailDisCountAmt() != null){
+                    totalPrice = totalPrice.subtract(goodsInfoInOrderDto.getOrderDetailDisCountAmt());
                 }
             }
         }
