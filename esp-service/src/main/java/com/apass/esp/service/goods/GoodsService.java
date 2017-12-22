@@ -1393,6 +1393,7 @@ public class GoodsService {
             entity.setGoodsCode(sb.toString());
             entity.setMainGoodsCode(sb.toString());
             goodsDao.insert(entity);
+            entity.setGoodId(entity.getId());
             LOGGER.info("保存商品成功,保存内容：{}", entity);
             return entity;
         }else{
