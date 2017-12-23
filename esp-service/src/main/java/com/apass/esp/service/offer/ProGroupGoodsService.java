@@ -147,49 +147,98 @@ public class ProGroupGoodsService {
 		}
 		return result;
 	}
-	// 判断该商品是否参加了限时购活动，如果参加了且时间有冲突
-		public Boolean getStatusByGoodId(String activityId, Long goodsId) {
-			Date proActivityStartDate = null;//满减活动的开始时间
-			Date proActivityEndDate = null;//满减活动的结束时间
-			Date limitStartDate = null;// 限时购活动开始时间
-			Date limitEndDate = null;// 限时购活动结束时间
-			ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
-			if(null !=activityCfg){
-				proActivityStartDate=activityCfg.getStartTime();
-				proActivityEndDate=activityCfg.getEndTime();
-			}
-			GoodsInfoEntity goodsInfoEntity = goodsRepository.selectGoodsByGoodsId(goodsId + "");
-			String source = goodsInfoEntity.getSource();
-			String skuId = "";
-			if (SourceType.JD.getCode().equals(source) || SourceType.WZ.getCode().equals(source)) {
-				skuId = goodsInfoEntity.getExternalId();
-			} else {
-				List<GoodsStockInfoEntity> goodsStockList = goodsStockInfoRepository.loadByGoodsId(goodsId);
-				if (CollectionUtils.isNotEmpty(goodsStockList) && goodsStockList.size() == 1) {
-					skuId = goodsStockList.get(0).getSkuId();
-				}
-			}
-			LimitGoodsSku entity = new LimitGoodsSku();
-			entity.setSkuId(skuId);
-			entity.setUpLoadStatus((byte) 1);
-			List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
-			if (CollectionUtils.isNotEmpty(LimitGoodsSkuList)) {
-				for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
-					LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
-					if(null !=limitBuyAct){
-						limitStartDate = limitBuyAct.getStartDate();
-						limitEndDate = limitBuyAct.getEndDate();
-					}
-					if(null !=limitStartDate && null !=limitEndDate && null !=proActivityStartDate && null !=proActivityEndDate){
-						//满减活动和限时购活动的时间交叉了
-						if(!(proActivityEndDate.before(limitStartDate) || limitEndDate.before(proActivityStartDate) ) ){
-							return false;
-						}
-					}
-				}
-			}
-			return true;
+	
+	/**
+	 *  判断该商品是否参加了限时购活动，如果参加了且时间有冲突
+	 * @param activityId
+	 * @param goodsId
+	 * @return
+	 */
+	public Boolean getStatusByGoodId(String activityId, Long goodsId) {
+		Date proActivityStartDate = null;//满减活动的开始时间
+		Date proActivityEndDate = null;//满减活动的结束时间
+		Date limitStartDate = null;// 限时购活动开始时间
+		Date limitEndDate = null;// 限时购活动结束时间
+		ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
+		if(null !=activityCfg){
+			proActivityStartDate=activityCfg.getStartTime();
+			proActivityEndDate=activityCfg.getEndTime();
 		}
+		GoodsInfoEntity goodsInfoEntity = goodsRepository.selectGoodsByGoodsId(goodsId + "");
+		String source = goodsInfoEntity.getSource();
+		String skuId = "";
+		if (SourceType.JD.getCode().equals(source) || SourceType.WZ.getCode().equals(source)) {
+			skuId = goodsInfoEntity.getExternalId();
+		} else {
+			List<GoodsStockInfoEntity> goodsStockList = goodsStockInfoRepository.loadByGoodsId(goodsId);
+			if (CollectionUtils.isNotEmpty(goodsStockList) && goodsStockList.size() == 1) {
+				skuId = goodsStockList.get(0).getSkuId();
+			}
+		}
+		LimitGoodsSku entity = new LimitGoodsSku();
+		entity.setSkuId(skuId);
+		entity.setUpLoadStatus((byte) 1);
+		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
+		if (CollectionUtils.isNotEmpty(LimitGoodsSkuList)) {
+			for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
+				LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
+				if(null !=limitBuyAct){
+					limitStartDate = limitBuyAct.getStartDate();
+					limitEndDate = limitBuyAct.getEndDate();
+				}
+				if(null !=limitStartDate && null !=limitEndDate && null !=proActivityStartDate && null !=proActivityEndDate){
+					//满减活动和限时购活动的时间交叉了
+					if(!(proActivityEndDate.before(limitStartDate) || limitEndDate.before(proActivityStartDate) ) ){
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	
+	/**
+	 *  判断该商品是否参加了限时购活动，如果参加了且时间有冲突
+	 * @param activityId
+	 * @param goodsId
+	 * @return
+	 */
+	public Boolean getStatusByGoodId(String activityId, String skuId) {
+		Date proActivityStartDate = null;//满减活动的开始时间
+		Date proActivityEndDate = null;//满减活动的结束时间
+		Date limitStartDate = null;// 限时购活动开始时间
+		Date limitEndDate = null;// 限时购活动结束时间
+		ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
+		if(null !=activityCfg){
+			proActivityStartDate=activityCfg.getStartTime();
+			proActivityEndDate=activityCfg.getEndTime();
+		}
+		
+		LimitGoodsSku entity = new LimitGoodsSku();
+		entity.setSkuId(skuId);
+		entity.setUpLoadStatus((byte) 1);
+		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
+		if (CollectionUtils.isNotEmpty(LimitGoodsSkuList)) {
+			for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
+				LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
+				if(null !=limitBuyAct){
+					limitStartDate = limitBuyAct.getStartDate();
+					limitEndDate = limitBuyAct.getEndDate();
+				}
+				if(limitBuyAct.getEndDate().getTime() < new Date().getTime()){
+					continue;
+				}
+				if(null !=limitStartDate && null !=limitEndDate && null !=proActivityStartDate && null !=proActivityEndDate){
+					//满减活动和限时购活动的时间交叉了
+					if(!(proActivityEndDate.before(limitStartDate) || limitEndDate.before(proActivityStartDate) ) ){
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
 	/**
 	 * 编辑排序
 	 * @param vo
