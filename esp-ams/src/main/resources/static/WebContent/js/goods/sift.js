@@ -3,6 +3,7 @@
  */
 $(function() {
 	$('#siftGoodsInfoUpload').window('close');
+	$('#siftGoodsInfoEdit').window('close');
 	$('#showSiftGoodImg').window('close');
     // Grid 列表
     $('#tablelist').datagrid({
@@ -154,7 +155,7 @@ $(function() {
                         if(row.goodsType=='1'){
                         	content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick='$.updateGoodsSift(\"" + row.id + "\",\"" + row.goodsType + "\");'>设置为精选</a>&nbsp;";
                         }else if(row.goodsType=='2'){
-//                        	content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick='$.editGoodsSift(\"" + row.id + "\");'>编辑</a>&nbsp;";
+                        	content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick='$.editGoodsSift(\"" + row.id + "\",\"" + row.siftSort + "\",\"" + row.goodsSiftUrl + "\");'>编辑</a>&nbsp;";
                         	content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick='$.updateGoodsSift(\"" + row.id + "\",\"" + row.goodsType + "\");'>恢复为正常</a>&nbsp;";
                         }
                         if(row.goodsSiftUrl){
@@ -180,7 +181,6 @@ $(function() {
         }
     });
     $("#goodsCategoryCombo").combotree({
-//        required : true,
         loader : function(param, success, error) {
             $.ajax({
                 url : ctx + "/application/goods/management/categoryList",
@@ -225,22 +225,17 @@ $(function() {
 		var params = {};
 		$('#tablelist').datagrid('load', params);
 	});
-
-	
 	//全局变量 商品id
     var goodsId = null;
     //全局变量商品类型
 	var goodsType = null;
 	//全局变量商品精选排序
 	var siftGoodsSort = null;
-	// 编辑精选商品
-	$.editGoodsSift= function(goodsId) {
-		$('#siftGoodsInfoUpload').window('open');
-	};
     // 设置商品为精选弹窗   or 恢复为正常
     $.updateGoodsSift = function(goodsId2,goodsType2) {
     	$("#siftGoodsFile").val("");//点击设置商品为精选时置空文件，让用户重新选择
-    	$("#siftGoodsSortInput").val('');//点击设置商品排序为精选时置空，让用户重新选择
+//    	$("#siftGoodsSortInput").val('');
+    	$("#siftGoodsSortInput").textbox('setValue',"");//点击设置商品排序为精选时置空，让用户重新选择
     	goodsId = goodsId2;
     	goodsType = goodsType2;
     	if(goodsType=='1'){
@@ -257,14 +252,12 @@ $(function() {
     		updataGoodsType();
     	}
     }; 
-    
     //查看图片
 	$.show=function(goodsSiftUrl){
 	   $("#siftGoodImg").attr("src","");
 	   $("#siftGoodImg").attr("src", ctx + "/fileView/query?picUrl=" + goodsSiftUrl);
 	   $("#showSiftGoodImg").window('open');
 	}
-    
     //修改商品类型(正常--1，精选--2)
     function updataGoodsType(){
     	var address = ctx + '/application/goods/sift/update';
@@ -285,9 +278,7 @@ $(function() {
             	$('#siftGoodsInfoUpload').window('close');
             }
         });
-	
     }
-    
     //确认  
 	$("#agreeEdit").click(function() {	
 		var siftGoodsFile=$('#siftGoodsFile').val();//结果:siftGoodsFile = "C:\fakepath\Capture001.png"
@@ -325,5 +316,54 @@ $(function() {
 	//取消
 	$("#cancelEdit").click(function() {
 		$('#siftGoodsInfoUpload').window('close');
+	});
+	// 编辑精选商品
+	$.editGoodsSift= function(id,siftSort,goodsSiftUrl) {
+		goodsId = id;
+		$("#siftGoodsSortInputEdit").textbox('setValue',siftSort);
+		$("#siftGoodsFileEdit").val("");//点击设置商品为精选时置空文件，让用户重新选择
+		$("#siftGoods").attr("src",ctx + "/fileView/queryCompress?picUrl=" + goodsSiftUrl);//回显精选图片
+    	$('#siftGoodsInfoEdit').window({
+			shadow : true,
+			minimizable : false,
+			maximizable : false,
+			collapsible : false,
+			modal : true
+		});
+		$('#siftGoodsInfoEdit').window('open');
+	};
+	//确认  
+	$("#agreeUpdate").click(function() {	
+		var siftGoodsFile=$('#siftGoodsFileEdit').val();
+		var siftGoodsSortInput=$("#siftGoodsSortInputEdit").textbox("getValue");
+		var r = /^\+?[1-9][0-9]*$/;//正整数
+	    var falg = r.test(siftGoodsSortInput);
+	    if(!falg){
+	    	$.messager.alert("提示", "精选商品排序字段请用正整数维护！", "info");
+			return;
+	    }
+	    $("#siftGoodsIdEdit").val(goodsId);//赋值商品id
+	    siftGoodsSort = siftGoodsSortInput;//赋值精选商品排序字段
+	    if (null == siftGoodsFile || ("") == siftGoodsFile) {//只修改了精选排序
+	    	
+		}else{//修改排序和图片
+			
+		}
+	    var thisForm = $("#siftGoodsFormEdit");
+		thisForm.form("submit",{
+			url : ctx + '/application/goods/sift/upSiftFileEdit',
+			success : function(data) {
+				var res = JSON.parse(data);//字符串解析成json对象
+				if(res.status == '1'){
+					$.messager.alert("提示", res.msg, "info");
+					$(".search-btn").click();
+					$('#siftGoodsInfoEdit').window('close');
+				} 
+			}
+		});
+	});
+	//取消
+	$("#cancelUpdate").click(function() {
+		$('#siftGoodsInfoEdit').window('close');
 	});
 });

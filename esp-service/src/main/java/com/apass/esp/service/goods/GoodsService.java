@@ -20,8 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import com.apass.esp.domain.dto.goods.SiftGoodFileModel;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.domain.entity.GoodsAttrVal;

@@ -72,17 +72,18 @@
     <div id="tablelist"></div>
     
     <!-- 设置为精选     上传图片 -->
-    <div id="siftGoodsInfoUpload" class="easyui-window" title="<font color='black'>精选商品</font>" hidden="hidden"
-        style="width: 450px; height: 220px; display: none; text-align: center;" >
+    <div id="siftGoodsInfoUpload" class="easyui-window" title="<font color='black'>设置精选商品</font>" hidden="hidden"
+        style="width: 400px; height: 220px; display: none; text-align: center;" >
         <h2>你确定将该条商品设为精选?</h2>
         <table class="details_table" style="width:92%">
             <tr>
-                <td width="50%" align="right"><font color="red">*</font>排序:</td>
-                <td align="left"><input id="siftGoodsSortInput"; class="easyui-textbox" style="width: 200px;"></td>
-
+                <td width="30%" align="right"><font color="red">*</font>精选排序:</td>
+                <td align="left">
+                    <input id="siftGoodsSortInput" name="siftSort" class="easyui-textbox" style="width: 200px;">
+                </td>
 			</tr>
 			<tr>
-				<td width="50%" align="right"><font color="red">*</font>精选商品图片:</td>
+				<td width="30%" align="right"><font color="red">*</font>精选商品图片:</td>
 				<td align="left">
 					<form id="siftGoodsForm"  method="POST" enctype="multipart/form-data" modelAttribute="siftGoodFileModel">	
 						<input  type="file" id="siftGoodsFile" name="siftGoodsFile"/>
@@ -91,17 +92,54 @@
 				</td>
             </tr>
             <tr>
-                <td colspan="4">
-                    <span><font color="red">支持格式：.png或.jpg;宽：350px,高：350px;大小：≤500kb</font></span>
+                <td></td>
+                <td style="color:red;margin-left: -20px">
+                    <span>格式:.png.jpg;尺寸:350×350;大小:≤500kb</span>
                 </td>
             </tr>
             <tr style="margin-top: 22px;">
                 <td colspan="4">
-                    <a href="javascript:void(0);" id="cancelEdit" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
                     <a href="javascript:void(0);" id="agreeEdit" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+                    <a href="javascript:void(0);" id="cancelEdit" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
                 </td>
             </tr>
         </table>
+    </div>
+    
+    <!-- 编辑精选商品     编辑图片 -->
+    <div id="siftGoodsInfoEdit" class="easyui-window" title="<font color='black'>编辑精选商品</font>" hidden="hidden"
+    style="width: 400px; height: 320px; display: none; text-align: center;" >
+        <form id="siftGoodsFormEdit"  method="POST" enctype="multipart/form-data" modelAttribute="siftGoodFileModel">   
+            <input  type="hidden" id="siftGoodsIdEdit" name="siftGoodsId"/>
+            <h2>编辑精选商品</h2>
+	        <table class="details_table" style="width:92%">
+	            <tr>
+	                <td width="30%" align="right"><font color="red">*</font>精选排序:</td>
+	                <td align="left">
+	                   <input id="siftGoodsSortInputEdit" name="siftSort" class="easyui-textbox" style="width: 200px;">
+                    </td>
+	            </tr>
+	            <tr>
+	                <td width="30%" align="right" valign="top"><font color="red">*</font>精选商品图片:</td>
+	                <td colspan="3" width="60%">
+                        <img id='siftGoods' src=""/>
+                        <input  type="file" id="siftGoodsFileEdit" name="siftGoodsFile"/>
+	                </td>
+	            </tr>
+	            <tr>
+                    <td></td>
+                    <td>
+	                    <span>格式:.png.jpg;尺寸:350×350;大小:≤500kb</font></span>
+	                </td>
+	            </tr>
+	            <tr style="margin-top: 22px;">
+	                <td colspan="4">
+	                    <a href="javascript:void(0);" id="agreeUpdate" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+	                    <a href="javascript:void(0);" id="cancelUpdate" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
+	                </td>
+	            </tr>
+	        </table>
+        </form>
     </div>
     
     <!-- 预览精选图片弹出窗口 -->
