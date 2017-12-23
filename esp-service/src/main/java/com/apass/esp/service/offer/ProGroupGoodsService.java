@@ -226,7 +226,7 @@ public class ProGroupGoodsService {
 					limitStartDate = limitBuyAct.getStartDate();
 					limitEndDate = limitBuyAct.getEndDate();
 				}
-				if(limitBuyAct.getEndDate().getTime() < new Date().getTime()){
+ 				if(null !=limitBuyAct && limitBuyAct.getEndDate().getTime() < new Date().getTime()){
 					continue;
 				}
 				if(null !=limitStartDate && null !=limitEndDate && null !=proActivityStartDate && null !=proActivityEndDate){
