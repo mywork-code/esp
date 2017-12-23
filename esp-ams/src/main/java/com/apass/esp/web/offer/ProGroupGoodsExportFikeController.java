@@ -288,7 +288,7 @@ public class ProGroupGoodsExportFikeController {
 							pggds.setMarketPrice(list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP));//对小数点第三位执行四舍五入
 							pggds.setActivityPrice(list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
 							pggds.setGoodsId(gbity.getGoodId());
-							pggds.setSkuId(gbity.getExternalId());
+							pggds.setSkuId(id);
 							pggds.setGoodsCode(gbity.getGoodsCodeString());
 							pggds.setDetailDesc("1");// 1表示导入成功
 							pggds.setActivityId(Long.parseLong(activityId));
@@ -296,7 +296,7 @@ public class ProGroupGoodsExportFikeController {
 						    countSuccess++;
 						}else{//该商品在其他有效活动中，导入失败
 							pggds.setGoodsId(gbity.getGoodId());
-							pggds.setSkuId(gbity.getExternalId());
+							pggds.setSkuId(id);
 							pggds.setGoodsCode(gbity.getGoodsCode().toString());
 							pggds.setMarketPrice(list.get(i).getMarketPrice());
 							pggds.setActivityPrice(list.get(i).getActivityPrice());
