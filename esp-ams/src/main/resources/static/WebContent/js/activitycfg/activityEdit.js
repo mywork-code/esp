@@ -275,12 +275,18 @@ $(function () {
     });
 
     //导入
+    var lock = true;
     $("#import").click(function () {
+    	if(!lock){
+    		return false;
+    	}
+    	lock = false;
     	var actiId = $("#addGoodsToGroupActivityId").val();
         $("#activityId").val(actiId);
         var form = $("#ExcelFileForm");
         var file = $("#Excelfile").val();
         if (file == null || file == '') {
+        	lock = true;
             $.messager.alert("<font color='black'>提示</font>", "请选择要上传的Excel文件", "info");
             return;
         }
@@ -292,8 +298,10 @@ $(function () {
                     $.messager.alert("<font color='black'>提示</font>", data.msg, "info");
                     $('#Excelfile').val('');
                     var params = {};
+                    lock = true;
                     $('#importFileList').datagrid('load', {"activityId":actiId});
                 } else {
+                	lock = true;
                     $.messager.alert("<font color='black'>提示</font>", data.msg, "info");
                 }
             }
