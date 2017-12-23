@@ -128,7 +128,16 @@ public class GoodsInfoEntity {
     private Date createDate;
     //修改时间
     private Date updateDate;
-    public List<String> getStatuList() {
+    //品牌
+    private String brandId;
+    
+    public String getBrandId() {
+		return brandId;
+	}
+	public void setBrandId(String brandId) {
+		this.brandId = brandId;
+	}
+	public List<String> getStatuList() {
         return statuList;
     }
     public void setStatuList(List<String> statuList) {

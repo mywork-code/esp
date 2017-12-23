@@ -144,13 +144,12 @@
 				WHERE
 					a.`status` = 'G02'
 				AND a.is_delete = '01'
+				AND a.source ='wz'
 				AND CURRENT_TIMESTAMP > a.list_time
 
 	]]>
-	   <if test="goodsCode != null or externalId != null">
-            AND (a.goods_code = #{goodsCode, jdbcType=BIGINT}
-           OR a.external_id = #{externalId, jdbcType=VARCHAR}
-           )
+	   <if test="externalId != null">
+            AND a.external_id = #{externalId, jdbcType=VARCHAR}
         </if>
 
     </select>

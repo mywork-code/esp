@@ -20,11 +20,15 @@
     <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
     <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
     <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
+    <result column="brand_id" property="brandId" jdbcType="BIGINT" />
+    <result column="offer_range" property="offerRange" jdbcType="BIGINT" />
+    <result column="category_id3" property="categoryId3" jdbcType="VARCHAR" />
+    <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, extend_type, type, effective_time, sill_type, coupon_sill, discount_amonut, 
     category_id1, category_id2, goods_code, similar_goods_code, memo, create_user, update_user, 
-    created_time, updated_time, is_delete
+    created_time, updated_time, is_delete, brand_id, offer_range, category_id3, sku_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -42,13 +46,17 @@
       discount_amonut, category_id1, category_id2, 
       goods_code, similar_goods_code, memo, 
       create_user, update_user, created_time, 
-      updated_time, is_delete)
+      updated_time, is_delete, brand_id, 
+      offer_range, category_id3, sku_id
+      )
     values (#{name,jdbcType=VARCHAR}, #{extendType,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{effectiveTime,jdbcType=INTEGER}, #{sillType,jdbcType=VARCHAR}, #{couponSill,jdbcType=DECIMAL}, 
       #{discountAmonut,jdbcType=DECIMAL}, #{categoryId1,jdbcType=VARCHAR}, #{categoryId2,jdbcType=VARCHAR}, 
       #{goodsCode,jdbcType=VARCHAR}, #{similarGoodsCode,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, 
-      #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR})
+      #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR}, #{brandId,jdbcType=BIGINT}, 
+      #{offerRange,jdbcType=BIGINT}, #{categoryId3,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProCoupon" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_pro_coupon
@@ -104,6 +112,18 @@
       <if test="isDelete != null" >
         is_delete,
       </if>
+      <if test="brandId != null" >
+        brand_id,
+      </if>
+      <if test="offerRange != null" >
+        offer_range,
+      </if>
+      <if test="categoryId3 != null" >
+        category_id3,
+      </if>
+      <if test="skuId != null" >
+        sku_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="name != null" >
@@ -157,6 +177,18 @@
       <if test="isDelete != null" >
         #{isDelete,jdbcType=VARCHAR},
       </if>
+      <if test="brandId != null" >
+        #{brandId,jdbcType=BIGINT},
+      </if>
+      <if test="offerRange != null" >
+        #{offerRange,jdbcType=BIGINT},
+      </if>
+      <if test="categoryId3 != null" >
+        #{categoryId3,jdbcType=VARCHAR},
+      </if>
+      <if test="skuId != null" >
+        #{skuId,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.ProCoupon" >
@@ -165,7 +197,7 @@
       <if test="name != null" >
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="extendType != null and extendType != ''" >
+      <if test="extendType != null" >
         extend_type = #{extendType,jdbcType=VARCHAR},
       </if>
       <if test="type != null" >
@@ -213,6 +245,18 @@
       <if test="isDelete != null" >
         is_delete = #{isDelete,jdbcType=VARCHAR},
       </if>
+      <if test="brandId != null" >
+        brand_id = #{brandId,jdbcType=BIGINT},
+      </if>
+      <if test="offerRange != null" >
+        offer_range = #{offerRange,jdbcType=BIGINT},
+      </if>
+      <if test="categoryId3 != null" >
+        category_id3 = #{categoryId3,jdbcType=VARCHAR},
+      </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -234,7 +278,11 @@
       update_user = #{updateUser,jdbcType=VARCHAR},
       created_time = #{createdTime,jdbcType=TIMESTAMP},
       updated_time = #{updatedTime,jdbcType=TIMESTAMP},
-      is_delete = #{isDelete,jdbcType=VARCHAR}
+      is_delete = #{isDelete,jdbcType=VARCHAR},
+      brand_id = #{brandId,jdbcType=BIGINT},
+      offer_range = #{offerRange,jdbcType=BIGINT},
+      category_id3 = #{categoryId3,jdbcType=VARCHAR},
+      sku_id = #{skuId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

@@ -18,6 +18,12 @@ public class ProMyCouponVo {
     
     private String categoryId2;//二级类目的Id
     
+    private String categoryId3;//三级类目的Id
+    
+    private String offerRange;//优惠范围
+    
+    private String skuId;//商品的skuId
+    
     private String goodsId;//商品ID
     
     private String similarGoodsCode;//商品的相似code
@@ -50,7 +56,17 @@ public class ProMyCouponVo {
     
     private String source;//如果是指定商品，用来区分京东和非京东
     
-    public String getSource() {
+    private String brandId;//品牌Id
+    
+    public String getBrandId() {
+		return brandId;
+	}
+
+	public void setBrandId(String brandId) {
+		this.brandId = brandId;
+	}
+
+	public String getSource() {
 		return source;
 	}
 
@@ -232,6 +248,30 @@ public class ProMyCouponVo {
 
 	public void setRule(String rule) {
 		this.rule = rule;
+	}
+
+	public String getCategoryId3() {
+		return categoryId3;
+	}
+
+	public void setCategoryId3(String categoryId3) {
+		this.categoryId3 = categoryId3;
+	}
+
+	public String getSkuId() {
+		return skuId;
+	}
+
+	public void setSkuId(String skuId) {
+		this.skuId = skuId;
+	}
+
+	public String getOfferRange() {
+		return offerRange;
+	}
+
+	public void setOfferRange(String offerRange) {
+		this.offerRange = offerRange;
 	}
 	
 }

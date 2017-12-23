@@ -1911,11 +1911,11 @@ public class GoodsService {
    */
   public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode(String param,SourceType sourceType) {
     GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
-    entity.setGoodsCode(Long.parseLong(param));
+//    entity.setGoodsCode(Long.parseLong(param));
     entity.setExternalId(param);
     entity.setSource(sourceType.getCode());
     List<GoodsBasicInfoEntity> result=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity);
-    if(null !=result && result.size()==1){
+    if(CollectionUtils.isNotEmpty(result) && result.size()==1){
         return result.get(0);
     }
     return null;
