@@ -372,7 +372,10 @@ public class ProGroupGoodsExportFikeController {
 					break;
 				}
 			}
-			list.add(pggt);
+			//如果商品编号不为空时，才认为是一条完整的数据
+			if(StringUtils.isNotBlank(pggt.getId())){
+				list.add(pggt);
+			}
 		}
 		return list;
 	}
