@@ -144,13 +144,13 @@
 				WHERE
 					a.`status` = 'G02'
 				AND a.is_delete = '01'
-				AND a.source ='wz'
+				AND a.source !='jd'
 				AND CURRENT_TIMESTAMP > a.list_time
 
 	]]>
 	   <if test="externalId != null">
-            AND a.external_id = #{externalId, jdbcType=VARCHAR}
-        </if>
+            AND (a.external_id = #{externalId, jdbcType=VARCHAR} or b.sku_id = #{externalId, jdbcType=VARCHAR})
+       </if>
 
     </select>
       <!--  查询可上架的京东商品数量-->
