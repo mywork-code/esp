@@ -2661,6 +2661,7 @@ function initGoodsInfo(){
 	//$('#addgoodsSkuType').combobox('setValue','');
 	$('#addUnSupportProvince').combobox('setValue','');
 	$("#sordNo").numberbox('setValue','');
+	$("#addBrandName").textbox('clear');
 }
 
 //编辑商品初始化商品信息

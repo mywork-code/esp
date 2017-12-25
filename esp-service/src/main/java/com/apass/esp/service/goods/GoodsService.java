@@ -22,6 +22,7 @@ import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.domain.entity.GoodsAttrVal;
+import com.apass.esp.domain.entity.GoodsBrand;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
@@ -119,6 +120,8 @@ public class GoodsService {
   private WeiZhiProductService weiZhiProductService;
   @Autowired
   private LimitCommonService limitCommonService;
+  @Autowired
+  private GoodsBrandService goodsBrandService;
   /**
    * app 首页加载精品推荐商品
    *
@@ -1403,6 +1406,25 @@ public class GoodsService {
             sb.append(random);
             entity.setGoodsCode(sb.toString());
             entity.setMainGoodsCode(sb.toString());
+            
+            //验证品牌
+            String brandname = entity.getBrandName();
+            if (StringUtils.isNotBlank(brandname)){
+                GoodsBrand brand = new GoodsBrand();
+                brand.setName(brandname);
+                brand = goodsBrandService.getGoodsBrandByName(brand);
+                if(brand==null){
+                    brand.setIsDelete("00");
+                    brand.setCreatedTime(new Date());
+                    brand.setUpdatedTime(new Date());
+                    if(goodsBrandService.createdBrand(brand)!=1){
+                        throw new BusinessException("商品品牌录入失败!");
+                    }
+                }
+                entity.setBrandId(brand.getId().toString());
+            }else{
+                entity.setBrandId("");
+            }
             goodsDao.insert(entity);
             entity.setGoodId(entity.getId());
             LOGGER.info("保存商品成功,保存内容：{}", entity);

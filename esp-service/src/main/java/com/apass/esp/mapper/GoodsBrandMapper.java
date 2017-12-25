@@ -8,9 +8,15 @@ import com.apass.gfb.framework.mybatis.GenericMapper;
  */
 public interface GoodsBrandMapper extends GenericMapper<GoodsBrand,Long> {
     /**
-     * 发票查询
+     * 品牌查询
      * @param entity
      * @return
      */
     public List<GoodsBrand> getGoodsBrandList(GoodsBrand entity);
+    /**
+     * 品牌查询
+     * @param entity
+     * @return
+     */
+    public GoodsBrand getGoodsBrandByName(GoodsBrand entity);
 }

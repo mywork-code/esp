@@ -10,12 +10,12 @@
             created_time createdTime,
             updated_time updatedTime
         FROM
-            t_esp_goods_brand t
+            t_esp_goods_brand
         WHERE 1=1 
-            AND t.is_delete = '00'
         ]]>
         <if test="name!=null and name!=''">
-            AND name = '#{name}'
+<!--             AND is_delete = '00' -->
+            AND name = #{name}
         </if>
     </select>
 </mapper>
