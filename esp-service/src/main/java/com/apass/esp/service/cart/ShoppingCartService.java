@@ -761,9 +761,8 @@ public class ShoppingCartService {
         }
 		if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
 			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfo.getExternalId()));
-			List<JdSimilarSkuTo> jdSimilarSkuToList=new ArrayList<>();
 			resultMap.put("source", "jd");
-			resultMap.put("JdSimilarSkuToList", jdSimilarSkuToList);
+			resultMap.put("JdSimilarSkuToList", jdSimilarSkuInfoMap.get("JdSimilarSkuToList"));
 			resultMap.put("jdSimilarSkuList", jdSimilarSkuInfoMap.get("jdSimilarSkuList"));
 			resultMap.put("jdSimilarSkuListSize", jdSimilarSkuInfoMap.get("jdSimilarSkuListSize"));
 		} else {
