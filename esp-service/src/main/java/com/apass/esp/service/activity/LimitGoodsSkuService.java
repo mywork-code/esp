@@ -305,7 +305,7 @@ public class LimitGoodsSkuService {
      * @param skuId
      * @return
      */
-    private Boolean checkoutSkuId(String skuId) {
+    public Boolean checkoutSkuId(String skuId) {
         try{
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
             List<String> strlist = new ArrayList<String>();
@@ -329,10 +329,17 @@ public class LimitGoodsSkuService {
         List<LimitGoodsSku> skulist = null;
         ResponsePageBody<LimitGoodsSkuVo> pageBody = new ResponsePageBody<LimitGoodsSkuVo>();
         List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
+        List<LimitGoodsSku> underfindlist = new ArrayList<LimitGoodsSku>();
         if(entity.getLimitBuyActId()!=null){
             Long sortNo = 0L;
             skulist = limitGoodsSkuMapper.getLimitGoodsSkuPage(entity);
             for(LimitGoodsSku sku : skulist){
+                Boolean fskuid = checkoutSkuId(sku.getSkuId());
+                if(fskuid){
+                    //是否跑出异常   待查询列表SKUID错误
+                    underfindlist.add(sku);
+                    continue;
+                }
                 LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
                 GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
                 GoodsInfoEntity goods = null;
@@ -364,6 +371,22 @@ public class LimitGoodsSkuService {
                     vo.setSource("wz");
                 }
                 skuvolist.add(vo);
+            }
+            //验证不通过，不存在的sku 
+            for(LimitGoodsSku underfindentity : underfindlist){
+                String skuId = underfindentity.getSkuId();
+                LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
+                vo.setActivityPrice(underfindentity.getActivityPrice());
+                vo.setSkuId(skuId);
+                vo.setSortNo(++sortNo);
+                vo.setUpLoadStatus((byte)0);
+                vo.setLimitNumTotal(0L);
+                vo.setLimitNum(0L);
+                vo.setSource("notwz");
+                skuvolist.add(vo);
+                if(sortNo==100L){
+                    break;
+                }
             }
             pageBody.setTotal(limitGoodsSkuMapper.getLimitGoodsSkuPageCount(entity));
             pageBody.setRows(skuvolist);

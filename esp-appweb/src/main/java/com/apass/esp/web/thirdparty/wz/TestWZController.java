@@ -475,9 +475,10 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWeiZhiSimilarSku(@RequestBody Map<String, Object> paramMap) throws Exception {
 		try {
-			List<JdSimilarSku> list = weiZhiProductService.getWeiZhiSimilarSku("100376");
-			TreeSet<String> jdSimilarSkuIdList = jdGoodsInfoService.getJdSimilarSkuIdList("100376");
-			return Response.success("同类商品查询成功！", list);
+			String skuId = (String)paramMap.get("skuId");
+			List<JdSimilarSku> list = weiZhiProductService.getWeiZhiSimilarSku(skuId);
+			TreeSet<String> jdSimilarSkuIdList = jdGoodsInfoService.getJdSimilarSkuIdList(skuId);
+			return Response.success("同类商品查询成功！", jdSimilarSkuIdList);
 		} catch (Exception e) {
 			return Response.fail("同类商品查询失败！");
 		}

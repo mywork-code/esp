@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Created by jie.xu on 17/7/5.
@@ -128,10 +129,12 @@ public class JdGoodsService {
         entity.setAttrDesc("");
         entity.setSupport7dRefund("");
         entity.setSiftSort(0);
+        entity.setMainGoodsCode("");
 
 
         //查询数据库是否已经存在此商品
         GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
+
         if(insertJdGoods != null){
             // 商品编号
             StringBuffer sb = new StringBuffer();
@@ -139,9 +142,21 @@ public class JdGoodsService {
             String random = RandomUtils.getNum(8);
             sb.append(random);
             entity.setGoodsCode(sb.toString());
-            entity.setMerchantCode(sb.toString());
+            entity.setMainGoodsCode(sb.toString());
             goodsService.updateService(entity);
 
+            //查询similar skuIds
+            TreeSet<String> similarSkuIds = jdGoodsInfoService.getJdSimilarSkuIdList(jdGoods.getSkuId().toString());
+            if(CollectionUtils.isNotEmpty(similarSkuIds)){
+                for (String skuId: similarSkuIds) {
+                    //根据skuId去goodsbase表中查,如果存在并且mainGoodsCode存在 存储mainGoodsCode
+                    GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(skuId);
+                    if(goodsInfoEntity != null){
+                        goodsInfoEntity.setMainGoodsCode(sb.toString());
+                        goodsService.updateService(goodsInfoEntity);
+                    }
+                }
+            }
         }
 
         // 往t_esp_goods_stock_info表插数据

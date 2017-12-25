@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,8 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import com.apass.esp.domain.dto.goods.SiftGoodFileModel;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.domain.entity.GoodsAttrVal;
@@ -1392,6 +1395,7 @@ public class GoodsService {
             entity.setGoodsCode(sb.toString());
             entity.setMainGoodsCode(sb.toString());
             goodsDao.insert(entity);
+            entity.setGoodId(entity.getId());
             LOGGER.info("保存商品成功,保存内容：{}", entity);
             return entity;
         }else{
@@ -1639,15 +1643,47 @@ public class GoodsService {
     if (jdCategory == null) {
       throw new RuntimeException("数据有误");
     }
-    List<JdGoods> jdGoods = jdGoodsMapper.queryGoodsByThirdCateId(jdCategory.getCatId().toString());
-    for (JdGoods jdGood : jdGoods) {
-      GoodsInfoEntity goodsEntity = goodsDao.selectGoodsByExternalIdAndStatus(jdGood.getSkuId());
-      if (goodsEntity != null) {
-        LOGGER.info("上架或待审核商品：{}", GsonUtils.toJson(goodsEntity));
-        b = true;
-        break;
-      }
+    List<JdGoods> jdGoodsList = jdGoodsMapper.queryGoodsByThirdCateId(jdCategory.getCatId().toString());
+    if(CollectionUtils.isEmpty(jdGoodsList)){
+        LOGGER.error(cateId+"三级类目下jd_goods表中无数据");
+        throw new RuntimeException(cateId+"三级类目下jd_goods表中无数据");
     }
+
+    List<Long> skuIds = Lists.newArrayList();
+    //批量查询
+    if(jdGoodsList.size()>500){
+        int count = 0;
+        for(int i=0; i<jdGoodsList.size(); i++){
+            skuIds.add(jdGoodsList.get(i).getSkuId());
+            if(i%500==0){
+                List<GoodsInfoEntity> goodsInfoEntities = goodsDao.selectGoodsByExternalIds(skuIds);
+                if(CollectionUtils.isNotEmpty(goodsInfoEntities)){
+                    LOGGER.error("上架或待审核商品：{}", GsonUtils.toJson(goodsInfoEntities));
+                    b = true;
+                    break;
+                }
+                skuIds.clear();
+            }
+        }
+        //如果数量>500且没有被500整除，例:586,则循环结束后skuIds中还有86个商品没查
+        if(!b && skuIds.size()>0){
+            List<GoodsInfoEntity> goodsInfoEntities = goodsDao.selectGoodsByExternalIds(skuIds);
+            if(CollectionUtils.isEmpty(goodsInfoEntities)){
+                LOGGER.info("上架或待审核商品：{}", GsonUtils.toJson(goodsInfoEntities));
+                b = true;
+            }
+        }
+    }else{
+        for(JdGoods jdGoods : jdGoodsList){
+            skuIds.add(jdGoods.getSkuId());
+        }
+        List<GoodsInfoEntity> goodsInfoEntities = goodsDao.selectGoodsByExternalIds(skuIds);
+        if(CollectionUtils.isEmpty(goodsInfoEntities)){
+            LOGGER.info("上架或待审核商品：{}", GsonUtils.toJson(goodsInfoEntities));
+            b = true;
+        }
+    }
+      
     return b;
   }
 

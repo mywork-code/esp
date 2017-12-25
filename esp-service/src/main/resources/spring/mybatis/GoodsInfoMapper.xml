@@ -245,7 +245,7 @@
             AND t.category_id3 = #{categoryId3, jdbcType=BIGINT}
         </if>
         <![CDATA[
-        ORDER BY t.goods_type ASC,t.sift_sort ASC,t.sord_no ASC
+        ORDER BY t.goods_type DESC,t.sift_sort ASC,t.sord_no ASC
     ]]>
     </select>
     <!-- 商品管理count -->
@@ -924,7 +924,11 @@
             attr_desc     attrDesc,
             support_7d_refund support7dRefund,
             goods_code goodsCode,
+<<<<<<< HEAD
+            sift_sort siftSort
+=======
             brand_id brandId
+>>>>>>> 8ff3e18a7e6c6146281b0e7704517eb90136e72d
         FROM
             t_esp_goods_base_info
         WHERE
@@ -1180,7 +1184,7 @@
         t.update_date desc
     </select>
 
-    <!-- 根据三级类目id查询其下已下架或待上架商品 -->
+    <!-- 根据external_id查询待审核和已上架架商品 -->
     <select id="selectGoodsByExternalIdAndStatus" resultType="GoodsInfoEntity">
         SELECT
         t.category_id1 categoryId1,
@@ -1490,5 +1494,51 @@
             #{externalId}
         </foreach>
 
+    </select>
+
+    <!-- 根据external_id查询待审核和已上架架商品 -->
+    <select id="selectGoodsByExternalIds" resultType="GoodsInfoEntity">
+        SELECT
+        t.category_id1 categoryId1,
+        t.category_id2 categoryId2,
+        t.category_id3 categoryId3,
+        t.ID id,
+        t.category_code categoryCode,
+        t.goods_name goodsName,
+        t.goods_title goodsTitle,
+        t.goods_sell_pt goodsSellPt,
+        t.goods_type goodsType,
+        t.goods_type goodsTypeDesc,
+        t.goods_logo_url goodsLogoUrl,
+        t.list_time listTime,
+        t.delist_time delistTime,
+        t.pro_date proDate,
+        t.keep_date keepDate,
+        t.sup_no supNo,
+        t.create_user createUser,
+        t.update_user updateUser,
+        t.create_date createDate,
+        t.update_date updateDate,
+        t.merchant_code merchantCode,
+        t.status status,
+        t.status statusDesc,
+        t.goods_Sku_Type goodsSkuType,
+        t.goods_Model goodsModel,
+        t.goods_sift_url goodsSiftUrl,
+        t.sord_no sordNo,
+        t.un_support_province unSupportProvince,
+        t.source source,
+        t.external_id externalId
+        FROM
+        t_esp_goods_base_info t
+        WHERE
+        t.status in('G01','G02','G04') and
+        t.source = 'wz'
+        <if test="list != null">
+            and t.external_id in
+            <foreach collection="list" item="skuId" open="(" close=")" separator=",">
+                #{skuId}
+            </foreach>
+        </if>
     </select>
 </mapper>

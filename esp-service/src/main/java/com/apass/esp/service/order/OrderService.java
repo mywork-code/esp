@@ -847,19 +847,19 @@ public class OrderService {
 	 * @throws Exception
 	 */
 	public Boolean checkGoodsSalesOrNot(String skuId) {
-		Boolean falge = false;
+		Boolean flag = false;
 		try {
 			CheckSale checkSale = productApi.getWeiZhiCheckSale(skuId);
 			if (null != checkSale.getResult() && checkSale.getResult().size() > 0) {
 				WZCheckSale wZCheckSale = checkSale.getResult().get(0);
 				if (1 == wZCheckSale.getSaleState()) {
-					falge = true;
+					flag = true;
 				}
 			}
-			return falge;
+			return flag;
 		} catch (Exception e) {
 			LOGGER.error("getWeiZhiCheckSale is fail:{}", e);
-			return falge;
+			return flag;
 		}
 	}
     /**
@@ -1797,13 +1797,17 @@ public class OrderService {
      * @param orderId
      * @throws BusinessException
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
     public void addGoodsStock(String requestId, String orderId) throws BusinessException {
         Integer errorNum = errorNo;
         List<OrderDetailInfoEntity> orderDetailList = orderDetailInfoRepository.queryOrderDetailInfo(orderId);
         // 加库存
         for (OrderDetailInfoEntity orderDetail : orderDetailList) {
             try {
+            	GoodsInfoEntity goods = goodsDao.select(orderDetail.getGoodsId());
+            	if(StringUtils.isNotBlank(goods.getSource())){
+            		continue;
+            	}
                 for (int i = 0; i < errorNum; i++) {
                     GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
                     if (null == goodsStock) {
@@ -1834,7 +1838,6 @@ public class OrderService {
                     } else if (successFlag == 1) {
                         break;
                     }
-
                 }
 
             } catch (Exception e) {
@@ -1842,9 +1845,9 @@ public class OrderService {
                 LOGGER.error("加库存操作失败", e);
                 continue;
             }
-            goodsStcokLogDao.deleteByOrderId(orderId);
-            rebackLimitActivityNum(orderId);
         }
+        goodsStcokLogDao.deleteByOrderId(orderId);
+        rebackLimitActivityNum(orderId);
     }
     
     
@@ -2411,7 +2414,7 @@ public class OrderService {
             goodInfo.setProActivityId(proGroupGoodsService.getActivityId(orderDetail.getGoodsId()));
             goodsList.add(goodInfo);
             //根据skuId查询该规格是否参加了限时购活动
-            LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId.toString(),goodsStock.getSkuId());
+            LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId.toString(),orderDetail.getSkuId());
             if(null !=limitGS  && StringUtils.equals("InProgress", limitGS.getLimitFalg())){
                 goodInfo.setLimitFalg(true);
                 goodInfo.setGoodsLimitPrice(limitGS.getActivityPrice());
