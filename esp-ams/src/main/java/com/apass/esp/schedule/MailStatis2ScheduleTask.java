@@ -198,14 +198,14 @@ public class MailStatis2ScheduleTask {
                 xieYiPrice = xieYiPrice.add(goodsStockInfoEntity.getGoodsCostPrice().multiply(new BigDecimal(goodsInfoInOrderDto.getBuyNum())));
                 //成交价
                 totalPrice = totalPrice.add(goodsInfoInOrderDto.getGoodsPrice().multiply(new BigDecimal(goodsInfoInOrderDto.getBuyNum())));
-                //判断是否存在使用优惠券的情况
-                if(goodsInfoInOrderDto.getOrderDetailCouponDisCountAmt() != null){
-                    totalPrice = totalPrice.subtract(goodsInfoInOrderDto.getOrderDetailCouponDisCountAmt());
-                }
-                //判断是否是参加优惠活动的情况
-                if(goodsInfoInOrderDto.getOrderDetailDisCountAmt() != null){
-                    totalPrice = totalPrice.subtract(goodsInfoInOrderDto.getOrderDetailDisCountAmt());
-                }
+//                // 暂时不需要判断是否存在使用优惠券的情况
+//                if(goodsInfoInOrderDto.getOrderDetailCouponDisCountAmt() != null){
+//                    totalPrice = totalPrice.subtract(goodsInfoInOrderDto.getOrderDetailCouponDisCountAmt());
+//                }
+//                //判断是否是参加优惠活动的情况
+//                if(goodsInfoInOrderDto.getOrderDetailDisCountAmt() != null){
+//                    totalPrice = totalPrice.subtract(goodsInfoInOrderDto.getOrderDetailDisCountAmt());
+//                }
             }
         }
         map.put("xieYiPrice",xieYiPrice);
