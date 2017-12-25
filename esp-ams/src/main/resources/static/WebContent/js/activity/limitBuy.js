@@ -87,7 +87,7 @@ $(function () {
                 success : function(resp) {
                     $.validateResponse(resp, function() {
                     	getLimitGoodsList();
-                        $('#commonLayer').show(50,commonLayerShow());
+                        $('#commonLayer').show(500);
                         success(resp);
                     });
                 }
@@ -164,6 +164,7 @@ $(function () {
     	var params = {};
     	params['limitBuyActId']=limitBuyActId;
     	$('#uploadGoodsListEdit').datagrid('load', params);
+//    	$("#uploadGoodsListEdit").datagrid("resize");
 		$('#editLayer').show(500,editLayerShow());
 	};
     //返回
@@ -246,6 +247,7 @@ $(function () {
 				if(response.status=="1"){
 					//刷新商品列表
 					$('#uploadGoodsListAdd').datagrid('loadData', response);
+					$("#uploadGoodsListAdd").datagrid("resize");
 				}
 		    }
 		});
@@ -476,6 +478,7 @@ function getLimitGoodsList(){
 function addFunction(){
     $('#uploadGoodsListAdd').datagrid({
     	fit : false,
+    	fitColumns: true,
         rownumbers : true,
         singleSelect : true,
         striped:true,
@@ -517,7 +520,7 @@ function addFunction(){
         },{
             title : 'SKUID',
             field : 'skuId',
-            width : 70,
+            width : 80,
             align : 'center',
         },{
         	title : '活动价',
@@ -575,17 +578,17 @@ function addFunction(){
          },{
         	 title : '库存剩余',
              field : 'stockCurrAmt',
-             width : 80,
+             width : 60,
              align : 'center',
          },{
         	 title : '限购总量',
              field : 'limitNumTotal',
-             width : 80,
+             width : 60,
              align : 'center',
          },{
         	 title : '每人限购',
              field : 'limitNum',
-             width : 80,
+             width : 60,
              align : 'center',
          },{
             title : '操作',
@@ -608,8 +611,8 @@ function addFunction(){
 
 function editFunction(){
     $('#uploadGoodsListEdit').datagrid({
-    	fit : false,
-		fitColumns: true,
+    	fit : true,
+		fitColumns: false,
         rownumbers : true,
         pagination : true,
         singleSelect : true,
@@ -710,17 +713,17 @@ function editFunction(){
          },{
         	 title : '库存剩余',
              field : 'stockCurrAmt',
-             width : 80,
+             width : 60,
              align : 'center',
          },{
         	 title : '限购总量',
              field : 'limitNumTotal',
-             width : 80,
+             width : 60,
              align : 'center',
          },{
         	 title : '每人限购',
              field : 'limitNum',
-             width : 80,
+             width : 60,
              align : 'center',
          },{
             title : '操作',
