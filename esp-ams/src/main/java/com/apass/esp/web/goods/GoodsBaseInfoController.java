@@ -345,51 +345,23 @@ public class GoodsBaseInfoController {
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @LogAnnotion(operationType = "商品添加", valueType = LogValueTypeEnum.VALUE_DTO)
-    public Response add(@ModelAttribute("pageModel") GoodsInfoEntity pageModel) {
+    public Response add(@ModelAttribute("pageModel") GoodsInfoEntity entity) {
         String message = SUCCESS;
         GoodsInfoEntity goodsInfo = null;
-
-        if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), 
-                pageModel.getGoodsModel(),pageModel.getGoodsName(), 
-                pageModel.getGoodsTitle())
-                || pageModel.getListTime().equals("")
-                || pageModel.getCategoryId1().equals("")
-                || pageModel.getCategoryId2().equals("")
-                || pageModel.getCategoryId3().equals("")
-                || pageModel.getSupport7dRefund().equals("")) {
-            message = "参数有误,请确认再提交！";
-            return Response.fail(message);
-        }
-
         try {
-            pageModel.setStatus(GoodStatus.GOOD_NEW.getCode());
-            pageModel.setIsDelete("01");
-            pageModel.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-            pageModel.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
-            pageModel.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
-            pageModel.setNewCreatDate(new Date());
-            pageModel.setSource("");
-            pageModel.setExternalId("");
-            pageModel.setGoodsSkuType("");
-            Integer sordNo = pageModel.getSordNo();
-            if(sordNo != null){//如果有排序字段，判断同一二级类目下是否有相同排序商品。如果后，其后的都—sordNo都+1
-                List<GoodsInfoEntity> goodsInfoEntities = goodsService.selectByCategoryId2(pageModel.getCategoryId2());
-                for (GoodsInfoEntity goodsInfoEntity:goodsInfoEntities) {
-                    if(sordNo == goodsInfoEntity.getSordNo()){
-                        Map<String,Object> params = Maps.newHashMap();
-                        params.put("categoryId2",pageModel.getCategoryId2());
-                        params.put("sordNo",sordNo);
-                        params.put("status",GoodStatus.GOOD_UP.getCode());
-                        List<GoodsInfoEntity> goods= goodsService.selectByCategoryId2AndsordNo(params);
-                        for (GoodsInfoEntity good: goods) {
-                            good.setSordNo(good.getSordNo()+1);
-                            good.setUpdateDate(new Date());
-                            goodsService.updateService(good);
-                        }
-                    }
-                }
+            if (StringUtils.isAnyBlank(entity.getMerchantCode(), 
+                    entity.getGoodsModel(),entity.getGoodsName(), 
+                    entity.getGoodsTitle())
+                    || entity.getListTime().equals("")
+                    || entity.getCategoryId1().equals("")
+                    || entity.getCategoryId2().equals("")
+                    || entity.getCategoryId3().equals("")
+                    || entity.getSupport7dRefund().equals("")) {
+                message = "商品参数缺失,请确认再提交！";
+                return Response.fail(message);
             }
-            goodsInfo = goodsService.insert(pageModel);
+            String user = SpringSecurityUtils.getCurrentUser();
+            goodsInfo = goodsService.insertGoods(entity,user);
         }catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
             return Response.fail(e.getErrorDesc());

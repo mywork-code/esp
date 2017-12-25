@@ -1,5 +1,4 @@
 package com.apass.esp.service.goods;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,11 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
-import com.apass.esp.domain.dto.goods.SiftGoodFileModel;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.domain.entity.GoodsAttrVal;
@@ -42,6 +37,7 @@ import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.JdCategoryMapper;
@@ -62,7 +58,6 @@ import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.wz.WeiZhiProductService;
-import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.esp.third.party.jd.entity.product.Product;
@@ -77,50 +72,35 @@ import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
 import com.google.common.collect.Maps;
-
 @Service
 public class GoodsService {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(GoodsService.class);
-
   @Autowired
   private GoodsRepository goodsDao;
-
   @Autowired
   private GoodsStockInfoRepository goodsStockDao;
-
   @Autowired
   private BannerInfoRepository bannerInfoDao;
-
   @Autowired
   private CommonService commonService;
-
   @Autowired
   private ImageService imageService;
-
   @Autowired
   private MerchantInforService merchantInforService;
-
   @Autowired
   private GoodsBasicRepository goodsBasicRepository;
-
   @Autowired
   private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
-
   @Autowired
   private JdCategoryMapper jdCategoryMapper;
-
   @Autowired
   private JdGoodsInfoService jdGoodsInfoService;
-
   @Autowired
   private CategoryMapper categoryMapper;
-
   @Autowired
   private JdGoodsMapper jdGoodsMapper;
-
-  @Autowired
-  private JdProductApiClient jdProductApiClient;
+//  @Autowired
+//  private JdProductApiClient jdProductApiClient;
   @Autowired
   private ProGroupGoodsService proGroupGoodsService;
   @Autowired
@@ -139,7 +119,6 @@ public class GoodsService {
   private WeiZhiProductService weiZhiProductService;
   @Autowired
   private LimitCommonService limitCommonService;
-
   /**
    * app 首页加载精品推荐商品
    *
@@ -1378,7 +1357,37 @@ public class GoodsService {
      * @throws BusinessException 
      */
     @Transactional(rollbackFor = Exception.class)
-    public GoodsInfoEntity insert(GoodsInfoEntity entity) throws BusinessException {
+    public GoodsInfoEntity insertGoods(GoodsInfoEntity entity,String user) throws BusinessException {
+        Integer sordNo = entity.getSordNo();
+        if(sordNo != null){
+            //如果有排序字段，判断同一二级类目下是否有相同排序商品。如果后，其后的都—sordNo都+1
+            List<GoodsInfoEntity> goodsInfoEntities = this.selectByCategoryId2(entity.getCategoryId2());
+            for (GoodsInfoEntity goodsInfoEntity:goodsInfoEntities) {
+                if(sordNo == goodsInfoEntity.getSordNo()){
+                    Map<String,Object> params = Maps.newHashMap();
+                    params.put("categoryId2",entity.getCategoryId2());
+                    params.put("sordNo",sordNo);
+                    params.put("status",GoodStatus.GOOD_UP.getCode());
+                    List<GoodsInfoEntity> goods= this.selectByCategoryId2AndsordNo(params);
+                    for (GoodsInfoEntity good: goods) {
+                        good.setSordNo(good.getSordNo()+1);
+                        good.setUpdateUser(user);
+                        good.setUpdateDate(new Date());
+                        this.updateService(good);
+                    }
+                }
+            }
+        }
+        entity.setStatus(GoodStatus.GOOD_NEW.getCode());
+        entity.setIsDelete("01");
+        entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
+        entity.setCreateUser(user);// 创建人
+        entity.setUpdateUser(user);// 更新人
+        entity.setNewCreatDate(new Date());
+        entity.setUpdateDate(new Date());
+        entity.setSource("");
+        entity.setExternalId("");
+        entity.setGoodsSkuType("");
         StringBuffer sb = new StringBuffer();
         String merchantCode = entity.getMerchantCode();
         MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
@@ -1399,7 +1408,7 @@ public class GoodsService {
             LOGGER.info("保存商品成功,保存内容：{}", entity);
             return entity;
         }else{
-            throw new BusinessException("商品编号无法生存,请检查商品商户编码字段!");
+            throw new BusinessException("商品编号无法生成,请检查商品商户编码字段!");
         }
     }
   /**

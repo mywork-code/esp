@@ -467,6 +467,7 @@ $(function() {
     $('#addGoodsInfo').window({
     	onBeforeClose:function(){ 
     		$("#addgoodsNameL").text('');
+    		$("#addBrandNameL").text('');
     		$("#addgoodsTitleL").text('');
     		$('#inputDiv').empty();
     		categorynameArr1 = [];//单纯保存input内容
@@ -937,7 +938,6 @@ $(function() {
 		})
 		
 	}
-	
 	//添加--商品名称动态提醒
 	$("input",$("#addgoodsName").next("span")).keyup(function(){
 		var len = $("#addgoodsName").textbox('getText').length;
@@ -950,7 +950,6 @@ $(function() {
 			$("#addgoodsNameL").text('还可以输入'+canLen+'个字');
 		}
 	})
-	
 	//添加--商品小标题动态提醒
 	$("input",$("#addgoodsTitle").next("span")).keyup(function(){ 
 		var len = $("#addgoodsTitle").textbox('getText').length;
@@ -962,6 +961,18 @@ $(function() {
 		}else{
 			canLen = 25 - len;
 			$("#addgoodsTitleL").text('还可以输入'+canLen+'个字');
+		}
+	})
+	//添加--商品品牌动态提醒
+	$("input",$("#addBrandName").next("span")).keyup(function(){ 
+		var len = $("#addBrandName").textbox('getText').length;
+		var canLen;
+		if(len>30){
+			canLen = len - 30;
+			$("#addBrandNameL").text('已经超出'+canLen+'个字');
+		}else{
+			canLen = 30 - len;
+			$("#addBrandNameL").text('还可以输入'+canLen+'个字');
 		}
 	})
 	//编辑
@@ -2266,9 +2277,10 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	goodsModel=$("#addgoodsModel").textbox('getValue'),
 	goodsName=$("#addgoodsName").textbox('getValue'), 
 	goodsTitle=$("#addgoodsTitle").textbox('getValue'), 
-	listTime=$("#addlistTime").datetimebox('getValue'), 
 	proDate=$("#addproDate").datebox('getValue'),
+	listTime=$("#addlistTime").datetimebox('getValue'), 
 	delistTime=$("#adddelistTime").datetimebox('getValue'),
+	brandName=$("#addBrandName").textbox('getValue'), 
 	keepDate=$("#addkeepDate").textbox('getValue'),
 	supNo=$("#addsupNo").textbox('getValue'),
 	//goodsSkuType=$("#addgoodsSkuType").combobox('getValue'),
@@ -2297,7 +2309,6 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		$.messager.alert("提示", "商品名称不能为空！", "info");
 		return;
 	}
-	
 	if(goodsName.length>30){
 		$.messager.alert("提示", "商品名称最多30字！", "info");  
 		return;
@@ -2343,6 +2354,12 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 			return;
 		}
 	}
+	if (null != brandName && ("") != brandName) {
+		if (brandName.length > 30) {
+			$.messager.alert("提示", "商品品牌最多30字！", "info");
+			return;
+		}
+	}
 //	if (null == keepDate || ("") == keepDate) {
 //		$.messager.alert("提示", "商品保质期不能为空！", "info");
 //		return;
@@ -2377,6 +2394,10 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
  	}else{
  		formObj.append("<input type='text' name='delistTime' value=''/>");
  	}
+ 	if (!(null == brandName || ("") == brandName)) {
+ 		formObj.append("<input type='text' name='brandName' value='"+brandName+"'/>");
+ 	}
+ 	
  	formObj.append("<input type='text' name='unSupportProvince' value='"+unSupportProvince+"'/>");
 	formObj.append("<input type='text' name='goodId' value='"+addGoodId+"'/>");
 	if(proDate!=""){

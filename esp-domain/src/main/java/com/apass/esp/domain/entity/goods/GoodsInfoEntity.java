@@ -120,6 +120,10 @@ public class GoodsInfoEntity {
     private String isDelete;
     //精选商品排序字段
     private Integer siftSort;
+    //品牌
+    private String brandId;
+    //品牌
+    private String brandName;
     //创建人
     private String createUser;
     //修改人 
@@ -128,15 +132,6 @@ public class GoodsInfoEntity {
     private Date createDate;
     //修改时间
     private Date updateDate;
-    //品牌
-    private String brandId;
-    
-    public String getBrandId() {
-		return brandId;
-	}
-	public void setBrandId(String brandId) {
-		this.brandId = brandId;
-	}
 	public List<String> getStatuList() {
         return statuList;
     }
@@ -477,6 +472,18 @@ public class GoodsInfoEntity {
     }
     public void setMainGoodsCode(String mainGoodsCode) {
         this.mainGoodsCode = mainGoodsCode;
+    }
+    public String getBrandId() {
+        return brandId;
+    }
+    public void setBrandId(String brandId) {
+        this.brandId = brandId;
+    }
+    public String getBrandName() {
+        return brandName;
+    }
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
     }
     public String getCreateUser() {
         return createUser;
