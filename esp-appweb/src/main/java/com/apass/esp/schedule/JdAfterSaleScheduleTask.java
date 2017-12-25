@@ -10,6 +10,7 @@ import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.entity.refund.ServiceProcessEntity;
 import com.apass.esp.domain.enums.RefundStatus;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.MessageListenerMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
@@ -109,8 +110,11 @@ public class JdAfterSaleScheduleTask {
         ml.setType("100");
         LOGGER.info("refund task begin...");
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
-            LOGGER.info("orderInfoEntity.getExtOrderId() {}",orderInfoEntity.getExtOrderId());
-            ml.setOrderid(orderInfoEntity.getExtOrderId());
+            LOGGER.info("orderInfoEntity.getOrderId() {}",orderInfoEntity.getOrderId());
+            if(orderInfoEntity.getSource().equals(SourceType.JD.getCode())){
+                continue;
+            }
+            ml.setOrderid(orderInfoEntity.getOrderId());
             List<SkuObject> serviveList = null;
             try {
                 //TODO 根据客户账号和订单号分页查询服务单概要信息

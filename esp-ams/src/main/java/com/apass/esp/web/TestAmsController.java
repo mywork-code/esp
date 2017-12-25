@@ -25,5 +25,6 @@ public class TestAmsController{
     public Response delsku() {
         return Response.successResponse(goodsBasicRepository.deleteRepeatSku());
     }
+    
 }
 
