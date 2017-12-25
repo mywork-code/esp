@@ -3137,37 +3137,45 @@ public class OrderService {
     			for (PurchaseRequestDto purchase : available) {
     				GoodsInfoEntity goods =  goodsDao.select(purchase.getGoodsId());
     				GoodsStockInfoEntity stocks  = goodsStockDao.select(purchase.getGoodsStockId());
-    				if(StringUtils.equals(coupon.getType(), CouponType.COUPON_ZDPL.getCode())){
-    					if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
-    					   StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
-    					   StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//因为三个等级的类目，只能存在一个，所以，不需要分别判断
-	    						total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-    					}
-    				}else if(StringUtils.equals(coupon.getType(), CouponType.COUPON_ZDSP.getCode()) && StringUtils.isNotBlank(coupon.getSimilarGoodsCode())){//指定商品
-	    				String[] strs = coupon.getSimilarGoodsCode().split(",");
-	    				if(Arrays.asList(strs).contains(goods.getGoodsCode())){
-	    					total = total.add(purchase.getPayMoney());
-	    					goodslist.add(purchase.getGoodsStockId()+"");
-	    				}
-	    			}else if(StringUtils.equals(coupon.getType(), CouponType.COUPON_HDSP.getCode()) && coupon.getActivityId() > 0){//活动
-    					if(StringUtils.equals(goods.getBrandId(), coupon.getBrandId())){//品牌
-    						total = total.add(purchase.getPayMoney());
-	    					goodslist.add(purchase.getGoodsStockId()+"");
-    					}else if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
-    	    					 StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
-    	    					 StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//类目
+    				CouponType type = CouponType.getCode(coupon.getType());
+    				switch (type) {
+						case COUPON_ZDPL ://指定品类
+							if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
+	    					   StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
+	    					   StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//因为三个等级的类目，只能存在一个，所以，不需要分别判断
 		    						total = total.add(purchase.getPayMoney());
 			    					goodslist.add(purchase.getGoodsStockId()+"");
-    	    			}else if(StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
-    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId())){//skuid
-    						total = total.add(purchase.getPayMoney());
-	    					goodslist.add(purchase.getGoodsStockId()+"");
-    					}
-	    			}else if(StringUtils.equals(coupon.getType(), CouponType.COUPON_QPL.getCode())){//全品类
-	    				total = total.add(purchase.getPayMoney());
-	    				goodslist.add(purchase.getGoodsStockId()+"");
-	    			}
+			    			}
+							break;
+						case COUPON_ZDSP ://指定商品
+							String[] strs = coupon.getSimilarGoodsCode().split(",");
+		    				if(Arrays.asList(strs).contains(goods.getGoodsCode())){
+		    					total = total.add(purchase.getPayMoney());
+		    					goodslist.add(purchase.getGoodsStockId()+"");
+		    				}
+							break;
+						case COUPON_HDSP ://活动商品
+							if(StringUtils.equals(goods.getBrandId(), coupon.getBrandId())){//品牌
+	    						total = total.add(purchase.getPayMoney());
+		    					goodslist.add(purchase.getGoodsStockId()+"");
+	    					}else if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
+	    	    					 StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
+	    	    					 StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//类目
+			    						total = total.add(purchase.getPayMoney());
+				    					goodslist.add(purchase.getGoodsStockId()+"");
+	    	    			}else if(StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
+	    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId())){//skuid
+	    						total = total.add(purchase.getPayMoney());
+		    					goodslist.add(purchase.getGoodsStockId()+"");
+	    					}
+							break;
+						case COUPON_QPL ://全品类
+							total = total.add(purchase.getPayMoney());
+		    				goodslist.add(purchase.getGoodsStockId()+"");
+							break;
+						default :
+							break;
+					}
     			}
     			
     			if(total.compareTo(BigDecimal.ZERO) <= 0){

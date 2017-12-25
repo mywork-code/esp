@@ -44,4 +44,14 @@ public enum CouponType {
 		}
     	return "";
     }
+    
+    public static CouponType getCode(String code){
+    	CouponType[] types = CouponType.values();
+    	for (CouponType type : types) {
+    		if(StringUtils.equals(code, type.getCode())){
+    			return type;
+    		}
+		}
+    	return null;
+    }
 }
