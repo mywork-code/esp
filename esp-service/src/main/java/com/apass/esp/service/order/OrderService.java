@@ -3138,54 +3138,32 @@ public class OrderService {
     				GoodsInfoEntity goods =  goodsDao.select(purchase.getGoodsId());
     				GoodsStockInfoEntity stocks  = goodsStockDao.select(purchase.getGoodsStockId());
     				if(StringUtils.equals(coupon.getType(), CouponType.COUPON_ZDPL.getCode())){
-    					if(StringUtils.isNotBlank(coupon.getCategoryId1())){//指定分类（一级类目)
-    	    				if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"")){
-    	    					total = total.add(purchase.getPayMoney());
-    	    					goodslist.add(purchase.getGoodsStockId()+"");
-    	    				}
-    	    			}else if(StringUtils.isNotBlank(coupon.getCategoryId2())){//指定分类（二级类目）
-    	    				if(StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"")){
-    	    					total = total.add(purchase.getPayMoney());
-    	    					goodslist.add(purchase.getGoodsStockId()+"");
-    	    				}
-    	    			}else if(StringUtils.isNotBlank(coupon.getCategoryId3())){//指定分类（三级类目）
-    	    				if(StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){
-    	    					total = total.add(purchase.getPayMoney());
-    	    					goodslist.add(purchase.getGoodsStockId()+"");
-    	    				}
-    	    			}
+    					if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
+    					   StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
+    					   StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//因为三个等级的类目，只能存在一个，所以，不需要分别判断
+	    						total = total.add(purchase.getPayMoney());
+		    					goodslist.add(purchase.getGoodsStockId()+"");
+    					}
     				}else if(StringUtils.equals(coupon.getType(), CouponType.COUPON_ZDSP.getCode()) && StringUtils.isNotBlank(coupon.getSimilarGoodsCode())){//指定商品
 	    				String[] strs = coupon.getSimilarGoodsCode().split(",");
 	    				if(Arrays.asList(strs).contains(goods.getGoodsCode())){
 	    					total = total.add(purchase.getPayMoney());
 	    					goodslist.add(purchase.getGoodsStockId()+"");
 	    				}
-	    			}else if(StringUtils.equals(coupon.getType(), CouponType.COUPON_HDSP.getCode()) && null != coupon.getActivityId() && coupon.getActivityId() > 0){//活动
-	    				if(StringUtils.equals(coupon.getOfferRange(), OfferRangeType.RANGE_ZDPP.getCode())){//指定品牌
-	    					if(StringUtils.equals(goods.getBrandId(), coupon.getBrandId())){
-	    						total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-	    					}
-	    				}else if(StringUtils.equals(coupon.getOfferRange(), OfferRangeType.RANGE_ZDPL.getCode())){//指定品牌
-	    					if(StringUtils.equals(goods.getCategoryId1()+"", coupon.getCategoryId1())){
-	    						total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-	    					}
-							if(StringUtils.equals(goods.getCategoryId2()+"", coupon.getCategoryId2())){
-								total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+""); 						
-							}
-							if(StringUtils.equals(goods.getCategoryId3()+"", coupon.getCategoryId3())){
-								total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-							}
-	    				}else if(StringUtils.equals(coupon.getOfferRange(), OfferRangeType.RANGE_ZDSP.getCode())){//指定商品
-	    					if(StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
-	    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId())){
-	    						total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-	    					}
-	    				}
+	    			}else if(StringUtils.equals(coupon.getType(), CouponType.COUPON_HDSP.getCode()) && coupon.getActivityId() > 0){//活动
+    					if(StringUtils.equals(goods.getBrandId(), coupon.getBrandId())){//品牌
+    						total = total.add(purchase.getPayMoney());
+	    					goodslist.add(purchase.getGoodsStockId()+"");
+    					}else if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
+    	    					 StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
+    	    					 StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//类目
+		    						total = total.add(purchase.getPayMoney());
+			    					goodslist.add(purchase.getGoodsStockId()+"");
+    	    			}else if(StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
+    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId())){//skuid
+    						total = total.add(purchase.getPayMoney());
+	    					goodslist.add(purchase.getGoodsStockId()+"");
+    					}
 	    			}else if(StringUtils.equals(coupon.getType(), CouponType.COUPON_QPL.getCode())){//全品类
 	    				total = total.add(purchase.getPayMoney());
 	    				goodslist.add(purchase.getGoodsStockId()+"");
