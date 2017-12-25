@@ -841,7 +841,7 @@ public class ShoppingCartService {
                   jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
 				}
               jdSimilarSkuVo.setGoodsStockId(goodsStockId);
-              jdSimilarSkuVo.setStockDesc("");
+              jdSimilarSkuVo.setStockDesc("有货");
               jdSimilarSkuTo.setSkuIdOrder("");
               jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
               JdSimilarSkuToList.add(jdSimilarSkuTo);
