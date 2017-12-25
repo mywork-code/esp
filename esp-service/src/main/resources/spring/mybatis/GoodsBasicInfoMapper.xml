@@ -694,8 +694,8 @@
 
     <!--删除重复的sku-->
     <delete id="deleteRepeatSku">
-      DELETE FROM t_esp_goods_base_info WHERE
-        id  IN (select id from t_esp_goods_base_info where external_id in ( SELECT
+       DELETE FROM t_esp_goods_base_info WHERE
+        id  IN (select id from (select id from t_esp_goods_base_info where external_id in ( SELECT
                           external_id
                         FROM
                             t_esp_goods_base_info
@@ -703,7 +703,7 @@
 
                         GROUP BY
                             external_id
-        HAVING count(1)>1) and `status` = 'G00'
+        HAVING count(1)>1 ) and `status` = 'G00') as b
       )
     </delete>
 
