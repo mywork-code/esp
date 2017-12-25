@@ -278,7 +278,7 @@ public class ProGroupGoodsExportFikeController {
 					Pattern pattern = Pattern.compile("[0-9]*");   
 					Matcher isNum = pattern.matcher(id);  
 					if(null !=id && isNum.matches()){
-						gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id, SourceType.WZ);
+						gbity=goodsService.getByGoodsBySkuId(id);
 					}
 					if (null !=id && null != gbity && null != marketPrice && marketPrice.compareTo(zero)>0 && null != activityPrice && activityPrice.compareTo(zero)>0 && countSuccess <= 200) {
 						//判断该商品是否存在其他有效的活动中
@@ -372,7 +372,10 @@ public class ProGroupGoodsExportFikeController {
 					break;
 				}
 			}
-			list.add(pggt);
+			//如果商品编号不为空时，才认为是一条完整的数据
+			if(StringUtils.isNotBlank(pggt.getId())){
+				list.add(pggt);
+			}
 		}
 		return list;
 	}
