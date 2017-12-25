@@ -109,8 +109,11 @@ $(function(){
 					text : "保存",
 					handler : function() {
 						var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
-						if("请选择"==goodsCategoryCombo){
-							goodsCategoryCombo="";
+						if("请选择"==goodsCategoryCombo || goodsCategoryCombo==""){
+							goodsCategoryCombo=$("#goodsCategoryCombo_range").combotree('getValue')
+							if("请选择"==goodsCategoryCombo || goodsCategoryCombo==""){
+								goodsCategoryCombo="";
+							}
 						}
 						var arry = goodsCategoryCombo.split("_");
 						var level = arry[0];
@@ -125,6 +128,7 @@ $(function(){
 						}else if(level == '3'){
 							categoryId3 = id;
 						}
+
 						//参数验证
 						if(!validateAddCoupon(categoryId1,categoryId2,categoryId3)){
 							return;
@@ -136,10 +140,15 @@ $(function(){
 							"type":type,
 							"categoryId1":categoryId1,
 							"categoryId2":categoryId2,
+							"categoryId3":categoryId3,
 							"goodsCode":$("#addGoodsCode").textbox("getValue"),
 							"couponSill":$("#addCouponSill").textbox("getValue"),
 							"discountAmonut":$("#addDiscountAmonut").textbox("getValue"),
-							"sillType":$("#sillType").val()
+							"sillType":$("#sillType").val(),
+							"offerRange":$("#offerRange").combobox('getValue'),
+							"brandId":$("#brandId").combobox('getValue'),
+							"skuId":$("#skuId").textbox('getValue'),
+
 						}
 
 						$.ajax({
@@ -395,6 +404,9 @@ $(function(){
 	$('#addExtendType').combobox({
 		onChange: function(param){
 			if(param == 'YHLQ'){
+				$("#rangeTr").show();
+
+
 				$("#effectiveTimeTr").css("display","none");
 				$("#typeTd1").css("display","none");
 				$("#typeTd2").show();
@@ -406,11 +418,35 @@ $(function(){
 				type = $("#addType2").combobox('getValue');
 				$("#addType2").combobox({ disabled: true });
 			}else{
+				$(".rangeTr").css("display","none");
+
 				$("#addType").combobox('setValue','');
 				$("#typeTd1").show();
 				$("#typeTd2").css("display","none");
 				$("#effectiveTimeTr").show()
 				type = $("#addType1").combobox('getValue');
+			}
+		}
+	});
+
+	$('#offerRange').combobox({
+		onChange: function(param){
+			if(param == '1'){
+				$("#brandTr").show();
+				$("#goosCategoryTr_range").css("display","none");
+				$("#externalIdTr_range").css("display","none");
+
+				brancCombo();
+			}else if(param == '2'){
+				$("#brandTr").css("display","none");
+				$("#goosCategoryTr_range").show();
+				$("#externalIdTr_range").css("display","none");
+
+				goodsCategoryComboFun2("goodsCategoryCombo_range");//加载类目树
+			}else{
+				$("#brandTr").css("display","none");
+				$("#goosCategoryTr_range").css("display","none");
+				$("#externalIdTr_range").show();
 			}
 		}
 	});
@@ -431,7 +467,7 @@ $(function(){
 				$("#goodsCodeTr").css("display","none");
 			}
 			//加载类目树
-			goodsCategoryComboFun2();
+			goodsCategoryComboFun2("goodsCategoryCombo");
 		}
 	});
 
@@ -506,6 +542,39 @@ $(function(){
 			return false;
 		}
 
+		if($("#addExtendType").textbox("getValue") == "YHLQ"){
+			if($("#offerRange").combobox("getValue")==null || $("#offerRange").combobox("getValue")==""){
+				$.messager.alert('<span style="color: black">提示</span>','请选择优惠范围');
+				return false;
+			}
+
+			if($("#offerRange").combobox("getValue")=="1"){
+				if($("#brandId").combobox("getValue")=="请选择"){
+					$.messager.alert('<span style="color: black">提示</span>','请选择品牌');
+					return false;
+				}
+
+			}else if($("#offerRange").combobox("getValue")=="2"){
+				if($("#goodsCategoryCombo_range").combobox("getValue")=="请选择"){
+					$.messager.alert('<span style="color: black">提示</span>','请选择品类');
+					return false;
+				}
+			}else{
+				if($("#skuId").textbox("getValue")=="" || $("#skuId").textbox("getValue")==null){
+					$.messager.alert('<span style="color: black">提示</span>','请输入商品skuId');
+					return false;
+				}
+				var externalId = parseInt($("#skuId").textbox("getValue"));
+				if(externalId<0){
+					$.messager.alert('<span style="color: black">提示</span>','商品skuId只能输入正整数');
+					return false;
+				}
+			}
+
+		}
+
+
+
 		return true;
 	}
 
@@ -513,12 +582,12 @@ $(function(){
 });
 
 //加载类目
-function goodsCategoryComboFun2() {
-	$("#goodsCategoryCombo").combotree({
+function goodsCategoryComboFun2(id) {
+	$("#"+id).combotree({
 //        required : true,
 		loader : function(param, success, error) {
 			$.ajax({
-				url : ctx + "/application/goods/management/categoryList2",
+				url : ctx + "/application/goods/management/categoryList",
 				data : param,
 				type : "get",
 				dataType : "json",
@@ -530,10 +599,36 @@ function goodsCategoryComboFun2() {
 			})
 		}
 	});
-	$("#goodsCategoryCombo").combotree('setValue', '请选择');
+	$("#"+id).combotree('setValue', '请选择');
 }
+
+//加载品牌
+function brancCombo() {
+	$("#brandId").combobox({
+		method: "get",
+		url: ctx + "/application/goods/brand/list",
+		valueField: 'id',
+		textField: 'name',
+		onLoadSuccess: function () {
+			$(this).combobox('setValue','请选择');
+			//加载完成后,设置选中第一项
+			// var val = $(this).combobox('getData');
+			// for (var item in val[0]) {
+			// 	if (item == 'id') {
+			// 		$(this).combobox('select', val[0][item]);
+			// 	}
+			// }
+		},
+	});
+}
+
 //添加优惠券窗口初始化
 function clearFunction() {
+	$("#offerRange").combobox("setValue",""),
+	$("#brandId").combobox("setValue",""),
+	$("#skuId").textbox("clear"),
+	$(".rangeTr").css("display","none");
+
 	$("#addCouponName").textbox("clear");
 	$("#addExtendType").textbox("clear");
 	$("#addEffectiveTime").textbox("clear");
