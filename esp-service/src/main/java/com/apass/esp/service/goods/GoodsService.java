@@ -1414,6 +1414,8 @@ public class GoodsService {
                 brand.setName(brandname);
                 brand = goodsBrandService.getGoodsBrandByName(brand);
                 if(brand==null){
+                    brand = new GoodsBrand();
+                    brand.setName(brandname);
                     brand.setIsDelete("00");
                     brand.setCreatedTime(new Date());
                     brand.setUpdatedTime(new Date());

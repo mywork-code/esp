@@ -12,10 +12,27 @@
         FROM
             t_esp_goods_brand
         WHERE 1=1 
+            AND is_delete = '00'
         ]]>
         <if test="name!=null and name!=''">
-<!--             AND is_delete = '00' -->
-            AND name = #{name}
+            AND name = #{name, jdbcType=VARCHAR}
+        </if>
+    </select>
+    <select id="getGoodsBrandByName" parameterType="com.apass.esp.domain.entity.GoodsBrand" resultType="com.apass.esp.domain.entity.GoodsBrand">
+        <![CDATA[
+        SELECT
+            id id,
+            name name,
+            is_delete isDelete,
+            created_time createdTime,
+            updated_time updatedTime
+        FROM
+            t_esp_goods_brand
+        WHERE 1=1 
+            AND is_delete = '00'
+        ]]>
+        <if test="name!=null and name!=''">
+            AND name = #{name, jdbcType=VARCHAR}
         </if>
     </select>
 </mapper>
