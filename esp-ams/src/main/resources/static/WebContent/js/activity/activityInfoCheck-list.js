@@ -81,7 +81,9 @@ $(function() {
                     width : 140,
                     align : 'center',
                     formatter:function(value,row,index){
-                    	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+						if(value!=null){
+                    		return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+						}
                     }
                 }, {
                     title : '商品下架时间',
@@ -89,7 +91,9 @@ $(function() {
                     width : 140,
                     align : 'center',
                     formatter:function(value,row,index){
-                    	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+						if(value != null){
+                    		return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+						}
                     }
                 },{
                 	field: 'aStartDate', 

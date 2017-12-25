@@ -57,6 +57,7 @@ $(function(){
                     	$("#returnCashSum").html(data.rebateAmtSum);
                         success(data);
                         awardbindrel(-1);
+                        awarddetai(-1);
                     });
                 }
             })
@@ -95,7 +96,7 @@ $(function(){
     });
     
     //查询已放款和预计放款
-    $("#awarddetail").combobox({ 
+    $("#awarddetail").combobox({
     	onBeforeLoad:function(){
     		$('#awarddetail').combobox('setValue',-1);
     		awarddetai(-1);
@@ -113,8 +114,9 @@ $(function(){
             type : "POST",
             dataType : "json",
             success : function(data) {
-        		 $("#loadAmount").html(data.loadAmount);
-             	 $("#expectLoadAmount").html(data.expectLoadAmount);
+                $("#awarddetail").combobox("setValue",days);
+                $("#loadAmount").html(data.loadAmount);
+                $("#expectLoadAmount").html(data.expectLoadAmount);
             }
         });
     }
@@ -137,6 +139,7 @@ $(function(){
             type : "POST",
             dataType : "json",
             success : function(data) {
+                $("#awardbindrel").combobox("setValue",days);
             	$("#personSum").html(data);
             }
         });
