@@ -200,88 +200,91 @@ $(function(){
 				{
 					text : "保存",
 					handler : function() {
-						var arr = [];
-						var arrObj1 = {};
-						var arrObj2 = {};
-						var arrObj3 = {};
-						arrObj1.id = $("#chooseCoupon").combobox('getValue');
-						arrObj1.numer = $("#issueCouponNum").textbox('getValue');
-						if(arrObj1.id=='请选择'){
-							$.messager.alert('<span style="color: black">提示</span>','请选择发放优惠券');
-							return;
-						}
-						if(arrObj1.numer == null || arrObj1.numer==''){
-							$.messager.alert('<span style="color: black">提示</span>','请输入发放数量');
-							return;
-						}
-						arr.push(arrObj1)
-
-						var addOrdeleteCouponTrDisplay1 = $(".addOrdeleteCouponTr1").css("display");
-						var addOrdeleteCouponTrDisplay2 = $(".addOrdeleteCouponTr2").css("display");
-						if(addOrdeleteCouponTrDisplay1 != "none"){
-							arrObj2.id = $("#chooseCoupon1").combobox('getValue');
-							arrObj2.numer = $("#issueCouponNum1").textbox('getValue');
-							if(arrObj2.id=='请选择'){
+						$.messager.confirm('<span style="color: black">提示</span>', '你确认要保存吗？', function(r){
+							if (!r){
+								return;
+							}
+							var arr = [];
+							var arrObj1 = {};
+							var arrObj2 = {};
+							var arrObj3 = {};
+							arrObj1.id = $("#chooseCoupon").combobox('getValue');
+							arrObj1.numer = $("#issueCouponNum").textbox('getValue');
+							if(arrObj1.id=='请选择'){
 								$.messager.alert('<span style="color: black">提示</span>','请选择发放优惠券');
 								return;
 							}
-							if(arrObj2.numer == null || arrObj2.numer==''){
+							if(arrObj1.numer == null || arrObj1.numer==''){
 								$.messager.alert('<span style="color: black">提示</span>','请输入发放数量');
 								return;
 							}
-							arr.push(arrObj2);
-						}
-						if(addOrdeleteCouponTrDisplay2 != "none"){
-							arrObj3.id = $("#chooseCoupon2").combobox('getValue');
-							arrObj3.numer = $("#issueCouponNum2").textbox('getValue');
-							if(arrObj3.id=='请选择'){
-								$.messager.alert('<span style="color: black">提示</span>','请选择发放优惠券');
-								return;
-							}
-							if(arrObj3.numer == null || arrObj3.numer==''){
-								$.messager.alert('<span style="color: black">提示</span>','请输入发放数量');
-								return;
-							}
-							arr.push(arrObj3);
-						}
+							arr.push(arrObj1)
 
-						// issueUserGroup
-						if($("#issueUserGroup").textbox('getValue') == null || $("#issueUserGroup").textbox('getValue') == ""){
-							$.messager.alert('<span style="color: black">提示</span>','请选择发放人群');
-							return;
-						}
-						if($("#issueTelephone").textbox('getValue') == null || $("#issueTelephone").textbox('getValue') == ""){
-							$.messager.alert('<span style="color: black">提示</span>','请输入发放手机号');
-							return;
-						}
-						if($("#issueRemark").textbox('getValue') == ""){
-							$.messager.alert('<span style="color: black">提示</span>','请输入备注');
-							return;
-						}
-						var param = {
-							"couponListIssue":arr,
-							"telephone":$("#issueTelephone").textbox('getValue'),
-							"remarks":$("#issueRemark").textbox('getValue')
-						}
-
-						console.log(JSON.stringify(param));
-						$.ajax({
-							url : ctx + '/application/coupon/management/issue',
-							data : encodeURI(JSON.stringify(param)),
-							type : "post",
-							dataType : "json",
-							success : function(data) {
-								if(data.status=="1"){
-									$.messager.alert('<span style="color: black">提示</span>',data.msg);
-									$('#issueCouponDiv').dialog('close');
-									$('#couponList').datagrid('reload',{});
-								}else{
-									$.messager.alert('<span style="color: black">提示</span>',data.msg);
+							var addOrdeleteCouponTrDisplay1 = $(".addOrdeleteCouponTr1").css("display");
+							var addOrdeleteCouponTrDisplay2 = $(".addOrdeleteCouponTr2").css("display");
+							if(addOrdeleteCouponTrDisplay1 != "none"){
+								arrObj2.id = $("#chooseCoupon1").combobox('getValue');
+								arrObj2.numer = $("#issueCouponNum1").textbox('getValue');
+								if(arrObj2.id=='请选择'){
+									$.messager.alert('<span style="color: black">提示</span>','请选择发放优惠券');
+									return;
 								}
+								if(arrObj2.numer == null || arrObj2.numer==''){
+									$.messager.alert('<span style="color: black">提示</span>','请输入发放数量');
+									return;
+								}
+								arr.push(arrObj2);
 							}
-						})
-						
+							if(addOrdeleteCouponTrDisplay2 != "none"){
+								arrObj3.id = $("#chooseCoupon2").combobox('getValue');
+								arrObj3.numer = $("#issueCouponNum2").textbox('getValue');
+								if(arrObj3.id=='请选择'){
+									$.messager.alert('<span style="color: black">提示</span>','请选择发放优惠券');
+									return;
+								}
+								if(arrObj3.numer == null || arrObj3.numer==''){
+									$.messager.alert('<span style="color: black">提示</span>','请输入发放数量');
+									return;
+								}
+								arr.push(arrObj3);
+							}
 
+							// issueUserGroup
+							if($("#issueUserGroup").textbox('getValue') == null || $("#issueUserGroup").textbox('getValue') == ""){
+								$.messager.alert('<span style="color: black">提示</span>','请选择发放人群');
+								return;
+							}
+							if($("#issueTelephone").textbox('getValue') == null || $("#issueTelephone").textbox('getValue') == ""){
+								$.messager.alert('<span style="color: black">提示</span>','请输入发放手机号');
+								return;
+							}
+							if($("#issueRemark").textbox('getValue') == ""){
+								$.messager.alert('<span style="color: black">提示</span>','请输入备注');
+								return;
+							}
+							var param = {
+								"couponListIssue":arr,
+								"telephone":$("#issueTelephone").textbox('getValue'),
+								"remarks":$("#issueRemark").textbox('getValue')
+							}
+
+							console.log(JSON.stringify(param));
+							$.ajax({
+								url : ctx + '/application/coupon/management/issue',
+								data : encodeURI(JSON.stringify(param)),
+								type : "post",
+								dataType : "json",
+								success : function(data) {
+									if(data.status=="1"){
+										$.messager.alert('<span style="color: black">提示</span>',data.msg);
+										$('#issueCouponDiv').dialog('close');
+										$('#couponList').datagrid('reload',{});
+									}else{
+										$.messager.alert('<span style="color: black">提示</span>',data.msg);
+									}
+								}
+							})
+						});
 
 					}
 				},{
