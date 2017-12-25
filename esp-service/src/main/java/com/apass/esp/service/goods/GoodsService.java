@@ -499,42 +499,43 @@ public class GoodsService {
 	    List<JdSimilarSkuTo> JdSimilarSkuToList = null;
 	    if(jdSimilarSkuList != null){
 	        JdSimilarSkuToList = getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList,isUnSupport,userId);
-	    }else{ 
-	    	JdSimilarSkuToList=new ArrayList<>();
-	        JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
-	        JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
-	        BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
-	       	//根据skuId查询该规格是否参加了限时购活动
-			LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsList.get(0).getSkuId());
-			if(null !=limitGS){
-			BigDecimal limitActivityPrice=limitGS.getActivityPrice();
-			limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
-			jdSimilarSkuVo.setPrice(price);//限时购活动价
-			jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
-			jdSimilarSkuVo.setLimitActivityPrice(limitActivityPrice);
-			jdSimilarSkuVo.setLimitActivityPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
-			jdSimilarSkuVo.setIsLimitActivity(true);
-			jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
-			jdSimilarSkuVo.setLimitPersonNum(limitGS.getLimitPersonNum());
-			jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
-			jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
-			jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
-			jdSimilarSkuVo.setLimitBuyStartTime(limitGS.getStartTime());
-			jdSimilarSkuVo.setLimitBuyEndTime(limitGS.getEndTime());
-			}else{
-	          jdSimilarSkuVo.setPrice(price);
-	          jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-	                  BigDecimal.ROUND_DOWN));
-			}
-	        jdSimilarSkuVo.setGoodsId(goodsId.toString());
-	        jdSimilarSkuVo.setSkuId(goodsList.get(0).getSkuId());
-	        jdSimilarSkuVo.setGoodsStockId(goodsList.get(0).getId().toString());
-	        jdSimilarSkuVo.setStockCurrAmt(goodsList.get(0).getStockCurrAmt());
-	        jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
-	        jdSimilarSkuTo.setSkuIdOrder("");
-	        jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
-	        JdSimilarSkuToList.add(jdSimilarSkuTo);
 	    }
+//	    else{ 
+//	    	JdSimilarSkuToList=new ArrayList<>();
+//	        JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+//	        JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+//	        BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
+//	       	//根据skuId查询该规格是否参加了限时购活动
+//			LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsList.get(0).getSkuId());
+//			if(null !=limitGS){
+//			BigDecimal limitActivityPrice=limitGS.getActivityPrice();
+//			limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
+//			jdSimilarSkuVo.setPrice(price);//限时购活动价
+//			jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+//			jdSimilarSkuVo.setLimitActivityPrice(limitActivityPrice);
+//			jdSimilarSkuVo.setLimitActivityPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
+//			jdSimilarSkuVo.setIsLimitActivity(true);
+//			jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
+//			jdSimilarSkuVo.setLimitPersonNum(limitGS.getLimitPersonNum());
+//			jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
+//			jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
+//			jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
+//			jdSimilarSkuVo.setLimitBuyStartTime(limitGS.getStartTime());
+//			jdSimilarSkuVo.setLimitBuyEndTime(limitGS.getEndTime());
+//			}else{
+//	          jdSimilarSkuVo.setPrice(price);
+//	          jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+//	                  BigDecimal.ROUND_DOWN));
+//			}
+//	        jdSimilarSkuVo.setGoodsId(goodsId.toString());
+//	        jdSimilarSkuVo.setSkuId(goodsList.get(0).getSkuId());
+//	        jdSimilarSkuVo.setGoodsStockId(goodsList.get(0).getId().toString());
+//	        jdSimilarSkuVo.setStockCurrAmt(goodsList.get(0).getStockCurrAmt());
+//	        jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+//	        jdSimilarSkuTo.setSkuIdOrder("");
+//	        jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+//	        JdSimilarSkuToList.add(jdSimilarSkuTo);
+//	    }
 
 	    returnMap.put("jdImagePathList",JdImagePathList);
 	    returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
@@ -548,7 +549,13 @@ public class GoodsService {
 	         returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
 	    	 returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
 	    }
-	    returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
+	    if(null !=JdSimilarSkuToList){
+	    	 returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
+	    }else{
+	    	JdSimilarSkuToList=new ArrayList<>();
+	    	returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
+	    }
+	   
 	    //返回活动id
 	    ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
 	    if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
@@ -854,7 +861,9 @@ public class GoodsService {
                           String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split(":");
                           if (Arrays.asList(attrValIds).contains(goodsAttrVal2.getId().toString())) {
                               if(isImageFalge){
-                                  jdSaleAttr.setImagePath(imageService.getImageUrl(goodsStockInfoEntity.getStockLogo()));
+                            	  if(dim==1){
+                                      jdSaleAttr.setImagePath(imageService.getImageUrl(goodsStockInfoEntity.getStockLogo()));
+                            	  }
                                   isImageFalge=false;
                               }
                               skuIds.add(goodsStockInfoEntity.getSkuId());

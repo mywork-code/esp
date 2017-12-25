@@ -351,6 +351,9 @@ public class ShoppingCartController {
         String methodDesc = LogStashKey.CART_VIEWSKU.getName();
         
         String goodsId = CommonUtils.getValue(paramMap, "goodsId");
+        
+        String userId = CommonUtils.getValue(paramMap, "userId");
+
         //非京东商品要上传
         String goodsStockId = CommonUtils.getValue(paramMap, "goodsStockId");
         
@@ -366,7 +369,7 @@ public class ShoppingCartController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         try {
-            resultMap = shoppingCartService.getGoodsStockSkuInfoV3(requestId, goodsId,goodsStockId);
+            resultMap = shoppingCartService.getGoodsStockSkuInfoV3(requestId, goodsId,goodsStockId,userId);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
             return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
