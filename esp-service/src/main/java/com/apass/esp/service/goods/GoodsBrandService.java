@@ -1,19 +1,22 @@
 package com.apass.esp.service.goods;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.entity.GoodsBrand;
 import com.apass.esp.mapper.GoodsBrandMapper;
 @Service
 public class GoodsBrandService {
+    @Autowired
     private GoodsBrandMapper goodsBrandMapper;
     /**
      * CREATE
      * @param brand
      */
     @Transactional(rollbackFor = Exception.class)
-    public Integer createdBrand(GoodsBrand brand) {
-        return goodsBrandMapper.insertSelective(brand);
+    public Integer createdBrand(GoodsBrand entity) {
+        return goodsBrandMapper.insertSelective(entity);
     }
     /**
      * CREATE
@@ -43,8 +46,8 @@ public class GoodsBrandService {
      * @param brand
      */
     @Transactional(rollbackFor = Exception.class)
-    public Integer updateBrand(GoodsBrand brand) {
-        return goodsBrandMapper.updateByPrimaryKeySelective(brand);
+    public Integer updateBrand(GoodsBrand entity) {
+        return goodsBrandMapper.updateByPrimaryKeySelective(entity);
     }
     /**
      * DELETE
@@ -52,6 +55,9 @@ public class GoodsBrandService {
      */
     @Transactional(rollbackFor = Exception.class)
     public Integer deleteBrand(Long id) {
-        return goodsBrandMapper.deleteByPrimaryKey(id);
+        GoodsBrand entity = readBrand(id);
+        entity.setIsDelete("01");
+        return updateBrand(entity);
+//        return goodsBrandMapper.deleteByPrimaryKey(id);
     }
 }
