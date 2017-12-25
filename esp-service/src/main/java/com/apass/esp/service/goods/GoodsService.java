@@ -854,7 +854,9 @@ public class GoodsService {
                           String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split(":");
                           if (Arrays.asList(attrValIds).contains(goodsAttrVal2.getId().toString())) {
                               if(isImageFalge){
-                                  jdSaleAttr.setImagePath(imageService.getImageUrl(goodsStockInfoEntity.getStockLogo()));
+                            	  if(dim==1){
+                                      jdSaleAttr.setImagePath(imageService.getImageUrl(goodsStockInfoEntity.getStockLogo()));
+                            	  }
                                   isImageFalge=false;
                               }
                               skuIds.add(goodsStockInfoEntity.getSkuId());
