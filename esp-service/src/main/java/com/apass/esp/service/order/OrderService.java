@@ -3176,7 +3176,7 @@ public class OrderService {
 								total = total.add(purchase.getPayMoney());
 		    					goodslist.add(purchase.getGoodsStockId()+"");
 							}
-	    				}else{//指定商品
+	    				}else if(StringUtils.equals(coupon.getOfferRange(), OfferRangeType.RANGE_ZDSP.getCode())){//指定商品
 	    					if(StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
 	    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId())){
 	    						total = total.add(purchase.getPayMoney());
