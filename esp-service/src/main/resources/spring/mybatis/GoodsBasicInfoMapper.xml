@@ -144,13 +144,13 @@
 				WHERE
 					a.`status` = 'G02'
 				AND a.is_delete = '01'
-				AND a.source ='wz'
+				AND a.source !='jd'
 				AND CURRENT_TIMESTAMP > a.list_time
 
 	]]>
 	   <if test="externalId != null">
-            AND a.external_id = #{externalId, jdbcType=VARCHAR}
-        </if>
+            AND (a.external_id = #{externalId, jdbcType=VARCHAR} or b.sku_id = #{externalId, jdbcType=VARCHAR})
+       </if>
 
     </select>
       <!--  查询可上架的京东商品数量-->
@@ -691,6 +691,22 @@
 
     </select>
 
+
+    <!--删除重复的sku-->
+    <delete id="deleteRepeatSku">
+      DELETE FROM t_esp_goods_base_info WHERE
+        id  IN (
+        select id from (
+                        SELECT
+                            min(id) AS id
+                        FROM
+                            t_esp_goods_base_info
+                 WHERE source='wz'
+        and `status` = 'G00'
+                        GROUP BY
+                            external_id
+        HAVING count(1)>1) as b)
+    </delete>
 
 
 </mapper>

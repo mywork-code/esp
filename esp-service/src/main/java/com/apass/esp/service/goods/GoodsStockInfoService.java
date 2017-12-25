@@ -182,4 +182,8 @@ public class GoodsStockInfoService {
         }
         return getValidSkuIdByGoodsCode(goodsCode);
     }
+
+    public GoodsStockInfoEntity getById(Long goodsStockId){
+        return goodsStockDao.select(goodsStockId);
+    }
 }
