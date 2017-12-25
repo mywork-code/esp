@@ -215,11 +215,11 @@ $(function() {
 			width : 90,
 			align : 'center'
 		},{
-//			title : 'skuid',
-//			field : 'externalId',
-//			width : 90,
-//			align : 'center'
-//		},{  
+			title : 'skuid',
+			field : 'externalId',
+			width : 90,
+			align : 'center'
+		},{  
 	 		title : '类目名称',  
 	 		field : 'categoryName3', 
 	 	    width : 80,  
