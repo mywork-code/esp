@@ -330,19 +330,19 @@ public class WeiZhiProductApiClient {
 		parameters.add(param2);
 		if (null != region) {
 			if (StringUtils.isNotBlank(region.getProvince())) {
-				BasicNameValuePair param3 = new BasicNameValuePair("province", region.getProvinceId()+"");
+				BasicNameValuePair param3 = new BasicNameValuePair("province", region.getProvince());
 				parameters.add(param3);
 			}
 			if (StringUtils.isNotBlank(region.getCity())) {
-				BasicNameValuePair param4 = new BasicNameValuePair("city", region.getCityId()+"");
+				BasicNameValuePair param4 = new BasicNameValuePair("city", region.getCity());
 				parameters.add(param4);
 			}
 			if (StringUtils.isNotBlank(region.getCounty())) {
-				BasicNameValuePair param5 = new BasicNameValuePair("county", region.getCountyId()+"");
+				BasicNameValuePair param5 = new BasicNameValuePair("county", region.getCounty());
 				parameters.add(param5);
 			}
 			if (StringUtils.isNotBlank(region.getTown())) {
-				BasicNameValuePair param6 = new BasicNameValuePair("town", region.getTownId()+"");
+				BasicNameValuePair param6 = new BasicNameValuePair("town", region.getTown());
 				parameters.add(param6);
 			}else{
 				BasicNameValuePair param6 = new BasicNameValuePair("town", "0");

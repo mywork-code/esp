@@ -2931,10 +2931,14 @@ public class OrderService {
                     Region region = new Region();
                     if (null != address) {
                         region.setProvinceId(Integer.parseInt(address.getProvinceCode()));
+                        region.setProvince(address.getProvinceCode());
                         region.setCityId(Integer.parseInt(address.getCityCode()));
+                        region.setCity(address.getCityCode());
                         region.setCountyId(Integer.parseInt(address.getDistrictCode()));
+                        region.setCounty(address.getDistrictCode());
                         region.setTownId(StringUtils.isEmpty(address.getTownsCode()) ? 0 : Integer
                                 .parseInt(address.getTownsCode()));
+                        region.setTown(StringUtils.isEmpty(address.getTownsCode()) ? "0" :address.getTownsCode());
                     }
                     List<Long> skus = new ArrayList<Long>();
                     skus.add(Long.parseLong(goods.getExternalId()));
