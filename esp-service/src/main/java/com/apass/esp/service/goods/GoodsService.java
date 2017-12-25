@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.Category;
@@ -1435,6 +1437,38 @@ public class GoodsService {
             throw new BusinessException("商品编号无法生成,请检查商品商户编码字段!");
         }
     }
+    /**
+     * 修改商品
+     * @param entity
+     * @param user
+     * @return
+     * @throws BusinessException 
+     */
+    public Response updateGoods(GoodsInfoEntity entity, String user) throws BusinessException {
+        //验证品牌
+        String brandname = entity.getBrandName();
+        if (StringUtils.isNotBlank(brandname)){
+            GoodsBrand brand = new GoodsBrand();
+            brand.setName(brandname);
+            brand = goodsBrandService.getGoodsBrandByName(brand);
+            if(brand==null){
+                brand = new GoodsBrand();
+                brand.setName(brandname);
+                brand.setIsDelete("00");
+                brand.setCreatedTime(new Date());
+                brand.setUpdatedTime(new Date());
+                if(goodsBrandService.createdBrand(brand)!=1){
+                    throw new BusinessException("商品品牌录入失败!");
+                }
+            }
+            entity.setBrandId(brand.getId().toString());
+        }else{
+            entity.setBrandId("");
+        }
+        entity.setUpdateUser(user);
+        goodsDao.updateServiceForBaseInfoColler(entity);
+        return Response.success("SUCCESS");
+    }
   /**
    * 修改
    *
@@ -1444,12 +1478,6 @@ public class GoodsService {
   public Integer updateService(GoodsInfoEntity entity) {
     return goodsDao.updateGoods(entity);
   }
-
-    @Transactional(rollbackFor = Exception.class)
-    public Integer updateServiceForBaseInfoColler(GoodsInfoEntity entity) {
-        return goodsDao.updateServiceForBaseInfoColler(entity);
-    }
-
   /**
    * 主键查询
    *

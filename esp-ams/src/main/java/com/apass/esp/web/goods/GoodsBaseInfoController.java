@@ -9,9 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.Response;
@@ -46,7 +43,6 @@ import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
@@ -75,8 +71,6 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
 import com.google.common.collect.Maps;
-
-
 /**
  * 商品管理
  *
@@ -97,36 +91,25 @@ public class GoodsBaseInfoController {
     private GoodsStockInfoService goodsStockInfoService;
     @Autowired
     private UsersService usersService;
-
     @Autowired
     private SystemParamService systemParamService;
-
     @Autowired
     private MerchantInforService merchantInforService;
-
     @Autowired
     private CategoryInfoService categoryInfoService;
-
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
-    
     @Autowired
     private GoodsEsDao goodsEsDao;
     @Autowired
     private OrderService orderService;
-
-    /**
-     * 图片服务器地址
-     */
+    //图片服务器地址
     @Value("${nfs.rootPath}")
     private String rootPath;
-
     @Value("${nfs.banner}")
     private String nfsBanner;
-
     @Value("${nfs.goods}")
     private String nfsGoods;
-
     /**
      * form表单提交 Date类型数据绑定 <功能详细描述>
      *
@@ -139,7 +122,6 @@ public class GoodsBaseInfoController {
         dateFormat.setLenient(false);
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
-
     /**
      * 商品管理页面加载
      */
@@ -380,31 +362,26 @@ public class GoodsBaseInfoController {
     @ResponseBody
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @LogAnnotion(operationType = "商品修改", valueType = LogValueTypeEnum.VALUE_DTO)
-    public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit) {
-        LOGGER.info("编辑商品，参数:{}",GsonUtils.toJson(pageModelEdit));
-        String message = SUCCESS;
-        if (StringUtils.isAnyBlank(pageModelEdit.getGoodsName(), pageModelEdit.getGoodsTitle())
-                || pageModelEdit.getListTime().equals("")) {
-            message = "参数有误,请确认再提交！";
-            return Response.fail(message);
-        }
+    public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity entity) {
+        LOGGER.info("编辑商品，参数:{}",GsonUtils.toJson(entity));
         try {
-//            String goodsName = URLDecoder.decode(pageModelEdit.getGoodsName(), "UTF-8");
-            pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
-            goodsService.updateServiceForBaseInfoColler(pageModelEdit);
+            if (StringUtils.isAnyBlank(entity.getGoodsName(), entity.getGoodsTitle()) || entity.getListTime().equals("")) {
+                return Response.fail("参数有误,请确认再提交！");
+            }
+            String user = SpringSecurityUtils.getCurrentUser();
+            return goodsService.updateGoods(entity,user);
         } catch (Exception e) {
             LOGGER.error("编辑商品失败", e);
             return Response.fail("编辑商品失败");
         }
-        return Response.success(message);
     }
-
     @ResponseBody
     @RequestMapping(value = "/editCategory", method = RequestMethod.POST)
     @LogAnnotion(operationType = "商品类目修改", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response editCategory(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit) {
         try {
-        	pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
+            String user = SpringSecurityUtils.getCurrentUser();
+        	pageModelEdit.setUpdateUser(user);
             return goodsAttrService.editCategory(pageModelEdit);
         } catch (Exception e) {
             LOGGER.error("编辑商品失败", e);
