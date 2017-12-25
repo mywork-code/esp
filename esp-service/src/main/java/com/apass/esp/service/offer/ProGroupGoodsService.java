@@ -80,6 +80,7 @@ public class ProGroupGoodsService {
       bo.setActivityId(groupGoods.getActivityId());
       bo.setActivityPrice(groupGoods.getActivityPrice());
       bo.setGoodsId(goodsId);
+      bo.setSkuId(groupGoods.getSkuId());
       bo.setValidActivity(ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg));
       return bo;
   }
