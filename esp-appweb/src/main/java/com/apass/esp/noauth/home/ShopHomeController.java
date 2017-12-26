@@ -1139,6 +1139,7 @@ public class ShopHomeController {
      */
     @POST
     @Path("/v3/getProCouponsList")
+    @Deprecated
     public Response getProCouponsList(Map<String, Object> paramMap) {
         Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
         String userId = CommonUtils.getValue(paramMap, "userId");
