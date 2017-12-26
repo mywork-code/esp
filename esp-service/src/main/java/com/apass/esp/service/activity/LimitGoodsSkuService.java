@@ -232,7 +232,9 @@ public class LimitGoodsSkuService {
             vo.setActivityPrice(entity.getActivityPrice());
             vo.setSkuId(skuId);
             //复制类目名称数据
-            vo.setCategoryId1Name(cate.getCategoryName());
+            if(cate!=null){
+                vo.setCategoryId1Name(cate.getCategoryName());
+            }
             vo.setSortNo(++sortNo);
             vo.setUpLoadStatus((byte)1);
             if(!fwz){
@@ -272,7 +274,9 @@ public class LimitGoodsSkuService {
             vo.setActivityPrice(entity.getActivityPrice());
             vo.setSkuId(skuId);
             //复制类目名称数据
-            vo.setCategoryId1Name(cate.getCategoryName());
+            if(cate!=null){
+                vo.setCategoryId1Name(cate.getCategoryName());
+            }
             vo.setSortNo(++sortNo);
             vo.setUpLoadStatus((byte)0);
             vo.setLimitNumTotal(0L);
@@ -374,7 +378,9 @@ public class LimitGoodsSkuService {
                 vo.setStockCurrAmt(stock.getStockCurrAmt());
                 vo.setMarketPrice(stock.getMarketPrice());
                 //复制类目名称数据
-                vo.setCategoryId1Name(cate.getCategoryName());
+                if(cate!=null){
+                    vo.setCategoryId1Name(cate.getCategoryName());
+                }
                 vo.setSortNo(++sortNo);
                 if(!fwz){
                     vo.setSource("notwz");
