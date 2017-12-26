@@ -13,7 +13,8 @@ public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
 
 
    ProGroupGoods selectLatestByGoodsId(@Param("goodsId") Long goodsId);
-
+   
+   ProGroupGoods selectLatestBySkuId(@Param("skuId") String  skuId);
 
    ProGroupGoods selectByGoodsIdAndActivityId(@Param("goodsId") Long goodsId,
                                               @Param("activityId") Long activityId);

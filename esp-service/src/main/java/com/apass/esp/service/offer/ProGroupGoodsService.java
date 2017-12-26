@@ -95,6 +95,30 @@ public class ProGroupGoodsService {
       bo.setValidActivity(ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg));
       return bo;
   }
+  /**
+   * 通过skuId查询
+   * @param goodsId
+   * @param skuId
+   * @return
+   */
+  public ProGroupGoodsBo getBySkuId(Long goodsId,String skuId){
+	    ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestBySkuId(skuId);
+	    if(groupGoods == null){
+	      return null;
+	    }
+
+	      ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
+	      if(activityCfg == null){
+	        return null;
+	      }
+	      ProGroupGoodsBo bo = new ProGroupGoodsBo();
+	      bo.setActivityId(groupGoods.getActivityId());
+	      bo.setActivityPrice(groupGoods.getActivityPrice());
+	      bo.setGoodsId(goodsId);
+	      bo.setSkuId(groupGoods.getSkuId());
+	      bo.setValidActivity(ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg));
+	      return bo;
+	  }
   //判断商品是否已经关联了有效的活动
   public ProGroupGoodsBo getByGoodsIdStatus(Long goodsId){
 	    ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);

@@ -1147,6 +1147,21 @@ public class ShopHomeController {
         return Response.success("获取商品优惠券列表成功！", returnMap);
     }
     /**
+     * 
+     *获取商品优惠券列表
+     * @return
+     */
+    @POST
+    @Path("/v3/getProCouponsList")
+    public Response getProCouponsList2(Map<String, Object> paramMap) {
+        Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+        String skuId=CommonUtils.getValue(paramMap, "skuId");
+        String userId = CommonUtils.getValue(paramMap, "userId");
+        //获取商品的优惠券
+        Map<String,Object>  returnMap=jdGoodsInfoService.getProCouponsBySkuId(goodsId,Long.parseLong(userId),skuId);
+        return Response.success("获取商品优惠券列表成功！", returnMap);
+    }
+    /**
      * 商品优惠券列表领取优惠券接口
      * @param paramMap
      * @return

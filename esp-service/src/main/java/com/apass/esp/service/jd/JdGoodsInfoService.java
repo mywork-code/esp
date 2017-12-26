@@ -880,6 +880,185 @@ public class JdGoodsInfoService {
 		return resultMap;
 	}
 	/**
+	 * 获取商品优惠券列表
+	 */
+	public Map<String,Object> getProCouponsBySkuId(Long goodsId,Long userId,String skuId){
+		Map<String, Object> resultMap = new HashMap<>();
+		List<ProCouponVo> proCouponVos = new ArrayList<>();// 根据活动的Id，查询所属活动的券
+		List<ProCouponVo> reProCouponList = new ArrayList<>();// 已领取的有效的券
+		List<ProCouponVo> proCouponList = new ArrayList<>();// 可领取的有效的券
+		String activityId = "";
+		GoodsInfoEntity goodsBasicInfo = new GoodsInfoEntity();
+		// 获取与活动向关联的优惠券
+		if (null != goodsId) {
+			goodsBasicInfo = goodsDao.select(goodsId);
+//			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,skuId);
+
+			if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
+				ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoodsBo.getActivityId());
+				activityId = proGroupGoodsBo.getActivityId().toString();
+				List<ProCoupon> proCoupons = couponManagerService.getCouponsByActivityId(activityId);
+				for (ProCoupon proCoupon : proCoupons) {
+					Boolean falge = false;
+					if (StringUtils.equals(goodsBasicInfo.getBrandId(), proCoupon.getBrandId() + "")) {
+						falge = true;
+					}else if (StringUtils.equals(goodsBasicInfo.getCategoryId1() + "", proCoupon.getCategoryId1()) || 
+							  StringUtils.equals(goodsBasicInfo.getCategoryId2() + "", proCoupon.getCategoryId2())  ||
+							  StringUtils.equals(goodsBasicInfo.getCategoryId3() + "", proCoupon.getCategoryId3())) {
+							falge = true;
+					} else if(StringUtils.equals(skuId, proCoupon.getSkuId())) {
+							falge = true;
+					}
+					if (falge) {
+						ProCouponVo proCouponVo = new ProCouponVo();
+						proCouponVo.setId(proCoupon.getId());
+						proCouponVo.setActivityId(Long.parseLong(activityId));
+						proCouponVo.setActivityFalge(true);
+						proCouponVo.setName("【限" + activityCfg.getActivityName() + "活动商品】\t" + proCoupon.getName());
+						proCouponVo.setCouponSill(proCoupon.getCouponSill());
+						proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
+						SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
+						String startTimeString = formatter.format(activityCfg.getStartTime());
+						String endTimeTimeString = formatter.format(activityCfg.getEndTime());
+						proCouponVo.setStartTime(startTimeString);
+						proCouponVo.setEndTime(endTimeTimeString);
+						proCouponVo.setEffectiveTiem(startTimeString, endTimeTimeString);
+						proCouponVos.add(proCouponVo);
+					}
+				}
+			}
+		}
+		//排序（按优惠力度的从大小排序）
+		if(proCouponVos.size()>0){
+			for(int i=0;i<proCouponVos.size()-1;i++){
+				for(int j=i+1;j<proCouponVos.size();j++){
+					ProCouponVo proCoupon1=proCouponVos.get(i);
+					ProCouponVo proCoupon2=proCouponVos.get(j);
+					if(proCoupon1.getDiscountAmonut().compareTo(proCoupon2.getDiscountAmonut())<0){
+						proCouponVos.set(i, proCoupon2);
+						proCouponVos.set(j, proCoupon1);
+					}
+				}
+			}
+		} 
+		//获取可用优惠券 
+		List<ProMyCoupon> proMyCouponList=new ArrayList<>();
+		for (ProCouponVo proCouponVo : proCouponVos) {
+			ProCouponRel proCouponRel=couponRelService.getRelByActivityIdAndCouponId(Long.parseLong(activityId), proCouponVo.getId());
+			List<ProMyCoupon> proMyCouponList1=myCouponMapper.getCouponByUserIdAndRelId(new ProMyCouponQuery(userId, proCouponRel.getId()));
+			if( proCouponRel.getRemainNum() > 0 ){//優惠券的剩餘數量大於零
+				if(CollectionUtils.isNotEmpty(proMyCouponList1)){
+					if( proMyCouponList1.size() < proCouponRel.getLimitNum() ){//领取的数量小于限领的数量则该优惠券还可以领取
+						proCouponList.add(proCouponVo);
+					}
+				}else{
+					proCouponList.add(proCouponVo);
+				}
+			}
+			//已经领取的优惠券中未使用的优惠券
+			for (ProMyCoupon proMyCoupon : proMyCouponList1) {
+				if(StringUtils.equals(proMyCoupon.getStatus(), CouponStatus.COUPON_N.getCode())){
+					proMyCoupon.setActivityFalge(true);
+					proMyCouponList.add(proMyCoupon);
+				}
+			}
+		}
+		//获取与活动无关的优惠券
+		ProMyCouponQuery query=new ProMyCouponQuery();
+		query.setUserId(userId);
+		query.setCouponRelId(-1L);
+		query.setStatus("N");
+		query.setMaxDate(new Date());
+		List<ProMyCoupon> ProMyCoupons=myCouponMapper.getCouponByStatusAndDate(query);
+		for (ProMyCoupon proMyCoupon : ProMyCoupons) {
+			proMyCoupon.setActivityFalge(false);
+			ProCoupon pro = proCouponMapper.selectByPrimaryKey(proMyCoupon.getCouponId());
+			if (StringUtils.equals(pro.getType(), CouponType.COUPON_ZDPL.getCode())) {
+				if (StringUtils.equals(goodsBasicInfo.getCategoryId1() + "", pro.getCategoryId1())) {
+					proMyCouponList.add(proMyCoupon);
+				} else if (StringUtils.equals(goodsBasicInfo.getCategoryId2() + "", pro.getCategoryId2())) {
+					proMyCouponList.add(proMyCoupon);
+				}
+			} else if (StringUtils.equals(pro.getType(), CouponType.COUPON_ZDSP.getCode())) {
+				String[] similarGoods = pro.getSimilarGoodsCode().split(",");
+				if (Arrays.asList(similarGoods).contains(goodsBasicInfo.getGoodsCode())) {
+					proMyCouponList.add(proMyCoupon);
+				}
+			} else if (StringUtils.equals(pro.getType(), CouponType.COUPON_QPL.getCode())) {
+				proMyCouponList.add(proMyCoupon);
+			}
+		}
+		for (ProMyCoupon proMyCoupon : proMyCouponList) {
+			ProCoupon proCoupon = proCouponMapper.selectByPrimaryKey(proMyCoupon.getCouponId());
+			ProCouponVo proCouponVo=new ProCouponVo();
+			proCouponVo.setId(proCoupon.getId());
+			if(StringUtils.isNotEmpty(activityId)){
+				proCouponVo.setActivityId(Long.parseLong(activityId));
+			}else{
+				proCouponVo.setActivityId(null);
+			}
+			if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDPL.getCode())) {
+				if (StringUtils.equals(goodsBasicInfo.getCategoryId1() + "", proCoupon.getCategoryId1())) {
+					Category categroy = categoryMapper.selectByPrimaryKey(Long.parseLong(proCoupon.getCategoryId1()));
+				    proCouponVo.setName("【限"+categroy.getCategoryName()+"类】\t"+proCoupon.getName());
+				} else if (StringUtils.equals(goodsBasicInfo.getCategoryId2() + "", proCoupon.getCategoryId2())) {
+					Category categroy = categoryMapper.selectByPrimaryKey(Long.parseLong(proCoupon.getCategoryId2()));
+				    proCouponVo.setName("【限"+categroy.getCategoryName()+"类】\t"+proCoupon.getName());
+				}
+			} else if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDSP.getCode())) {
+				String[] similarGoods = proCoupon.getSimilarGoodsCode().split(",");
+				if (Arrays.asList(similarGoods).contains(goodsBasicInfo.getGoodsCode())) {
+					GoodsInfoEntity goods = goodsMapper.selectGoodsByGoodsCode(proCoupon.getGoodsCode());
+				    proCouponVo.setName("【指定商品】\t" + goods.getGoodsName());
+				}
+			} else if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_QPL.getCode())) {
+			    proCouponVo.setName("【全品类】\t" + proCoupon.getName());
+
+			} else if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_HDSP.getCode())) {
+				String activityName = "";
+				if (null != proMyCoupon.getCouponRelId()) {
+					ProCouponRel rel = couponRelMapper.selectByPrimaryKey(proMyCoupon.getCouponRelId());
+					if (null != rel) {// 此做法主要是适配于测试环境直接删库数据不完全，可能导致的问题
+						ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(rel.getProActivityId());
+						if (null != cfg) {
+							activityName = cfg.getActivityName();
+						}
+					}
+				}
+				proCouponVo.setName("【限" + activityName + "活动商品】\t" + proCoupon.getName());
+			}
+			
+			proCouponVo.setActivityFalge(proMyCoupon.getActivityFalge());
+//			proCouponVo.setName(proCoupon.getName());
+			proCouponVo.setCouponSill(proCoupon.getCouponSill());
+			proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
+			String startTimeString = formatter.format(proMyCoupon.getStartDate());
+			String endTimeTimeString = formatter.format(proMyCoupon.getEndDate());
+			proCouponVo.setStartTime(startTimeString);
+			proCouponVo.setEndTime(endTimeTimeString);
+			proCouponVo.setEffectiveTiem(startTimeString, endTimeTimeString);
+			reProCouponList.add(proCouponVo);
+		}
+		//排序（按优惠力度的从大小排序）
+		if(reProCouponList.size()>0){
+			for(int i=0;i<reProCouponList.size()-1;i++){
+				for(int j=i+1;j<reProCouponList.size();j++){
+					ProCouponVo proCoupon1=reProCouponList.get(i);
+					ProCouponVo proCoupon2=reProCouponList.get(j);
+					if(proCoupon1.getDiscountAmonut().compareTo(proCoupon2.getDiscountAmonut())<0){
+						reProCouponList.set(i, proCoupon2);
+						reProCouponList.set(j, proCoupon1);
+					}
+				}
+			}
+		} 
+		resultMap.put("reProCouponList", reProCouponList);
+		resultMap.put("proCouponList", proCouponList);
+		return resultMap;
+	}
+	/**
 	 * 获取京东商品本身的规格描述
 	 * @return
 	 */

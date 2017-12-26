@@ -8,7 +8,12 @@
         from t_esp_pro_group_goods
         where goods_id = #{goodsId} and status = 'S' order by id desc limit 1
     </select>
-    
+    <select id="selectLatestBySkuId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_group_goods
+        where sku_id = #{skuId} and status = 'S' order by id desc limit 1
+    </select>
     <select id="selectOneByGodsIdAndGroupId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
