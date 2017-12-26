@@ -149,11 +149,11 @@ public class ProGroupGoodsExportFikeController {
 	@RequestMapping(value = "/addOneGoods")
 	@LogAnnotion(operationType = "商品添加至分组", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response ProGroupGoodsPageList(@RequestParam("activityId") String activityId,
-			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId) {
+			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId, @RequestParam("skuId") String skuId) {
 		int count = 0;
 		int countSuccess = 0;
 		int countFail = 0;
-		if (StringUtils.isEmpty(goodsId)) {
+		if (StringUtils.isEmpty(goodsId) || StringUtils.isEmpty(skuId)) {
 			return Response.fail("请选择商品！");
 		}
 		try {

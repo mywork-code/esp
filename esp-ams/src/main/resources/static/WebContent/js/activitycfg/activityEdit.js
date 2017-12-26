@@ -176,7 +176,7 @@ $(function () {
                     var content = "";
                     if (row.detailDesc == '1' && row.status != 'S') {
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoodsAndActivity('"
-                            + row.goodsId + "','" + row.activityId + "');\">添加至</a>&nbsp;&nbsp;";
+                            + row.goodsId + "','" + row.skuId+"','" +row.activityId + "');\">添加至</a>&nbsp;&nbsp;";
                     }
                     return content;
                 }
@@ -301,7 +301,7 @@ $(function () {
     });
     
     //单个商品添加至
-    $.editGoodsAndActivity = function (goodsId, activityId) {
+    $.editGoodsAndActivity = function (goodsId,skuId, activityId) {
         /**加载该活动的分组**/
         var params = {};
         params['activityId'] = activityId;
@@ -315,6 +315,7 @@ $(function () {
                 	$('#addGoodsToGroup').window('open')
                 	$("#addGoodsToGroupActivityId").val(activityId);
                     $("#addGoodsToGroupGoodsId").val(goodsId);
+                    $("#addGoodsToGroupSkuId").val(skuId);
                 } else {
                     alert("请先创建分组！");
                 }
@@ -333,13 +334,15 @@ $(function () {
         var params = {};
         var activityId = $("#addGoodsToGroupActivityId").val();
         var goodsId = $("#addGoodsToGroupGoodsId").val();
+        var skuId = $("#addGoodsToGroupSkuId").val();
         var groupNameId = $("#groupName").textbox('getValue');
         if (null == groupNameId || groupNameId == "") {
             alert("请选择分组！");
             return;
         }
         params['activityId'] = activityId;
-        params['goodsId'] = goodsId
+        params['goodsId'] = goodsId;
+        params['skuId'] = skuId;
         params['groupNameId'] = groupNameId;
         $.ajax({
             type: "POST",
@@ -368,8 +371,10 @@ $(function () {
         } else {
 			var activityId= $("#addGoodsToGroupActivityId").val();
             var goodsIdsString = selRow[0].goodsId;
+            var skuIdsString=selRow[0].skuId;
             for (var i = 1; i < selRow.length; i++) {
                 goodsIdsString = goodsIdsString + ',' + selRow[i].goodsId;
+                skuIdsString=skuIdsString+','+selRow[i].skuId;
             }
             /**加载该活动的分组**/
             var params = {};
@@ -397,6 +402,7 @@ $(function () {
                         $win.window('open');
                         $("#addGoodsToGroupActivityId").val(activityId);
                         $("#addGoodsToGroupGoodsId").val(goodsIdsString);
+                        $("#addGoodsToGroupSkuId").val(skuIdsString);
                     } else {
                         alert("请先创建分组！");
                     }
