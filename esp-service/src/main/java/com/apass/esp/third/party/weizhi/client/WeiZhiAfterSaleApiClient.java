@@ -43,6 +43,7 @@ public class WeiZhiAfterSaleApiClient {
      * @return 微知返回的所有数据data始终为{}
      */
     public WeiZhiAfterSaleResponse afterSaleAfsApplyCreate(AfsApplyWeiZhiDto afsWeizhiApply) throws Exception {
+        Long startTime = System.currentTimeMillis();
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -65,7 +66,7 @@ public class WeiZhiAfterSaleApiClient {
 
         //发送请求并封装返回值
         String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALES_AFSAPPLY),entity);
-        LOGGER.info("服务单保存申请,返回结果：{}", responseJson);
+        LOGGER.info("服务单保存申请,返回结果：{},接口响应时间:{}ms", responseJson,System.currentTimeMillis() - startTime);
 
         /**
          * 解析json
@@ -93,6 +94,7 @@ public class WeiZhiAfterSaleApiClient {
      * @return 微知返回的所有数据data始终为{}
      */
     public WeiZhiAfterSaleResponse afterUpdateSendSku(SendSku sendSku) throws Exception {
+        Long startTime = System.currentTimeMillis();
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
         //封装参数：表单提交
@@ -107,7 +109,7 @@ public class WeiZhiAfterSaleApiClient {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
         String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALES_SENDSKU),entity);
-        LOGGER.info("服务单保存申请,返回结果：{}", responseJson);
+        LOGGER.info("服务单保存申请,返回结果：{},接口响应时间:{}", responseJson,System.currentTimeMillis() - startTime);
 
         /**
          * 返回json
@@ -136,6 +138,7 @@ public class WeiZhiAfterSaleApiClient {
      * @throws Exception
      */
     public Integer getAvailableNumberComp(String wzOrderId,String skuId) throws Exception {
+        Long startTime = System.currentTimeMillis();
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -152,7 +155,7 @@ public class WeiZhiAfterSaleApiClient {
         //发送请求并封装返回值
         String responseJson = null;
         responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALE_AVAILABLENUMBERCOMP),entity);
-        LOGGER.info("校验某订单中某商品是否可以提交售后服务,返回结果：{}", responseJson);
+        LOGGER.info("校验某订单中某商品是否可以提交售后服务,返回结果：{},接口响应时间：{}", responseJson,System.currentTimeMillis() - startTime);
 
         /**
          * 返回json
@@ -183,6 +186,7 @@ public class WeiZhiAfterSaleApiClient {
      * @throws Exception
      */
     public String getCustomerExpectComp(String wzOrderId,String skuId) throws Exception {
+        Long startTime = System.currentTimeMillis();
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -196,7 +200,7 @@ public class WeiZhiAfterSaleApiClient {
 
         //发送请求并封装返回值
         String  responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALE_CUSTOMEREXPECTCOMP),entity);
-        LOGGER.info("根据订单号、商品编号查询支持的服务类型,返回结果：{}", responseJson);
+        LOGGER.info("根据订单号、商品编号查询支持的服务类型,返回结果：{},接口响应时间:{}", responseJson,System.currentTimeMillis() - startTime);
 
         JSONObject datas = JSON.parseObject(responseJson);
         if(null == datas){
@@ -221,6 +225,7 @@ public class WeiZhiAfterSaleApiClient {
      * @throws Exception
      */
     public String getWareReturnJdComp(String wzOrderId,String skuId) throws Exception {
+        Long startTime = System.currentTimeMillis();
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -234,7 +239,7 @@ public class WeiZhiAfterSaleApiClient {
 
         //发送请求并封装返回值
         String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALE_WARERETURNJDCOMP),entity);
-        LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{}", responseJson);
+        LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{},接口响应时间：{}", responseJson,System.currentTimeMillis() - startTime);
 
         JSONObject jsonObject = JSON.parseObject(responseJson);
         if(null == jsonObject){
@@ -250,16 +255,6 @@ public class WeiZhiAfterSaleApiClient {
         }
 
         return jsonObject.getString("data");
-//        List<ComponentExport> compTypes = Lists.newArrayList();
-//        JSONArray jsonArray = jsonObject.getJSONArray("data");
-//
-//        for (Object obj: jsonArray) {
-//            String content = JSONObject.toJSONString(obj);
-//            ComponentExport afterSaleExpectCompType = GsonUtils.convertObj(content, ComponentExport.class);
-//            compTypes.add(afterSaleExpectCompType);
-//        }
-//
-//        return compTypes;
     }
 
 
@@ -272,6 +267,7 @@ public class WeiZhiAfterSaleApiClient {
      * @throws Exception
      */
     public List<SkuObject> getServiveList(String wzOrderId,String pageIndex,String pageSize) throws Exception {
+        Long startTime = System.currentTimeMillis();
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -286,7 +282,7 @@ public class WeiZhiAfterSaleApiClient {
 
         //发送请求并封装返回值
         String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALE_SERVIVELIST),entity);
-        LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{}", responseJson);
+        LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{},接口响应时间:{}", responseJson,System.currentTimeMillis() - startTime);
         JSONObject jsonObject = JSON.parseObject(responseJson);
         if(null == jsonObject){
             LOGGER.error("-----------getServiveList----------response is null");

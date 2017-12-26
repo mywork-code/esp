@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.apass.esp.common.utils.JsonUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
@@ -52,6 +53,7 @@ public class WeiZhiPriceApiClient {
 		if(CollectionUtils.isEmpty(skuList)){
 			throw new BusinessException("传参不能为空!");
 		}
+		Long startTime = System.currentTimeMillis();
 		String join = StringUtils.join(skuList, ",");
 		
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -61,10 +63,10 @@ public class WeiZhiPriceApiClient {
 		parameters.add(param2);
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
-		
+		logger.info("----getWzPrice------ params:{}", JsonUtil.toJsonString(parameters));
 		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRICE_GETWZPRICE), entity);
 	    
-		logger.info("----getWzPrice------ response:{}",responseJson);
+		logger.info("----getWzPrice------ response:{},接口响应时间:{}",responseJson,System.currentTimeMillis() - startTime);
 	    /**
 	     * 返回json
 	     */
