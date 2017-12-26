@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
+import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
+import com.apass.esp.domain.entity.ProGroupManager;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
@@ -23,10 +25,12 @@ import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupGoodsVo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
+import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.mapper.LimitGoodsSkuMapper;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
+import com.apass.esp.mapper.ProGroupManagerMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.ImageService;
@@ -65,6 +69,10 @@ public class ProGroupGoodsService {
   public LimitGoodsSkuMapper limitGoodsSkuMapper;
   @Autowired
   public LimitBuyActMapper limitBuyActMapper;
+  @Autowired
+  private ProGroupManagerMapper managerMapper;
+  @Autowired
+  private CategoryMapper categoryMapper;
 
   public ProGroupGoodsBo getByGoodsId(Long goodsId){
     ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
@@ -314,31 +322,67 @@ public class ProGroupGoodsService {
 	 * @return
 	 * @throws BusinessException 
 	 */
-	public ResponsePageBody<ProGroupGoodsVo> getProGroupGoodsListPage(ProGroupGoodsQuery query) throws BusinessException{
-		ResponsePageBody<ProGroupGoodsVo> pageBody = new ResponsePageBody<ProGroupGoodsVo>();
-		List<ProGroupGoodsVo> configList = groupGoodsMapper.getProGroupGoodsListPage(query);
-		// 因为voList在数据库查询时就已经跟进order排序来查询
-		if(null !=configList && configList.size()!=0){
-			configList.get(0).setIsFirstOne(true);
-			configList.get(configList.size() - 1).setIsLastOne(true);
-			for (ProGroupGoodsVo proGroupGoodsVo : configList) {
-				if(proGroupGoodsVo.getDetailDesc().equals("0")){
-					proGroupGoodsVo.setGoodsCategory(null);
-					proGroupGoodsVo.setGoodsName(null);
-					proGroupGoodsVo.setGoodsStatus(null);
-					proGroupGoodsVo.setGoodsCostPrice(null);
-					proGroupGoodsVo.setGoodsPrice(null);
+	public ResponsePageBody<ProGroupGoodsVo> getProGroupGoodsListPage(ProGroupGoodsQuery query) throws BusinessException{ResponsePageBody<ProGroupGoodsVo> pageBody = new ResponsePageBody<ProGroupGoodsVo>();
+	List<ProGroupGoodsVo> configList = groupGoodsMapper.getProGroupGoodsListPage(query);
+	for (ProGroupGoodsVo proGroupGoodsVo : configList) {
+		/**
+		 * 商品
+		 */
+		GoodsInfoEntity goods = goodsRepository.select(proGroupGoodsVo.getGoodsId());
+		proGroupGoodsVo.setGoodsName(goods.getGoodsName());
+		proGroupGoodsVo.setGoodsStatus(goods.getStatus());
+		
+		/**
+		 * 第三方产品
+		 */
+		String skuId = proGroupGoodsVo.getSkuId();
+		List<GoodsStockInfoEntity> stocks = goodsStockInfoRepository.loadByGoodsId(goods.getGoodId());
+		GoodsStockInfoEntity stock = null;
+		if(CollectionUtils.isNotEmpty(stocks)){
+			if(stocks.size() == 1){
+				stock = stocks.get(0);
+			}else{
+				for (GoodsStockInfoEntity s : stocks) {
+					if(StringUtils.equals(s.getSkuId(), skuId)){
+						stock = s;
+						break;
+					}
 				}
 			}
+			proGroupGoodsVo.setGoodsCostPrice(stock.getGoodsCostPrice());
+			proGroupGoodsVo.setGoodsPrice(stock.getGoodsPrice());
 		}
-
-		Integer count = groupGoodsMapper.getProGroupGoodsListPageCount(query);
-		
-		pageBody.setTotal(count);
-		pageBody.setRows(configList);
-		pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
-		return pageBody;
+		ProGroupManager group = managerMapper.selectByPrimaryKey(proGroupGoodsVo.getGroupId());
+		if(null != group){
+			proGroupGoodsVo.setGroupName(group.getGroupName());
+		}
+		Category categroy = categoryMapper.selectByPrimaryKey(goods.getCategoryId3());
+		if(null != categroy){
+			proGroupGoodsVo.setGoodsCategory(categroy.getCategoryName());
+		}
 	}
+	// 因为voList在数据库查询时就已经跟进order排序来查询
+	if(null !=configList && configList.size()!=0){
+		configList.get(0).setIsFirstOne(true);
+		configList.get(configList.size() - 1).setIsLastOne(true);
+		for (ProGroupGoodsVo proGroupGoodsVo : configList) {
+			if(proGroupGoodsVo.getDetailDesc().equals("0")){
+				proGroupGoodsVo.setGoodsCategory(null);
+				proGroupGoodsVo.setGoodsName(null);
+				proGroupGoodsVo.setGoodsStatus(null);
+				proGroupGoodsVo.setGoodsCostPrice(null);
+				proGroupGoodsVo.setGoodsPrice(null);
+			}
+		}
+	}
+
+	Integer count = groupGoodsMapper.getProGroupGoodsListPageCount(query);
+	
+	pageBody.setTotal(count);
+	pageBody.setRows(configList);
+	pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
+	return pageBody;
+}
 	/**
 	 * 根据分组的id，获取分组下属的商品
 	 * @param groupId

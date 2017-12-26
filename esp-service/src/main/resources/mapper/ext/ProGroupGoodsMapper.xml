@@ -94,23 +94,23 @@
 						a.sku_id             skuId,
 						a.goods_id           goodsId,
 						a.order_sort		 orderSort,
-						b.goods_name         goodsName,
-						b.status             goodsStatus,
-						d.category_name      goodsCategory,
-			            c.goods_cost_price   goodsCostPrice,
-			            c.goods_price        goodsPrice,
+<!-- 				    b.goods_name         goodsName, -->
+<!-- 					b.status             goodsStatus, -->
+<!-- 					d.category_name      goodsCategory, -->
+<!-- 			        c.goods_cost_price   goodsCostPrice, -->
+<!-- 			        c.goods_price        goodsPrice, -->
 			            a.market_price       marketPrice,
 			            a.activity_price     activityPrice,
 			            a.detail_desc        detailDesc,
 			            a.activity_id        activityId,
-			            a.status             status,
-			            e.group_name         groupName
+			            a.status             status
+<!--			        e.group_name         groupName -->
 				FROM
 						t_esp_pro_group_goods   a
-			LEFT JOIN 	t_esp_goods_base_info   b ON a.goods_id = b.id
+<!-- 		LEFT JOIN 	t_esp_goods_base_info   b ON a.goods_id = b.id
 			LEFT JOIN   t_esp_goods_stock_info  c ON c.goods_id =b.id
 			LEFT JOIN   t_esp_category          d ON b.category_id3 =d.id
-			LEFT JOIN   t_esp_pro_group_manager e ON a.group_id=e.id
+			LEFT JOIN   t_esp_pro_group_manager e ON a.group_id=e.id -->
 	    <include refid="QueryConditionSql" />
         <![CDATA[ 
          order by a.detail_desc desc,a.order_sort,  a.updated_time desc
@@ -124,10 +124,10 @@
 				SELECT  count(*)
 					FROM
 					t_esp_pro_group_goods   a
-					LEFT JOIN 	t_esp_goods_base_info   b ON a.goods_id = b.id
+			<!--    LEFT JOIN 	t_esp_goods_base_info   b ON a.goods_id = b.id
 					LEFT JOIN   t_esp_goods_stock_info  c ON c.goods_id =b.id
 					LEFT JOIN   t_esp_category          d ON b.category_id3 =d.id
-					LEFT JOIN   t_esp_pro_group_manager e ON a.group_id=e.id
+					LEFT JOIN   t_esp_pro_group_manager e ON a.group_id=e.id -->
 				<include refid="QueryConditionSql" />
 	</select>
     <!-- 查询条件 -->
@@ -148,7 +148,7 @@
 			<if test="groupId != null and groupId != ''">
 				AND a.group_id = #{groupId, jdbcType=BIGINT}
 			</if>
-			<if test="categoryId1 != null and categoryId1 != ''">
+	<!-- 		<if test="categoryId1 != null and categoryId1 != ''">
 				AND b.category_id1 = #{categoryId1, jdbcType=BIGINT}
 			</if>
 			<if test="categoryId2 != null and categoryId2 != ''">
@@ -156,7 +156,7 @@
 			</if>
 			<if test="categoryId3 != null and categoryId3 != ''">
 				AND b.category_id3 = #{categoryId3, jdbcType=BIGINT}
-			</if>
+			</if> -->
 		</where>
 	</sql>
 </mapper>
