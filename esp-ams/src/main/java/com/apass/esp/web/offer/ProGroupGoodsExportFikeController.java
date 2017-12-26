@@ -282,7 +282,7 @@ public class ProGroupGoodsExportFikeController {
 					}
 					if (null !=id && null != gbity && null != marketPrice && marketPrice.compareTo(zero)>0 && null != activityPrice && activityPrice.compareTo(zero)>0 && countSuccess <= 200) {
 						//判断该商品是否存在其他有效的活动中
-						Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(gbity.getGoodId());
+						Boolean result=proGroupGoodsService.selectEffectiveGoodsBySkuId(id);
 						Boolean limitResult=proGroupGoodsService.getStatusByGoodId(activityId, gbity.getGoodId());
 						if (result && limitResult) {//允许导入
 							pggds.setMarketPrice(list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP));//对小数点第三位执行四舍五入

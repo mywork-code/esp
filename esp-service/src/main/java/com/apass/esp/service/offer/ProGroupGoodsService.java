@@ -148,6 +148,26 @@ public class ProGroupGoodsService {
 		}
 		return result;
 	}
+	//判断商品是否存在其他有效的活动中
+		public Boolean selectEffectiveGoodsBySkuId(String skuId) {
+			Boolean result = true;
+			List<ProGroupGoods> list = groupGoodsMapper.selectEffectiveGoodsBySkuId(skuId);
+			if (null != list && list.size() > 0) {
+				for (ProGroupGoods proGroupGoods : list) {
+					ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoods.getActivityId());
+					if (null != activityCfg) {
+						ActivityStatus activityStatus = activityCfgService.getActivityStatus(activityCfg);
+						// 当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
+						if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
+							result = false;
+							break;
+						}
+					}
+				}
+
+			}
+			return result;
+		}
 	// 判断该商品是否参加了限时购活动，如果参加了且时间有冲突
 		public Boolean getStatusByGoodId(String activityId, Long goodsId) {
 			Date proActivityStartDate = null;//满减活动的开始时间

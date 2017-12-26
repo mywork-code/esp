@@ -32,6 +32,14 @@
         where detail_desc = '1' 
           AND goods_id = #{goodsId} 
     </select>
+    <!-- 查看商品是否存在其他有效的活动中 -->
+    <select id="selectEffectiveGoodsBySkuId" resultMap="BaseResultMap">
+       select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_group_goods
+        where detail_desc = '1' 
+          AND sku_id = #{skuId} 
+    </select>
     <!-- 从分组中移除该商品 -->
 	<update id="updateGoods" parameterType="com.apass.esp.domain.entity.ProGroupGoods" >
 	     update t_esp_pro_group_goods
