@@ -1170,6 +1170,7 @@ public class ShopHomeController {
     @Path("/v3/saveCoupon")
 	public Response giveCouponToUser(Map<String, Object> paramMap){
         Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+        String skuId = CommonUtils.getValue(paramMap, "skuId");
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String activityId = CommonUtils.getValue(paramMap, "activityId");
 		String couponId = CommonUtils.getValue(paramMap, "couponId");
@@ -1182,7 +1183,7 @@ public class ShopHomeController {
 			int count = myCouponManagerService.giveCouponToUser(new MyCouponVo(Long.parseLong(userId),Long.parseLong(couponId),Long.parseLong(activityId)));
 			if(count > 0){
 		      //获取商品的优惠券
-		      Map<String,Object>  returnMap=jdGoodsInfoService.getProCoupons(goodsId,Long.parseLong(userId));
+		      Map<String,Object>  returnMap=jdGoodsInfoService.getProCouponsBySkuId(goodsId,Long.parseLong(userId),skuId);
 		      LOGGER.info("giveCouponToUser:--------->{}",GsonUtils.toJson(returnMap));
 			  return Response.success("领取成功!",returnMap);
 			}
