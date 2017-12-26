@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
@@ -53,9 +52,12 @@ import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.utils.Pinyin4jUtil;
 import com.apass.esp.service.activity.LimitCommonService;
+import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.service.jd.JdGoodsService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
@@ -124,6 +126,12 @@ public class GoodsService {
   private LimitCommonService limitCommonService;
   @Autowired
   private GoodsBrandService goodsBrandService;
+    @Autowired
+    private SystemParamService systemParamService;
+    @Autowired
+    private CategoryInfoService categoryInfoService;
+    @Autowired
+    private JdGoodsService jdGoodsService;
   /**
    * app 首页加载精品推荐商品
    *
@@ -1294,50 +1302,6 @@ public class GoodsService {
   public Long getStockCurrAmt(Long goodsStockId) {
     return goodsStockDao.getStockCurrAmt(goodsStockId);
   }
-
-  /**
-   * 商品分页(查询)
-   *
-   * @param goodsInfoEntity
-   * @param pageNo
-   * @param pageSize
-   * @return
-   */
-  public PaginationManage<GoodsInfoEntity> pageList(GoodsInfoEntity goodsInfoEntity, String pageNo,
-                                                    String pageSize) {
-    Integer pageNum = Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo);
-    Integer pageSiz = Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize);
-    Integer begin = (pageNum - 1) * pageSiz;
-    goodsInfoEntity.setBegin(begin);
-    goodsInfoEntity.setPageSize(pageSiz);
-    // Page page = new Page();
-    // page.setPage(Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo));
-    // page.setLimit(Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize));
-
-    PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
-
-    List<GoodsInfoEntity> dataList = goodsDao.pageList(goodsInfoEntity);
-    Integer totalCount = goodsDao.countByKey(goodsInfoEntity, "goodsPageList");
-    for (GoodsInfoEntity goodsInfo : dataList) {
-      if(StringUtils.equals("jd",SourceType.JD.getCode())){
-          goodsInfo.setMerchantCode(SourceType.JD.getMessage());
-      }
-      if(StringUtils.equals("wz",SourceType.WZ.getCode())){
-        goodsInfo.setMerchantCode(SourceType.WZ.getMessage());
-      }
-      if (null != goodsInfo.getListTime()) {
-        goodsInfo.setListTimeString(goodsInfo.getListTime());
-      }
-      if (null != goodsInfo.getDelistTime()) {
-        goodsInfo.setDelistTimeString(goodsInfo.getDelistTime());
-      }
-    }
-
-    result.setDataList(dataList);
-    result.setTotalCount(totalCount);
-    return result;
-  }
-
   /**
    * 商品(查询)
    *
@@ -1356,10 +1320,81 @@ public class GoodsService {
       return goodsDao.getNotJDgoodsList();
   }
     /**
+     * 商品分页(查询)
+     * @param goodsInfoEntity
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    public PaginationManage<GoodsInfoEntity> pageList(GoodsInfoEntity goodsInfoEntity, String pageNo, String pageSize) throws BusinessException {
+        Integer pageNum = Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo);
+        Integer pageSiz = Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize);
+        Integer begin = (pageNum - 1) * pageSiz;
+        goodsInfoEntity.setBegin(begin);
+        goodsInfoEntity.setPageSize(pageSiz);
+        PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
+        List<GoodsInfoEntity> dataList = goodsDao.pageList(goodsInfoEntity);
+        Integer totalCount = goodsDao.countByKey(goodsInfoEntity, "goodsPageList");
+        for (GoodsInfoEntity goodsInfo : dataList) {
+            Boolean falg = true;
+            if(StringUtils.equals("jd",SourceType.JD.getCode())||StringUtils.equals("wz",SourceType.WZ.getCode())){
+                if(StringUtils.isNotBlank(goodsInfo.getExternalId())){
+                    JdGoods jd = jdGoodsService.queryGoodsBySkuId(Long.parseLong(goodsInfo.getExternalId()));
+                    if(jd!=null&&StringUtils.isNotBlank(jd.getBrandName())){
+                        GoodsBrand brand = new GoodsBrand();
+                        brand.setName(jd.getBrandName());
+                        brand = goodsBrandService.getGoodsBrandByName(brand);
+                        if(brand!=null){
+                            goodsInfo.setBrandId(brand.getId().toString());
+                        }
+                        goodsInfo.setBrandName(jd.getBrandName());
+                        falg = false;
+                    }else{
+                        falg = true;
+                    }
+                }else{
+                    falg = true;
+                }
+            }else{
+                falg = true;
+            }
+            if(falg){
+                if(StringUtils.isNotBlank(goodsInfo.getBrandId())){
+                    GoodsBrand brand = goodsBrandService.readBrand(Long.parseLong(goodsInfo.getBrandId()));
+                    if(brand!=null){
+                        goodsInfo.setBrandName(brand.getName());
+                    }
+                }
+            }
+            if(StringUtils.equals("jd",SourceType.JD.getCode())){
+                goodsInfo.setMerchantCode(SourceType.JD.getMessage());
+            }
+            if(StringUtils.equals("wz",SourceType.WZ.getCode())){
+                goodsInfo.setMerchantCode(SourceType.WZ.getMessage());
+            }
+            if (null != goodsInfo.getListTime()) {
+                goodsInfo.setListTimeString(goodsInfo.getListTime());
+            }
+            if (null != goodsInfo.getDelistTime()) {
+                goodsInfo.setDelistTimeString(goodsInfo.getDelistTime());
+            }
+            Long categoryId = goodsInfo.getCategoryId3();
+            Category category = categoryInfoService.selectNameById(categoryId);
+            if (null != category) {
+                goodsInfo.setCategoryName3(category.getCategoryName());
+            }
+            goodsInfo.setColFalgt(this.ifRate(goodsInfo.getId(),systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate()));
+        }
+        result.setDataList(dataList);
+        result.setTotalCount(totalCount);
+        return result;
+    }
+    /**
      * 新增
      * @param entity
+     * @param user
      * @return
-     * @throws BusinessException 
+     * @throws BusinessException
      */
     @Transactional(rollbackFor = Exception.class)
     public GoodsInfoEntity insertGoods(GoodsInfoEntity entity,String user) throws BusinessException {
@@ -1427,7 +1462,7 @@ public class GoodsService {
                 }
                 entity.setBrandId(brand.getId().toString());
             }else{
-                entity.setBrandId("");
+                entity.setBrandId("0");
             }
             goodsDao.insert(entity);
             entity.setGoodId(entity.getId());
@@ -1444,6 +1479,7 @@ public class GoodsService {
      * @return
      * @throws BusinessException 
      */
+    @Transactional(rollbackFor = Exception.class)
     public Response updateGoods(GoodsInfoEntity entity, String user) throws BusinessException {
         //验证品牌
         String brandname = entity.getBrandName();
@@ -1463,9 +1499,10 @@ public class GoodsService {
             }
             entity.setBrandId(brand.getId().toString());
         }else{
-            entity.setBrandId("");
+            entity.setBrandId("0");
         }
         entity.setUpdateUser(user);
+        entity.setUpdateDate(new Date());
         goodsDao.updateServiceForBaseInfoColler(entity);
         return Response.success("SUCCESS");
     }
@@ -1525,7 +1562,12 @@ public class GoodsService {
     return goodsDao.goodsPageListCount();
   }
 
-  // 判断费率
+  /**
+   *  判断费率
+   * @param goodsId
+   * @param merchantSettleRate
+   * @return
+   */
   public String ifRate(Long goodsId, BigDecimal merchantSettleRate) {
     List<GoodsStockInfoEntity> list = goodsStockDao.loadByGoodsId(goodsId);
     if (!list.isEmpty()) {

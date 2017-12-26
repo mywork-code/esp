@@ -449,7 +449,6 @@
         UPDATE t_esp_goods_base_info
         ]]>
         <set>
-
             update_date = CURRENT_TIMESTAMP,
             <if test="updateDate != null and categoryId1 != ''">
                 update_date=#{updateDate, jdbcType=TIMESTAMP},
@@ -540,6 +539,9 @@
             </if>
             <if test="mainGoodsCode != null">
                 main_goods_code = #{mainGoodsCode},
+            </if>
+            <if test="brandId != null">
+                brand_id = #{brandId, jdbcType=VARCHAR},
             </if>
         </set>
         <![CDATA[
@@ -638,6 +640,9 @@
             </if>
             <if test="siftSort != null">
                 sift_sort = #{siftSort},
+            </if>
+            <if test="brandId != null">
+                brand_id = #{brandId, jdbcType=VARCHAR},
             </if>
         </set>
         <![CDATA[

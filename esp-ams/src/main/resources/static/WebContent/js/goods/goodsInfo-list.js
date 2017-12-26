@@ -2676,7 +2676,6 @@ function initGoodsInfo(){
 	$("#sordNo").numberbox('setValue','');
 	$("#addBrandName").textbox('clear');
 }
-
 //编辑商品初始化商品信息
 function initEditGoodsInfo(row){
 	var unSupportPrivinces = row.unSupportProvince;//省份汉字
@@ -2735,6 +2734,7 @@ function initEditGoodsInfo(row){
 				$("#editmerchantCode").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsModel").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsName").textbox('textbox').attr("data-options","");
+				$("#editBrandName").textbox('textbox').attr("disabled","disabled");
 				//$("#editgoodsSkuType").combobox('disable');
 				$("#editUnSupportProvince").combobox('disable');
 				$("#editproDate").next("span").children(".validatebox-text").attr("disabled","disabled");
@@ -2746,6 +2746,7 @@ function initEditGoodsInfo(row){
 				// $("input[name='editSupport7dRefund'][value='Y']").attr("checked", "checked");
 			}else{
 				$("#editgoodsModel").textbox('textbox').removeAttr("disabled");
+				$("#editBrandName").textbox('textbox').removeAttr("disabled");
 				//$("#editgoodsSkuType").combobox('enable');
 				$("#editUnSupportProvince").combobox('enable');
 				$("#editproDate").next("span").children(".validatebox-text").removeAttr("disabled");
@@ -2766,11 +2767,11 @@ function initEditGoodsInfo(row){
 
 			$("#editid").val(row.id);
 			$("#editLogogoodsId").val(row.id);
-			
 			$("#editmerchantCode").textbox('setValue',row.merchantCode);
 			$("#editgoodsModel").textbox('setValue',row.goodsModel);
 			$("#editgoodsName").textbox('setValue',row.goodsName);
 			$("#editgoodsTitle").textbox('setValue',row.goodsTitle);
+			$("#editBrandName").textbox('setValue',row.brandName);
 			//$("#editgoodsSkuType").combobox('setValue',row.goodsSkuType);
 			if(unSupportPrivincesCodes != null && unSupportPrivincesCodes != ''){
 				$("#editUnSupportProvince").combobox('setValues',unSupportPrivincesCodes.split(","));

@@ -1,5 +1,4 @@
 package com.apass.esp.service.jd;
-
 import com.apass.esp.common.model.ExtentMerchantCode;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -25,39 +24,38 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-
 /**
  * Created by jie.xu on 17/7/5.
  */
 @Service
 public class JdGoodsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdGoodsService.class);
-
     @Autowired
     private JdGoodsMapper jdGoodsMapper;
-
     @Autowired
     private JdCategoryMapper jdCategoryMapper;
-
     @Autowired
     private GoodsService goodsService;
-
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
-
     @Autowired
     private OrderDetailInfoRepository orderDetailInfoRepository;
-
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
-
+    /**
+     * queryJDGoodsBySkuId
+     * @param skuId
+     * @return
+     */
+    public JdGoods queryGoodsBySkuId(Long skuId){
+        return jdGoodsMapper.queryGoodsBySkuId(skuId);
+    }
     /**
      * 关联京东类目
      * 

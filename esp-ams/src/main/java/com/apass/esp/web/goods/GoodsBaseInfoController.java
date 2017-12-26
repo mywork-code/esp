@@ -33,7 +33,6 @@ import com.apass.esp.domain.dto.goods.BannerPicDto;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.dto.goods.LogoFileModel;
 import com.apass.esp.domain.dto.goods.StockInfoFileModel;
-import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.CategoryDo;
 import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
@@ -221,7 +220,6 @@ public class GoodsBaseInfoController {
             return Response.fail("商品类目列表加载失败！");
         }
     }
-
     /**
      * 商品管理分页json
      */
@@ -230,11 +228,6 @@ public class GoodsBaseInfoController {
     public ResponsePageBody<GoodsInfoEntity> handlePageList(HttpServletRequest request) {
         ResponsePageBody<GoodsInfoEntity> respBody = new ResponsePageBody<GoodsInfoEntity>();
         try {
-            // if (null == usersService.loadBasicInfo().getMerchantCode()) {
-            // respBody.setTotal(0);
-            // respBody.setStatus("1");
-            // return respBody;
-            // }
             String pageNo = HttpWebUtils.getValue(request, "page");
             String pageSize = HttpWebUtils.getValue(request, "rows");
             String goodsName = HttpWebUtils.getValue(request, "goodsName");
@@ -243,13 +236,11 @@ public class GoodsBaseInfoController {
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
             String goodsCategoryCombo = HttpWebUtils.getValue(request, "goodsCategoryCombo");
             String status = HttpWebUtils.getValue(request, "goodsStatus");
-
             // String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
             String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
             String categoryId3 = HttpWebUtils.getValue(request, "categoryId3");
             String goodsCode = HttpWebUtils.getValue(request, "goodsCode");
-
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             goodsInfoEntity.setGoodsCode(goodsCode);
             goodsInfoEntity.setGoodsName(goodsName);
@@ -277,47 +268,30 @@ public class GoodsBaseInfoController {
                     goodsInfoEntity.setCategoryId3(Long.valueOf(id));
                 }
             }
-
             if (!StringUtils.isAnyBlank(categoryId1, categoryId2, categoryId3)) {
                 goodsInfoEntity.setCategoryId1(Long.valueOf(categoryId1));
                 goodsInfoEntity.setCategoryId2(Long.valueOf(categoryId2));
                 goodsInfoEntity.setCategoryId3(Long.valueOf(categoryId3));
             }
-
             goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
-
             PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo,pageSize);
-
             if (pagination == null) {
                 respBody.setTotal(0);
                 respBody.setStatus("1");
                 return respBody;
             }
-            for (int i = 0; i < pagination.getDataList().size(); i++) {
-                pagination
-                        .getDataList()
-                        .get(i)
-                        .setColFalgt(
-                                goodsService.ifRate(Long.valueOf(pagination.getDataList().get(i).getId()),
-                                        systemParamService.querySystemParamInfo().get(0)
-                                                .getMerchantSettleRate()));
-
-                Long categoryId = pagination.getDataList().get(i).getCategoryId3();
-                Category category = categoryInfoService.selectNameById(categoryId);
-                if (null != category) {
-                    pagination.getDataList().get(i).setCategoryName3(category.getCategoryName());
-                }
-            }
             respBody.setTotal(pagination.getTotalCount());
             respBody.setRows(pagination.getDataList());
             respBody.setStatus(CommonCode.SUCCESS_CODE);
-        } catch (Exception e) {
+        } catch (BusinessException e) {
+            LOGGER.error("商品列表查询失败", e);
+            respBody.setMsg("商品列表查询失败");
+        }catch (Exception e) {
             LOGGER.error("商品列表查询失败", e);
             respBody.setMsg("商品列表查询失败");
         }
         return respBody;
     }
-
     /**
      * 商品基本信息录入
      *
@@ -555,6 +529,7 @@ public class GoodsBaseInfoController {
         String id = HttpWebUtils.getValue(request, "id");
         String source = HttpWebUtils.getValue(request, "source");
         String listTime = HttpWebUtils.getValue(request, "listTime");
+        @SuppressWarnings("unused")
         String delistTime = HttpWebUtils.getValue(request, "delistTime");
         GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
         if (null == goodsEntity) {
