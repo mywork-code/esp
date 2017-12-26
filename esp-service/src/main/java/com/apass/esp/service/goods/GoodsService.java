@@ -2023,7 +2023,20 @@ public class GoodsService {
     }
     return null;
   }
-
+  /**
+   * 当传入的skuId在数据库中查出了多条数据时，则认为该条数据导入失败
+   * @param skuId
+   * @return
+   */
+  public GoodsBasicInfoEntity getByGoodsBySkuId(String skuId) {
+    GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
+    entity.setExternalId(skuId);
+    List<GoodsBasicInfoEntity> result=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity);
+    if(CollectionUtils.isNotEmpty(result) && result.size()==1){
+        return result.get(0);
+    }
+    return null;
+  }
     /**
      * 添加banner使用
      * @param param

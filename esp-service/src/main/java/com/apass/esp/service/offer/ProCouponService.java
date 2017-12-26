@@ -82,7 +82,7 @@ public class ProCouponService {
 
     public Integer inserProcoupon(ProCoupon proCoupon) {
     	/**
-    	 * 如果是指定商品的优惠券
+    	 * 如果是指定商品的优惠券:验证传入的商品编号是否存在
     	 */
         if(StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDSP.getCode())){
             GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByGoodsCode(proCoupon.getGoodsCode());

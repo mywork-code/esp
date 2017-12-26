@@ -278,17 +278,17 @@ public class ProGroupGoodsExportFikeController {
 					Pattern pattern = Pattern.compile("[0-9]*");   
 					Matcher isNum = pattern.matcher(id);  
 					if(null !=id && isNum.matches()){
-						gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id, SourceType.WZ);
+						gbity=goodsService.getByGoodsBySkuId(id);
 					}
 					if (null !=id && null != gbity && null != marketPrice && marketPrice.compareTo(zero)>0 && null != activityPrice && activityPrice.compareTo(zero)>0 && countSuccess <= 200) {
 						//判断该商品是否存在其他有效的活动中
-						Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(gbity.getGoodId());
-						Boolean limitResult=proGroupGoodsService.getStatusByGoodId(activityId, gbity.getGoodId());
+						Boolean result=proGroupGoodsService.selectEffectiveGoodsBySkuId(id);
+						Boolean limitResult=proGroupGoodsService.getStatusBySkuId(activityId,id);
 						if (result && limitResult) {//允许导入
 							pggds.setMarketPrice(list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP));//对小数点第三位执行四舍五入
 							pggds.setActivityPrice(list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
 							pggds.setGoodsId(gbity.getGoodId());
-							pggds.setSkuId(gbity.getExternalId());
+							pggds.setSkuId(id);
 							pggds.setGoodsCode(gbity.getGoodsCodeString());
 							pggds.setDetailDesc("1");// 1表示导入成功
 							pggds.setActivityId(Long.parseLong(activityId));
@@ -296,7 +296,7 @@ public class ProGroupGoodsExportFikeController {
 						    countSuccess++;
 						}else{//该商品在其他有效活动中，导入失败
 							pggds.setGoodsId(gbity.getGoodId());
-							pggds.setSkuId(gbity.getExternalId());
+							pggds.setSkuId(id);
 							pggds.setGoodsCode(gbity.getGoodsCode().toString());
 							pggds.setMarketPrice(list.get(i).getMarketPrice());
 							pggds.setActivityPrice(list.get(i).getActivityPrice());
@@ -372,7 +372,10 @@ public class ProGroupGoodsExportFikeController {
 					break;
 				}
 			}
-			list.add(pggt);
+			//如果商品编号不为空时，才认为是一条完整的数据
+			if(StringUtils.isNotBlank(pggt.getId())){
+				list.add(pggt);
+			}
 		}
 		return list;
 	}

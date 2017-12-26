@@ -79,6 +79,46 @@
 					</td>
 				</tr>
 
+				<tr style="display: none" id="rangeTr" class="rangeTr">
+					<td align="right">优惠范围 </td>
+					<td colspan="2">
+						<select class="easyui-combobox" style="width: 220px; display: none"
+								data-options="prompt:'请选择'" editable="false" required
+								id="offerRange" name="type">
+							<option value=""></option>
+							<option value="1">品牌</option>
+							<option value="2">品类</option>
+							<option value="3">指定商品</option>
+						</select>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+
+				<tr style="display: none" id="brandTr" class="rangeTr">
+					<td align="right">品牌 </td>
+					<td>
+						<input class="easyui-combobox" style="width: 220px;" type="text" id="brandId" required editable="false"/>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+				<tr style="display: none" id="goosCategoryTr_range" class="rangeTr">
+					<td align="right">品类</td>
+					<td colspan="2">
+						<input id="goodsCategoryCombo_range" name="categoryId" class="easyui-combotree" style="width: 220px;" required/>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+
+				<tr style="display: none" id="externalIdTr_range" class="rangeTr">
+					<td align="right">指定商品 </td>
+					<td colspan="2">
+						<input class="easyui-numberbox" style="width: 220px;"
+							   type="text" id="skuId" name="skuId" required/>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+
+
 				<tr style="display: none" id="goosCategoryTr">
 					<td align="right">商品类目：</td>
 					<td colspan="2">
@@ -94,7 +134,6 @@
 						<span style="color: red">*</span>
 					</td>
 				</tr>
-
 
 				<tr>
 					<td align="right">优惠门槛 </td>
