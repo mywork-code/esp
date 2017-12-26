@@ -1,9 +1,6 @@
 package com.apass.esp.service.refund;
-
 import com.apass.esp.domain.dto.refund.RefundedOrderInfoDto;
 import com.apass.esp.domain.entity.Invoice;
-import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
-import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.entity.refund.ServiceProcessEntity;
 import com.apass.esp.domain.enums.InvoiceStatusEnum;
@@ -11,29 +8,24 @@ import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.invoice.InvoiceService;
 import com.apass.esp.mapper.InvoiceMapper;
-import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
-import com.apass.esp.repository.refund.RefundDetailInfoRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 @Service
 public class OrderRefundService {
     private static final Logger   LOGGER = LoggerFactory.getLogger(OrderRefundService.class);
@@ -53,10 +45,10 @@ public class OrderRefundService {
     private LogisticsService logisticsService;
     @Autowired
     private InvoiceService invoiceService;
-    @Autowired
-    private OrderDetailInfoRepository orderDetailInfoRepository;
-    @Autowired
-    private RefundDetailInfoRepository refundDetailInfoRepository;
+//    @Autowired
+//    private OrderDetailInfoRepository orderDetailInfoRepository;
+//    @Autowired
+//    private RefundDetailInfoRepository refundDetailInfoRepository;
     @Autowired
     private InvoiceMapper invoiceMapper;
     
@@ -230,94 +222,80 @@ public class OrderRefundService {
             throw new BusinessException("确认退款异常了！", e);
         }
     }
-    
     /**
      * 售后完成和售后失败的的订单,1天后订单状态改为交易完成
      * 售后完成和售后失败的订单1天后   开具发票  《监控有售后交易》
      * @throws Exception 
      */
     public void handleReturningOrders() throws Exception {
-        
         Date date = new Date();
         Date startDate = DateFormatUtil.addDays(date, -2);
         Date endDate = DateFormatUtil.addDays(date, -1);
-        
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("startDate", startDate);
         map.put("endDate", endDate);
         List<String> statuList = Lists.newArrayList();
         statuList.add(RefundStatus.REFUND_STATUS05.getCode());
         map.put("status",statuList);
-        List<RefundedOrderInfoDto> refundedOrderInfoList = orderRefundRepository.queryReturningOrderInfo(map);
-        LOGGER.info("售后完成订单状态修改：" + refundedOrderInfoList.toString());
-        
-        if(!CollectionUtils.isEmpty(refundedOrderInfoList)){
-            for(RefundedOrderInfoDto dto: refundedOrderInfoList){
-                String status = OrderStatus.ORDER_COMPLETED.getCode();
-                    //根据该订单的售后的服务类型（0 退货， 1 换货）,来更新订单状态//退货：退货成功后订单状态由 "交易完成" 改为 "交易关闭"(sprint8)
-                    if(StringUtils.equals(dto.getRefundType(), "0")){
-                        //如果退货商品数量<订单中商品数量：订单状态改为交易完成,修改发票金额不修改发票状态，调invoiceCheck方法
-                        if(dto.getRefundAmt().compareTo(dto.getOrderAmt()) < 0){
-                            orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
-                            boolean flag = false;//自动开具发票成功,默认false
-                            //根据订单号获取发票金额,并减退货金额.修改发票表中的订单金额
-                            Invoice invoice = invoiceMapper.getInvoiceByorderId(dto.getOrderId());
-                            if(invoice.getStatus().toString().equals(String.valueOf(InvoiceStatusEnum.APPLYING.getCode()))){
-                                BigDecimal orderAmt = invoice.getOrderAmt().subtract(dto.getRefundAmt());
-                                invoice.setOrderAmt(orderAmt);
-                                //修改金额
-                                invoiceMapper.updateByPrimaryKey(invoice);
-                            }
-
-                            //调invoiceCheck方法
-                            flag = invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
-                            if(flag){
-                                LOGGER.info("自动开具发票成功!orderId:{}", dto.getOrderId());
-                            }else{
-                                LOGGER.info("自动开具发票失败!orderId:{}", dto.getOrderId());
-                            }
-                        }else if(dto.getRefundAmt().compareTo(dto.getOrderAmt()) == 0){
-                            //退货数量=订单中商品数量：订单状态改为交易关闭，发票修改状态，发票金额不动
-                            status = OrderStatus.ORDER_TRADCLOSED.getCode();//交易关闭
-
-                            //根据订单号获取发票状态，并修改状态为
-                            Invoice invoice = invoiceMapper.getInvoiceByorderId(dto.getOrderId());
-                            invoice.setStatus((byte)InvoiceStatusEnum.INVISIBLE.getCode());
-                            invoiceMapper.updateByPrimaryKey(invoice);//修改状态
-                            orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
-                        }else{
-                            LOGGER.error("数据有误,退货金额大于订单总金额;参数orderId:{}",dto.getOrderId());
-                            throw new RuntimeException("数据有误");
-                        }
-                    }else{
-                        //换货的订单改成交易完成
-                        orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
+        List<RefundedOrderInfoDto> returnList = orderRefundRepository.queryReturningOrderInfo(map);
+        LOGGER.info("售后完成订单状态修改：" + returnList.toString());
+        for(RefundedOrderInfoDto dto: returnList){
+            String status = OrderStatus.ORDER_COMPLETED.getCode();
+            //根据该订单的售后的服务类型（0 退货， 1 换货）,来更新订单状态//退货：退货成功后订单状态由 "交易完成" 改为 "交易关闭"(sprint8)
+            if(StringUtils.equals(dto.getRefundType(), "0")){
+                if(dto.getRefundAmt().compareTo(dto.getOrderAmt()) < 0){
+                    //如果退货商品数量<订单中商品数量：订单状态改为交易完成,修改发票金额不修改发票状态，且调用invoiceCheck方法
+                    orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
+                    boolean flag = false;//自动开具发票成功,默认false
+                    //根据订单号获取发票金额,并减退货金额.修改发票表中的订单金额
+                    Invoice invoice = invoiceMapper.getInvoiceByorderId(dto.getOrderId());
+                    if(invoice.getStatus().toString().equals(String.valueOf(InvoiceStatusEnum.APPLYING.getCode()))){
+                        BigDecimal orderAmt = invoice.getOrderAmt().subtract(dto.getRefundAmt());
+                        invoice.setOrderAmt(orderAmt);
+                        //修改金额
+                        invoiceMapper.updateByPrimaryKey(invoice);
                     }
+                    //调invoiceCheck方法
+                    flag = invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
+                    if(flag){
+                        LOGGER.info("自动开具发票成功!orderId:{}", dto.getOrderId());
+                    }else{
+                        LOGGER.info("自动开具发票失败!orderId:{}", dto.getOrderId());
+                    }
+                }else if(dto.getRefundAmt().compareTo(dto.getOrderAmt()) == 0){
+                    //退货数量=订单中商品数量：订单状态改为交易关闭，发票修改状态，发票金额不动   且不调用invoiceCheck方法
+                    status = OrderStatus.ORDER_TRADCLOSED.getCode();//交易关闭
+                    orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
+                    //根据订单号获取发票状态，并修改发票状态
+                    Invoice invoice = invoiceMapper.getInvoiceByorderId(dto.getOrderId());
+                    invoice.setStatus((byte)InvoiceStatusEnum.INVISIBLE.getCode());
+                    invoiceMapper.updateByPrimaryKey(invoice);//修改状态
+                }else{
+                    LOGGER.error("数据有误,退货金额大于订单总金额;参数orderId:{}",dto.getOrderId());
+                    throw new RuntimeException("数据有误");
+                }
+            }else{
+                //换货的订单改成交易完成
+                orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
             }
         }
-
         //查询售后失败的订单，改成交易完成
-
         Map<String, Object> refundFailMap = new HashMap<String, Object>();
         refundFailMap.put("startDate", startDate);
         refundFailMap.put("endDate", endDate);
         List<String> rs06StatuList = Lists.newArrayList();
         rs06StatuList.add(RefundStatus.REFUND_STATUS06.getCode());
         refundFailMap.put("status",rs06StatuList);
-        List<RefundedOrderInfoDto> refundedFailOrderInfoList = orderRefundRepository.queryFailReturningOrderInfo(refundFailMap);
-        if(null != refundedFailOrderInfoList && !refundedFailOrderInfoList.isEmpty()){
-            for(RefundedOrderInfoDto dto: refundedFailOrderInfoList){
-                String status = OrderStatus.ORDER_COMPLETED.getCode();
-                orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
-                invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
-            }
+        List<RefundedOrderInfoDto> returnFailList = orderRefundRepository.queryFailReturningOrderInfo(refundFailMap);
+        for(RefundedOrderInfoDto dto: returnFailList){
+            String status = OrderStatus.ORDER_COMPLETED.getCode();
+            orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
+            invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
         }
     }
-    
     /**
      * 1.在退货完成，修改订单状态为交易关闭的时候，应该退款给客户（支付宝）
      */
-    
     /**
      * 换货 商家重新发货物流显示已签收， 3天后标记售后完成
      * @throws BusinessException 
@@ -348,8 +326,6 @@ public class OrderRefundService {
             }
         }
     }
-
-
     /**
      * 售后失败信息亮起后 该订单3天后由“售后服务中”转入“交易完成状态”后
      */
