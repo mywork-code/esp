@@ -19,6 +19,8 @@ public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
                                               @Param("activityId") Long activityId);
    ProGroupGoods selectOneByGoodsIdAndActivityId(@Param("goodsId") Long goodsId,
                                                  @Param("activityId") Long activityId);
+   ProGroupGoods selectOneBySkuIdAndActivityId(@Param("skuId") String skuId,
+		   									   @Param("activityId") Long activityId);
    List<ProGroupGoods> selectGoodsByGroupId(@Param("groupId") Long groupId);
    //查看商品是否存在其他有效的活动中
    List<ProGroupGoods> selectEffectiveGoodsByGoodsId(@Param("goodsId") Long goodsId);
