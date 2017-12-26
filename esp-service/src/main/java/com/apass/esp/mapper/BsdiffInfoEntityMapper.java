@@ -11,4 +11,5 @@ public interface BsdiffInfoEntityMapper extends GenericMapper<BsdiffInfoEntity, 
 
     List<BsdiffInfoEntity> selectAllBsdiff();
 
+    BsdiffInfoEntity selectByEntityQuery(BsdiffInfoEntity entity);
 }
