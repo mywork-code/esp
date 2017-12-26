@@ -67,6 +67,7 @@ public class WeiZhiMessageClient {
      * type=5 订单妥投的区别对待
      */
     public List<JdApiMessage> getMsg(int messageType) throws Exception{
+        Long startTime = System.currentTimeMillis();
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
         BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
         BasicNameValuePair param2 = new BasicNameValuePair("clientId",weiZhiConstants.getClientId());
@@ -77,7 +78,7 @@ public class WeiZhiMessageClient {
 
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
         String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_MESSAGE_GET), entity);
-        LOGGER.info("----get message ------ response:{}",responseJson);
+        LOGGER.info("----get message ------ response:{},接口响应时间:{}",responseJson,System.currentTimeMillis() - startTime);
         WeiZhiResponse<JSONArray> response = JSONObject.parseObject(responseJson,WeiZhiResponse.class);
         if (response.successResp()) {
             if(messageType == JdMessageEnum.DELIVERED_ORDER.getType()){

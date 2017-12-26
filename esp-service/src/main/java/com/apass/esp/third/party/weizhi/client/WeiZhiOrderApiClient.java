@@ -49,6 +49,7 @@ public class WeiZhiOrderApiClient {
 	 * @throws Exception 
      */
     public OrderUnitResponse submitOrder(OrderReq orderReq) throws Exception {
+		Long startTime = System.currentTimeMillis();
         Objects.requireNonNull(orderReq.getOrderPriceSnap());
         logger.info("----submitOrder------ params:{}",JsonUtil.toJsonString(orderReq));
         
@@ -95,7 +96,7 @@ public class WeiZhiOrderApiClient {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
         String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_SUBMITORDER), entity);
         
-        logger.info("----submitOrder------ response:{}",responseJson);
+        logger.info("----submitOrder------ response:{},接口响应时间:{}",responseJson,System.currentTimeMillis() - startTime);
         /**
          * 返回json
          */
@@ -128,7 +129,7 @@ public class WeiZhiOrderApiClient {
      * @throws Exception 
      */
     public boolean orderOccupyStockConfirm(String wzOrderId) throws Exception {
-    	
+		Long startTime = System.currentTimeMillis();
     	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
 		BasicNameValuePair param2 = new BasicNameValuePair("wzOrderId",wzOrderId);
@@ -140,7 +141,7 @@ public class WeiZhiOrderApiClient {
 		
 		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_CONFIRMORDER), entity);
 	    
-		logger.info("----orderOccupyStockConfirm------ response:{}",responseJson);
+		logger.info("----orderOccupyStockConfirm------ response:{},接口响应时间:{}",responseJson,System.currentTimeMillis() - startTime);
 	    /**
 	     * 返回json
 	     */
@@ -170,6 +171,7 @@ public class WeiZhiOrderApiClient {
      * @throws Exception 
      */
     public OrderInfoResponse selectOrder(String wzOrderId) throws Exception {
+		Long startTime = System.currentTimeMillis();
     	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
 		BasicNameValuePair param2 = new BasicNameValuePair("wzOrderId",wzOrderId);
@@ -181,7 +183,7 @@ public class WeiZhiOrderApiClient {
 		
 		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_SELECTORDER), entity);
 	    
-		logger.info("----selectOrder------ response:{}",responseJson);
+		logger.info("----selectOrder------ response:{},接口响应时间:{}",responseJson,System.currentTimeMillis() - startTime);
 	    /**
 	     * 返回json
 	     */
@@ -219,18 +221,18 @@ public class WeiZhiOrderApiClient {
      * @throws Exception 
      */
     public OrderTrackResponse orderTrack(String wzOrderId) throws Exception {
-
+		Long startTime = System.currentTimeMillis();
     	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
 		BasicNameValuePair param2 = new BasicNameValuePair("wzOrderId",wzOrderId);
 		parameters.add(param1);
 		parameters.add(param2);
-		
+		logger.info("----orderTrack------ params:{}",JsonUtil.toJsonString(parameters));
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
 		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_ORDERTRACK), entity);
 		
-		logger.info("----orderTrack------ response:{}",responseJson);
+		logger.info("----orderTrack------ response:{},接口响应时间:{}",responseJson,System.currentTimeMillis() - startTime);
 		
 		/**
 	     * 返回json
@@ -292,6 +294,7 @@ public class WeiZhiOrderApiClient {
      * @throws Exception 
      */
     public String selectOrderIdByThirdOrder(String thirdOrder) throws Exception{
+		Long startTime = System.currentTimeMillis();
     	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
 		BasicNameValuePair param2 = new BasicNameValuePair("thirdOrder",thirdOrder);
@@ -303,7 +306,7 @@ public class WeiZhiOrderApiClient {
 		
 		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_SELECTORDERIDBYTHIRDORDER), entity);
 	    
-		logger.info("----selectOrderIdByThirdOrder------ response:{}",responseJson);
+		logger.info("----selectOrderIdByThirdOrder------ response:{},接口响应时间:{}",responseJson,System.currentTimeMillis() - startTime);
 	    /**
 	     * 返回json
 	     */
@@ -331,6 +334,7 @@ public class WeiZhiOrderApiClient {
      * @throws Exception 
      */
     public boolean cancelOrder(String wzOrderId) throws Exception{
+		Long startTime = System.currentTimeMillis();
     	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
 		BasicNameValuePair param2 = new BasicNameValuePair("wzOrderId",wzOrderId);
@@ -342,7 +346,7 @@ public class WeiZhiOrderApiClient {
 		
 		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_CANCEL), entity);
 	    
-		logger.info("----cancelOrder------ response:{}",responseJson);
+		logger.info("----cancelOrder------ response:{},接口响应时间:{}",responseJson,System.currentTimeMillis() - startTime);
 	    /**
 	     * 返回json
 	     */

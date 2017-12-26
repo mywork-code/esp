@@ -50,7 +50,7 @@ public class OrderScheduleTask {
     /**
      * 订单24小时未支付自动取消[五分钟一次]
      */
-    @Scheduled(cron = "0 0/5 * * * *")
+    @Scheduled(cron = "0 0/15 * * * *")
     public void handleOrderInvalidTask() {
 
         Date now = new Date();
