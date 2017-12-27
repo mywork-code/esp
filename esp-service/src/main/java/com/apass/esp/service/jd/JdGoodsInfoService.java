@@ -346,6 +346,9 @@ public class JdGoodsInfoService {
 			if(StringUtils.equals(sku+"", skuId)){
             	support7dRefund=(String) checkMap.get("support7dRefund");
             	jdGoodStock=(String) checkMap.get("goodsStockDes");
+			}else{
+				jdGoodStock = getStockBySku(skuId.toString(), region);
+				support7dRefund=goodsService.getsupport7dRefund(Long.parseLong(skuId));
 			}
 			//满减活动字段
 			String activityCfg = goodsService.getActivityInfo(goodsId);
