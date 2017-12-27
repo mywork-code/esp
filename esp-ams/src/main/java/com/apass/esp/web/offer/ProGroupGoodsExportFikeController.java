@@ -315,7 +315,7 @@ public class ProGroupGoodsExportFikeController {
 						GoodsInfoEntity goods = goodsService.getGoodsInfo(id);
 						pggds.setGoodsId(null != goods ? goods.getId() : -1L );
 						pggds.setSkuId(id);
-						pggds.setGoodsCode(id);
+						pggds.setGoodsCode(null != goods ? goods.getGoodsCode() : "" );
 						pggds.setMarketPrice(list.get(i).getMarketPrice());
 						pggds.setActivityPrice(list.get(i).getActivityPrice());
 						pggds.setDetailDesc("0");//0表示导入失败
