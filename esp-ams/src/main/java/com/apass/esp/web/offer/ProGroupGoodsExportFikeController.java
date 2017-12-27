@@ -149,19 +149,20 @@ public class ProGroupGoodsExportFikeController {
 	@RequestMapping(value = "/addOneGoods")
 	@LogAnnotion(operationType = "商品添加至分组", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response ProGroupGoodsPageList(@RequestParam("activityId") String activityId,
-			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId) {
+			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId, @RequestParam("skuId") String skuId) {
 		int count = 0;
 		int countSuccess = 0;
 		int countFail = 0;
-		if (StringUtils.isEmpty(goodsId)) {
+		if (StringUtils.isEmpty(goodsId) || StringUtils.isEmpty(skuId)) {
 			return Response.fail("请选择商品！");
 		}
 		try {
 			String[] goods = goodsId.split(",");
+			String[] skuIds = skuId.split(",");
 			count = goods.length;
 			for (int i = 0; i < goods.length; i++) {
 				ProGroupGoods proGroupGoods = proGroupGoodsService
-						.selectOneByGoodsIdAndActivityId(Long.parseLong(goods[i]), Long.parseLong(activityId));
+						.selectOneBySkuIdAndActivityId(skuIds[i], Long.parseLong(activityId));
 				if (null != proGroupGoods && !proGroupGoods.getGroupId().equals(groupNameId)) {
 					if (proGroupGoods.getStatus().equals("S")) {
 						if (count > 1) {
@@ -169,6 +170,11 @@ public class ProGroupGoodsExportFikeController {
 						} else {
 							return Response.fail("该商品已添加至其他分组！");
 						}
+					}
+					//同类商品校验
+					Boolean falge=proGroupGoodsService.goodsSimilarCheck(activityId, groupNameId, goods[i], skuIds[i]);
+					if(!falge){
+						return Response.fail("同类商品不能再添加至其他分组");
 					}
 					int groupSortId = proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
 					proGroupGoods.setOrderSort(Long.parseLong(groupSortId + ""));
