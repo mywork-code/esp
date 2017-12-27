@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.apass.esp.domain.enums.SourceType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -31,6 +30,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.ProGroupManager;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupManagerVo;
@@ -312,7 +312,8 @@ public class ProGroupGoodsExportFikeController {
 							countExit++;
 						}
 					}else{
-						pggds.setGoodsId(-1l);
+						GoodsInfoEntity goods = goodsService.getGoodsInfo(id);
+						pggds.setGoodsId(null != goods ? goods.getGoodId() : -1L );
 						pggds.setSkuId(id);
 						pggds.setGoodsCode(id);
 						pggds.setMarketPrice(list.get(i).getMarketPrice());
