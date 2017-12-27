@@ -22,6 +22,7 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.SourceType;
+import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupGoodsVo;
@@ -354,6 +355,9 @@ public class ProGroupGoodsService {
 	public ResponsePageBody<ProGroupGoodsVo> getProGroupGoodsListPage(ProGroupGoodsQuery query) throws BusinessException{ResponsePageBody<ProGroupGoodsVo> pageBody = new ResponsePageBody<ProGroupGoodsVo>();
     	List<ProGroupGoodsVo> configList = groupGoodsMapper.getProGroupGoodsListPage(query);
     	for (ProGroupGoodsVo proGroupGoodsVo : configList) {
+    		if(StringUtils.equals(proGroupGoodsVo.getDetailDesc(), YesNo.NO.getCode())){//此处同本方法403行，保持一致
+    			continue;
+    		}
     		//商品
     		GoodsInfoEntity goods = goodsRepository.select(proGroupGoodsVo.getGoodsId());
     		if(goods!=null){
@@ -383,7 +387,7 @@ public class ProGroupGoodsService {
     	        }
     		}
     		ProGroupManager group = managerMapper.selectByPrimaryKey(proGroupGoodsVo.getGroupId());
-    		if(group!=null){
+    		if(null != group){
     			proGroupGoodsVo.setGroupName(group.getGroupName());
     		}
     	}
