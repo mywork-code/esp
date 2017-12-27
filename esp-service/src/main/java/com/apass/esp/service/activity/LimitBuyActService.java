@@ -601,6 +601,12 @@ public class LimitBuyActService {
     public Response activityGoodsList(Long limitBuyActId,String userId) throws BusinessException {
         // 获取活动状态   以便判断按钮状态
         Byte actstatus = readEntity(limitBuyActId).getStatus();
+        Map<String ,Object> map = new HashMap<String,Object>();
+        if(actstatus==(byte)3){//查询到已经结束活动  
+            map.put("frushfalg", false);
+            map.put("datalist", null);
+            return Response.success("限时购活动商品列表刷新失败,该活动已经结束,请实时刷新页面！",map);
+        }
         LimitGoodsSku act = new LimitGoodsSku();
         act.setLimitBuyActId(limitBuyActId);
         act.setUpLoadStatus((byte)1);
@@ -686,7 +692,9 @@ public class LimitBuyActService {
             }
             goodsinfolist.add(vo);
         }
-        return Response.success("限时购活动商品列表刷新成功！",goodsinfolist);
+        map.put("frushfalg", true);
+        map.put("datalist", goodsinfolist);
+        return Response.success("限时购活动商品列表刷新成功！",map);
     }
     /**
      * 即将开始限时购活动  某一个商品  面对用户开启抢购提醒
