@@ -1334,19 +1334,29 @@ public class JdGoodsInfoService {
 			return null;
 		}
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(Long.valueOf(skuId));
-
 		TreeSet<String> skusSet = new TreeSet<String>();
-
 		for (JdSimilarSku jdsk : jdSimilarSkuList) {
 			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
-
 			for (JdSaleAttr jdsa : saleAttrList) {
 				skusSet.addAll(jdsa.getSkuIds());
 			}
 		}
-
 		return skusSet;
 	}
+	/**
+     * 京东商品：根据skuId返回相似skuId   无规格时包括插入本条sku
+     * @return
+     */
+    public TreeSet<String> getJdSimilarSkuId(String skuId) {
+        if(StringUtils.isBlank(skuId)){
+            return null;
+        }
+        TreeSet<String> set = getJdSimilarSkuIdList(skuId);
+        if(set==null||set.size()==0){
+            set.add(skuId);
+        }
+        return set;
+    }
 	/**
 	 * 判断单个京东商品是否上下架
 	 * @return
