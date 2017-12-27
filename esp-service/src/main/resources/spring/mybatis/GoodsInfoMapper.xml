@@ -1545,6 +1545,6 @@
         FROM
             t_esp_goods_base_info t
         WHERE
-        	t.external_id = #{skuId}
+        	t.external_id = #{skuId} and t.source != 'jd'
     </select>
 </mapper>
