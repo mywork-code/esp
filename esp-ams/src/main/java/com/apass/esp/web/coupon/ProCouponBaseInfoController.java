@@ -135,6 +135,12 @@ public class ProCouponBaseInfoController {
         return proCouponService.getProCouponList(proCoupon);
     }
 
+    @RequestMapping("/loadp2")
+    @ResponseBody
+    public List<ProCoupon> loadCouponPTFF2(ProCoupon proCoupon){
+        return proCouponService.getProCouponList(proCoupon);
+    }
+
     @RequestMapping("/add")
     @ResponseBody
     public Response addCoupon(ProCoupon proCoupon){
