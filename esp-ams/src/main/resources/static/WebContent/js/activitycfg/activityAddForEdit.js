@@ -15,7 +15,7 @@ $(function(){
 	//获取选择发放优惠券下拉框内容
 	$(".issueCouponInput").combobox({
 		method: "get",
-		url: ctx + "/application/coupon/management/loadp",
+		url: ctx + "/application/coupon/management/loadp2",
 		valueField: 'id',
 		textField: 'name',
 		queryParams: {
