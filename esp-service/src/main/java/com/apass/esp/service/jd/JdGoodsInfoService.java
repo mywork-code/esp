@@ -340,11 +340,12 @@ public class JdGoodsInfoService {
 			Long goodsId = goodsInfo.getId();
 		
 			// 查询商品是否有货
-			String jdGoodStock = getStockBySku(skuId.toString(), region);
+			String jdGoodStock="";
 			//是否支持7天无理由退货,Y、N
 			String support7dRefund="N";
 			if(StringUtils.equals(sku+"", skuId)){
             	support7dRefund=(String) checkMap.get("support7dRefund");
+            	jdGoodStock=(String) checkMap.get("goodsStockDes");
 			}
 			//满减活动字段
 			String activityCfg = goodsService.getActivityInfo(goodsId);
