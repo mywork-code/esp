@@ -352,67 +352,61 @@ public class ProGroupGoodsService {
 	 * @throws BusinessException 
 	 */
 	public ResponsePageBody<ProGroupGoodsVo> getProGroupGoodsListPage(ProGroupGoodsQuery query) throws BusinessException{ResponsePageBody<ProGroupGoodsVo> pageBody = new ResponsePageBody<ProGroupGoodsVo>();
-	List<ProGroupGoodsVo> configList = groupGoodsMapper.getProGroupGoodsListPage(query);
-	for (ProGroupGoodsVo proGroupGoodsVo : configList) {
-		/**
-		 * 商品
-		 */
-		GoodsInfoEntity goods = goodsRepository.select(proGroupGoodsVo.getGoodsId());
-		if(goods!=null){
-		    proGroupGoodsVo.setGoodsName(goods.getGoodsName());
-		    proGroupGoodsVo.setGoodsStatus(goods.getStatus());
-		    /**
-	         * 第三方产品
-	         */
-	        String skuId = proGroupGoodsVo.getSkuId();
-	        List<GoodsStockInfoEntity> stocks = goodsStockInfoRepository.loadByGoodsId(goods.getGoodId());
-	        GoodsStockInfoEntity stock = null;
-	        if(CollectionUtils.isNotEmpty(stocks)){
-	            if(stocks.size() == 1){
-	                stock = stocks.get(0);
-	            }else{
-	                for (GoodsStockInfoEntity s : stocks) {
-	                    if(StringUtils.equals(s.getSkuId(), skuId)){
-	                        stock = s;
-	                        break;
-	                    }
-	                }
-	            }
-	            proGroupGoodsVo.setGoodsCostPrice(stock.getGoodsCostPrice());
-	            proGroupGoodsVo.setGoodsPrice(stock.getGoodsPrice());
-	        }
-	        Category categroy = categoryMapper.selectByPrimaryKey(goods.getCategoryId3());
-	        if(null != categroy){
-	            proGroupGoodsVo.setGoodsCategory(categroy.getCategoryName());
-	        }
-		}
-		ProGroupManager group = managerMapper.selectByPrimaryKey(proGroupGoodsVo.getGroupId());
-		if(null != group){
-			proGroupGoodsVo.setGroupName(group.getGroupName());
-		}
-	}
-	// 因为voList在数据库查询时就已经跟进order排序来查询
-	if(null !=configList && configList.size()!=0){
-		configList.get(0).setIsFirstOne(true);
-		configList.get(configList.size() - 1).setIsLastOne(true);
-		for (ProGroupGoodsVo proGroupGoodsVo : configList) {
-			if(proGroupGoodsVo.getDetailDesc().equals("0")){
-				proGroupGoodsVo.setGoodsCategory(null);
-				proGroupGoodsVo.setGoodsName(null);
-				proGroupGoodsVo.setGoodsStatus(null);
-				proGroupGoodsVo.setGoodsCostPrice(null);
-				proGroupGoodsVo.setGoodsPrice(null);
-			}
-		}
-	}
-
-	Integer count = groupGoodsMapper.getProGroupGoodsListPageCount(query);
-	
-	pageBody.setTotal(count);
-	pageBody.setRows(configList);
-	pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
-	return pageBody;
-}
+    	List<ProGroupGoodsVo> configList = groupGoodsMapper.getProGroupGoodsListPage(query);
+    	for (ProGroupGoodsVo proGroupGoodsVo : configList) {
+    		//商品
+    		GoodsInfoEntity goods = goodsRepository.select(proGroupGoodsVo.getGoodsId());
+    		if(goods!=null){
+    		    proGroupGoodsVo.setGoodsName(goods.getGoodsName());
+    		    proGroupGoodsVo.setGoodsStatus(goods.getStatus());
+    		    //第三方产品
+    	        String skuId = proGroupGoodsVo.getSkuId();
+    	        List<GoodsStockInfoEntity> stocks = goodsStockInfoRepository.loadByGoodsId(goods.getGoodId());
+    	        GoodsStockInfoEntity stock = null;
+    	        if(CollectionUtils.isNotEmpty(stocks)){
+    	            if(stocks.size() == 1){
+    	                stock = stocks.get(0);
+    	            }else{
+    	                for (GoodsStockInfoEntity s : stocks) {
+    	                    if(StringUtils.equals(s.getSkuId(), skuId)){
+    	                        stock = s;
+    	                        break;
+    	                    }
+    	                }
+    	            }
+    	            proGroupGoodsVo.setGoodsCostPrice(stock.getGoodsCostPrice());
+    	            proGroupGoodsVo.setGoodsPrice(stock.getGoodsPrice());
+    	        }
+    	        Category categroy = categoryMapper.selectByPrimaryKey(goods.getCategoryId3());
+    	        if(null != categroy){
+    	            proGroupGoodsVo.setGoodsCategory(categroy.getCategoryName());
+    	        }
+    		}
+    		ProGroupManager group = managerMapper.selectByPrimaryKey(proGroupGoodsVo.getGroupId());
+    		if(group!=null){
+    			proGroupGoodsVo.setGroupName(group.getGroupName());
+    		}
+    	}
+    	// 因为voList在数据库查询时就已经跟进order排序来查询
+    	if(null !=configList && configList.size()!=0){
+    		configList.get(0).setIsFirstOne(true);
+    		configList.get(configList.size() - 1).setIsLastOne(true);
+    		for (ProGroupGoodsVo proGroupGoodsVo : configList) {
+    			if(proGroupGoodsVo.getDetailDesc().equals("0")){
+    				proGroupGoodsVo.setGoodsCategory(null);
+    				proGroupGoodsVo.setGoodsName(null);
+    				proGroupGoodsVo.setGoodsStatus(null);
+    				proGroupGoodsVo.setGoodsCostPrice(null);
+    				proGroupGoodsVo.setGoodsPrice(null);
+    			}
+    		}
+    	}
+    	Integer count = groupGoodsMapper.getProGroupGoodsListPageCount(query);
+    	pageBody.setTotal(count);
+    	pageBody.setRows(configList);
+    	pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
+    	return pageBody;
+    }
 	/**
 	 * 根据分组的id，获取分组下属的商品
 	 * @param groupId

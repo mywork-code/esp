@@ -114,7 +114,8 @@
 			            a.activity_price     activityPrice,
 			            a.detail_desc        detailDesc,
 			            a.activity_id        activityId,
-			            a.status             status
+			            a.status             status,
+			            a.group_id           groupId
 <!--			        e.group_name         groupName -->
 				FROM
 						t_esp_pro_group_goods   a
