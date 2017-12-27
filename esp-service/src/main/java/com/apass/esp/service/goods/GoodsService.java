@@ -2075,4 +2075,24 @@ public class GoodsService {
     public List<GoodsInfoEntity> getGoodsListBySkuIds(List<String> skuIdList) {
         return goodsDao.getGoodsListBySkuIds(skuIdList);
     }
+    
+    public GoodsInfoEntity seletGoodsInfoBySkuId(String skuId){
+    	return goodsDao.seletGoodsInfoBySkuId(skuId);
+    }
+    
+    /**
+     * 根据skuID，查询对应商品的信息
+     * @param skuId
+     * @return
+     */
+    public GoodsInfoEntity getGoodsInfo(String skuId){
+    	GoodsInfoEntity goods = seletGoodsInfoBySkuId(skuId);
+    	if(null == goods){
+    		GoodsStockInfoEntity stock = goodsStockDao.getStockInfoEntityBySkuId(skuId);
+    		if(null != stock){
+    			goods = goodsDao.selectGoodsByGoodsId(stock.getGoodsId()+"");
+    		}
+    	}
+    	return goods;
+    }
 }
