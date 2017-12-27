@@ -18,6 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
@@ -63,6 +64,8 @@ public class LimitBuyActService {
     private CommonService commonService;
     @Autowired
     private ImageService imageService;
+    @Value("${esp.image.uri}")
+    private String espImageUrl;
     /**
      * CREATE
      * @param entity
@@ -545,7 +548,7 @@ public class LimitBuyActService {
                 return en1.getSort().compareTo(en2.getSort());
             }});
         Map<String,Object> map = new HashMap<String,Object>();
-        String url = "http://espapp.sit.apass.cn/static/eshop/other/1512959987323.png";
+        String url = espImageUrl+"/static/eshop/other/1514369779183.jpg";
         map.put("url",url);
         map.put("timelist",timelist);
         return Response.success("限时购活动时间条刷新成功！",map);
