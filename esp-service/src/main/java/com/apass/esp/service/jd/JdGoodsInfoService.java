@@ -259,7 +259,8 @@ public class JdGoodsInfoService {
 			String jdGoodStock = getStockBySku(sku.toString(), region);
 			map.put("goodsStockDes", jdGoodStock);
 			//查询京东商品规格
-			Map<String, Object> map2 = getJdSimilarSkuInfoList(sku, region,userId);
+			Map<String,Object> checkGoodsMap=new HashMap<>();
+			Map<String, Object> map2 = getJdSimilarSkuInfoList(sku, region,userId,checkGoodsMap);
 			map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
 			map.put("skuId", map2.get("skuId"));
 			map.put("jdSimilarSkuList", map2.get("jdSimilarSkuList"));
@@ -276,7 +277,7 @@ public class JdGoodsInfoService {
 		return map;
 	}
 	// 查询商品规格（包括库存）
-	public Map<String,Object> getJdSimilarSkuInfoList(Long sku,Region region,String userId) throws BusinessException {
+	public Map<String,Object> getJdSimilarSkuInfoList(Long sku,Region region,String userId,Map<String,Object> checkMap) throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		TreeSet<String> skusSet = new TreeSet<String>();
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
@@ -339,9 +340,16 @@ public class JdGoodsInfoService {
 			Long goodsId = goodsInfo.getId();
 		
 			// 查询商品是否有货
-			String jdGoodStock = getStockBySku(skuId.toString(), region);
+			String jdGoodStock="";
 			//是否支持7天无理由退货,Y、N
-			String support7dRefund=goodsService.getsupport7dRefund(Long.parseLong(skuId));
+			String support7dRefund="N";
+			if(StringUtils.equals(sku+"", skuId)){
+            	support7dRefund=(String) checkMap.get("support7dRefund");
+            	jdGoodStock=(String) checkMap.get("goodsStockDes");
+			}else{
+				jdGoodStock = getStockBySku(skuId.toString(), region);
+				support7dRefund=goodsService.getsupport7dRefund(Long.parseLong(skuId));
+			}
 			//满减活动字段
 			String activityCfg = goodsService.getActivityInfo(goodsId);
 			  //添加活动id

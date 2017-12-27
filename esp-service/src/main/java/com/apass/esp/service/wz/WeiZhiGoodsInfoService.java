@@ -63,7 +63,7 @@ public class WeiZhiGoodsInfoService {
 	 * 
 	 * @throws BusinessException
 	 */
-	public Map<String, Object> getAppWzGoodsAllInfoBySku(Long sku, String goodsId, Region region,String userId) {
+	public Map<String, Object> getAppWzGoodsAllInfoBySku(Long sku, String goodsId, Region region,String userId,Map<String,Object> checkMap) {
 		Map<String, Object> map = Maps.newHashMap();
 		try {
 			if (sku.toString().length() == 8) {
@@ -100,8 +100,9 @@ public class WeiZhiGoodsInfoService {
 			// 查询商品是否有货
 			String jdGoodStock = weiZhiProductService.getStockBySku(sku.toString(), region);
 			map.put("goodsStockDes", jdGoodStock);
+			checkMap.put("goodsStockDes", jdGoodStock);
 			// //查询京东商品规格
-			 Map<String, Object> map2 = jdGoodsInfoService.getJdSimilarSkuInfoList(sku, region,userId);
+			 Map<String, Object> map2 = jdGoodsInfoService.getJdSimilarSkuInfoList(sku, region,userId,checkMap);
 			 map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
 			 map.put("skuId", map2.get("skuId"));
 			 map.put("jdSimilarSkuList", map2.get("jdSimilarSkuList"));

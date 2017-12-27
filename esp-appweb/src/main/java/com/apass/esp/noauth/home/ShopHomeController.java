@@ -1017,7 +1017,10 @@ public class ShopHomeController {
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-
+              	//获取该商品是否支持7天退换及是否可售
+            	Map<String,Object> support7AndCheck=weiZhiProductService.getsupport7dRefundAndCheckSales(externalId);
+            	Boolean checkGoodsSales=(Boolean) support7AndCheck.get("checkGoodsSalesOrNot");
+            	String  support7dRefund=(String) support7AndCheck.get("support7dRefund");
                 if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region,userId);
@@ -1025,16 +1028,16 @@ public class ShopHomeController {
                     returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
                 } else {
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
-                            goodsId.toString(), region,userId);
+                            goodsId.toString(), region,userId,support7AndCheck);
                     returnMap.put("source", SourceType.JD.getCode());
                     returnMap.put("status", goodsInfo.getStatus());
                     // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                    if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
+                    if (StringUtils.isNotBlank(externalId) && !checkGoodsSales) {
                         returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
                     }
                 }
                 // 是否支持7天无理由退货,Y、N
-                returnMap.put("support7dRefund", goodsService.getsupport7dRefund(Long.parseLong(externalId)));
+                returnMap.put("support7dRefund", support7dRefund);
                 returnMap.put("goodsPrice", goodsInfo.getGoodsPrice());// 商品价格
                 returnMap.put("goodsPriceFirstPayment",goodsInfo.getFirstPrice());// 商品首付价格
             } else {
