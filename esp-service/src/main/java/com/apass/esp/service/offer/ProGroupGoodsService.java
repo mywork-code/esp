@@ -358,36 +358,37 @@ public class ProGroupGoodsService {
 		 * 商品
 		 */
 		GoodsInfoEntity goods = goodsRepository.select(proGroupGoodsVo.getGoodsId());
-		proGroupGoodsVo.setGoodsName(goods.getGoodsName());
-		proGroupGoodsVo.setGoodsStatus(goods.getStatus());
-		
-		/**
-		 * 第三方产品
-		 */
-		String skuId = proGroupGoodsVo.getSkuId();
-		List<GoodsStockInfoEntity> stocks = goodsStockInfoRepository.loadByGoodsId(goods.getGoodId());
-		GoodsStockInfoEntity stock = null;
-		if(CollectionUtils.isNotEmpty(stocks)){
-			if(stocks.size() == 1){
-				stock = stocks.get(0);
-			}else{
-				for (GoodsStockInfoEntity s : stocks) {
-					if(StringUtils.equals(s.getSkuId(), skuId)){
-						stock = s;
-						break;
-					}
-				}
-			}
-			proGroupGoodsVo.setGoodsCostPrice(stock.getGoodsCostPrice());
-			proGroupGoodsVo.setGoodsPrice(stock.getGoodsPrice());
+		if(goods!=null){
+		    proGroupGoodsVo.setGoodsName(goods.getGoodsName());
+		    proGroupGoodsVo.setGoodsStatus(goods.getStatus());
+		    /**
+	         * 第三方产品
+	         */
+	        String skuId = proGroupGoodsVo.getSkuId();
+	        List<GoodsStockInfoEntity> stocks = goodsStockInfoRepository.loadByGoodsId(goods.getGoodId());
+	        GoodsStockInfoEntity stock = null;
+	        if(CollectionUtils.isNotEmpty(stocks)){
+	            if(stocks.size() == 1){
+	                stock = stocks.get(0);
+	            }else{
+	                for (GoodsStockInfoEntity s : stocks) {
+	                    if(StringUtils.equals(s.getSkuId(), skuId)){
+	                        stock = s;
+	                        break;
+	                    }
+	                }
+	            }
+	            proGroupGoodsVo.setGoodsCostPrice(stock.getGoodsCostPrice());
+	            proGroupGoodsVo.setGoodsPrice(stock.getGoodsPrice());
+	        }
+	        Category categroy = categoryMapper.selectByPrimaryKey(goods.getCategoryId3());
+	        if(null != categroy){
+	            proGroupGoodsVo.setGoodsCategory(categroy.getCategoryName());
+	        }
 		}
 		ProGroupManager group = managerMapper.selectByPrimaryKey(proGroupGoodsVo.getGroupId());
 		if(null != group){
 			proGroupGoodsVo.setGroupName(group.getGroupName());
-		}
-		Category categroy = categoryMapper.selectByPrimaryKey(goods.getCategoryId3());
-		if(null != categroy){
-			proGroupGoodsVo.setGoodsCategory(categroy.getCategoryName());
 		}
 	}
 	// 因为voList在数据库查询时就已经跟进order排序来查询
