@@ -313,7 +313,7 @@ public class ProGroupGoodsExportFikeController {
 						}
 					}else{
 						GoodsInfoEntity goods = goodsService.getGoodsInfo(id);
-						pggds.setGoodsId(null != goods ? goods.getGoodId() : -1L );
+						pggds.setGoodsId(null != goods ? goods.getId() : -1L );
 						pggds.setSkuId(id);
 						pggds.setGoodsCode(id);
 						pggds.setMarketPrice(list.get(i).getMarketPrice());
