@@ -407,23 +407,6 @@ public class SystemParamController {
         return Response.success("更新weex成功");
     }
 
-    @ResponseBody
-    @RequestMapping("/bsdiffUpload")
-    public Response bsdiffUpload(@ModelAttribute("bsdiffEntiry")BsdiffVo bsdiffVo) {
-        try{
-            LOG.info("bsdiff增量更新开始上传,参数 版本号:{},业务线:{},文件名:{}",bsdiffVo.getBsdiffVer(),bsdiffVo.getLineId(), bsdiffVo.getBsdiffFile().getOriginalFilename());
-            BsdiffInfoEntity bsdiffInfoEntity = new BsdiffInfoEntity();
-            bsdiffInfoEntity.setCreatedTime(new Date());
-            bsdiffInfoEntity.setCreateUser(SpringSecurityUtils.getCurrentUser());
-            bsdiffInfoEntity.setUpdatedTime(new Date());
-            bsdiffInfoEntity.setUpdateUser(SpringSecurityUtils.getCurrentUser());
-            bsdiffinfoEntityService.bsdiffUpload(bsdiffVo,bsdiffInfoEntity);
-        }catch (Exception e){
-            LOG.error("增量添加上传失败",e);
-            return Response.fail(e.getMessage());
-        }
-        return Response.success("增量添加上传成功");
-    }
 
     /**
      * 增量更新升级版
@@ -431,7 +414,7 @@ public class SystemParamController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/bsdiffUpload2")
+    @RequestMapping("/bsdiffUpload")
     public Response bsdiffUpload2(@ModelAttribute("bsdiffEntiry")BsdiffVo bsdiffVo) {
         try{
             LOG.info("bsdiff增量更新开始上传,参数 版本号:{},文件名:{}",bsdiffVo.getBsdiffVer(),bsdiffVo.getBsdiffFile().getOriginalFilename());

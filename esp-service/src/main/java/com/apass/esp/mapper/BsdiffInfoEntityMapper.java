@@ -1,6 +1,7 @@
 package com.apass.esp.mapper;
 
 import com.apass.esp.domain.entity.BsdiffInfoEntity;
+import com.apass.esp.domain.entity.BsdiffQuery;
 import com.apass.esp.domain.entity.WeexInfoEntity;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 
@@ -11,4 +12,5 @@ public interface BsdiffInfoEntityMapper extends GenericMapper<BsdiffInfoEntity, 
 
     List<BsdiffInfoEntity> selectAllBsdiff();
 
+    BsdiffInfoEntity selectBsdiffInfoByVo(BsdiffQuery query);
 }

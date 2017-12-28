@@ -1,6 +1,7 @@
 package com.apass.esp.service.common;
 
 import com.apass.esp.domain.entity.BsdiffInfoEntity;
+import com.apass.esp.domain.entity.BsdiffQuery;
 import com.apass.esp.domain.entity.BsdiffVo;
 import com.apass.esp.mapper.BsdiffInfoEntityMapper;
 import com.apass.esp.utils.FileUtilsCommons;
@@ -41,14 +42,13 @@ public class BsdiffinfoService {
 		//如果版本号已存在，给出提示
         String bsdiffVer = bsdiffVo.getBsdiffVer();
 
-        List<BsdiffInfoEntity> bsdiffInfoEntities = listAll();
-        if(CollectionUtils.isNotEmpty(bsdiffInfoEntities)){
-            for (BsdiffInfoEntity bsEn: bsdiffInfoEntities) {
-                if(StringUtils.equals(bsdiffVer,bsEn.getBsdiffVer())){
-                    throw new RuntimeException("版本号已经存在，请重新填写版本号!");
-                }
-            }
-        }
+		BsdiffQuery query = new BsdiffQuery();
+		query.setLineId(bsdiffVo.getLineId());
+		query.setBsdiffVer(bsdiffVo.getBsdiffVer());
+		BsdiffInfoEntity entity = selectBsdiffInfoByVo(query);
+		if(entity == null){
+			throw new RuntimeException("版本号已经存在，请重新填写版本号!");
+		}
 
         MultipartFile bsdiffFile = bsdiffVo.getBsdiffFile();
         String[] split = bsdiffFile.getOriginalFilename().split("\\.");
@@ -61,19 +61,26 @@ public class BsdiffinfoService {
 
 		String originalFilename = bsdiffFile.getOriginalFilename();
 
+		bsdiffInfoEntity.setLineId(bsdiffVo.getLineId());
 		bsdiffInfoEntity.setBsdiffVer(bsdiffVer);
 
 		//判断服务器端是否有更早版本的文件，如果没有 直接上传，如果有 增量拆分
-		File directory = new File(rootPath+nfsBsdiffPath+VERPATH);
+		File directory = new File(rootPath+nfsBsdiffPath+VERPATH+"/"+bsdiffVo.getLineId()+"/"+bsdiffVo.getBsdiffVer());
 		if(!directory.exists()){//如果目录不存在创建目录
 			directory.mkdirs();
 		}
 		if(!(directory.listFiles().length > 0)){//第一次上传
-			int count = bsdiffInfoEntityMapper.insertSelective(bsdiffInfoEntity);//先操作数据库，再上传文件。
+			//解压缩文件
+
+			//合并并生成文件清单
+
+
+
+			/*int count = bsdiffInfoEntityMapper.insertSelective(bsdiffInfoEntity);//先操作数据库，再上传文件。
 			//没有增量拆分操作
 			if(count == 1){
 				FileUtilsCommons.uploadFilesUtil(rootPath, nfsBsdiffPath+VERPATH+"/"+originalFilename, bsdiffFile);
-			}
+			}*/
 		}else{//增量拆分
 			for(int i=Integer.valueOf(bsdiffVer)-1;i>0;i--){
 				if(i>1){
@@ -99,6 +106,10 @@ public class BsdiffinfoService {
 			}
 		}
     }
+
+	private BsdiffInfoEntity selectBsdiffInfoByVo(BsdiffQuery query) {
+		return  bsdiffInfoEntityMapper.selectBsdiffInfoByVo(query);
+	}
 
 	public List<BsdiffInfoEntity> listAll(){
 		return bsdiffInfoEntityMapper.selectAllBsdiff();
