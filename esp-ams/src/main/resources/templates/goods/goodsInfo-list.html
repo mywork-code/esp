@@ -112,21 +112,16 @@
 			</tr>
 			<tr>
 				<td colspan="8" align="right">
-					<a href="javascript:void(0);"
-					   class="easyui-linkbutton search-btn"
-					   data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp;
+					<a href="javascript:void(0);" class="easyui-linkbutton search-btn" data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp;
 					<@apass.role value="GOODS_INFO_ADD">
 					<#if merchantStatus??&&merchantStatus=="1">
-						<a href="javascript:void(0);" class="easyui-linkbutton add-btn"
-						   data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;</a>&nbsp;&nbsp;
+						<a href="javascript:void(0);" class="easyui-linkbutton add-btn" data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;</a>&nbsp;&nbsp;
 					</#if>
-				</@apass.role>
-				<@apass.role value="GOODS_INFO_EXPORT">
-				<a href="javascript:void(0);" class="easyui-linkbutton export-btn"
-				   data-options="iconCls:'icon-add'">导&nbsp;出&nbsp;</a>&nbsp;&nbsp;
-				</@apass.role>
-				<a href="javascript:void(0);" class="easyui-linkbutton" id="flush"
-				   data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;</a>
+				    </@apass.role>
+					<@apass.role value="GOODS_INFO_EXPORT">
+					   <a href="javascript:void(0);" class="easyui-linkbutton export-btn" data-options="iconCls:'icon-add'">导&nbsp;出&nbsp;</a>&nbsp;&nbsp;
+					</@apass.role>
+					<a href="javascript:void(0);" class="easyui-linkbutton" id="flush" data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;</a>
 				</td>
 			</tr>
 		</table>
