@@ -432,6 +432,7 @@
         create_date createDate,
         update_date updateDate,
         market_price marketPrice,
+        source       goodsSource,
         goods_Cost_Price goodsCostPrice,
         stock_Logo stockLogo
     FROM

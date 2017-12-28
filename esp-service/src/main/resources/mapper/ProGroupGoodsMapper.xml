@@ -89,6 +89,9 @@
       <if test="status != null" >
         status,
       </if>
+      <if test="similarFlag != null" >
+        similarFlag,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="goodsId != null" >
@@ -179,6 +182,9 @@
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="similarFlag != null" >
+        similarFlag = #{similarFlag,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

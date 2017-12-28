@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +32,8 @@ import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.ProGroupManager;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupManagerVo;
@@ -38,7 +41,9 @@ import com.apass.esp.domain.vo.GroupVo;
 import com.apass.esp.domain.vo.ProGroupGoodsTo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
 import com.apass.esp.mapper.ProGroupManagerMapper;
+import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -70,6 +75,10 @@ public class ProGroupGoodsExportFikeController {
 	private GroupManagerService groupManagerService;
 	@Autowired
 	private ProGroupManagerMapper groupManagerMapper;
+	@Autowired
+	private JdGoodsInfoService jdGoodsInfoService;
+    @Autowired
+    private GoodsStockInfoRepository goodsStockInfoRepository;
 
 	/**
      * 商品池分页json
@@ -171,18 +180,45 @@ public class ProGroupGoodsExportFikeController {
 							return Response.fail("该商品已添加至其他分组！");
 						}
 					}
-					//同类商品校验
-					Boolean falge=proGroupGoodsService.goodsSimilarCheck(activityId, groupNameId, goods[i], skuIds[i]);
-					if(!falge){
-						return Response.fail("同类商品不能再添加至其他分组");
-					}
+//					//同类商品校验
+//					Boolean falge=proGroupGoodsService.goodsSimilarCheck(activityId, groupNameId, goods[i], skuIds[i]);
+//					if(!falge){
+//						return Response.fail("同类商品不能再添加至其他分组");
+//					}
 					int groupSortId = proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
 					proGroupGoods.setOrderSort(Long.parseLong(groupSortId + ""));
 					proGroupGoods.setGroupId(Long.parseLong(groupNameId));
 					proGroupGoods.setStatus("S");
+					proGroupGoods.setSimilarFlag("1");
 					proGroupGoods.setUpdatedTime(new Date());
 					proGroupGoodsService.updateProGroupGoods(proGroupGoods);
 					countSuccess++;
+					TreeSet<String>  similarSkuIds = new TreeSet<>();
+					GoodsInfoEntity goodsInfoEntity=goodsService.getGoodsInfo(skuIds[i]);
+					//获取相似同类的商品的skuId
+					if(StringUtils.equals(goodsInfoEntity.getSource(), SourceType.WZ.getCode())){
+						similarSkuIds=jdGoodsInfoService.getJdSimilarSkuIdList(skuIds[i]);
+					}else{
+			            List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
+			            for (GoodsStockInfoEntity goodsStockInfoEntity : jdGoodsStockInfoList) {
+			            	similarSkuIds.add(goodsStockInfoEntity.getSkuId());
+						}
+					}
+					similarSkuIds.remove(skuIds[i]);
+					for (String string : similarSkuIds) {
+						ProGroupGoods proGroupGoods2 = proGroupGoodsService
+								.selectOneBySkuIdAndActivityId(string, Long.parseLong(activityId));
+						if(null != proGroupGoods){
+							int groupSortId2 = proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
+							proGroupGoods2.setOrderSort(Long.parseLong(groupSortId2 + ""));
+							proGroupGoods2.setGroupId(Long.parseLong(groupNameId));
+							proGroupGoods2.setStatus("S");
+							proGroupGoods2.setSimilarFlag("0");//同类商品标识
+							proGroupGoods2.setUpdatedTime(new Date());
+							proGroupGoodsService.updateProGroupGoods(proGroupGoods2);
+							countSuccess++;
+						}
+					}
 				} else {
 					countFail++;
 				}
