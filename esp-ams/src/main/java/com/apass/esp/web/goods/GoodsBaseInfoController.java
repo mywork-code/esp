@@ -698,6 +698,9 @@ public class GoodsBaseInfoController {
                         if(null !=source && SourceType.WZ.getCode().equals(source)){
                         	skuId=entity2.getExternalId();
                         	TreeSet<String> similarSkuIds=jdGoodsInfoService.getJdSimilarSkuIdList(skuId);
+                        	if(CollectionUtils.isNotEmpty(similarSkuIds)){
+                        		similarSkuIds.remove(skuId);
+                        	}
                         	for (String string : similarSkuIds) {
                         		GoodsInfoEntity goodsInfo=goodsService.selectGoodsByExternalId(string);
                         		Goods goodsfromES=IndexManager.goodSearchFromESBySkuId(goodsInfo.getId());
