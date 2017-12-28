@@ -22,11 +22,11 @@ import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
-import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.mybatis.page.Page;
+import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.HttpWebUtils;
@@ -101,7 +101,7 @@ public class GoodsBaseInfoSiftController {
                 }
             }
             // 获取分页结果返回给页面
-            PaginationManage<GoodsInfoEntity> pagination = goodsService.pageForSiftList(goodsInfoEntity, page);
+            Pagination<GoodsInfoEntity> pagination = goodsService.pageForSiftList(goodsInfoEntity, page);
             if (pagination == null) {
                 respBody.setTotal(0);
                 respBody.setStatus(CommonCode.SUCCESS_CODE);
