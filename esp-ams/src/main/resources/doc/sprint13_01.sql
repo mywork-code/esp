@@ -15,3 +15,6 @@ ADD COLUMN `brand_id`  bigint(20) NOT NULL DEFAULT -1 COMMENT '品牌ID' ,
 ADD COLUMN `offer_range`  bigint(20) NOT NULL DEFAULT -1 COMMENT '优惠范围（1.品牌 2.品类 3.指定商品）',
 ADD COLUMN `category_id3`  varchar(20) NOT NULL DEFAULT '' COMMENT '三级类目id' ,
 ADD COLUMN `sku_id`  varchar(30) NOT NULL DEFAULT '' COMMENT '商品的sku_id' ;
+
+ALTER TABLE `t_esp_pro_group_goods`
+ADD COLUMN `similarFlag`  tinyint(4) NOT NULL DEFAULT 1 COMMENT '同类商品标记 1:相似商品中第一个添加分组的商品；0：被动关联分组的商品';
