@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -199,7 +200,9 @@ public class ProGroupGoodsExportFikeController {
 			            	similarSkuIds.add(goodsStockInfoEntity.getSkuId());
 						}
 					}
-					similarSkuIds.remove(skuIds[i]);
+				   	if(CollectionUtils.isNotEmpty(similarSkuIds)){
+				   		similarSkuIds.remove(skuIds[i]);
+                	}
 					for (String string : similarSkuIds) {
 						ProGroupGoods proGroupGoods2 = proGroupGoodsService
 								.selectOneBySkuIdAndActivityId(string, Long.parseLong(activityId));
@@ -267,7 +270,10 @@ public class ProGroupGoodsExportFikeController {
 	            	similarSkuIds.add(goodsStockInfoEntity.getSkuId());
 				}
 			}
-			similarSkuIds.remove(entity.getSkuId());
+			
+		 	if(CollectionUtils.isNotEmpty(similarSkuIds)){
+		 		similarSkuIds.remove(entity.getSkuId());
+        	}
 			int countNum=0;
 			for (String string : similarSkuIds) {
 				ProGroupGoods proGroupGoods2 = proGroupGoodsService
