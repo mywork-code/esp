@@ -7,8 +7,6 @@ public class BsdiffInfoEntity {
 
     private String bsdiffVer;
 
-    private String patchName;
-
     private Date createdTime;
 
     private Date updatedTime;
@@ -16,6 +14,46 @@ public class BsdiffInfoEntity {
     private String createUser;
 
     private String updateUser;
+
+    private String lineId;
+
+    private String sourceFilePath;
+
+    private String mergeFilePath;
+
+    private String fileListPath;
+
+    public String getLineId() {
+        return lineId;
+    }
+
+    public void setLineId(String lineId) {
+        this.lineId = lineId;
+    }
+
+    public String getSourceFilePath() {
+        return sourceFilePath;
+    }
+
+    public void setSourceFilePath(String sourceFilePath) {
+        this.sourceFilePath = sourceFilePath;
+    }
+
+    public String getMergeFilePath() {
+        return mergeFilePath;
+    }
+
+    public void setMergeFilePath(String mergeFilePath) {
+        this.mergeFilePath = mergeFilePath;
+    }
+
+    public String getFileListPath() {
+        return fileListPath;
+    }
+
+    public void setFileListPath(String fileListPath) {
+        this.fileListPath = fileListPath;
+    }
 
     public Long getId() {
         return id;
@@ -31,14 +69,6 @@ public class BsdiffInfoEntity {
 
     public void setBsdiffVer(String bsdiffVer) {
         this.bsdiffVer = bsdiffVer;
-    }
-
-    public String getPatchName() {
-        return patchName;
-    }
-
-    public void setPatchName(String patchName) {
-        this.patchName = patchName;
     }
 
     public Date getCreatedTime() {

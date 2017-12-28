@@ -80,77 +80,74 @@ import com.apass.gfb.framework.utils.RandomUtils;
 import com.google.common.collect.Maps;
 @Service
 public class GoodsService {
-  private static final Logger LOGGER = LoggerFactory.getLogger(GoodsService.class);
-  @Autowired
-  private GoodsRepository goodsDao;
-  @Autowired
-  private GoodsStockInfoRepository goodsStockDao;
-  @Autowired
-  private BannerInfoRepository bannerInfoDao;
-  @Autowired
-  private CommonService commonService;
-  @Autowired
-  private ImageService imageService;
-  @Autowired
-  private MerchantInforService merchantInforService;
-  @Autowired
-  private GoodsBasicRepository goodsBasicRepository;
-  @Autowired
-  private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
-  @Autowired
-  private JdCategoryMapper jdCategoryMapper;
-  @Autowired
-  private JdGoodsInfoService jdGoodsInfoService;
-  @Autowired
-  private CategoryMapper categoryMapper;
-  @Autowired
-  private JdGoodsMapper jdGoodsMapper;
-//  @Autowired
-//  private JdProductApiClient jdProductApiClient;
-  @Autowired
-  private ProGroupGoodsService proGroupGoodsService;
-  @Autowired
-  private ActivityCfgService activityCfgService;
-  @Autowired
-  private OrderService orderService;
-  @Autowired
-  private GoodsAttrValService goodsAttrValService;
-  @Autowired
-  private GoodsAttrService goodsAttrService;
-  @Autowired
-  private GoodsStockInfoRepository goodsStockInfoRepository;
-  @Autowired
-  private WeiZhiProductApiClient productApiClient;
-  @Autowired
-  private WeiZhiProductService weiZhiProductService;
-  @Autowired
-  private LimitCommonService limitCommonService;
-  @Autowired
-  private GoodsBrandService goodsBrandService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoodsService.class);
+    @Autowired
+    private GoodsRepository goodsDao;
+    @Autowired
+    private GoodsStockInfoRepository goodsStockDao;
+    @Autowired
+    private BannerInfoRepository bannerInfoDao;
+    @Autowired
+    private CommonService commonService;
+    @Autowired
+    private ImageService imageService;
+    @Autowired
+    private MerchantInforService merchantInforService;
+    @Autowired
+    private GoodsBasicRepository goodsBasicRepository;
+    @Autowired
+    private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
+    @Autowired
+    private JdCategoryMapper jdCategoryMapper;
+    @Autowired
+    private JdGoodsInfoService jdGoodsInfoService;
+    @Autowired
+    private CategoryMapper categoryMapper;
+    @Autowired
+    private JdGoodsMapper jdGoodsMapper;
+    @Autowired
+    private ProGroupGoodsService proGroupGoodsService;
+    @Autowired
+    private ActivityCfgService activityCfgService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private GoodsAttrValService goodsAttrValService;
+    @Autowired
+    private GoodsAttrService goodsAttrService;
+    @Autowired
+    private GoodsStockInfoRepository goodsStockInfoRepository;
+    @Autowired
+    private WeiZhiProductApiClient productApiClient;
+    @Autowired
+    private WeiZhiProductService weiZhiProductService;
+    @Autowired
+    private LimitCommonService limitCommonService;
+    @Autowired
+    private GoodsBrandService goodsBrandService;
     @Autowired
     private SystemParamService systemParamService;
     @Autowired
     private CategoryInfoService categoryInfoService;
     @Autowired
     private JdGoodsService jdGoodsService;
-  /**
-   * app 首页加载精品推荐商品
-   *
-   * @return
-   */
-  public Pagination<GoodsBasicInfoEntity> loadRecommendGoods(int pageIndex, int pageSize) {
-    	 Pagination<GoodsBasicInfoEntity> result=goodsDao.loadRecommendGoods(pageIndex, pageSize);
-    	 List<GoodsBasicInfoEntity> goodsList=result.getDataList();
-    	 for (GoodsBasicInfoEntity goodsBasicInfoEntity : goodsList) {
-    		 Map<String,Object> map=goodsDao.selectMinGoodsStockByGoodsId(goodsBasicInfoEntity.getGoodId());
-    		 Long goodsStockId=(Long) map.get("goodsStockId"); 
-    		 BigDecimal goodsPrice=(BigDecimal) map.get("goodsPrice");
-    		 goodsBasicInfoEntity.setGoodsStockId(goodsStockId);
-    		 goodsBasicInfoEntity.setGoodsPrice(goodsPrice);
-		 }
-    	 return result;
-  }
-
+    /**
+     * 修改
+     * @param entity
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Integer updateService(GoodsInfoEntity entity) {
+        return goodsDao.updateGoods(entity);
+    }
+    /**
+     * READ
+     * @param goodsId
+     * @return
+     */
+    public GoodsInfoEntity selectByGoodsId(Long goodsId) {
+        return goodsDao.select(goodsId);
+    }
   /**
    * app 加载精品推荐商品列表
    *
@@ -1317,9 +1314,6 @@ public class GoodsService {
     return goodsStockDao.getStockCurrAmt(goodsStockId);
   }
 
-
-
-
   /**
    * 商品(查询)
    *
@@ -1524,62 +1518,57 @@ public class GoodsService {
         goodsDao.updateServiceForBaseInfoColler(entity);
         return Response.success("SUCCESS");
     }
-  /**
-   * 修改
-   *
-   * @param entity
-   */
-  @Transactional(rollbackFor = Exception.class)
-  public Integer updateService(GoodsInfoEntity entity) {
-    return goodsDao.updateGoods(entity);
-  }
-  /**
-   * 主键查询
-   *
-   * @param goodsId
-   * @return
-   */
-  public GoodsInfoEntity selectByGoodsId(Long goodsId) {
-    return goodsDao.select(goodsId);
-  }
-
-  /**
-   * 说明：GoodsList
-   *
-   * @param goodsInfoEntity
-   * @param page
-   * @return
-   * @author xiaohai
-   * @time：2016年12月20日 下午2:01:10
-   */
-  public PaginationManage<GoodsInfoEntity> page(GoodsInfoEntity goodsInfoEntity, Page page) {
-    PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
-    Pagination<GoodsInfoEntity> response = goodsDao.pageForSiftList(goodsInfoEntity, page);
-
-    result.setDataList(response.getDataList());
-    result.setPageInfo(page.getPageNo(), page.getPageSize());
-    result.setTotalCount(response.getTotalCount());
-    return result;
-  }
-  /**
-   * 精选商品列表
-   * @param goodsInfoEntity
-   * @return
-   */
-  public List<GoodsInfoEntity> goodsSiftList(GoodsInfoEntity entity) {
-      return goodsDao.goodsSiftList(entity);
-  }
-  /**
-   * 说明：查询商品精选数量
-   *
-   * @return
-   * @author xiaohai
-   * @time：2016年12月27日 下午3:55:45
-   */
-  public Integer goodsPageListCount() {
-    return goodsDao.goodsPageListCount();
-  }
-
+    /**
+     * 精选商品分页查询
+     * @param entity
+     * @param page
+     * @return
+     */
+    public Pagination<GoodsInfoEntity> pageForSiftList(GoodsInfoEntity entity, Page page) {
+        Pagination<GoodsInfoEntity> response = goodsDao.pageForSiftList(entity, page);
+        List<GoodsInfoEntity> list = response.getDataList();
+        for(GoodsInfoEntity en : list){
+            Category category=categoryInfoService.selectNameById(en.getCategoryId3());
+            if(category!=null){
+                en.setCategoryName3(category.getCategoryName());
+            }
+        }
+        response.setDataList(list);
+        return response;
+    }
+    /**
+     * 精选商品列表
+     * @param goodsInfoEntity
+     * @return
+     */
+    public List<GoodsInfoEntity> goodsSiftList(GoodsInfoEntity entity) {
+        return goodsDao.goodsSiftList(entity);
+    }
+    /**
+     * 查询商品精选数量
+     * @return
+     */
+    public Integer goodsPageListCount() {
+        return goodsDao.goodsPageListCount();
+    }
+    /**
+     * app 首页加载精品推荐商品
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     */
+    public Pagination<GoodsBasicInfoEntity> loadRecommendGoods(int pageIndex, int pageSize) {
+        Pagination<GoodsBasicInfoEntity> result=goodsDao.loadRecommendGoods(pageIndex, pageSize);
+        List<GoodsBasicInfoEntity> goodsList=result.getDataList();
+        for (GoodsBasicInfoEntity goodsBasicInfoEntity : goodsList) {
+            Map<String,Object> map=goodsDao.selectMinGoodsStockByGoodsId(goodsBasicInfoEntity.getGoodId());
+            Long goodsStockId=(Long) map.get("goodsStockId"); 
+            BigDecimal goodsPrice=(BigDecimal) map.get("goodsPrice");
+            goodsBasicInfoEntity.setGoodsStockId(goodsStockId);
+            goodsBasicInfoEntity.setGoodsPrice(goodsPrice);
+        }
+        return result;
+    }
   /**
    *  判断费率
    * @param goodsId
