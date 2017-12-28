@@ -121,7 +121,7 @@ public class ProCouponService {
         		GoodsInfoEntity goods = goodsService.selectGoodsByExternalId(proCoupon.getSkuId());
         		GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(proCoupon.getSkuId());
         		if(null == goods && null == stock){
-        			throw new RuntimeException("数据有误,商品无此skuId!");
+        			throw new RuntimeException("您输入的商品skuid不存在，请重新输入!");
         		}
         	}
         }
