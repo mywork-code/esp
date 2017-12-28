@@ -134,8 +134,8 @@ public class GoodsBaseInfoController {
             // 获取商户状态
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
             if (merchantInfoEntity != null) {
-                String merchantStatus = merchantInfoEntity.getStatus();
-                map.put("merchantStatus", merchantStatus);
+                map.put("merchantStatus", merchantInfoEntity.getStatus());
+                map.put("merchantCode", merchantInfoEntity.getMerchantCode());
             }
             // 系统参数费率
             map.put("goodsPriceRate", 1);
