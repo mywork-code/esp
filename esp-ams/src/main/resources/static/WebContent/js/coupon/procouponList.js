@@ -408,7 +408,7 @@ $(function(){
 		onChange: function(param){
 			if(param == 'YHLQ'){
 				$("#rangeTr").show();
-
+				$("#offerRange").combobox("setValue","");
 
 				$("#effectiveTimeTr").css("display","none");
 				$("#typeTd1").css("display","none");
@@ -567,6 +567,10 @@ $(function(){
 					$.messager.alert('<span style="color: black">提示</span>','请输入商品skuId');
 					return false;
 				}
+				if($("#skuId").textbox("getValue").length>20){
+					$.messager.alert('<span style="color: black">提示</span>','商品skuId不能大于20字符');
+					return false;
+				}
 				var externalId = parseInt($("#skuId").textbox("getValue"));
 				if(externalId<0){
 					$.messager.alert('<span style="color: black">提示</span>','商品skuId只能输入正整数');
@@ -575,8 +579,6 @@ $(function(){
 			}
 
 		}
-
-
 
 		return true;
 	}
