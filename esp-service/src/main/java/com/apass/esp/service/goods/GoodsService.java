@@ -1524,8 +1524,7 @@ public class GoodsService {
      * @param page
      * @return
      */
-    public PaginationManage<GoodsInfoEntity> pageForSiftList(GoodsInfoEntity entity, Page page) {
-        PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
+    public Pagination<GoodsInfoEntity> pageForSiftList(GoodsInfoEntity entity, Page page) {
         Pagination<GoodsInfoEntity> response = goodsDao.pageForSiftList(entity, page);
         List<GoodsInfoEntity> list = response.getDataList();
         for(GoodsInfoEntity en : list){
@@ -1534,10 +1533,8 @@ public class GoodsService {
                 en.setCategoryName3(category.getCategoryName());
             }
         }
-        result.setDataList(list);
-        result.setPageInfo(page.getPageNo(), page.getPageSize());
-        result.setTotalCount(response.getTotalCount());
-        return result;
+        response.setDataList(list);
+        return response;
     }
     /**
      * 精选商品列表
