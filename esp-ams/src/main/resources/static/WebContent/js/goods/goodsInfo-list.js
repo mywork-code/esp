@@ -306,11 +306,17 @@ $(function() {
             	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
             }
         },{
-        	title : '商品来源标识',
+        	title : '来源',
         	field : 'source',
-        	width : 80,
+        	width : 60,
         	align : 'center',
 //        	hidden: 'hidden'
+        	formatter:function(value,row,index){
+        		if(value=='wz'){
+            		return "微知";
+            	}
+            	return "供应商";
+            }
         },{
             title : '操作',
             field : 'opt',
