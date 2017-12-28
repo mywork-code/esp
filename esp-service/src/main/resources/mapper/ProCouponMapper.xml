@@ -21,7 +21,7 @@
     <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
     <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
     <result column="brand_id" property="brandId" jdbcType="BIGINT" />
-    <result column="offer_range" property="offerRange" jdbcType="BIGINT" />
+    <result column="offer_range" property="offerRange" jdbcType="TINYINT" />
     <result column="category_id3" property="categoryId3" jdbcType="VARCHAR" />
     <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
   </resultMap>
@@ -55,7 +55,7 @@
       #{goodsCode,jdbcType=VARCHAR}, #{similarGoodsCode,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, 
       #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR}, #{brandId,jdbcType=BIGINT}, 
-      #{offerRange,jdbcType=BIGINT}, #{categoryId3,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}
+      #{offerRange,jdbcType=TINYINT}, #{categoryId3,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProCoupon" useGeneratedKeys="true" keyProperty="id" >
@@ -181,7 +181,7 @@
         #{brandId,jdbcType=BIGINT},
       </if>
       <if test="offerRange != null" >
-        #{offerRange,jdbcType=BIGINT},
+        #{offerRange,jdbcType=TINYINT},
       </if>
       <if test="categoryId3 != null" >
         #{categoryId3,jdbcType=VARCHAR},
@@ -249,7 +249,7 @@
         brand_id = #{brandId,jdbcType=BIGINT},
       </if>
       <if test="offerRange != null" >
-        offer_range = #{offerRange,jdbcType=BIGINT},
+        offer_range = #{offerRange,jdbcType=TINYINT},
       </if>
       <if test="categoryId3 != null" >
         category_id3 = #{categoryId3,jdbcType=VARCHAR},
@@ -280,7 +280,7 @@
       updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       is_delete = #{isDelete,jdbcType=VARCHAR},
       brand_id = #{brandId,jdbcType=BIGINT},
-      offer_range = #{offerRange,jdbcType=BIGINT},
+      offer_range = #{offerRange,jdbcType=TINYINT},
       category_id3 = #{categoryId3,jdbcType=VARCHAR},
       sku_id = #{skuId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
