@@ -18,6 +18,8 @@ import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.RandomUtils;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +54,15 @@ public class CommonService {
      * @throws BusinessException
      */
 	public BigDecimal calculateGoodsPrice(Long goodsId, Long goodsStockId) throws BusinessException {
-	    ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+		GoodsInfoEntity goods = goodsDao.select(goodsId);
+    	String skuId = null;
+    	if(StringUtils.isNotBlank(goods.getSource())){
+    		skuId = goods.getExternalId();
+    	}else{
+    		GoodsStockInfoEntity stock = goodsStockDao.select(goodsStockId);
+    		skuId = stock.getSkuId();
+    	}
+	    ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,skuId);
 	    if(proGroupGoodsBo != null && proGroupGoodsBo.isValidActivity()){
 	      //返回活动价
 	      return proGroupGoodsBo.getActivityPrice().setScale(2, BigDecimal.ROUND_FLOOR);
