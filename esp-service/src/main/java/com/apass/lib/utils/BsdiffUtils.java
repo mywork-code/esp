@@ -1,4 +1,4 @@
-package com.utils;
+package com.apass.lib.utils;
 
 /**
  * Created by fuchen on 2017/11/14.

@@ -1,11 +1,10 @@
 package com.apass.esp.service.common;
 
-import com.apass.esp.domain.entity.BsdiffEntity;
 import com.apass.esp.domain.entity.BsdiffInfoEntity;
+import com.apass.esp.domain.entity.BsdiffVo;
 import com.apass.esp.mapper.BsdiffInfoEntityMapper;
 import com.apass.esp.utils.FileUtilsCommons;
-import com.tencent.tinker.bsdiff.BSDiff;
-import com.utils.BsdiffUtils;
+import com.apass.lib.utils.BsdiffUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -37,11 +35,11 @@ public class BsdiffinfoService {
 
 
     @Transactional
-    public void bsdiffUpload(BsdiffEntity bsdiffEntity, BsdiffInfoEntity bsdiffInfoEntity) throws IOException {
+    public void bsdiffUpload(BsdiffVo bsdiffVo, BsdiffInfoEntity bsdiffInfoEntity) throws IOException {
         StringBuffer sb = new StringBuffer();
 
 		//如果版本号已存在，给出提示
-        String bsdiffVer = bsdiffEntity.getBsdiffVer();
+        String bsdiffVer = bsdiffVo.getBsdiffVer();
 
         List<BsdiffInfoEntity> bsdiffInfoEntities = listAll();
         if(CollectionUtils.isNotEmpty(bsdiffInfoEntities)){
@@ -52,7 +50,7 @@ public class BsdiffinfoService {
             }
         }
 
-        MultipartFile bsdiffFile = bsdiffEntity.getBsdiffFile();
+        MultipartFile bsdiffFile = bsdiffVo.getBsdiffFile();
         String[] split = bsdiffFile.getOriginalFilename().split("\\.");
         if(!StringUtils.equals("zip",split[1])){
             throw new RuntimeException("请上传zip文件 .");
@@ -84,7 +82,6 @@ public class BsdiffinfoService {
 					sb.append(bsdiffVer+"_"+i);
 				}
 			}
-			bsdiffInfoEntity.setPatchName(sb.toString());
 			int count = bsdiffInfoEntityMapper.insertSelective(bsdiffInfoEntity);//先操作数据库，再上传文件。
 			if(count == 1){
 				FileUtilsCommons.uploadFilesUtil(rootPath, nfsBsdiffPath+VERPATH+"/"+originalFilename, bsdiffFile);
