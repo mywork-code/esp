@@ -320,7 +320,10 @@ public class ProCouponBaseInfoController {
 					break;
 				case 3 :
 					if(StringUtils.isBlank(proCoupon.getSkuId())){
-						throw new RuntimeException("商品SKUID不能为空!");
+						throw new RuntimeException("商品skuId不能为空!");
+					}
+					if(StringUtils.length(proCoupon.getSkuId()) > 20 ){
+						throw new RuntimeException("商品skuId不能大于20字符!");
 					}
 					break;
 				default :

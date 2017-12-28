@@ -151,6 +151,9 @@
 			<if test="groupId != null and groupId != ''">
 				AND a.group_id = #{groupId, jdbcType=BIGINT}
 			</if>
+			<if test="groupId != null and groupId != ''" >
+				AND a.similarFlag = 1
+			</if>
 		</where>
 	</sql>
 </mapper>
