@@ -5,6 +5,7 @@ import com.apass.esp.domain.entity.BsdiffInfoEntity;
 import com.apass.esp.mapper.BsdiffInfoEntityMapper;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.tencent.tinker.bsdiff.BSDiff;
+import com.utils.BsdiffUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -92,11 +93,11 @@ public class BsdiffinfoService {
 					directoryPatch.mkdirs();
 				}
 				for(int i=Integer.valueOf(bsdiffVer)-1;i>0;i--){
-					File oldFile = new File(rootPath+nfsBsdiffPath+VERPATH+"/"+i+".zip");
-					File newFile = new File(rootPath+nfsBsdiffPath+VERPATH+"/"+originalFilename);
-					File diffFile = new File(rootPath+nfsBsdiffPath+PATCHPATH+"/"+bsdiffVer+"_"+i+".zip");
+//					File oldFile = new File(rootPath+nfsBsdiffPath+VERPATH+"/"+i+".zip");
+//					File newFile = new File(rootPath+nfsBsdiffPath+VERPATH+"/"+originalFilename);
+//					File diffFile = new File(rootPath+nfsBsdiffPath+PATCHPATH+"/"+bsdiffVer+"_"+i+".zip");
 
-					BSDiff.bsdiff(oldFile,newFile,diffFile);
+					BsdiffUtils.getInstance().bsdiff(rootPath+nfsBsdiffPath+VERPATH+"/"+i+".zip",rootPath+nfsBsdiffPath+VERPATH+"/"+originalFilename,rootPath+nfsBsdiffPath+PATCHPATH+"/"+bsdiffVer+"_"+i+".zip");
 				}
 			}
 		}
