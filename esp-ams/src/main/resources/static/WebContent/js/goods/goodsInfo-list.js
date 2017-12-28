@@ -346,17 +346,12 @@ $(function() {
             }
         }]],
         loader : function(param, success, error) {
-            $.ajax({
-                url : ctx + '/application/goods/management/pagelist',
-                data : param,
-                type : "post",
-                dataType : "json",
+            $.ajax({url : ctx + '/application/goods/management/pagelist',data : param,type : "post",dataType : "json",
                 success : function(data) {
-                	console.log(data.rows);
                     $.validateResponse(data, function() {
                         success(data);
                     });
-                    $("#tb").show();
+//                    $("#tb").show();
                 }
             })
         }
@@ -2696,7 +2691,6 @@ function initEditGoodsInfo(row){
 				},
 				onLoadSuccess: function () {  //下拉框数据加载成功调用  
 					var opts = $(this).combobox('options');  
-					console.log(opts);
 					var target = this;  
 					var values = $(target).combobox('getValues');//获取选中的值的values
 					if(unSupportPrivincesCodes != null && unSupportPrivincesCodes != ''){
