@@ -252,13 +252,44 @@ public class ProGroupGoodsExportFikeController {
 			proGroupGoods.setStatus("");
 			proGroupGoods.setUpdatedTime(new Date());
 			proGroupGoods.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-
+			
 			ProGroupGoods entity = proGroupGoodsService.selectByPrimaryKey(Long.valueOf(id));
 			int count  = proGroupGoodsService.updateGoods(proGroupGoods);
+			//删除与之相似的且添加同一分组的商品
+			//获取相似同类的商品的skuId
+			GoodsInfoEntity goodsInfoEntity=goodsService.getGoodsInfo(entity.getSkuId());
+			TreeSet<String>  similarSkuIds = new TreeSet<>();
+			if(StringUtils.equals(goodsInfoEntity.getSource(), SourceType.WZ.getCode())){
+				similarSkuIds=jdGoodsInfoService.getJdSimilarSkuIdList(entity.getSkuId());
+			}else{
+	            List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
+	            for (GoodsStockInfoEntity goodsStockInfoEntity : jdGoodsStockInfoList) {
+	            	similarSkuIds.add(goodsStockInfoEntity.getSkuId());
+				}
+			}
+			similarSkuIds.remove(entity.getSkuId());
+			int countNum=0;
+			for (String string : similarSkuIds) {
+				ProGroupGoods proGroupGoods2 = proGroupGoodsService
+						.selectOneBySkuIdAndActivityId(string,entity.getActivityId());
+				if(null !=proGroupGoods2 && StringUtils.equals(proGroupGoods2.getStatus(), "S")){
+					ProGroupGoods proGroupGoods3=new ProGroupGoods();
+					proGroupGoods3.setId(proGroupGoods2.getId());
+					proGroupGoods3.setGroupId(-1l);
+					proGroupGoods3.setOrderSort(Long.parseLong("1"));
+					proGroupGoods3.setStatus("");
+					proGroupGoods3.setUpdatedTime(new Date());
+					proGroupGoods3.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+					int countSimimar  = proGroupGoodsService.updateGoods(proGroupGoods3);
+					if(countSimimar==1){
+						countNum++;
+					}
+				}
+			}
 			if(count == 1){
 				Long groupId = entity.getGroupId();
 				proGroupManager = groupManagerService.selectByPrimaryKey(groupId);
-				long goodsSumNew = proGroupManager.getGoodsSum() - 1;
+				long goodsSumNew = proGroupManager.getGoodsSum() - 1-countNum;
 				proGroupManager.setGoodsSum(goodsSumNew);
 				groupManagerService.updateByPrimaryKeySelective(proGroupManager);
 			}

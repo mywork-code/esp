@@ -306,11 +306,17 @@ $(function() {
             	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
             }
         },{
-        	title : '商品来源标识',
+        	title : '来源',
         	field : 'source',
-        	width : 80,
+        	width : 60,
         	align : 'center',
 //        	hidden: 'hidden'
+        	formatter:function(value,row,index){
+        		if(value=='wz'){
+            		return "微知";
+            	}
+            	return "供应商";
+            }
         },{
             title : '操作',
             field : 'opt',
@@ -340,17 +346,12 @@ $(function() {
             }
         }]],
         loader : function(param, success, error) {
-            $.ajax({
-                url : ctx + '/application/goods/management/pagelist',
-                data : param,
-                type : "post",
-                dataType : "json",
+            $.ajax({url : ctx + '/application/goods/management/pagelist',data : param,type : "post",dataType : "json",
                 success : function(data) {
-                	console.log(data.rows);
                     $.validateResponse(data, function() {
                         success(data);
                     });
-                    $("#tb").show();
+//                    $("#tb").show();
                 }
             })
         }
@@ -2690,7 +2691,6 @@ function initEditGoodsInfo(row){
 				},
 				onLoadSuccess: function () {  //下拉框数据加载成功调用  
 					var opts = $(this).combobox('options');  
-					console.log(opts);
 					var target = this;  
 					var values = $(target).combobox('getValues');//获取选中的值的values
 					if(unSupportPrivincesCodes != null && unSupportPrivincesCodes != ''){
