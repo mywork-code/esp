@@ -1,5 +1,4 @@
 package com.apass.esp.service.goods;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,12 +18,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.domain.entity.GoodsAttrVal;
+import com.apass.esp.domain.entity.GoodsBrand;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
@@ -41,6 +40,7 @@ import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.JdCategoryMapper;
@@ -53,15 +53,17 @@ import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.utils.Pinyin4jUtil;
 import com.apass.esp.service.activity.LimitCommonService;
+import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.service.jd.JdGoodsService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.wz.WeiZhiProductService;
-import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.esp.third.party.jd.entity.product.Product;
@@ -76,50 +78,35 @@ import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
 import com.google.common.collect.Maps;
-
 @Service
 public class GoodsService {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(GoodsService.class);
-
   @Autowired
   private GoodsRepository goodsDao;
-
   @Autowired
   private GoodsStockInfoRepository goodsStockDao;
-
   @Autowired
   private BannerInfoRepository bannerInfoDao;
-
   @Autowired
   private CommonService commonService;
-
   @Autowired
   private ImageService imageService;
-
   @Autowired
   private MerchantInforService merchantInforService;
-
   @Autowired
   private GoodsBasicRepository goodsBasicRepository;
-
   @Autowired
   private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
-
   @Autowired
   private JdCategoryMapper jdCategoryMapper;
-
   @Autowired
   private JdGoodsInfoService jdGoodsInfoService;
-
   @Autowired
   private CategoryMapper categoryMapper;
-
   @Autowired
   private JdGoodsMapper jdGoodsMapper;
-
-  @Autowired
-  private JdProductApiClient jdProductApiClient;
+//  @Autowired
+//  private JdProductApiClient jdProductApiClient;
   @Autowired
   private ProGroupGoodsService proGroupGoodsService;
   @Autowired
@@ -138,7 +125,14 @@ public class GoodsService {
   private WeiZhiProductService weiZhiProductService;
   @Autowired
   private LimitCommonService limitCommonService;
-
+  @Autowired
+  private GoodsBrandService goodsBrandService;
+    @Autowired
+    private SystemParamService systemParamService;
+    @Autowired
+    private CategoryInfoService categoryInfoService;
+    @Autowired
+    private JdGoodsService jdGoodsService;
   /**
    * app 首页加载精品推荐商品
    *
@@ -1323,48 +1317,8 @@ public class GoodsService {
     return goodsStockDao.getStockCurrAmt(goodsStockId);
   }
 
-  /**
-   * 商品分页(查询)
-   *
-   * @param goodsInfoEntity
-   * @param pageNo
-   * @param pageSize
-   * @return
-   */
-  public PaginationManage<GoodsInfoEntity> pageList(GoodsInfoEntity goodsInfoEntity, String pageNo,
-                                                    String pageSize) {
-    Integer pageNum = Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo);
-    Integer pageSiz = Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize);
-    Integer begin = (pageNum - 1) * pageSiz;
-    goodsInfoEntity.setBegin(begin);
-    goodsInfoEntity.setPageSize(pageSiz);
-    // Page page = new Page();
-    // page.setPage(Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo));
-    // page.setLimit(Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize));
 
-    PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
 
-    List<GoodsInfoEntity> dataList = goodsDao.pageList(goodsInfoEntity);
-    Integer totalCount = goodsDao.countByKey(goodsInfoEntity, "goodsPageList");
-    for (GoodsInfoEntity goodsInfo : dataList) {
-      if(StringUtils.equals(goodsInfo.getSource(),SourceType.JD.getCode())){
-          goodsInfo.setMerchantCode(SourceType.JD.getMessage());
-      }
-      if(StringUtils.equals(goodsInfo.getSource(),SourceType.WZ.getCode())){
-        goodsInfo.setMerchantCode(SourceType.WZ.getMessage());
-      }
-      if (null != goodsInfo.getListTime()) {
-        goodsInfo.setListTimeString(goodsInfo.getListTime());
-      }
-      if (null != goodsInfo.getDelistTime()) {
-        goodsInfo.setDelistTimeString(goodsInfo.getDelistTime());
-      }
-    }
-
-    result.setDataList(dataList);
-    result.setTotalCount(totalCount);
-    return result;
-  }
 
   /**
    * 商品(查询)
@@ -1384,13 +1338,114 @@ public class GoodsService {
       return goodsDao.getNotJDgoodsList();
   }
     /**
+     * 商品分页(查询)
+     * @param goodsInfoEntity
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    public PaginationManage<GoodsInfoEntity> pageList(GoodsInfoEntity goodsInfoEntity, String pageNo, String pageSize) throws BusinessException {
+        Integer pageNum = Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo);
+        Integer pageSiz = Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize);
+        Integer begin = (pageNum - 1) * pageSiz;
+        goodsInfoEntity.setBegin(begin);
+        goodsInfoEntity.setPageSize(pageSiz);
+        PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
+        List<GoodsInfoEntity> dataList = goodsDao.pageList(goodsInfoEntity);
+        Integer totalCount = goodsDao.countByKey(goodsInfoEntity, "goodsPageList");
+        for (GoodsInfoEntity goodsInfo : dataList) {
+            Boolean falg = true;
+            if(StringUtils.equals("jd",SourceType.JD.getCode())||StringUtils.equals("wz",SourceType.WZ.getCode())){
+                if(StringUtils.isNotBlank(goodsInfo.getExternalId())){
+                    JdGoods jd = jdGoodsService.queryGoodsBySkuId(Long.parseLong(goodsInfo.getExternalId()));
+                    if(jd!=null&&StringUtils.isNotBlank(jd.getBrandName())){
+                        GoodsBrand brand = new GoodsBrand();
+                        brand.setName(jd.getBrandName());
+                        brand = goodsBrandService.getGoodsBrandByName(brand);
+                        if(brand!=null){
+                            goodsInfo.setBrandId(brand.getId().toString());
+                        }
+                        goodsInfo.setBrandName(jd.getBrandName());
+                        falg = false;
+                    }else{
+                        falg = true;
+                    }
+                }else{
+                    falg = true;
+                }
+            }else{
+                falg = true;
+            }
+            if(falg){
+                if(StringUtils.isNotBlank(goodsInfo.getBrandId())){
+                    GoodsBrand brand = goodsBrandService.readBrand(Long.parseLong(goodsInfo.getBrandId()));
+                    if(brand!=null){
+                        goodsInfo.setBrandName(brand.getName());
+                    }
+                }
+            }
+            if(StringUtils.equals("jd",SourceType.JD.getCode())){
+                goodsInfo.setMerchantCode(SourceType.JD.getMessage());
+            }
+            if(StringUtils.equals("wz",SourceType.WZ.getCode())){
+                goodsInfo.setMerchantCode(SourceType.WZ.getMessage());
+            }
+            if (null != goodsInfo.getListTime()) {
+                goodsInfo.setListTimeString(goodsInfo.getListTime());
+            }
+            if (null != goodsInfo.getDelistTime()) {
+                goodsInfo.setDelistTimeString(goodsInfo.getDelistTime());
+            }
+            Long categoryId = goodsInfo.getCategoryId3();
+            Category category = categoryInfoService.selectNameById(categoryId);
+            if (null != category) {
+                goodsInfo.setCategoryName3(category.getCategoryName());
+            }
+            goodsInfo.setColFalgt(this.ifRate(goodsInfo.getId(),systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate()));
+        }
+        result.setDataList(dataList);
+        result.setTotalCount(totalCount);
+        return result;
+    }
+    /**
      * 新增
      * @param entity
+     * @param user
      * @return
-     * @throws BusinessException 
+     * @throws BusinessException
      */
     @Transactional(rollbackFor = Exception.class)
-    public GoodsInfoEntity insert(GoodsInfoEntity entity) throws BusinessException {
+    public GoodsInfoEntity insertGoods(GoodsInfoEntity entity,String user) throws BusinessException {
+        Integer sordNo = entity.getSordNo();
+        if(sordNo != null){
+            //如果有排序字段，判断同一二级类目下是否有相同排序商品。如果后，其后的都—sordNo都+1
+            List<GoodsInfoEntity> goodsInfoEntities = this.selectByCategoryId2(entity.getCategoryId2());
+            for (GoodsInfoEntity goodsInfoEntity:goodsInfoEntities) {
+                if(sordNo == goodsInfoEntity.getSordNo()){
+                    Map<String,Object> params = Maps.newHashMap();
+                    params.put("categoryId2",entity.getCategoryId2());
+                    params.put("sordNo",sordNo);
+                    params.put("status",GoodStatus.GOOD_UP.getCode());
+                    List<GoodsInfoEntity> goods= this.selectByCategoryId2AndsordNo(params);
+                    for (GoodsInfoEntity good: goods) {
+                        good.setSordNo(good.getSordNo()+1);
+                        good.setUpdateUser(user);
+                        good.setUpdateDate(new Date());
+                        this.updateService(good);
+                    }
+                }
+            }
+        }
+        entity.setStatus(GoodStatus.GOOD_NEW.getCode());
+        entity.setIsDelete("01");
+        entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
+        entity.setCreateUser(user);// 创建人
+        entity.setUpdateUser(user);// 更新人
+        entity.setNewCreatDate(new Date());
+        entity.setUpdateDate(new Date());
+        entity.setSource("");
+        entity.setExternalId("");
+        entity.setGoodsSkuType("");
         StringBuffer sb = new StringBuffer();
         String merchantCode = entity.getMerchantCode();
         MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
@@ -1406,13 +1461,68 @@ public class GoodsService {
             sb.append(random);
             entity.setGoodsCode(sb.toString());
             entity.setMainGoodsCode(sb.toString());
+            
+            //验证品牌
+            String brandname = entity.getBrandName();
+            if (StringUtils.isNotBlank(brandname)){
+                GoodsBrand brand = new GoodsBrand();
+                brand.setName(brandname);
+                brand = goodsBrandService.getGoodsBrandByName(brand);
+                if(brand==null){
+                    brand = new GoodsBrand();
+                    brand.setName(brandname);
+                    brand.setIsDelete("00");
+                    brand.setCreatedTime(new Date());
+                    brand.setUpdatedTime(new Date());
+                    if(goodsBrandService.createdBrand(brand)!=1){
+                        throw new BusinessException("商品品牌录入失败!");
+                    }
+                }
+                entity.setBrandId(brand.getId().toString());
+            }else{
+                entity.setBrandId("0");
+            }
             goodsDao.insert(entity);
             entity.setGoodId(entity.getId());
             LOGGER.info("保存商品成功,保存内容：{}", entity);
             return entity;
         }else{
-            throw new BusinessException("商品编号无法生存,请检查商品商户编码字段!");
+            throw new BusinessException("商品编号无法生成,请检查商品商户编码字段!");
         }
+    }
+    /**
+     * 修改商品
+     * @param entity
+     * @param user
+     * @return
+     * @throws BusinessException 
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Response updateGoods(GoodsInfoEntity entity, String user) throws BusinessException {
+        //验证品牌
+        String brandname = entity.getBrandName();
+        if (StringUtils.isNotBlank(brandname)){
+            GoodsBrand brand = new GoodsBrand();
+            brand.setName(brandname);
+            brand = goodsBrandService.getGoodsBrandByName(brand);
+            if(brand==null){
+                brand = new GoodsBrand();
+                brand.setName(brandname);
+                brand.setIsDelete("00");
+                brand.setCreatedTime(new Date());
+                brand.setUpdatedTime(new Date());
+                if(goodsBrandService.createdBrand(brand)!=1){
+                    throw new BusinessException("商品品牌录入失败!");
+                }
+            }
+            entity.setBrandId(brand.getId().toString());
+        }else{
+            entity.setBrandId("0");
+        }
+        entity.setUpdateUser(user);
+        entity.setUpdateDate(new Date());
+        goodsDao.updateServiceForBaseInfoColler(entity);
+        return Response.success("SUCCESS");
     }
   /**
    * 修改
@@ -1423,12 +1533,6 @@ public class GoodsService {
   public Integer updateService(GoodsInfoEntity entity) {
     return goodsDao.updateGoods(entity);
   }
-
-    @Transactional(rollbackFor = Exception.class)
-    public Integer updateServiceForBaseInfoColler(GoodsInfoEntity entity) {
-        return goodsDao.updateServiceForBaseInfoColler(entity);
-    }
-
   /**
    * 主键查询
    *
@@ -1476,7 +1580,12 @@ public class GoodsService {
     return goodsDao.goodsPageListCount();
   }
 
-  // 判断费率
+  /**
+   *  判断费率
+   * @param goodsId
+   * @param merchantSettleRate
+   * @return
+   */
   public String ifRate(Long goodsId, BigDecimal merchantSettleRate) {
     List<GoodsStockInfoEntity> list = goodsStockDao.loadByGoodsId(goodsId);
     if (!list.isEmpty()) {
@@ -1932,7 +2041,20 @@ public class GoodsService {
     }
     return null;
   }
-
+  /**
+   * 当传入的skuId在数据库中查出了多条数据时，则认为该条数据导入失败
+   * @param skuId
+   * @return
+   */
+  public GoodsBasicInfoEntity getByGoodsBySkuId(String skuId) {
+    GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
+    entity.setExternalId(skuId);
+    List<GoodsBasicInfoEntity> result=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity);
+    if(CollectionUtils.isNotEmpty(result) && result.size()==1){
+        return result.get(0);
+    }
+    return null;
+  }
     /**
      * 添加banner使用
      * @param param
@@ -1970,5 +2092,25 @@ public class GoodsService {
 
     public List<GoodsInfoEntity> getGoodsListBySkuIds(List<String> skuIdList) {
         return goodsDao.getGoodsListBySkuIds(skuIdList);
+    }
+    
+    public GoodsInfoEntity seletGoodsInfoBySkuId(String skuId){
+    	return goodsDao.seletGoodsInfoBySkuId(skuId);
+    }
+    
+    /**
+     * 根据skuID，查询对应商品的信息
+     * @param skuId
+     * @return
+     */
+    public GoodsInfoEntity getGoodsInfo(String skuId){
+    	GoodsInfoEntity goods = seletGoodsInfoBySkuId(skuId);
+    	if(null == goods){
+    		GoodsStockInfoEntity stock = goodsStockDao.getStockInfoEntityBySkuId(skuId);
+    		if(null != stock){
+    			goods = goodsDao.selectGoodsByGoodsId(stock.getGoodsId()+"");
+    		}
+    	}
+    	return goods;
     }
 }

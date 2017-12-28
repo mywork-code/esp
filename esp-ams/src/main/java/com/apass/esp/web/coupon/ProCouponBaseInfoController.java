@@ -29,6 +29,7 @@ import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.domain.enums.CouponSillType;
 import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.enums.OfferRangeType;
 import com.apass.esp.domain.query.ProCouponQuery;
 import com.apass.esp.domain.vo.ActivityCfgQuery;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
@@ -151,10 +152,7 @@ public class ProCouponBaseInfoController {
                 proCoupon.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                 proCoupon.setCreatedTime(new Date());
                 proCoupon.setUpdatedTime(new Date());
-                if(proCoupon.getEffectiveTime() == null){
-                    proCoupon.setEffectiveTime(-1);
-                }
-                Integer count = proCouponService.inserProcoupon(proCoupon);
+                proCouponService.inserProcoupon(proCoupon);
             }
 
         }catch (Exception e){
@@ -297,12 +295,39 @@ public class ProCouponBaseInfoController {
         if(proCoupon.getDiscountAmonut() == null){
             throw new RuntimeException("优惠金额不能为空");
         }
-
+        
+        /**
+         * 如果是活动商品的优惠券,则要判断优惠范围，根据优惠范围，判断是否需要传值
+         */
+        if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_HDSP.getCode())){
+        	
+        	 if(proCoupon.getOfferRange() == null){
+        		 throw new RuntimeException("优惠范围不能为空!");
+        	 }
+        	 int offerRange = proCoupon.getOfferRange().intValue();
+        	 switch (offerRange) {
+				case 1 :
+					if(proCoupon.getBrandId() == null){
+		        		 throw new RuntimeException("品牌不能为空!");
+		        	}
+					break;
+				case 2 :
+					if(StringUtils.isBlank(proCoupon.getCategoryId1()) &&
+							StringUtils.isBlank(proCoupon.getCategoryId2()) && 
+							StringUtils.isBlank(proCoupon.getCategoryId3())){
+						throw new RuntimeException("类目不能为空!");
+					}
+					break;
+				case 3 :
+					if(StringUtils.isBlank(proCoupon.getSkuId())){
+						throw new RuntimeException("商品SKUID不能为空!");
+					}
+					break;
+				default :
+					throw new RuntimeException("优惠范围传入值不合法!");
+			}
+        }
         return true;
     }
-
-
-
-
 
 }

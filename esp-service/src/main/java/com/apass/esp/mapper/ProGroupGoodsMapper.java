@@ -13,15 +13,21 @@ public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
 
 
    ProGroupGoods selectLatestByGoodsId(@Param("goodsId") Long goodsId);
-
+   
+   ProGroupGoods selectLatestBySkuId(@Param("skuId") String  skuId);
 
    ProGroupGoods selectByGoodsIdAndActivityId(@Param("goodsId") Long goodsId,
                                               @Param("activityId") Long activityId);
    ProGroupGoods selectOneByGoodsIdAndActivityId(@Param("goodsId") Long goodsId,
                                                  @Param("activityId") Long activityId);
+   ProGroupGoods selectOneBySkuIdAndActivityId(@Param("skuId") String skuId,
+		   									   @Param("activityId") Long activityId);
    List<ProGroupGoods> selectGoodsByGroupId(@Param("groupId") Long groupId);
    //查看商品是否存在其他有效的活动中
    List<ProGroupGoods> selectEffectiveGoodsByGoodsId(@Param("goodsId") Long goodsId);
+   
+   //查看商品是否存在其他有效的活动中
+   List<ProGroupGoods> selectEffectiveGoodsBySkuId(@Param("skuId") String skuId);
 
    ProGroupGoods selectOneByGodsIdAndGroupId(@Param("goodsId") Long goodsId,@Param("groupId") Long groupId);
    

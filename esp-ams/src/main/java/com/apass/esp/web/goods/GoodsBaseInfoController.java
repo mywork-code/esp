@@ -9,9 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.Response;
@@ -36,7 +33,6 @@ import com.apass.esp.domain.dto.goods.BannerPicDto;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.dto.goods.LogoFileModel;
 import com.apass.esp.domain.dto.goods.StockInfoFileModel;
-import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.CategoryDo;
 import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
@@ -46,7 +42,6 @@ import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
@@ -75,8 +70,6 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
 import com.google.common.collect.Maps;
-
-
 /**
  * 商品管理
  *
@@ -97,36 +90,25 @@ public class GoodsBaseInfoController {
     private GoodsStockInfoService goodsStockInfoService;
     @Autowired
     private UsersService usersService;
-
     @Autowired
     private SystemParamService systemParamService;
-
     @Autowired
     private MerchantInforService merchantInforService;
-
     @Autowired
     private CategoryInfoService categoryInfoService;
-
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
-    
     @Autowired
     private GoodsEsDao goodsEsDao;
     @Autowired
     private OrderService orderService;
-
-    /**
-     * 图片服务器地址
-     */
+    //图片服务器地址
     @Value("${nfs.rootPath}")
     private String rootPath;
-
     @Value("${nfs.banner}")
     private String nfsBanner;
-
     @Value("${nfs.goods}")
     private String nfsGoods;
-
     /**
      * form表单提交 Date类型数据绑定 <功能详细描述>
      *
@@ -139,7 +121,6 @@ public class GoodsBaseInfoController {
         dateFormat.setLenient(false);
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
-
     /**
      * 商品管理页面加载
      */
@@ -239,7 +220,6 @@ public class GoodsBaseInfoController {
             return Response.fail("商品类目列表加载失败！");
         }
     }
-
     /**
      * 商品管理分页json
      */
@@ -248,11 +228,6 @@ public class GoodsBaseInfoController {
     public ResponsePageBody<GoodsInfoEntity> handlePageList(HttpServletRequest request) {
         ResponsePageBody<GoodsInfoEntity> respBody = new ResponsePageBody<GoodsInfoEntity>();
         try {
-            // if (null == usersService.loadBasicInfo().getMerchantCode()) {
-            // respBody.setTotal(0);
-            // respBody.setStatus("1");
-            // return respBody;
-            // }
             String pageNo = HttpWebUtils.getValue(request, "page");
             String pageSize = HttpWebUtils.getValue(request, "rows");
             String goodsName = HttpWebUtils.getValue(request, "goodsName");
@@ -261,13 +236,11 @@ public class GoodsBaseInfoController {
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
             String goodsCategoryCombo = HttpWebUtils.getValue(request, "goodsCategoryCombo");
             String status = HttpWebUtils.getValue(request, "goodsStatus");
-
             // String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
             String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
             String categoryId3 = HttpWebUtils.getValue(request, "categoryId3");
             String goodsCode = HttpWebUtils.getValue(request, "goodsCode");
-
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             goodsInfoEntity.setGoodsCode(goodsCode);
             goodsInfoEntity.setGoodsName(goodsName);
@@ -295,47 +268,30 @@ public class GoodsBaseInfoController {
                     goodsInfoEntity.setCategoryId3(Long.valueOf(id));
                 }
             }
-
             if (!StringUtils.isAnyBlank(categoryId1, categoryId2, categoryId3)) {
                 goodsInfoEntity.setCategoryId1(Long.valueOf(categoryId1));
                 goodsInfoEntity.setCategoryId2(Long.valueOf(categoryId2));
                 goodsInfoEntity.setCategoryId3(Long.valueOf(categoryId3));
             }
-
             goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
-
             PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo,pageSize);
-
             if (pagination == null) {
                 respBody.setTotal(0);
                 respBody.setStatus("1");
                 return respBody;
             }
-            for (int i = 0; i < pagination.getDataList().size(); i++) {
-                pagination
-                        .getDataList()
-                        .get(i)
-                        .setColFalgt(
-                                goodsService.ifRate(Long.valueOf(pagination.getDataList().get(i).getId()),
-                                        systemParamService.querySystemParamInfo().get(0)
-                                                .getMerchantSettleRate()));
-
-                Long categoryId = pagination.getDataList().get(i).getCategoryId3();
-                Category category = categoryInfoService.selectNameById(categoryId);
-                if (null != category) {
-                    pagination.getDataList().get(i).setCategoryName3(category.getCategoryName());
-                }
-            }
             respBody.setTotal(pagination.getTotalCount());
             respBody.setRows(pagination.getDataList());
             respBody.setStatus(CommonCode.SUCCESS_CODE);
-        } catch (Exception e) {
+        } catch (BusinessException e) {
+            LOGGER.error("商品列表查询失败", e);
+            respBody.setMsg("商品列表查询失败");
+        }catch (Exception e) {
             LOGGER.error("商品列表查询失败", e);
             respBody.setMsg("商品列表查询失败");
         }
         return respBody;
     }
-
     /**
      * 商品基本信息录入
      *
@@ -345,51 +301,23 @@ public class GoodsBaseInfoController {
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @LogAnnotion(operationType = "商品添加", valueType = LogValueTypeEnum.VALUE_DTO)
-    public Response add(@ModelAttribute("pageModel") GoodsInfoEntity pageModel) {
+    public Response add(@ModelAttribute("pageModel") GoodsInfoEntity entity) {
         String message = SUCCESS;
         GoodsInfoEntity goodsInfo = null;
-
-        if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), 
-                pageModel.getGoodsModel(),pageModel.getGoodsName(), 
-                pageModel.getGoodsTitle())
-                || pageModel.getListTime().equals("")
-                || pageModel.getCategoryId1().equals("")
-                || pageModel.getCategoryId2().equals("")
-                || pageModel.getCategoryId3().equals("")
-                || pageModel.getSupport7dRefund().equals("")) {
-            message = "参数有误,请确认再提交！";
-            return Response.fail(message);
-        }
-
         try {
-            pageModel.setStatus(GoodStatus.GOOD_NEW.getCode());
-            pageModel.setIsDelete("01");
-            pageModel.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-            pageModel.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
-            pageModel.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
-            pageModel.setNewCreatDate(new Date());
-            pageModel.setSource("");
-            pageModel.setExternalId("");
-            pageModel.setGoodsSkuType("");
-            Integer sordNo = pageModel.getSordNo();
-            if(sordNo != null){//如果有排序字段，判断同一二级类目下是否有相同排序商品。如果后，其后的都—sordNo都+1
-                List<GoodsInfoEntity> goodsInfoEntities = goodsService.selectByCategoryId2(pageModel.getCategoryId2());
-                for (GoodsInfoEntity goodsInfoEntity:goodsInfoEntities) {
-                    if(sordNo == goodsInfoEntity.getSordNo()){
-                        Map<String,Object> params = Maps.newHashMap();
-                        params.put("categoryId2",pageModel.getCategoryId2());
-                        params.put("sordNo",sordNo);
-                        params.put("status",GoodStatus.GOOD_UP.getCode());
-                        List<GoodsInfoEntity> goods= goodsService.selectByCategoryId2AndsordNo(params);
-                        for (GoodsInfoEntity good: goods) {
-                            good.setSordNo(good.getSordNo()+1);
-                            good.setUpdateDate(new Date());
-                            goodsService.updateService(good);
-                        }
-                    }
-                }
+            if (StringUtils.isAnyBlank(entity.getMerchantCode(), 
+                    entity.getGoodsModel(),entity.getGoodsName(), 
+                    entity.getGoodsTitle())
+                    || entity.getListTime().equals("")
+                    || entity.getCategoryId1().equals("")
+                    || entity.getCategoryId2().equals("")
+                    || entity.getCategoryId3().equals("")
+                    || entity.getSupport7dRefund().equals("")) {
+                message = "商品参数缺失,请确认再提交！";
+                return Response.fail(message);
             }
-            goodsInfo = goodsService.insert(pageModel);
+            String user = SpringSecurityUtils.getCurrentUser();
+            goodsInfo = goodsService.insertGoods(entity,user);
         }catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
             return Response.fail(e.getErrorDesc());
@@ -408,31 +336,26 @@ public class GoodsBaseInfoController {
     @ResponseBody
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @LogAnnotion(operationType = "商品修改", valueType = LogValueTypeEnum.VALUE_DTO)
-    public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit) {
-        LOGGER.info("编辑商品，参数:{}",GsonUtils.toJson(pageModelEdit));
-        String message = SUCCESS;
-        if (StringUtils.isAnyBlank(pageModelEdit.getGoodsName(), pageModelEdit.getGoodsTitle())
-                || pageModelEdit.getListTime().equals("")) {
-            message = "参数有误,请确认再提交！";
-            return Response.fail(message);
-        }
+    public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity entity) {
+        LOGGER.info("编辑商品，参数:{}",GsonUtils.toJson(entity));
         try {
-//            String goodsName = URLDecoder.decode(pageModelEdit.getGoodsName(), "UTF-8");
-            pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
-            goodsService.updateServiceForBaseInfoColler(pageModelEdit);
+            if (StringUtils.isAnyBlank(entity.getGoodsName(), entity.getGoodsTitle()) || entity.getListTime().equals("")) {
+                return Response.fail("参数有误,请确认再提交！");
+            }
+            String user = SpringSecurityUtils.getCurrentUser();
+            return goodsService.updateGoods(entity,user);
         } catch (Exception e) {
             LOGGER.error("编辑商品失败", e);
             return Response.fail("编辑商品失败");
         }
-        return Response.success(message);
     }
-
     @ResponseBody
     @RequestMapping(value = "/editCategory", method = RequestMethod.POST)
     @LogAnnotion(operationType = "商品类目修改", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response editCategory(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit) {
         try {
-        	pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
+            String user = SpringSecurityUtils.getCurrentUser();
+        	pageModelEdit.setUpdateUser(user);
             return goodsAttrService.editCategory(pageModelEdit);
         } catch (Exception e) {
             LOGGER.error("编辑商品失败", e);
@@ -606,6 +529,7 @@ public class GoodsBaseInfoController {
         String id = HttpWebUtils.getValue(request, "id");
         String source = HttpWebUtils.getValue(request, "source");
         String listTime = HttpWebUtils.getValue(request, "listTime");
+        @SuppressWarnings("unused")
         String delistTime = HttpWebUtils.getValue(request, "delistTime");
         GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
         if (null == goodsEntity) {

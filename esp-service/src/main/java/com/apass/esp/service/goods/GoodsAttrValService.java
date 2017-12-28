@@ -67,7 +67,18 @@ public class GoodsAttrValService {
             Integer sort = 0;
             for(String str : arr){
                 entity = new GoodsAttrVal();
-                String s = str.split("-")[0];
+                String [] a = str.split("-");
+                String s = null;
+                if(a.length==2){
+                    s = a[0];
+                }else if(a.length>2){
+                    StringBuffer sb = new StringBuffer();
+                    for(int x=0;x<a.length-1;x++){
+                        sb.append(a[x]).append("-");
+                    }
+                    String sbs = sb.toString();
+                    s = sbs.substring(0, sbs.length()-1);
+                }
                 s= famartsubStringTrim(s);
                 entity.setAttrVal(s);
                 entity.setGoodsId(goodsId);

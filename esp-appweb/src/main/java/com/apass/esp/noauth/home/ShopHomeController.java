@@ -1140,11 +1140,27 @@ public class ShopHomeController {
      */
     @POST
     @Path("/v3/getProCouponsList")
+    @Deprecated
     public Response getProCouponsList(Map<String, Object> paramMap) {
         Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
         String userId = CommonUtils.getValue(paramMap, "userId");
         //获取商品的优惠券
         Map<String,Object>  returnMap=jdGoodsInfoService.getProCoupons(goodsId,Long.parseLong(userId));
+        return Response.success("获取商品优惠券列表成功！", returnMap);
+    }
+    /**
+     * 
+     *获取商品优惠券列表
+     * @return
+     */
+    @POST
+    @Path("/v3/getProCouponsList")
+    public Response getProCouponsList2(Map<String, Object> paramMap) {
+        Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+        String skuId=CommonUtils.getValue(paramMap, "skuId");
+        String userId = CommonUtils.getValue(paramMap, "userId");
+        //获取商品的优惠券
+        Map<String,Object>  returnMap=jdGoodsInfoService.getProCouponsBySkuId(goodsId,Long.parseLong(userId),skuId);
         return Response.success("获取商品优惠券列表成功！", returnMap);
     }
     /**
@@ -1156,6 +1172,7 @@ public class ShopHomeController {
     @Path("/v3/saveCoupon")
 	public Response giveCouponToUser(Map<String, Object> paramMap){
         Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+        String skuId = CommonUtils.getValue(paramMap, "skuId");
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String activityId = CommonUtils.getValue(paramMap, "activityId");
 		String couponId = CommonUtils.getValue(paramMap, "couponId");
@@ -1168,7 +1185,7 @@ public class ShopHomeController {
 			int count = myCouponManagerService.giveCouponToUser(new MyCouponVo(Long.parseLong(userId),Long.parseLong(couponId),Long.parseLong(activityId)));
 			if(count > 0){
 		      //获取商品的优惠券
-		      Map<String,Object>  returnMap=jdGoodsInfoService.getProCoupons(goodsId,Long.parseLong(userId));
+		      Map<String,Object>  returnMap=jdGoodsInfoService.getProCouponsBySkuId(goodsId,Long.parseLong(userId),skuId);
 		      LOGGER.info("giveCouponToUser:--------->{}",GsonUtils.toJson(returnMap));
 			  return Response.success("领取成功!",returnMap);
 			}

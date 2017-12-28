@@ -134,6 +134,7 @@
 				SELECT
 						a.id goodId,
 						a.external_id externalId,
+						b.sku_id       skuId,
 						a.goods_name   goodsName,
 						a.source       source,
 						a.goods_code   goodsCode,
@@ -149,10 +150,10 @@
 
 	]]>
 	   <if test="externalId != null">
-            AND (a.external_id = #{externalId, jdbcType=VARCHAR} or b.sku_id = #{externalId, jdbcType=VARCHAR})
-       </if>
-
+            AND (a.external_id = #{externalId, jdbcType=VARCHAR}  or b.sku_id  = #{externalId, jdbcType=VARCHAR})
+        </if>
     </select>
+
       <!--  查询可上架的京东商品数量-->
     <select id="selectJDGoodsCount" resultType="Integer">
         <![CDATA[

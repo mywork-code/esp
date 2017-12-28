@@ -1,15 +1,13 @@
 package com.apass.esp.service.offer;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import java.util.TreeSet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.LimitBuyAct;
@@ -21,6 +19,7 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.SourceType;
+import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupGoodsVo;
@@ -35,90 +34,112 @@ import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants;
-
 /**
  * Created by jie.xu on 17/9/26.
  */
 @Service
-@Transactional(rollbackFor = { Exception.class })
+@Transactional(rollbackFor = { Exception.class,RuntimeException.class})
 public class ProGroupGoodsService {
-  @Autowired
-  private ProGroupGoodsMapper groupGoodsMapper;
+	@Autowired
+	private ProGroupGoodsMapper groupGoodsMapper;
+	@Autowired
+	private ActivityCfgService activityCfgService;
 
-  @Autowired
-  private ActivityCfgService activityCfgService;
-  
-  @Autowired
-  private GoodsRepository goodsRepository;
-  
-  @Autowired
-  private ImageService imageService;
-  
-  @Autowired
-  private GoodsService goodsService;
-  
-  @Autowired
-  private ProActivityCfgMapper activityCfgMapper;
-  @Autowired
-  private GoodsStockInfoRepository goodsStockInfoRepository;
-  @Autowired
-  public LimitGoodsSkuMapper limitGoodsSkuMapper;
-  @Autowired
-  public LimitBuyActMapper limitBuyActMapper;
-  @Autowired
-  private ProGroupManagerMapper managerMapper;
-  @Autowired
-  private CategoryMapper categoryMapper;
+	@Autowired
+	private GoodsRepository goodsRepository;
 
-  public ProGroupGoodsBo getByGoodsId(Long goodsId){
-    ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
-    if(groupGoods == null){
-      return null;
-    }
+	@Autowired
+	private ImageService imageService;
 
-      ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
-      if(activityCfg == null){
-        return null;
-      }
-      ProGroupGoodsBo bo = new ProGroupGoodsBo();
-      bo.setActivityId(groupGoods.getActivityId());
-      bo.setActivityPrice(groupGoods.getActivityPrice());
-      bo.setGoodsId(goodsId);
-      bo.setValidActivity(ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg));
-      return bo;
-  }
-  //判断商品是否已经关联了有效的活动
-  public ProGroupGoodsBo getByGoodsIdStatus(Long goodsId){
-	    ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
-	    if(groupGoods == null){
-	      return null;
-	    }
+	@Autowired
+	private GoodsService goodsService;
 
-	      ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
-	      if(activityCfg == null){
-	        return null;
-	      }
-	      ProGroupGoodsBo bo = new ProGroupGoodsBo();
-	      bo.setActivityId(groupGoods.getActivityId());
-	      bo.setActivityPrice(groupGoods.getActivityPrice());
-	      bo.setGoodsId(goodsId);
-	      ActivityStatus activityStatus=activityCfgService.getActivityStatus(activityCfg);
-	      //当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
-	      if(ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO==activityStatus){
-	    	  bo.setValidActivity(true);
-	      }else{
-	    	  bo.setValidActivity(false);
-	      }
-	      return bo;
-	  }
+	@Autowired
+	private ProActivityCfgMapper activityCfgMapper;
+	@Autowired
+	private GoodsStockInfoRepository goodsStockInfoRepository;
+	@Autowired
+	public LimitGoodsSkuMapper limitGoodsSkuMapper;
+	@Autowired
+	public LimitBuyActMapper limitBuyActMapper;
+	@Autowired
+	private ProGroupManagerMapper managerMapper;
+	@Autowired
+	private CategoryMapper categoryMapper;
+	@Autowired
+	private JdGoodsInfoService jdGoodsInfoService;
+
+	public ProGroupGoodsBo getByGoodsId(Long goodsId){
+		ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
+		if(groupGoods == null){
+			return null;
+		}
+		ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
+		if(activityCfg == null){
+			return null;
+		}
+		ProGroupGoodsBo bo = new ProGroupGoodsBo();
+		bo.setActivityId(groupGoods.getActivityId());
+		bo.setActivityPrice(groupGoods.getActivityPrice());
+		bo.setGoodsId(goodsId);
+		bo.setSkuId(groupGoods.getSkuId());
+		bo.setValidActivity(ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg));
+		return bo;
+	}
+	/**
+	 * 通过skuId查询
+	 * @param goodsId
+	 * @param skuId
+	 * @return
+	 */
+	public ProGroupGoodsBo getBySkuId(Long goodsId,String skuId){
+		ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestBySkuId(skuId);
+		if(groupGoods == null){
+			return null;
+		}
+		ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
+		if(activityCfg == null){
+			return null;
+		}
+		ProGroupGoodsBo bo = new ProGroupGoodsBo();
+		bo.setActivityId(groupGoods.getActivityId());
+		bo.setActivityPrice(groupGoods.getActivityPrice());
+		bo.setGoodsId(goodsId);
+		bo.setSkuId(groupGoods.getSkuId());
+		bo.setValidActivity(ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg));
+		return bo;
+	}
+	//判断商品是否已经关联了有效的活动
+	public ProGroupGoodsBo getByGoodsIdStatus(Long goodsId){
+		ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
+		if(groupGoods == null){
+			return null;
+		}
+		ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
+		if(activityCfg == null){
+			return null;
+		}
+		ProGroupGoodsBo bo = new ProGroupGoodsBo();
+		bo.setActivityId(groupGoods.getActivityId());
+		bo.setActivityPrice(groupGoods.getActivityPrice());
+		bo.setGoodsId(goodsId);
+		ActivityStatus activityStatus=activityCfgService.getActivityStatus(activityCfg);
+		//当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
+		if(ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO==activityStatus){
+			bo.setValidActivity(true);
+		}else{
+			bo.setValidActivity(false);
+		}
+		return bo;
+	}
 	public ProGroupGoods selectByGoodsId(Long goodsId){
 		return groupGoodsMapper.selectLatestByGoodsId(goodsId);
 	}
-	
+
 	public Integer insertSelective(ProGroupGoods proGroupGoods){
 		return groupGoodsMapper.insertSelective(proGroupGoods);
 	}
@@ -126,7 +147,7 @@ public class ProGroupGoodsService {
 	public Integer updateGoods(ProGroupGoods proGroupGoods){
 		return groupGoodsMapper.updateGoods(proGroupGoods);
 	}
-	
+
 	//查看该活动下是否已经存在成功添加到分组的商品
 	public Integer checkActivityGroupGoods(Long activityId){
 		return groupGoodsMapper.checkActivityGroupGoods(activityId);
@@ -151,17 +172,29 @@ public class ProGroupGoodsService {
 					}
 				}
 			}
-
 		}
 		return result;
 	}
-	
-	/**
-	 *  判断该商品是否参加了限时购活动，如果参加了且时间有冲突
-	 * @param activityId
-	 * @param goodsId
-	 * @return
-	 */
+	//判断商品是否存在其他有效的活动中
+	public Boolean selectEffectiveGoodsBySkuId(String skuId) {
+		Boolean result = true;
+		List<ProGroupGoods> list = groupGoodsMapper.selectEffectiveGoodsBySkuId(skuId);
+		if (null != list && list.size() > 0) {
+			for (ProGroupGoods proGroupGoods : list) {
+				ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoods.getActivityId());
+				if (null != activityCfg) {
+					ActivityStatus activityStatus = activityCfgService.getActivityStatus(activityCfg);
+					// 当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
+					if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
+						result = false;
+						break;
+					}
+				}
+			}
+		}
+		return result;
+	}
+	// 判断该商品是否参加了限时购活动，如果参加了且时间有冲突
 	public Boolean getStatusByGoodId(String activityId, Long goodsId) {
 		Date proActivityStartDate = null;//满减活动的开始时间
 		Date proActivityEndDate = null;//满减活动的结束时间
@@ -204,15 +237,14 @@ public class ProGroupGoodsService {
 		}
 		return true;
 	}
-	
-	
+
 	/**
 	 *  判断该商品是否参加了限时购活动，如果参加了且时间有冲突
 	 * @param activityId
 	 * @param goodsId
 	 * @return
 	 */
-	public Boolean getStatusByGoodId(String activityId, String skuId) {
+	public Boolean getStatusBySkuId(String activityId, String skuId) {
 		Date proActivityStartDate = null;//满减活动的开始时间
 		Date proActivityEndDate = null;//满减活动的结束时间
 		Date limitStartDate = null;// 限时购活动开始时间
@@ -222,7 +254,7 @@ public class ProGroupGoodsService {
 			proActivityStartDate=activityCfg.getStartTime();
 			proActivityEndDate=activityCfg.getEndTime();
 		}
-		
+
 		LimitGoodsSku entity = new LimitGoodsSku();
 		entity.setSkuId(skuId);
 		entity.setUpLoadStatus((byte) 1);
@@ -234,7 +266,7 @@ public class ProGroupGoodsService {
 					limitStartDate = limitBuyAct.getStartDate();
 					limitEndDate = limitBuyAct.getEndDate();
 				}
- 				if(null !=limitBuyAct && limitBuyAct.getEndDate().getTime() < new Date().getTime()){
+				if(null !=limitBuyAct && limitBuyAct.getEndDate().getTime() < new Date().getTime()){
 					continue;
 				}
 				if(null !=limitStartDate && null !=limitEndDate && null !=proActivityStartDate && null !=proActivityEndDate){
@@ -247,14 +279,14 @@ public class ProGroupGoodsService {
 		}
 		return true;
 	}
+
 	/**
 	 * 编辑排序
 	 * @param vo
 	 * @return
 	 */
-	@Transactional(rollbackFor = { Exception.class})
 	public Integer editSortGroup(GoodsOrderSortVo vo){
-		
+
 		ProGroupGoods managerSub = groupGoodsMapper.selectByPrimaryKey(vo.getSubjectId());
 		ProGroupGoods managerPassive = groupGoodsMapper.selectByPrimaryKey(vo.getPassiveId());
 		if(null == managerSub || null == managerPassive){
@@ -267,13 +299,13 @@ public class ProGroupGoodsService {
 		Long subSort = managerSub.getOrderSort();
 		Long passiveSort = managerPassive.getOrderSort();
 		Date date = new Date();
-		
-		
+
+
 		managerSub.setOrderSort(passiveSort);
 		managerSub.setUpdatedTime(date);
 		managerSub.setUpdateUser(vo.getUserName());
-		
-		
+
+
 		managerPassive.setOrderSort(subSort);
 		managerPassive.setUpdatedTime(date);
 		managerPassive.setUpdateUser(vo.getUserName());
@@ -285,7 +317,6 @@ public class ProGroupGoodsService {
 		}
 		return 1;
 	}
-	
 
 	public Integer updateProGroupGoods(ProGroupGoods proGroupGoods){
 		return groupGoodsMapper.updateByPrimaryKeySelective(proGroupGoods);
@@ -293,11 +324,13 @@ public class ProGroupGoodsService {
 	public ProGroupGoods selectOneByGoodsIdAndActivityId(Long goodsId,Long activityId){
 		return groupGoodsMapper.selectOneByGoodsIdAndActivityId(goodsId,activityId);
 	}
-	
+	public ProGroupGoods selectOneBySkuIdAndActivityId(String skuId,Long activityId){
+		return groupGoodsMapper.selectOneBySkuIdAndActivityId(skuId,activityId);
+	}
 	public ProGroupGoods selectOneByGodsIdAndGroupId(Long goodsId,Long groupId){
 		return groupGoodsMapper.selectOneByGodsIdAndGroupId(goodsId, groupId);
 	}
-	
+
 	public int getMaxSortOrder(Long groupId){
 		return groupGoodsMapper.getMaxSortOrder(groupId);
 	}
@@ -305,46 +338,45 @@ public class ProGroupGoodsService {
 	 * 获取活动配置信息
 	 * @param query
 	 * @return
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
-	public ResponsePageBody<ProGroupGoodsVo> getProGroupGoodsListPage(ProGroupGoodsQuery query) throws BusinessException{
-		ResponsePageBody<ProGroupGoodsVo> pageBody = new ResponsePageBody<ProGroupGoodsVo>();
+	public ResponsePageBody<ProGroupGoodsVo> getProGroupGoodsListPage(ProGroupGoodsQuery query) throws BusinessException{ResponsePageBody<ProGroupGoodsVo> pageBody = new ResponsePageBody<ProGroupGoodsVo>();
 		List<ProGroupGoodsVo> configList = groupGoodsMapper.getProGroupGoodsListPage(query);
 		for (ProGroupGoodsVo proGroupGoodsVo : configList) {
-			/**
-			 * 商品
-			 */
+			if(StringUtils.equals(proGroupGoodsVo.getDetailDesc(), YesNo.NO.getCode())){//此处同本方法403行，保持一致
+				continue;
+			}
+			//商品
 			GoodsInfoEntity goods = goodsRepository.select(proGroupGoodsVo.getGoodsId());
-			proGroupGoodsVo.setGoodsName(goods.getGoodsName());
-			proGroupGoodsVo.setGoodsStatus(goods.getStatus());
-			
-			/**
-			 * 第三方产品
-			 */
-			String skuId = proGroupGoodsVo.getSkuId();
-			List<GoodsStockInfoEntity> stocks = goodsStockInfoRepository.loadByGoodsId(goods.getGoodId());
-			GoodsStockInfoEntity stock = null;
-			if(CollectionUtils.isNotEmpty(stocks)){
-				if(stocks.size() == 1){
-					stock = stocks.get(0);
-				}else{
-					for (GoodsStockInfoEntity s : stocks) {
-						if(StringUtils.equals(s.getSkuId(), skuId)){
-							stock = s;
-							break;
+			if(goods!=null){
+				proGroupGoodsVo.setGoodsName(goods.getGoodsName());
+				proGroupGoodsVo.setGoodsStatus(goods.getStatus());
+				//第三方产品
+				String skuId = proGroupGoodsVo.getSkuId();
+				List<GoodsStockInfoEntity> stocks = goodsStockInfoRepository.loadByGoodsId(goods.getGoodId());
+				GoodsStockInfoEntity stock = null;
+				if(CollectionUtils.isNotEmpty(stocks)){
+					if(stocks.size() == 1){
+						stock = stocks.get(0);
+					}else{
+						for (GoodsStockInfoEntity s : stocks) {
+							if(StringUtils.equals(s.getSkuId(), skuId)){
+								stock = s;
+								break;
+							}
 						}
 					}
+					proGroupGoodsVo.setGoodsCostPrice(stock.getGoodsCostPrice());
+					proGroupGoodsVo.setGoodsPrice(stock.getGoodsPrice());
 				}
-				proGroupGoodsVo.setGoodsCostPrice(stock.getGoodsCostPrice());
-				proGroupGoodsVo.setGoodsPrice(stock.getGoodsPrice());
+				Category categroy = categoryMapper.selectByPrimaryKey(goods.getCategoryId3());
+				if(null != categroy){
+					proGroupGoodsVo.setGoodsCategory(categroy.getCategoryName());
+				}
 			}
 			ProGroupManager group = managerMapper.selectByPrimaryKey(proGroupGoodsVo.getGroupId());
 			if(null != group){
 				proGroupGoodsVo.setGroupName(group.getGroupName());
-			}
-			Category categroy = categoryMapper.selectByPrimaryKey(goods.getCategoryId3());
-			if(null != categroy){
-				proGroupGoodsVo.setGoodsCategory(categroy.getCategoryName());
 			}
 		}
 		// 因为voList在数据库查询时就已经跟进order排序来查询
@@ -361,9 +393,7 @@ public class ProGroupGoodsService {
 				}
 			}
 		}
-
 		Integer count = groupGoodsMapper.getProGroupGoodsListPageCount(query);
-		
 		pageBody.setTotal(count);
 		pageBody.setRows(configList);
 		pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
@@ -375,7 +405,7 @@ public class ProGroupGoodsService {
 	 * @return
 	 */
 	public List<GroupGoodsVo> getGroupGoodsByGroupId(Long groupId){
-		
+
 		List<GroupGoodsVo> voList = new ArrayList<GroupGoodsVo>();
 		List<ProGroupGoods> goodsList = groupGoodsMapper.selectGoodsByGroupId(groupId);
 		for (ProGroupGoods goods : goodsList) {
@@ -400,57 +430,87 @@ public class ProGroupGoodsService {
 			vo.setOnShelf(goodsService.validateGoodOnShelf(goodsId));
 			voList.add(vo);
 		}
-		
+
 		return voList;
 	}
-
-  /**
-   * 判断商品活动是否失效
-   */
-  public ActivityStatus isValidActivity(String activityId,Long goodsId){
-    if(StringUtils.isEmpty(activityId)){
-      return ActivityStatus.NO;
-    }
-    ProGroupGoods groupGoods = groupGoodsMapper.selectByGoodsIdAndActivityId(goodsId,Long.valueOf(activityId));
-    if(groupGoods == null){
-      return ActivityStatus.NO;
-    }
-    ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
-    if(activityCfg == null){
-      return ActivityStatus.NO;
-    }
-    return activityCfgService.getActivityStatus(activityCfg);
-  }
-
-
+	/**
+	 * 判断商品活动是否失效
+	 */
+	public ActivityStatus isValidActivity(String activityId,Long goodsId){
+		if(StringUtils.isEmpty(activityId)){
+			return ActivityStatus.NO;
+		}
+		ProGroupGoods groupGoods = groupGoodsMapper.selectByGoodsIdAndActivityId(goodsId,Long.valueOf(activityId));
+		if(groupGoods == null){
+			return ActivityStatus.NO;
+		}
+		ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
+		if(activityCfg == null){
+			return ActivityStatus.NO;
+		}
+		return activityCfgService.getActivityStatus(activityCfg);
+	}
 	public ProGroupGoods selectByPrimaryKey(Long id) {
 		return groupGoodsMapper.selectByPrimaryKey(id);
 	}
-	
+
 	/**
-     * 根据商品的Id,获取活动的Id(如果活动实效，返回空)
-     * @param goodId
-     * @return
-     */
-    public Long getActivityId(Long goodId){
-    	if(null == goodId){
-    		return null;
-    	}
-    	List<ProGroupGoods> goodList= groupGoodsMapper.selectEffectiveGoodsByGoodsId(goodId);
-    	Date now = new Date();
-    	if(CollectionUtils.isNotEmpty(goodList)){
-    		for(int i = goodList.size()-1;i>=0;i--){
-    			ProGroupGoods good = goodList.get(i);
-    			if(null != good.getActivityId()){
-    				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(good.getActivityId());
-    				if(cfg.getStartTime().getTime() <= now.getTime() 
-     						&& now.getTime()<= cfg.getEndTime().getTime()){
-    					return cfg.getId();
-    				}
-    			}
-    		}
-    	}
-    	
-    	return null;
-    }
+	 * 根据商品的Id,获取活动的Id(如果活动实效，返回空)
+	 * @param goodId
+	 * @return
+	 */
+	public Long getActivityId(Long goodId){
+		if(null == goodId){
+			return null;
+		}
+		List<ProGroupGoods> goodList= groupGoodsMapper.selectEffectiveGoodsByGoodsId(goodId);
+		Date now = new Date();
+		if(CollectionUtils.isNotEmpty(goodList)){
+			for(int i = goodList.size()-1;i>=0;i--){
+				ProGroupGoods good = goodList.get(i);
+				if(null != good.getActivityId()){
+					ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(good.getActivityId());
+					if(cfg.getStartTime().getTime() <= now.getTime()
+							&& now.getTime()<= cfg.getEndTime().getTime()){
+						return cfg.getId();
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+	/**
+	 * 导入商品后，添加至分组时需校验是否存在同类sku，如存在，其他sku不能再添加至其他分组
+	 * 例：iphone x 64g，256g，将64g添加至分组1,256g不可在添加至其他分组（无添加至按钮）
+	 * @return
+	 */
+	public Boolean goodsSimilarCheck(String activityId,String groupNameId,String goodsId,String skuId){
+		GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+		if(null ==goodsInfo ){
+			return false;
+		}
+		TreeSet<String>  similarSkuIds=new TreeSet<>();
+		if(StringUtils.equals(goodsInfo.getSource(), SourceType.WZ.getCode()) || StringUtils.equals(goodsInfo.getSource(), SourceType.JD.getCode())){
+			similarSkuIds=jdGoodsInfoService.getJdSimilarSkuIdList(skuId);
+		}else{
+			// 商品规格
+			List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(Long.parseLong(goodsId));
+			for (GoodsStockInfoEntity goodsStockInfoEntity : jdGoodsStockInfoList) {
+				similarSkuIds.add(goodsStockInfoEntity.getSkuId());
+			}
+		}
+
+		if(CollectionUtils.isNotEmpty(similarSkuIds)){
+			similarSkuIds.remove(skuId);
+			for (String string : similarSkuIds) {
+				ProGroupGoods proGroupGoods = groupGoodsMapper.selectOneBySkuIdAndActivityId(string, Long.parseLong(activityId));
+				if(null !=proGroupGoods && StringUtils.equals(proGroupGoods.getStatus(), "S") && !StringUtils.equals(groupNameId, proGroupGoods.getGroupId()+"")){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 }

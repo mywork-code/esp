@@ -758,7 +758,7 @@
 			FROM
 			t_esp_order_info
 		WHERE
-			(orderstatus = 'D07' or  orderstatus = 'D08') and source = 'jd' and pre_stock_status = '1'
+			(orderstatus = 'D07' or  orderstatus = 'D08') and source = 'wz' and pre_stock_status = '1'
 		]]>
 	</select>
 	<select id="getOrderByOrderStatusAndPreStatus" resultType="OrderInfoEntity">
