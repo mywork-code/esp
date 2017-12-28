@@ -180,11 +180,6 @@ public class ProGroupGoodsExportFikeController {
 							return Response.fail("该商品已添加至其他分组！");
 						}
 					}
-//					//同类商品校验
-//					Boolean falge=proGroupGoodsService.goodsSimilarCheck(activityId, groupNameId, goods[i], skuIds[i]);
-//					if(!falge){
-//						return Response.fail("同类商品不能再添加至其他分组");
-//					}
 					int groupSortId = proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
 					proGroupGoods.setOrderSort(Long.parseLong(groupSortId + ""));
 					proGroupGoods.setGroupId(Long.parseLong(groupNameId));
@@ -208,7 +203,7 @@ public class ProGroupGoodsExportFikeController {
 					for (String string : similarSkuIds) {
 						ProGroupGoods proGroupGoods2 = proGroupGoodsService
 								.selectOneBySkuIdAndActivityId(string, Long.parseLong(activityId));
-						if(null != proGroupGoods){
+						if(null != proGroupGoods2){
 							int groupSortId2 = proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
 							proGroupGoods2.setOrderSort(Long.parseLong(groupSortId2 + ""));
 							proGroupGoods2.setGroupId(Long.parseLong(groupNameId));
