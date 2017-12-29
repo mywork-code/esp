@@ -305,7 +305,6 @@ $(function() {
 	                		if($(".border-circle").hasClass('disabled')){
 	                			return;
 	                		}
-	                		debugger;
 	                		$(".border-circle").addClass('disabled');
 	                		var $that = $(this).find('.switch-circle');
 	                		
