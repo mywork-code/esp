@@ -703,7 +703,10 @@ public class GoodsBaseInfoController {
                         	}
                         	for (String string : similarSkuIds) {
                         		GoodsInfoEntity goodsInfo=goodsService.selectGoodsByExternalId(string);
-                        		Goods goodsfromES=IndexManager.goodSearchFromESBySkuId(goodsInfo.getId());
+                        		Goods goodsfromES=null;
+                        		if(null !=goodsInfo){
+                        			goodsfromES=IndexManager.goodSearchFromESBySkuId(goodsInfo.getId());
+                        		}
                         		if(null !=goodsfromES){//该商品的相似规格已经在ES中存在
                         			goodsInESNumFalg=false;
                         			break;

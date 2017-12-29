@@ -1138,7 +1138,7 @@ public class ShopHomeController {
      *获取商品优惠券列表
      * @return
      */
-    @POST
+ /*   @POST
     @Path("/v3/getProCouponsList")
     @Deprecated
     public Response getProCouponsList(Map<String, Object> paramMap) {
@@ -1147,7 +1147,7 @@ public class ShopHomeController {
         //获取商品的优惠券
         Map<String,Object>  returnMap=jdGoodsInfoService.getProCoupons(goodsId,Long.parseLong(userId));
         return Response.success("获取商品优惠券列表成功！", returnMap);
-    }
+    }*/
     /**
      * 
      *获取商品优惠券列表
