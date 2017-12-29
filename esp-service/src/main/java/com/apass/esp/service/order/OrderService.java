@@ -3869,4 +3869,10 @@ public class OrderService {
 			buydetailMapper.deleteByPrimaryKey(limit.getId());
 		}
 	}
+
+    public List<CheckAccountOrderDetail> selectOrderDetailsByOrderIds(List<Long> orderIds) {
+        Map<String,Object> paramMap = Maps.newHashMap();
+        paramMap.put("orderIds",orderIds);
+        return orderInfoRepository.selectOrderDetailsByOrderIds(paramMap);
+    }
 }

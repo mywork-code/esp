@@ -66,6 +66,19 @@ public class CheckAccountOrderDetail {
      */
     private String parTxnType;
 
+    /**
+     *成本价
+     */
+    private BigDecimal goodsCostPrice;
+
+    public BigDecimal getGoodsCostPrice() {
+        return goodsCostPrice;
+    }
+
+    public void setGoodsCostPrice(BigDecimal goodsCostPrice) {
+        this.goodsCostPrice = goodsCostPrice;
+    }
+
     public String getMainOrderId() {
         return mainOrderId;
     }
