@@ -301,33 +301,29 @@ $(function(){
 			if(value == 'Y'){
 				$(".couponsDiv").show();
 				$("#addOrDeleteButtonClass").show();
-				//加载所有活动优惠券
-				$(".issueCouponInput").combobox({
-					method: "get",
-					url: ctx + "/application/coupon/management/loadp",
-					valueField: 'id',
-					textField: 'name',
-					queryParams: {
-						"extendType" : "YHLQ",
-					},
-
-					onLoadSuccess: function () {
-						$(this).combobox('setValue','');
-						//加载完成后,设置选中第一项
-						// var val = $(this).combobox('getData');
-						// for (var item in val[0]) {
-						// 	if (item == 'id') {
-						// 		$(this).combobox('select', val[0][item]);
-						// 	}
-						// }
-					},
-				});
 			}else{
 				clearTextBox('1');
 				$(".couponsDiv").css("display","none");
 			}
 		}
 	);
+	//加载所有活动优惠券
+	$(".issueCouponInput").combobox({
+		method: "get",
+		// url: ctx + "/application/coupon/management/loadp",
+		valueField: 'id',
+		textField: 'name',
+		queryParams: {
+			"extendType" : "YHLQ",
+		},
+		onShowPanel : function(){
+			$(this).combobox('options').url= ctx + "/application/coupon/management/loadp",
+			$(this).combobox('reload');
+		},
+		onLoadSuccess: function () {
+			$(this).combobox('setValue','');
+		},
+	});
 
 	//手动发放优惠券---->添加优惠券种类
 	$('#issueAddCoupon').bind('click', function(){
