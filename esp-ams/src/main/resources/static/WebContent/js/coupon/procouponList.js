@@ -406,6 +406,9 @@ $(function(){
 	//推广方式类型监听事件
 	$('#addExtendType').combobox({
 		onChange: function(param){
+			// $("#addCouponSill").textbox("clear");
+			// $("#addDiscountAmonut").textbox("clear");
+
 			if(param == 'YHLQ'){
 				$("#rangeTr").show();
 				$("#offerRange").combobox("setValue","");
@@ -424,6 +427,8 @@ $(function(){
 				$(".rangeTr").css("display","none");
 
 				$("#addType").combobox('setValue','');
+				$("#addType1").combobox("clear");
+
 				$("#typeTd1").show();
 				$("#typeTd2").css("display","none");
 				$("#effectiveTimeTr").show()
@@ -451,6 +456,15 @@ $(function(){
 				$("#goosCategoryTr_range").css("display","none");
 				$("#externalIdTr_range").show();
 			}
+		}
+	});
+	// $("#skuId").bind("blur", function () {
+	// 	alert("");
+	// });
+	$("#skuId").next("span").children().first().blur(function(){
+		//blur事件处理代码
+		if($("#skuId").textbox("getValue").length>20){
+			$("#skuId").textbox("clear")
 		}
 	});
 
@@ -516,34 +530,6 @@ $(function(){
 				}
 			}
 		}
-		if($("#sillType").val() == "Y"){
-			if($("#addCouponSill").textbox("getValue")==null || $("#addCouponSill").textbox("getValue") == ""){
-				$.messager.alert('<span style="color: black">提示</span>','请输入优惠门槛');
-				return false;
-			}
-
-			var couponSill = parseInt($("#addCouponSill").textbox("getValue"));
-			if(couponSill<0){
-				$.messager.alert('<span style="color: black">提示</span>','优惠门槛只能输入正整数');
-				return false;
-			}
-
-			if(couponSill<$("#addDiscountAmonut").textbox("getValue")){
-				$.messager.alert('<span style="color: black">提示</span>','优惠金额不能大于优惠门槛');
-				return false;
-			}
-		}
-
-
-		if($("#addDiscountAmonut").textbox("getValue")==null || $("#addDiscountAmonut").textbox("getValue") == ""){
-			$.messager.alert('<span style="color: black">提示</span>','请输入优惠金额');
-			return false;
-		}
-		var dsicountAmount = parseInt($("#addDiscountAmonut").textbox("getValue"));
-		if(dsicountAmount<0){
-			$.messager.alert('<span style="color: black">提示</span>','优惠金额只能输入正整数');
-			return false;
-		}
 
 		if($("#addExtendType").textbox("getValue") == "YHLQ"){
 			if($("#offerRange").combobox("getValue")==null || $("#offerRange").combobox("getValue")==""){
@@ -579,6 +565,36 @@ $(function(){
 			}
 
 		}
+		if($("#sillType").val() == "Y"){
+			if($("#addCouponSill").textbox("getValue")==null || $("#addCouponSill").textbox("getValue") == ""){
+				$.messager.alert('<span style="color: black">提示</span>','请输入优惠门槛');
+				return false;
+			}
+
+			var couponSill = parseInt($("#addCouponSill").textbox("getValue"));
+			if(couponSill<0){
+				$.messager.alert('<span style="color: black">提示</span>','优惠门槛只能输入正整数');
+				return false;
+			}
+
+			if(couponSill<$("#addDiscountAmonut").textbox("getValue")){
+				$.messager.alert('<span style="color: black">提示</span>','优惠金额不能大于优惠门槛');
+				return false;
+			}
+		}
+
+
+		if($("#addDiscountAmonut").textbox("getValue")==null || $("#addDiscountAmonut").textbox("getValue") == ""){
+			$.messager.alert('<span style="color: black">提示</span>','请输入优惠金额');
+			return false;
+		}
+		var dsicountAmount = parseInt($("#addDiscountAmonut").textbox("getValue"));
+		if(dsicountAmount<0){
+			$.messager.alert('<span style="color: black">提示</span>','优惠金额只能输入正整数');
+			return false;
+		}
+
+
 
 		return true;
 	}

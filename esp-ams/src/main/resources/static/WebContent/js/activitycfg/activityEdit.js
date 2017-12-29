@@ -235,6 +235,7 @@ $(function () {
                                 $.messager.alert("<span style='color: black'>提示</span>", data.msg,'info');
                                 $('#activityGroupList').datagrid("load", {"activityId": activityId});
                             } else {
+                                $("#addGroupDiv").dialog("close");
                                 $.messager.alert("<span style='color: black'>提示</span>", data.msg,'info');
                             }
                         }

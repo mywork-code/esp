@@ -30,7 +30,7 @@ function exportFile (id, fileName, params)
 					attrs["marketPrice"]="市场价";
 					attrs["goodsCostPrice"]="成本价";  
 					attrs["goodsPrice"]="商品价格";
-					attrs["skuid"]="externalId";
+					attrs["externalId"]="skuid";
 				}
 				attrs[n] = columns[i].title;
 			}
