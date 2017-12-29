@@ -1651,7 +1651,7 @@ public class GoodsService {
    * @return
    */
   public GoodsInfoEntity insertJdGoods(GoodsInfoEntity entity) {
-    goodsDao.insert(entity);
+    goodsDao.insertSelective(entity);
     entity.setGoodId(entity.getId());
     return entity;
   }
