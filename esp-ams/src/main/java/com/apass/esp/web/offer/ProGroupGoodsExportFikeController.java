@@ -173,6 +173,10 @@ public class ProGroupGoodsExportFikeController {
 			for (int i = 0; i < goods.length; i++) {
 				ProGroupGoods proGroupGoods = proGroupGoodsService
 						.selectOneBySkuIdAndActivityId(skuIds[i], Long.parseLong(activityId));
+				if (null != proGroupGoods && StringUtils.equals(proGroupGoods.getStatus(), "S")
+						&& StringUtils.equals(proGroupGoods.getGroupId() + "", groupNameId)) {
+					continue;
+				}
 				if (null != proGroupGoods && !proGroupGoods.getGroupId().equals(groupNameId)) {
 					if (proGroupGoods.getStatus().equals("S")) {
 						if (count > 1) {
