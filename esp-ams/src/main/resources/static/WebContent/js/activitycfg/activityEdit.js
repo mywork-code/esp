@@ -213,32 +213,41 @@ $(function () {
             buttons: [{
                 text: "确定",
                 handler: function () {
-                    var activityId = $("#addGoodsToGroupActivityId").val();
-                    var groupNameAdd = $("#groupNameAdd").textbox('getValue');
-                    var sordGroupAdd = $("#sordGroupAdd").textbox('getValue');
-                    if(groupNameAdd.length == 0){
-                    	$.messager.alert("<span style='color: black;'>提示</span>","分组名称不能为空!","info");
-                    	return;
-                    }
-                    if(sordGroupAdd.length == 0){
-                    	$.messager.alert("<span style='color: black;'>提示</span>","分组排序不能为空!","info");
-                    	return;
-                    }
-                    $.ajax({
-                        type: "POST",
-                        url: ctx + '/group/manager/add/save',
-                        data: {"groupName": groupNameAdd, "orderSort": sordGroupAdd, "activityId": activityId},
-                        success: function (data) {
-                            ifLogout(data);
-                            if (data.status == 1) {
-                                $("#addGroupDiv").dialog("close");
-                                $.messager.alert("<span style='color: black'>提示</span>", data.msg,'info');
-                                $('#activityGroupList').datagrid("load", {"activityId": activityId});
-                            } else {
-                                $.messager.alert("<span style='color: black'>提示</span>", data.msg,'info');
+                    $.messager.confirm("<span style='color: black'>确认对话框</span>", "你确定要提交吗？", function(r){
+                        if (r){
+                            var activityId = $("#addGoodsToGroupActivityId").val();
+                            var groupNameAdd = $("#groupNameAdd").textbox('getValue');
+                            var sordGroupAdd = $("#sordGroupAdd").textbox('getValue');
+                            if(groupNameAdd.length == 0){
+                                $.messager.alert("<span style='color: black;'>提示</span>","分组名称不能为空!","info");
+                                return;
                             }
+                            if(sordGroupAdd.length == 0){
+                                $.messager.alert("<span style='color: black;'>提示</span>","分组排序不能为空!","info");
+                                return;
+                            }
+                            $.ajax({
+                                type: "POST",
+                                url: ctx + '/group/manager/add/save',
+                                data: {"groupName": groupNameAdd, "orderSort": sordGroupAdd, "activityId": activityId},
+                                success: function (data) {
+                                    ifLogout(data);
+                                    if (data.status == 1) {
+                                        $("#addGroupDiv").dialog("close");
+                                        $.messager.alert("<span style='color: black'>提示</span>", data.msg,'info');
+                                        $('#activityGroupList').datagrid("load", {"activityId": activityId});
+                                    } else {
+                                        $("#addGroupDiv").dialog("close");
+                                        $.messager.alert("<span style='color: black'>提示</span>", data.msg,'info');
+                                    }
+                                }
+                            });
                         }
                     });
+
+
+
+
 
                 }
             }, {
