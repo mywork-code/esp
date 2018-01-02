@@ -82,12 +82,12 @@ public class BsdiffinfoService {
 		//先上传zip文件，方便后续解压
 		FileUtilsCommons.uploadFilesUtil(rootPath,zipPath+zipName,bsdiffFile);
 		if(!(directory.listFiles().length > 0)){//第一次上传
-			//解压缩,并重成文件清单
+			//解压缩,并重成文件清单,
 //			ZipUtil.unZipFiles(rootPath+zipPath+zipName,rootPath+zipPath);
-			new ZipUtil().unZipFiles(rootPath,zipPath,zipName);
+			String json = new ZipUtil().unZipFiles(rootPath,zipPath,zipName);
 
 			//合并并生成文件清单
-
+			mergeFile(rootPath,zipPath);
 
 
 			/*int count = bsdiffInfoEntityMapper.insertSelective(bsdiffInfoEntity);//先操作数据库，再上传文件。
@@ -115,6 +115,10 @@ public class BsdiffinfoService {
 			}
 		}
     }
+
+	private void mergeFile(String rootPath, String zipPath) {
+		
+	}
 
 	/**
 	 *  根据用版本号查询数据是否已经存在
