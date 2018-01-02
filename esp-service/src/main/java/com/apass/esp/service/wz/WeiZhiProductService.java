@@ -2,6 +2,7 @@ package com.apass.esp.service.wz;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
-import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
@@ -256,6 +256,28 @@ public class WeiZhiProductService {
 			}
 		}
         return value;
+    }
+    /**
+     * 微知商品是否支持7天无理由退货,Y、N（单个商品）和校验是否可售
+	 * @throws Exception 
+     */
+    public Map<String,Object> getsupport7dRefundAndCheckSales(String skuIds) throws Exception {
+    	Map<String,Object> map=new HashMap<>();
+        String value = "N";
+		Boolean falge = false;
+        CheckSale checkSale = weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
+		if (null != checkSale.getResult() && checkSale.getResult().size() > 0) {
+			WZCheckSale wZCheckSale = checkSale.getResult().get(0);
+			if (1 == wZCheckSale.getIs7ToReturn()) {
+				value = "Y";
+			}
+			if (1 == wZCheckSale.getSaleState()) {
+				falge = true;
+			}
+		}
+		map.put("support7dRefund", value);
+		map.put("checkGoodsSalesOrNot", falge);
+        return map;
     }
 	/**
 	 * 商品可售验证接口(多个商品验证)

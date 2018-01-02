@@ -112,21 +112,16 @@
 			</tr>
 			<tr>
 				<td colspan="8" align="right">
-					<a href="javascript:void(0);"
-					   class="easyui-linkbutton search-btn"
-					   data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp;
+					<a href="javascript:void(0);" class="easyui-linkbutton search-btn" data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp;
 					<@apass.role value="GOODS_INFO_ADD">
-					<#if merchantStatus??&&merchantStatus=="1">
-						<a href="javascript:void(0);" class="easyui-linkbutton add-btn"
-						   data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;</a>&nbsp;&nbsp;
+					<#if merchantStatus??&&merchantStatus=="1"&&merchantCode??&&merchantCode!="05103">
+				       <a href="javascript:void(0);" class="easyui-linkbutton add-btn" data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;</a>&nbsp;&nbsp;
 					</#if>
-				</@apass.role>
-				<@apass.role value="GOODS_INFO_EXPORT">
-				<a href="javascript:void(0);" class="easyui-linkbutton export-btn"
-				   data-options="iconCls:'icon-add'">导&nbsp;出&nbsp;</a>&nbsp;&nbsp;
-				</@apass.role>
-				<a href="javascript:void(0);" class="easyui-linkbutton" id="flush"
-				   data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;</a>
+				    </@apass.role>
+					<@apass.role value="GOODS_INFO_EXPORT">
+					   <a href="javascript:void(0);" class="easyui-linkbutton export-btn" data-options="iconCls:'icon-add'">导&nbsp;出&nbsp;</a>&nbsp;&nbsp;
+					</@apass.role>
+					<a href="javascript:void(0);" class="easyui-linkbutton" id="flush" data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;</a>
 				</td>
 			</tr>
 		</table>
@@ -233,6 +228,13 @@
 						<td  align="left"><input id="adddelistTime" name="adddelistTime" editable="false"
 							class="easyui-datetimebox" style="width: 50%;" /></td>
 					</tr>
+					<tr>
+	                    <td align="right"><font color="red"></font>品牌:</td>
+	                    <td colspan="1" width="60%" align="left">
+	                       <input class="easyui-textbox" type="text" id="addBrandName" name="addBrandName" data-options="validType:'length[1,30]'" style="width: 50%;">
+	                       <span id="addBrandNameL"></span>
+                        </td>
+                    </tr>
 					<tr>
 						<td align="right"><font color="red">*</font>是否支持7天退货:</td>
 						<td align="left"><input type="radio" name="addSupport7dRefund" value="Y" checked="true"/> 是
@@ -474,6 +476,13 @@
 							class="easyui-datetimebox" style="width: 50%;" /></td>
 					</tr>
 					<tr>
+                        <td align="right"><font color="red"></font>品牌:</td>
+                        <td colspan="1" width="60%" align="left">
+                           <input class="easyui-textbox" type="text" id="editBrandName" name="editBrandName" data-options="validType:'length[1,30]'" style="width: 50%;">
+                           <span id="editBrandNameL"></span>
+                        </td>
+                    </tr>
+					<tr>
 						<td align="right"><font color="red">*</font>是否支持7天退货:</td>
 						<td align="left"><input type="radio" name="editSupport7dRefund" value="Y"/> 是
 							<input type="radio" name="editSupport7dRefund" value="N"/> 否</td>
@@ -652,8 +661,8 @@
 			<tr>
 				<td align="right"><font color="red">*</font>库存总量:</td>
 				<td>
-				   <input class="easyui-numberspinner" type="text" data-options="min:1,max:999" id="stockTotalAmt" name="stockTotalAmt"
-					required="true" missingMessage="1~999之间的正整数" style="width: 100%;" />
+				   <input class="easyui-numberspinner" type="text" data-options="min:0,max:999" id="stockTotalAmt" name="stockTotalAmt"
+					required="true" missingMessage="0~999之间的正整数" style="width: 100%;" />
 				</td>
 			</tr>
 		    <!-- <tr>
@@ -725,8 +734,8 @@
 		    <tr>
 		        <td align="right"><font color="red">*</font>库存总量:</td>
 		        <td>
-		           <input class="easyui-numberspinner" type="text" data-options="min:1,max:999" id="editaddstockTotalAmt" 
-		           name="stockTotalAmt" required="true" missingMessage="1~999之间的正整数" style="width: 100%;" />
+		           <input class="easyui-numberspinner" type="text" data-options="min:0,max:999" id="editaddstockTotalAmt" 
+		           name="stockTotalAmt" required="true" missingMessage="0~999之间的正整数" style="width: 100%;" />
 		        </td>
 		    </tr>
 		    <tr style="margin-top: 22px;">
@@ -800,8 +809,8 @@
 			<tr>
 				<td align="right"><font color="red">*</font>库存总量:</td>
 				<td>
-				    <input class="easyui-numberspinner" type="text" data-options="min:1,max:999" id="editstockTotalAmt" name="editstockTotalAmt"
-					required="true" missingMessage="1~999之间的正整数" style="width: 100%;"  disabled="disabled"/>
+				    <input class="easyui-numberspinner" type="text" data-options="min:0,max:999" id="editstockTotalAmt" name="editstockTotalAmt"
+					required="true" missingMessage="0~999之间的正整数" style="width: 100%;"  disabled="disabled"/>
 				</td>
 			</tr>
 			<!-- <tr>

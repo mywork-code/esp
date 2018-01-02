@@ -1,11 +1,12 @@
 package com.apass.esp.service.common;
 
-import com.apass.esp.domain.entity.BsdiffEntity;
 import com.apass.esp.domain.entity.BsdiffInfoEntity;
+import com.apass.esp.domain.entity.BsdiffQuery;
+import com.apass.esp.domain.entity.BsdiffVo;
 import com.apass.esp.mapper.BsdiffInfoEntityMapper;
 import com.apass.esp.utils.FileUtilsCommons;
-import com.tencent.tinker.bsdiff.BSDiff;
-import org.apache.commons.collections.CollectionUtils;
+import com.apass.esp.utils.ZipUtil;
+import com.apass.lib.utils.BsdiffUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -46,27 +46,19 @@ public class BsdiffinfoService {
 	 * @throws IOException
      */
     @Transactional
-    public void bsdiffUpload(BsdiffEntity bsdiffEntity, BsdiffInfoEntity bsdiffInfoEntity) throws IOException {
-        StringBuffer sb = new StringBuffer();
-
+    public void bsdiffUpload(BsdiffVo bsdiffVo, BsdiffInfoEntity bsdiffInfoEntity) throws IOException {
 		//如果版本号已存在，给出提示
-        String bsdiffVer = bsdiffEntity.getBsdiffVer();
+        String bsdiffVer = bsdiffVo.getBsdiffVer();
 
-		BsdiffInfoEntity entity = selectByVer(bsdiffVer);
-		if(entity != null){
+		BsdiffQuery query = new BsdiffQuery();
+		query.setLineId(bsdiffVo.getLineId());
+		query.setBsdiffVer(bsdiffVo.getBsdiffVer());
+		BsdiffInfoEntity entity = selectBsdiffInfoByVo(query);
+		if(entity == null){
 			throw new RuntimeException("版本号已经存在，请重新填写版本号!");
 		}
-//        List<BsdiffInfoEntity> bsdiffInfoEntities = listAll();
-//        if(CollectionUtils.isNotEmpty(bsdiffInfoEntities)){
-//            for (BsdiffInfoEntity bsEn: bsdiffInfoEntities) {
-//                if(StringUtils.equals(bsdiffVer,bsEn.getBsdiffVer())){
-//                    throw new RuntimeException("版本号已经存在，请重新填写版本号!");
-//                }
-//            }
-//        }
 
-		//判断上传文件类型，并且限制文件名和版本号要一致
-        MultipartFile bsdiffFile = bsdiffEntity.getBsdiffFile();
+        MultipartFile bsdiffFile = bsdiffVo.getBsdiffFile();
         String[] split = bsdiffFile.getOriginalFilename().split("\\.");
         if(!StringUtils.equals("zip",split[1])){
             throw new RuntimeException("请上传zip文件 .");
@@ -75,34 +67,38 @@ public class BsdiffinfoService {
             throw new RuntimeException("版本要与zip文件名一致.");
         }
 
-		String originalFilename = bsdiffFile.getOriginalFilename();
+		String zipName = bsdiffFile.getOriginalFilename();
+		String zipPath = nfsBsdiffPath+VERPATH+"/"+bsdiffVo.getLineId()+"/"+bsdiffVo.getBsdiffVer()+"/";
 
+		bsdiffInfoEntity.setLineId(bsdiffVo.getLineId());
 		bsdiffInfoEntity.setBsdiffVer(bsdiffVer);
 
 		//判断服务器端是否有更早版本的文件，如果没有 直接上传，如果有 增量拆分
-		File directory = new File(rootPath+nfsBsdiffPath+VERPATH);
+		File directory = new File(rootPath+zipPath);
 		if(!directory.exists()){//如果目录不存在创建目录
 			directory.mkdirs();
 		}
+
+		//先上传zip文件，方便后续解压
+		FileUtilsCommons.uploadFilesUtil(rootPath,zipPath+zipName,bsdiffFile);
 		if(!(directory.listFiles().length > 0)){//第一次上传
-			int count = bsdiffInfoEntityMapper.insertSelective(bsdiffInfoEntity);//先操作数据库，再上传文件。
+			//解压缩,并重成文件清单
+//			ZipUtil.unZipFiles(rootPath+zipPath+zipName,rootPath+zipPath);
+			new ZipUtil().unZipFiles(rootPath,zipPath,zipName);
+
+			//合并并生成文件清单
+
+
+
+			/*int count = bsdiffInfoEntityMapper.insertSelective(bsdiffInfoEntity);//先操作数据库，再上传文件。
 			//没有增量拆分操作
 			if(count == 1){
 				FileUtilsCommons.uploadFilesUtil(rootPath, nfsBsdiffPath+VERPATH+"/"+originalFilename, bsdiffFile);
-			}
+			}*/
 		}else{//增量拆分
-			for(int i=Integer.valueOf(bsdiffVer)-1;i>0;i--){
-				if(i>1){
-					sb.append(bsdiffVer+"_"+i+",");
-				}else {
-					sb.append(bsdiffVer+"_"+i);
-				}
-			}
-			bsdiffInfoEntity.setPatchName(sb.toString());
 			int count = bsdiffInfoEntityMapper.insertSelective(bsdiffInfoEntity);//先操作数据库，再上传文件。
 			if(count == 1){
-				//先上传源zip包
-				FileUtilsCommons.uploadFilesUtil(rootPath, nfsBsdiffPath+VERPATH+"/"+originalFilename, bsdiffFile);
+				FileUtilsCommons.uploadFilesUtil(rootPath, nfsBsdiffPath+VERPATH+"/", bsdiffFile);
 				File directoryPatch = new File(rootPath+nfsBsdiffPath+PATCHPATH);
 				if(!directoryPatch.exists()){//如果目录不存在创建目录
 					directoryPatch.mkdirs();
@@ -110,11 +106,11 @@ public class BsdiffinfoService {
 
 				//再上传增量更新包
 				for(int i=Integer.valueOf(bsdiffVer)-1;i>0;i--){
-					File oldFile = new File(rootPath+nfsBsdiffPath+VERPATH+"/"+i+".zip");
-					File newFile = new File(rootPath+nfsBsdiffPath+VERPATH+"/"+originalFilename);
-					File diffFile = new File(rootPath+nfsBsdiffPath+PATCHPATH+"/"+bsdiffVer+"_"+i+".zip");
+//					File oldFile = new File(rootPath+nfsBsdiffPath+VERPATH+"/"+i+".zip");
+//					File newFile = new File(rootPath+nfsBsdiffPath+VERPATH+"/"+originalFilename);
+//					File diffFile = new File(rootPath+nfsBsdiffPath+PATCHPATH+"/"+bsdiffVer+"_"+i+".zip");
 
-					BSDiff.bsdiff(oldFile,newFile,diffFile);
+					BsdiffUtils.getInstance().bsdiff(rootPath+nfsBsdiffPath+VERPATH+"/"+i+".zip",rootPath+nfsBsdiffPath+VERPATH+"/",rootPath+nfsBsdiffPath+PATCHPATH+"/"+bsdiffVer+"_"+i+".zip");
 				}
 			}
 		}
@@ -135,6 +131,10 @@ public class BsdiffinfoService {
 	 * 查询所有
 	 * @return
      */
+	private BsdiffInfoEntity selectBsdiffInfoByVo(BsdiffQuery query) {
+		return  bsdiffInfoEntityMapper.selectBsdiffInfoByVo(query);
+	}
+
 	public List<BsdiffInfoEntity> listAll(){
 		return bsdiffInfoEntityMapper.selectAllBsdiff();
 	}

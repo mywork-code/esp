@@ -82,20 +82,6 @@ public class GroupManagerService {
 	}
 	
 	/**
-	 * 根据活动的id，获取下属分组和分组下的商品
-	 * @param activityId
-	 * @return
-	 */
-	public List<GroupManagerVo> getGroupAndGoodsByActivityId(String activityId){
-		List<GroupManagerVo> groupVoList = getGroupByActivityId(activityId);
-		for (GroupManagerVo vo : groupVoList) {
-			List<GroupGoodsVo> goodsList = proGroupGoodsService.getGroupGoodsByGroupId(vo.getId());
-			vo.setGoodsList(goodsList);
-		}
-		return groupVoList;
-	}
-	
-	/**
 	 * 根据活动的id，获取下属分组和分组下的商品,如果分组下不存在商品则，不查询出来
 	 * @param activityId
 	 * @return
@@ -112,9 +98,6 @@ public class GroupManagerService {
 		
 		Date currentTime = new Date();
 		
-//		if(activity.getStartTime().getTime() > currentTime.getTime()){
-//			throw new BusinessException("活动暂未开始!");
-//		}
 		//活动的状态
 		String status = "";
 		if(activity.getEndTime().getTime() < currentTime.getTime()){

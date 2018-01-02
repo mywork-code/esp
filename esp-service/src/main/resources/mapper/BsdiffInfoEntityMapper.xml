@@ -4,14 +4,17 @@
   <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.BsdiffInfoEntity" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="bsdiff_ver" property="bsdiffVer" jdbcType="VARCHAR" />
-    <result column="patch_name" property="patchName" jdbcType="VARCHAR" />
     <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
     <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
     <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="line_id" property="lineId" jdbcType="VARCHAR" />
+    <result column="source_file_path" property="sourceFilePath" jdbcType="VARCHAR" />
+    <result column="merge_file_path" property="mergeFilePath" jdbcType="VARCHAR" />
+    <result column="file_list_path" property="fileListPath" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, bsdiff_ver, patch_name, created_time, updated_time, create_user, update_user
+    id, bsdiff_ver, created_time, updated_time, create_user, update_user, line_id, source_file_path, merge_file_path, file_list_path
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -24,11 +27,13 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.BsdiffInfoEntity" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_esp_bsdiff_info (bsdiff_ver, patch_name, created_time,
-      updated_time, create_user, update_user
-      )
-    values (#{bsdiffVer,jdbcType=VARCHAR}, #{patchName,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP},
-      #{updateDate,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}
+    insert into t_esp_bsdiff_info (bsdiff_ver, created_time,
+      updated_time, create_user, update_user,line_id,source_file_path,
+      merge_file_path, file_list_path)
+    values (#{bsdiffVer,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP},
+      #{updateDate,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR},
+      #{lineId,jdbcType=VARCHAR}, #{sourceFilePath,jdbcType=VARCHAR}, #{mergeFilePath,jdbcType=VARCHAR},
+      #{fileListPath,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.BsdiffInfoEntity" useGeneratedKeys="true" keyProperty="id" >
@@ -36,9 +41,6 @@
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="bsdiffVer != null" >
         bsdiff_ver,
-      </if>
-      <if test="patchName != null" >
-        patch_name,
       </if>
       <if test="createdTime != null" >
         created_time,
@@ -52,13 +54,22 @@
       <if test="updateUser != null" >
         update_user,
       </if>
+      <if test="lineId != null" >
+        line_id,
+      </if>
+      <if test="sourceFilePath != null" >
+        source_file_path,
+      </if>
+      <if test="mergeFilePath != null" >
+        merge_file_path,
+      </if>
+      <if test="fileListPath != null" >
+        file_list_path,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="bsdiffVer != null" >
         #{bsdiffVer,jdbcType=VARCHAR},
-      </if>
-      <if test="patchName != null" >
-        #{patchName,jdbcType=VARCHAR},
       </if>
       <if test="createdTime != null" >
         #{createdTime,jdbcType=TIMESTAMP},
@@ -72,6 +83,18 @@
       <if test="updateUser != null" >
         #{updateUser,jdbcType=VARCHAR},
       </if>
+      <if test="lineId != null" >
+        #{lineId,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceFilePath != null" >
+        #{sourceFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="mergeFilePath != null" >
+        #{mergeFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="fileListPath != null" >
+        #{fileListPath,jdbcType=VARCHAR}
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.BsdiffInfoEntity" >
@@ -79,9 +102,6 @@
     <set >
       <if test="bsdiffVer != null" >
         bsdiff_ver = #{bsdiffVer,jdbcType=VARCHAR},
-      </if>
-      <if test="patchName != null" >
-        patch_name = #{patchName,jdbcType=VARCHAR},
       </if>
       <if test="createdTime != null" >
         created_time = #{createdTime,jdbcType=TIMESTAMP},
@@ -95,17 +115,32 @@
       <if test="updateUser != null" >
         update_user = #{updateUser,jdbcType=VARCHAR},
       </if>
+      <if test="lineId != null" >
+        #{lineId,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceFilePath != null" >
+        #{sourceFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="mergeFilePath != null" >
+        #{mergeFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="fileListPath != null" >
+        #{fileListPath,jdbcType=VARCHAR}
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.BsdiffInfoEntity" >
     update t_esp_bsdiff_info
     set bsdiff_ver = #{bsdiffVer,jdbcType=VARCHAR},
-      patch_name = #{patchName,jdbcType=VARCHAR},
       created_time = #{createdTime,jdbcType=TIMESTAMP},
       updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       create_user = #{createUser,jdbcType=VARCHAR},
-      update_user = #{updateUser,jdbcType=VARCHAR}
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      line_id = #{lineId,jdbcType=VARCHAR},
+      source_file_path = #{sourceFilePath,jdbcType=VARCHAR},
+      merge_file_path = #{mergeFilePath,jdbcType=VARCHAR},
+      file_list_path = #{fileListPath,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

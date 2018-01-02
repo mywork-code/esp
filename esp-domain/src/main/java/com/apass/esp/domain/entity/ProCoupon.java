@@ -39,10 +39,14 @@ public class ProCoupon {
     private Date updatedTime;
 
     private String isDelete;
-    
+
     private Long brandId;
 
-    private Long offerRange;
+    private Byte offerRange;
+
+    private String categoryId3;
+
+    private String skuId;
 
     public Long getId() {
         return id;
@@ -196,11 +200,27 @@ public class ProCoupon {
         this.brandId = brandId;
     }
 
-    public Long getOfferRange() {
+    public Byte getOfferRange() {
         return offerRange;
     }
 
-    public void setOfferRange(Long offerRange) {
+    public void setOfferRange(Byte offerRange) {
         this.offerRange = offerRange;
+    }
+
+    public String getCategoryId3() {
+        return categoryId3;
+    }
+
+    public void setCategoryId3(String categoryId3) {
+        this.categoryId3 = categoryId3;
+    }
+
+    public String getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
     }
 }

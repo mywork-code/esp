@@ -214,14 +214,7 @@ $(function() {
 			field : 'goodsCode',
 			width : 90,
 			align : 'center'
-		},
-		// {
-		// 	title : 'skuid',
-		// 	field : 'externalId',
-		// 	width : 90,
-		// 	align : 'center'
-		// },
-		{
+		},{
 	 		title : '类目名称',  
 	 		field : 'categoryName3', 
 	 	    width : 80,  
@@ -241,11 +234,6 @@ $(function() {
             field : 'goodsTypeDesc',
             width : 60,
             align : 'center',
-//        },{
-//            title : '规格类型',
-//            field : 'goodsSkuType',
-//            width : 80,
-//            align : 'center'
         },{
             title : '商品生产日期',
             field : 'proDate',
@@ -318,11 +306,17 @@ $(function() {
             	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
             }
         },{
-        	title : '商品来源标识',
+        	title : '来源',
         	field : 'source',
-        	width : 80,
+        	width : 60,
         	align : 'center',
 //        	hidden: 'hidden'
+        	formatter:function(value,row,index){
+        		if(value=='wz'){
+            		return "微知";
+            	}
+            	return "供应商";
+            }
         },{
             title : '操作',
             field : 'opt',
@@ -352,17 +346,12 @@ $(function() {
             }
         }]],
         loader : function(param, success, error) {
-            $.ajax({
-                url : ctx + '/application/goods/management/pagelist',
-                data : param,
-                type : "post",
-                dataType : "json",
+            $.ajax({url : ctx + '/application/goods/management/pagelist',data : param,type : "post",dataType : "json",
                 success : function(data) {
-                	console.log(data.rows);
                     $.validateResponse(data, function() {
                         success(data);
                     });
-                    $("#tb").show();
+//                    $("#tb").show();
                 }
             })
         }
@@ -469,6 +458,7 @@ $(function() {
     $('#addGoodsInfo').window({
     	onBeforeClose:function(){ 
     		$("#addgoodsNameL").text('');
+    		$("#addBrandNameL").text('');
     		$("#addgoodsTitleL").text('');
     		$('#inputDiv').empty();
     		categorynameArr1 = [];//单纯保存input内容
@@ -906,12 +896,6 @@ $(function() {
 	});
 	
 	//监听编辑商品输入商品名称事件
-//	var $editgoodsName = $("#editgoodsName"),$edit_last = $("#editgoodsNameL");
-//	$editgoodsName.on("keydown",function(){
-//		alert("keydown");
-//		var len = $editMerchantPostcode.textbox('getValue').length;
-//		$edit_last.html(len);
-//	})
 	if(!(externalsource == 'jd' || externalsource == 'wz')){
 		$("input",$("#editgoodsName").next("span")).keyup(function(){
 			var len = $("#editgoodsName").textbox('getText').length;
@@ -925,7 +909,6 @@ $(function() {
 				$("#editgoodsNameL").text('还可以输入'+canLen+'个字');
 			}
 		})
-		
 		$("input",$("#editgoodsTitle").next("span")).keyup(function(){ 
 			var len = $("#editgoodsTitle").textbox('getText').length;
 			var canLen;
@@ -937,9 +920,18 @@ $(function() {
 				$("#editgoodsTitleL").text('还可以输入'+canLen+'个字');
 			}
 		})
-		
+		$("input",$("#editBrandName").next("span")).keyup(function(){ 
+			var len = $("#editBrandName").textbox('getText').length;
+			var canLen;
+			if(len>30){
+				canLen = len - 30;
+				$("#editBrandNameL").text('已经超出'+canLen+'个字');
+			}else{
+				canLen = 30 - len;
+				$("#editBrandNameL").text('还可以输入'+canLen+'个字');
+			}
+		})
 	}
-	
 	//添加--商品名称动态提醒
 	$("input",$("#addgoodsName").next("span")).keyup(function(){
 		var len = $("#addgoodsName").textbox('getText').length;
@@ -952,7 +944,6 @@ $(function() {
 			$("#addgoodsNameL").text('还可以输入'+canLen+'个字');
 		}
 	})
-	
 	//添加--商品小标题动态提醒
 	$("input",$("#addgoodsTitle").next("span")).keyup(function(){ 
 		var len = $("#addgoodsTitle").textbox('getText').length;
@@ -964,6 +955,18 @@ $(function() {
 		}else{
 			canLen = 25 - len;
 			$("#addgoodsTitleL").text('还可以输入'+canLen+'个字');
+		}
+	})
+	//添加--商品品牌动态提醒
+	$("input",$("#addBrandName").next("span")).keyup(function(){ 
+		var len = $("#addBrandName").textbox('getText').length;
+		var canLen;
+		if(len>30){
+			canLen = len - 30;
+			$("#addBrandNameL").text('已经超出'+canLen+'个字');
+		}else{
+			canLen = 30 - len;
+			$("#addBrandNameL").text('还可以输入'+canLen+'个字');
 		}
 	})
 	//编辑
@@ -1140,6 +1143,7 @@ $(function() {
 		listTime=$("#editlistTime").datetimebox('getValue'),
 		proDate=$("#editproDate").datebox('getValue'),
 		delistTime=$("#editdelistTime").datetimebox('getValue'),
+		brandName=$("#editBrandName").textbox('getValue'), 
 		editSupport7dRefund	= $("input[name='editSupport7dRefund']:checked").val(),
 		unSupportProvince = $("#editUnSupportProvince").combobox('getText');
 		keepDate=$("#editkeepDate").textbox('getValue');
@@ -1201,6 +1205,10 @@ $(function() {
 				return;
 			}
 		}
+		if (!(externalsource == 'jd' || externalsource == 'wz') && brandName.length>30) {
+			$.messager.alert("提示", "商品品牌最多录入30字！", "info");
+			return;
+		}
 //		if (!(externalsource == 'jd')&&(null == sordNo || ("") == sordNo)) {
 //			$.messager.alert("提示", "商品排序不能为空！", "info");
 //			return;
@@ -1235,6 +1243,11 @@ $(function() {
 	 		formObj.append("<input type='text' name='delistTime' value='"+delistTime+"'/>");
 	 	}else{
 	 		formObj.append("<input type='text' name='delistTime' value=''/>");
+	 	}
+	 	if(!(null == brandName || ("") == brandName)){
+	 		formObj.append("<input type='text' name='brandName' value='"+brandName+"'/>");
+	 	}else{
+	 		formObj.append("<input type='text' name='brandName' value=''/>");
 	 	}
 		if(!(null == proDate || ("") == proDate)){
 			formObj.append("<input type='text' name='proDate' value='"+proDate+"  00:00:00'/>");
@@ -2268,9 +2281,10 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	goodsModel=$("#addgoodsModel").textbox('getValue'),
 	goodsName=$("#addgoodsName").textbox('getValue'), 
 	goodsTitle=$("#addgoodsTitle").textbox('getValue'), 
-	listTime=$("#addlistTime").datetimebox('getValue'), 
 	proDate=$("#addproDate").datebox('getValue'),
+	listTime=$("#addlistTime").datetimebox('getValue'), 
 	delistTime=$("#adddelistTime").datetimebox('getValue'),
+	brandName=$("#addBrandName").textbox('getValue'), 
 	keepDate=$("#addkeepDate").textbox('getValue'),
 	supNo=$("#addsupNo").textbox('getValue'),
 	//goodsSkuType=$("#addgoodsSkuType").combobox('getValue'),
@@ -2299,7 +2313,6 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		$.messager.alert("提示", "商品名称不能为空！", "info");
 		return;
 	}
-	
 	if(goodsName.length>30){
 		$.messager.alert("提示", "商品名称最多30字！", "info");  
 		return;
@@ -2345,6 +2358,12 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 			return;
 		}
 	}
+	if (null != brandName && ("") != brandName) {
+		if (brandName.length > 30) {
+			$.messager.alert("提示", "商品品牌最多录入30字！", "info");
+			return;
+		}
+	}
 //	if (null == keepDate || ("") == keepDate) {
 //		$.messager.alert("提示", "商品保质期不能为空！", "info");
 //		return;
@@ -2379,6 +2398,10 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
  	}else{
  		formObj.append("<input type='text' name='delistTime' value=''/>");
  	}
+ 	if (!(null == brandName || ("") == brandName)) {
+ 		formObj.append("<input type='text' name='brandName' value='"+brandName+"'/>");
+ 	}
+ 	
  	formObj.append("<input type='text' name='unSupportProvince' value='"+unSupportProvince+"'/>");
 	formObj.append("<input type='text' name='goodId' value='"+addGoodId+"'/>");
 	if(proDate!=""){
@@ -2642,8 +2665,8 @@ function initGoodsInfo(){
 	//$('#addgoodsSkuType').combobox('setValue','');
 	$('#addUnSupportProvince').combobox('setValue','');
 	$("#sordNo").numberbox('setValue','');
+	$("#addBrandName").textbox('clear');
 }
-
 //编辑商品初始化商品信息
 function initEditGoodsInfo(row){
 	var unSupportPrivinces = row.unSupportProvince;//省份汉字
@@ -2668,7 +2691,6 @@ function initEditGoodsInfo(row){
 				},
 				onLoadSuccess: function () {  //下拉框数据加载成功调用  
 					var opts = $(this).combobox('options');  
-					console.log(opts);
 					var target = this;  
 					var values = $(target).combobox('getValues');//获取选中的值的values
 					if(unSupportPrivincesCodes != null && unSupportPrivincesCodes != ''){
@@ -2702,6 +2724,7 @@ function initEditGoodsInfo(row){
 				$("#editmerchantCode").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsModel").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsName").textbox('textbox').attr("data-options","");
+				$("#editBrandName").textbox('textbox').attr("disabled","disabled");
 				//$("#editgoodsSkuType").combobox('disable');
 				$("#editUnSupportProvince").combobox('disable');
 				$("#editproDate").next("span").children(".validatebox-text").attr("disabled","disabled");
@@ -2713,6 +2736,7 @@ function initEditGoodsInfo(row){
 				// $("input[name='editSupport7dRefund'][value='Y']").attr("checked", "checked");
 			}else{
 				$("#editgoodsModel").textbox('textbox').removeAttr("disabled");
+				$("#editBrandName").textbox('textbox').removeAttr("disabled");
 				//$("#editgoodsSkuType").combobox('enable');
 				$("#editUnSupportProvince").combobox('enable');
 				$("#editproDate").next("span").children(".validatebox-text").removeAttr("disabled");
@@ -2733,11 +2757,11 @@ function initEditGoodsInfo(row){
 
 			$("#editid").val(row.id);
 			$("#editLogogoodsId").val(row.id);
-			
 			$("#editmerchantCode").textbox('setValue',row.merchantCode);
 			$("#editgoodsModel").textbox('setValue',row.goodsModel);
 			$("#editgoodsName").textbox('setValue',row.goodsName);
 			$("#editgoodsTitle").textbox('setValue',row.goodsTitle);
+			$("#editBrandName").textbox('setValue',row.brandName);
 			//$("#editgoodsSkuType").combobox('setValue',row.goodsSkuType);
 			if(unSupportPrivincesCodes != null && unSupportPrivincesCodes != ''){
 				$("#editUnSupportProvince").combobox('setValues',unSupportPrivincesCodes.split(","));
@@ -3077,6 +3101,70 @@ function dropdown(selectId,type){
         			catename.push(catenamenew[a]);
         		}
         	}
+    		//当选择无时  清空10个输入框    刷新2个表格
+    		if(type=="add"){
+    			var ddd = document.getElementById("inputDiv").childNodes;
+    			var inputid = 0;
+    			var childattVlaue = $('#'+selectId).combobox('getValue');
+				for(var i = 0;i<ddd.length;i++){
+					var ddds = ddd[i].childNodes[0].childNodes[0];
+					if(ddds.id==selectId){
+						var dddsi = ddd[i].childNodes[1].childNodes;
+						for(var j = 0;j<dddsi.length;j++){
+							inputid = dddsi[j].id;
+							if(childattVlaue=='0'){
+								document.getElementById(inputid).value = "";
+							}
+						}
+						break;
+					}
+				}
+    			addFlushAttrValPar();
+    			//此处需要对三个数组处理
+    			//此处需要对三个数组处理
+    			var attnuma = inputid.split("+")[0];//第几个（属性和input）框  0 1 2
+    			if(attnuma==0){
+    				categorynameArr1=[];
+    			}
+    			if(attnuma==1){
+    				categorynameArr2=[];
+    			}
+    			if(attnuma==2){
+    				categorynameArr3=[];
+    			}
+    			flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
+    		}
+    		if(type=="edit"){
+    			var ddd = document.getElementById("inputDivEdit").childNodes;
+    			var childattVlaue = $('#'+selectId).combobox('getValue');
+    			var inputid = 0;
+				for(var i = 0;i<ddd.length;i++){
+					var ddds = ddd[i].childNodes[0].childNodes[0];
+					if(ddds.id==selectId){
+						var dddsi = ddd[i].childNodes[1].childNodes;
+						for(var j = 0;j<dddsi.length;j++){
+							inputid = dddsi[j].id;
+							if(childattVlaue=='0'){
+								document.getElementById(inputid).value = "";
+							}
+						}
+						break;
+					}
+				}
+    			editaddFlushAttrValPar(finalGoodId);
+    			//此处需要对三个数组处理
+    			var attnume = inputid.split("+")[0];//第几个（属性和input）框  0 1 2
+    			if(attnume==0){
+    				categorynameArr1=[];
+    			}
+    			if(attnume==1){
+    				categorynameArr2=[];
+    			}
+    			if(attnume==2){
+    				categorynameArr3=[];
+    			}
+    			function4(categorynameArr1,categorynameArr2,categorynameArr3);
+    		}
         }
 	});
 }

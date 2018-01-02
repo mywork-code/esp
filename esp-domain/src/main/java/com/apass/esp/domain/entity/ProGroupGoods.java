@@ -33,6 +33,8 @@ public class ProGroupGoods {
     private Long activityId;
 
     private String status;
+    
+    private String similarFlag;
 
     public Long getId() {
         return id;
@@ -153,4 +155,13 @@ public class ProGroupGoods {
     public void setStatus(String status) {
         this.status = status;
     }
+
+	public String getSimilarFlag() {
+		return similarFlag;
+	}
+
+	public void setSimilarFlag(String similarFlag) {
+		this.similarFlag = similarFlag;
+	}
+    
 }

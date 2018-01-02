@@ -601,12 +601,13 @@ public class GoodsAttrService {//450
             if(!f){//供应商
                 listold =  goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
             }else{//wz
-                TreeSet<String> jdsku = jdGoodsInfoService.getJdSimilarSkuIdList(g.getExternalId());
+                TreeSet<String> jdsku = jdGoodsInfoService.getJdSimilarSkuId(g.getExternalId());
                 for(String set : jdsku){
-                    //根据SKUID查找库存   //该方法需要拷贝limitbuy分支！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-                    List<String> skuIdList = new ArrayList<String>();
-                    skuIdList.add(set);
-                    GoodsInfoEntity goo = goodsService.getGoodsListBySkuIds(skuIdList).get(0);
+                    //根据SKUID查找库存   
+//                    List<String> skuIdList = new ArrayList<String>();
+//                    skuIdList.add(set);
+//                    GoodsInfoEntity goo = goodsService.getGoodsListBySkuIds(skuIdList).get(0);
+                    GoodsInfoEntity goo = goodsService.getGoodsInfo(set);
                     GoodsStockInfoEntity s = goodsStockInfoService.getGoodsStock(goo.getId()).get(0);
                     BigDecimal goodsPrice = commonService.calculateGoodsPrice(s.getGoodsId(),s.getId());
                     s.setGoodsPrice(goodsPrice);

@@ -6,10 +6,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.apass.esp.domain.enums.SourceType;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -31,6 +32,9 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.ProGroupManager;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupManagerVo;
@@ -38,7 +42,9 @@ import com.apass.esp.domain.vo.GroupVo;
 import com.apass.esp.domain.vo.ProGroupGoodsTo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
 import com.apass.esp.mapper.ProGroupManagerMapper;
+import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -70,6 +76,10 @@ public class ProGroupGoodsExportFikeController {
 	private GroupManagerService groupManagerService;
 	@Autowired
 	private ProGroupManagerMapper groupManagerMapper;
+	@Autowired
+	private JdGoodsInfoService jdGoodsInfoService;
+    @Autowired
+    private GoodsStockInfoRepository goodsStockInfoRepository;
 
 	/**
      * 商品池分页json
@@ -149,19 +159,24 @@ public class ProGroupGoodsExportFikeController {
 	@RequestMapping(value = "/addOneGoods")
 	@LogAnnotion(operationType = "商品添加至分组", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response ProGroupGoodsPageList(@RequestParam("activityId") String activityId,
-			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId) {
+			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId, @RequestParam("skuId") String skuId) {
 		int count = 0;
 		int countSuccess = 0;
 		int countFail = 0;
-		if (StringUtils.isEmpty(goodsId)) {
+		if (StringUtils.isEmpty(goodsId) || StringUtils.isEmpty(skuId)) {
 			return Response.fail("请选择商品！");
 		}
 		try {
 			String[] goods = goodsId.split(",");
+			String[] skuIds = skuId.split(",");
 			count = goods.length;
 			for (int i = 0; i < goods.length; i++) {
 				ProGroupGoods proGroupGoods = proGroupGoodsService
-						.selectOneByGoodsIdAndActivityId(Long.parseLong(goods[i]), Long.parseLong(activityId));
+						.selectOneBySkuIdAndActivityId(skuIds[i], Long.parseLong(activityId));
+				if (null != proGroupGoods && StringUtils.equals(proGroupGoods.getStatus(), "S")
+						&& StringUtils.equals(proGroupGoods.getGroupId() + "", groupNameId)) {
+					continue;
+				}
 				if (null != proGroupGoods && !proGroupGoods.getGroupId().equals(groupNameId)) {
 					if (proGroupGoods.getStatus().equals("S")) {
 						if (count > 1) {
@@ -174,9 +189,38 @@ public class ProGroupGoodsExportFikeController {
 					proGroupGoods.setOrderSort(Long.parseLong(groupSortId + ""));
 					proGroupGoods.setGroupId(Long.parseLong(groupNameId));
 					proGroupGoods.setStatus("S");
+					proGroupGoods.setSimilarFlag("1");
 					proGroupGoods.setUpdatedTime(new Date());
 					proGroupGoodsService.updateProGroupGoods(proGroupGoods);
 					countSuccess++;
+					TreeSet<String>  similarSkuIds = new TreeSet<>();
+					GoodsInfoEntity goodsInfoEntity=goodsService.getGoodsInfo(skuIds[i]);
+					//获取相似同类的商品的skuId
+					if(StringUtils.equals(goodsInfoEntity.getSource(), SourceType.WZ.getCode())){
+						similarSkuIds=jdGoodsInfoService.getJdSimilarSkuIdList(skuIds[i]);
+					}else{
+			            List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
+			            for (GoodsStockInfoEntity goodsStockInfoEntity : jdGoodsStockInfoList) {
+			            	similarSkuIds.add(goodsStockInfoEntity.getSkuId());
+						}
+					}
+				   	if(CollectionUtils.isNotEmpty(similarSkuIds)){
+				   		similarSkuIds.remove(skuIds[i]);
+                	}
+					for (String string : similarSkuIds) {
+						ProGroupGoods proGroupGoods2 = proGroupGoodsService
+								.selectOneBySkuIdAndActivityId(string, Long.parseLong(activityId));
+						if(null != proGroupGoods2){
+							int groupSortId2 = proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
+							proGroupGoods2.setOrderSort(Long.parseLong(groupSortId2 + ""));
+							proGroupGoods2.setGroupId(Long.parseLong(groupNameId));
+							proGroupGoods2.setStatus("S");
+							proGroupGoods2.setSimilarFlag("0");//同类商品标识
+							proGroupGoods2.setUpdatedTime(new Date());
+							proGroupGoodsService.updateProGroupGoods(proGroupGoods2);
+							countSuccess++;
+						}
+					}
 				} else {
 					countFail++;
 				}
@@ -215,13 +259,47 @@ public class ProGroupGoodsExportFikeController {
 			proGroupGoods.setStatus("");
 			proGroupGoods.setUpdatedTime(new Date());
 			proGroupGoods.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-
+			
 			ProGroupGoods entity = proGroupGoodsService.selectByPrimaryKey(Long.valueOf(id));
 			int count  = proGroupGoodsService.updateGoods(proGroupGoods);
+			//删除与之相似的且添加同一分组的商品
+			//获取相似同类的商品的skuId
+			GoodsInfoEntity goodsInfoEntity=goodsService.getGoodsInfo(entity.getSkuId());
+			TreeSet<String>  similarSkuIds = new TreeSet<>();
+			if(StringUtils.equals(goodsInfoEntity.getSource(), SourceType.WZ.getCode())){
+				similarSkuIds=jdGoodsInfoService.getJdSimilarSkuIdList(entity.getSkuId());
+			}else{
+	            List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
+	            for (GoodsStockInfoEntity goodsStockInfoEntity : jdGoodsStockInfoList) {
+	            	similarSkuIds.add(goodsStockInfoEntity.getSkuId());
+				}
+			}
+			
+		 	if(CollectionUtils.isNotEmpty(similarSkuIds)){
+		 		similarSkuIds.remove(entity.getSkuId());
+        	}
+			int countNum=0;
+			for (String string : similarSkuIds) {
+				ProGroupGoods proGroupGoods2 = proGroupGoodsService
+						.selectOneBySkuIdAndActivityId(string,entity.getActivityId());
+				if(null !=proGroupGoods2 && StringUtils.equals(proGroupGoods2.getStatus(), "S")){
+					ProGroupGoods proGroupGoods3=new ProGroupGoods();
+					proGroupGoods3.setId(proGroupGoods2.getId());
+					proGroupGoods3.setGroupId(-1l);
+					proGroupGoods3.setOrderSort(Long.parseLong("1"));
+					proGroupGoods3.setStatus("");
+					proGroupGoods3.setUpdatedTime(new Date());
+					proGroupGoods3.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+					int countSimimar  = proGroupGoodsService.updateGoods(proGroupGoods3);
+					if(countSimimar==1){
+						countNum++;
+					}
+				}
+			}
 			if(count == 1){
 				Long groupId = entity.getGroupId();
 				proGroupManager = groupManagerService.selectByPrimaryKey(groupId);
-				long goodsSumNew = proGroupManager.getGoodsSum() - 1;
+				long goodsSumNew = proGroupManager.getGoodsSum() - 1-countNum;
 				proGroupManager.setGoodsSum(goodsSumNew);
 				groupManagerService.updateByPrimaryKeySelective(proGroupManager);
 			}
@@ -278,12 +356,13 @@ public class ProGroupGoodsExportFikeController {
 					Pattern pattern = Pattern.compile("[0-9]*");   
 					Matcher isNum = pattern.matcher(id);  
 					if(null !=id && isNum.matches()){
-						gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id, SourceType.WZ);
+						gbity=goodsService.getByGoodsBySkuId(id);
 					}
 					if (null !=id && null != gbity && null != marketPrice && marketPrice.compareTo(zero)>0 && null != activityPrice && activityPrice.compareTo(zero)>0 && countSuccess <= 200) {
 						//判断该商品是否存在其他有效的活动中
-						Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(gbity.getGoodId());
-						Boolean limitResult=proGroupGoodsService.getStatusByGoodId(activityId, id);
+
+						Boolean result=proGroupGoodsService.selectEffectiveGoodsBySkuId(id);
+						Boolean limitResult=proGroupGoodsService.getStatusBySkuId(activityId,id);
 						if (result && limitResult) {//允许导入
 							pggds.setMarketPrice(list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP));//对小数点第三位执行四舍五入
 							pggds.setActivityPrice(list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
@@ -306,9 +385,10 @@ public class ProGroupGoodsExportFikeController {
 							countExit++;
 						}
 					}else{
-						pggds.setGoodsId(-1l);
+						GoodsInfoEntity goods = goodsService.getGoodsInfo(id);
+						pggds.setGoodsId(null != goods ? goods.getId() : -1L );
 						pggds.setSkuId(id);
-						pggds.setGoodsCode(id);
+						pggds.setGoodsCode(null != goods ? goods.getGoodsCode() : "" );
 						pggds.setMarketPrice(list.get(i).getMarketPrice());
 						pggds.setActivityPrice(list.get(i).getActivityPrice());
 						pggds.setDetailDesc("0");//0表示导入失败

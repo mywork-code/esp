@@ -18,6 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
@@ -63,6 +64,8 @@ public class LimitBuyActService {
     private CommonService commonService;
     @Autowired
     private ImageService imageService;
+    @Value("${esp.image.uri}")
+    private String espImageUrl;
     /**
      * CREATE
      * @param entity
@@ -545,7 +548,7 @@ public class LimitBuyActService {
                 return en1.getSort().compareTo(en2.getSort());
             }});
         Map<String,Object> map = new HashMap<String,Object>();
-        String url = "http://espapp.sit.apass.cn/static/eshop/other/1512959987323.png";
+        String url = espImageUrl+"/static/eshop/other/1514369779183.jpg";
         map.put("url",url);
         map.put("timelist",timelist);
         return Response.success("限时购活动时间条刷新成功！",map);
@@ -601,6 +604,12 @@ public class LimitBuyActService {
     public Response activityGoodsList(Long limitBuyActId,String userId) throws BusinessException {
         // 获取活动状态   以便判断按钮状态
         Byte actstatus = readEntity(limitBuyActId).getStatus();
+        Map<String ,Object> map = new HashMap<String,Object>();
+        if(actstatus==(byte)3){//查询到已经结束活动  
+            map.put("frushfalg", false);
+            map.put("datalist", null);
+            return Response.success("限时购活动商品列表刷新失败,该活动已经结束,请实时刷新页面！",map);
+        }
         LimitGoodsSku act = new LimitGoodsSku();
         act.setLimitBuyActId(limitBuyActId);
         act.setUpLoadStatus((byte)1);
@@ -686,7 +695,9 @@ public class LimitBuyActService {
             }
             goodsinfolist.add(vo);
         }
-        return Response.success("限时购活动商品列表刷新成功！",goodsinfolist);
+        map.put("frushfalg", true);
+        map.put("datalist", goodsinfolist);
+        return Response.success("限时购活动商品列表刷新成功！",map);
     }
     /**
      * 即将开始限时购活动  某一个商品  面对用户开启抢购提醒

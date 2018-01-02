@@ -61,8 +61,10 @@ import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CouponMessage;
+import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.InvoiceStatusEnum;
+import com.apass.esp.domain.enums.OfferRangeType;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PaymentType;
@@ -1457,7 +1459,7 @@ public class OrderService {
     		BigDecimal total = BigDecimal.ZERO;
     		for (String stockId : stockIds) {
     			String stock = StringUtils.trim(stockId);
-    			if(StringUtils.isEmpty(stock)){continue;}
+    			if(StringUtils.isBlank(stock)){continue;}
     			for (PurchaseRequestDto purchase : purchaseList) {
         			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
         				total = total.add(purchase.getPayMoney());
@@ -1467,7 +1469,7 @@ public class OrderService {
     		for (PurchaseRequestDto purchase : purchaseList) {
     			for (String stockId : stockIds) {
     				String stock = StringUtils.trim(stockId);
-    				if(StringUtils.isEmpty(stock)){continue;}
+    				if(StringUtils.isBlank(stock)){continue;}
 	    			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
 	    				BigDecimal couponMoney  = purchase.getPayMoney().multiply(coupon.getDiscountAmonut())
 	        					.divide(total,2,BigDecimal.ROUND_HALF_UP);
@@ -3136,32 +3138,47 @@ public class OrderService {
     			List<String> goodslist = new ArrayList<>();
     			BigDecimal total = BigDecimal.ZERO;
     			for (PurchaseRequestDto purchase : available) {
-    				GoodsInfoEntity goods =  goodsDao.select(purchase.getGoodsId()); 
-	    			if(StringUtils.isNotBlank(coupon.getCategoryId1())){//指定分类（一级类目)
-	    				if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"")){
-	    					total = total.add(purchase.getPayMoney());
-	    					goodslist.add(purchase.getGoodsStockId()+"");
-	    				}
-	    			}else if(StringUtils.isNotBlank(coupon.getCategoryId2())){//指定分类（二级类目）
-	    				if(StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"")){
-	    					total = total.add(purchase.getPayMoney());
-	    					goodslist.add(purchase.getGoodsStockId()+"");
-	    				}
-	    			}else if(StringUtils.isNotBlank(coupon.getSimilarGoodsCode())){//指定商品
-	    				String[] strs = coupon.getSimilarGoodsCode().split(",");
-	    				if(Arrays.asList(strs).contains(goods.getGoodsCode())){
-	    					total = total.add(purchase.getPayMoney());
-	    					goodslist.add(purchase.getGoodsStockId()+"");
-	    				}
-	    			}else if(null != coupon.getActivityId() && coupon.getActivityId() > 0){//活动
-	    				if(StringUtils.equals(coupon.getActivityId()+"",purchase.getProActivityId()) ){
-	    					total = total.add(purchase.getPayMoney());
-	    					goodslist.add(purchase.getGoodsStockId()+"");
-	    				}
-	    			}else{//全品类
-	    				total = total.add(purchase.getPayMoney());
-	    				goodslist.add(purchase.getGoodsStockId()+"");
-	    			}
+    				GoodsInfoEntity goods =  goodsDao.select(purchase.getGoodsId());
+    				GoodsStockInfoEntity stocks  = goodsStockDao.select(purchase.getGoodsStockId());
+    				CouponType type = CouponType.getCode(coupon.getType());
+    				switch (type) {
+						case COUPON_ZDPL ://指定品类
+							if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
+	    					   StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
+	    					   StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//因为三个等级的类目，只能存在一个，所以，不需要分别判断
+		    						total = total.add(purchase.getPayMoney());
+			    					goodslist.add(purchase.getGoodsStockId()+"");
+			    			}
+							break;
+						case COUPON_ZDSP ://指定商品
+							String[] strs = coupon.getSimilarGoodsCode().split(",");
+		    				if(Arrays.asList(strs).contains(goods.getGoodsCode())){
+		    					total = total.add(purchase.getPayMoney());
+		    					goodslist.add(purchase.getGoodsStockId()+"");
+		    				}
+							break;
+						case COUPON_HDSP ://活动商品
+							if(StringUtils.equals(goods.getBrandId(), coupon.getBrandId())){//品牌
+	    						total = total.add(purchase.getPayMoney());
+		    					goodslist.add(purchase.getGoodsStockId()+"");
+	    					}else if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
+	    	    					 StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
+	    	    					 StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//类目
+			    						total = total.add(purchase.getPayMoney());
+				    					goodslist.add(purchase.getGoodsStockId()+"");
+	    	    			}else if(StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
+	    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId())){//skuid
+	    						total = total.add(purchase.getPayMoney());
+		    					goodslist.add(purchase.getGoodsStockId()+"");
+	    					}
+							break;
+						case COUPON_QPL ://全品类
+							total = total.add(purchase.getPayMoney());
+		    				goodslist.add(purchase.getGoodsStockId()+"");
+							break;
+						default :
+							break;
+					}
     			}
     			
     			if(total.compareTo(BigDecimal.ZERO) <= 0){
@@ -3852,4 +3869,10 @@ public class OrderService {
 			buydetailMapper.deleteByPrimaryKey(limit.getId());
 		}
 	}
+
+    public List<CheckAccountOrderDetail> selectOrderDetailsByOrderIds(List<Long> orderIds) {
+        Map<String,Object> paramMap = Maps.newHashMap();
+        paramMap.put("orderIds",orderIds);
+        return orderInfoRepository.selectOrderDetailsByOrderIds(paramMap);
+    }
 }

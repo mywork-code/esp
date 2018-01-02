@@ -246,7 +246,7 @@ public class ShopHomeController {
                 LimitBuyActBannerVo limitBuyActBannerVo = new LimitBuyActBannerVo();//返回app值
                 limitBuyAct = limitBuyActs.get(0);
                 //TODO 发生产时要在对应目录上传图片 /data/nfs/gfb/eshop/banner/limitbuy
-                limitBuyActBannerVo.setImgurl(espImageUrl + "/static"+ "/eshop/banner/limitbuy/20171218164912.png");
+                limitBuyActBannerVo.setImgurl(espImageUrl + "/static"+ "/eshop/banner/limitbuy/20171227171809.jpg");
                 limitBuyActBannerVo.setStartDate(DateFormatUtil.dateToString(limitBuyAct.getStartDate(),"HH:mm"));
                 limitBuyActBannerVo.setEndDate(String.valueOf(limitBuyAct.getEndDate().getTime()));
                 returnMap.put("limitBuyActBannerVo",limitBuyActBannerVo);
@@ -1017,7 +1017,10 @@ public class ShopHomeController {
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-
+              	//获取该商品是否支持7天退换及是否可售
+            	Map<String,Object> support7AndCheck=weiZhiProductService.getsupport7dRefundAndCheckSales(externalId);
+            	Boolean checkGoodsSales=(Boolean) support7AndCheck.get("checkGoodsSalesOrNot");
+            	String  support7dRefund=(String) support7AndCheck.get("support7dRefund");
                 if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region,userId);
@@ -1025,16 +1028,16 @@ public class ShopHomeController {
                     returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
                 } else {
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
-                            goodsId.toString(), region,userId);
+                            goodsId.toString(), region,userId,support7AndCheck);
                     returnMap.put("source", SourceType.JD.getCode());
                     returnMap.put("status", goodsInfo.getStatus());
                     // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                    if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
+                    if (StringUtils.isNotBlank(externalId) && !checkGoodsSales) {
                         returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
                     }
                 }
                 // 是否支持7天无理由退货,Y、N
-                returnMap.put("support7dRefund", goodsService.getsupport7dRefund(Long.parseLong(externalId)));
+                returnMap.put("support7dRefund", support7dRefund);
                 returnMap.put("goodsPrice", goodsInfo.getGoodsPrice());// 商品价格
                 returnMap.put("goodsPriceFirstPayment",goodsInfo.getFirstPrice());// 商品首付价格
             } else {
@@ -1135,13 +1138,29 @@ public class ShopHomeController {
      *获取商品优惠券列表
      * @return
      */
-    @POST
+ /*   @POST
     @Path("/v3/getProCouponsList")
+    @Deprecated
     public Response getProCouponsList(Map<String, Object> paramMap) {
         Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
         String userId = CommonUtils.getValue(paramMap, "userId");
         //获取商品的优惠券
         Map<String,Object>  returnMap=jdGoodsInfoService.getProCoupons(goodsId,Long.parseLong(userId));
+        return Response.success("获取商品优惠券列表成功！", returnMap);
+    }*/
+    /**
+     * 
+     *获取商品优惠券列表
+     * @return
+     */
+    @POST
+    @Path("/v3/getProCouponsList")
+    public Response getProCouponsList2(Map<String, Object> paramMap) {
+        Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+        String skuId=CommonUtils.getValue(paramMap, "skuId");
+        String userId = CommonUtils.getValue(paramMap, "userId");
+        //获取商品的优惠券
+        Map<String,Object>  returnMap=jdGoodsInfoService.getProCouponsBySkuId(goodsId,Long.parseLong(userId),skuId);
         return Response.success("获取商品优惠券列表成功！", returnMap);
     }
     /**
@@ -1153,6 +1172,7 @@ public class ShopHomeController {
     @Path("/v3/saveCoupon")
 	public Response giveCouponToUser(Map<String, Object> paramMap){
         Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+        String skuId = CommonUtils.getValue(paramMap, "skuId");
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String activityId = CommonUtils.getValue(paramMap, "activityId");
 		String couponId = CommonUtils.getValue(paramMap, "couponId");
@@ -1165,7 +1185,7 @@ public class ShopHomeController {
 			int count = myCouponManagerService.giveCouponToUser(new MyCouponVo(Long.parseLong(userId),Long.parseLong(couponId),Long.parseLong(activityId)));
 			if(count > 0){
 		      //获取商品的优惠券
-		      Map<String,Object>  returnMap=jdGoodsInfoService.getProCoupons(goodsId,Long.parseLong(userId));
+		      Map<String,Object>  returnMap=jdGoodsInfoService.getProCouponsBySkuId(goodsId,Long.parseLong(userId),skuId);
 		      LOGGER.info("giveCouponToUser:--------->{}",GsonUtils.toJson(returnMap));
 			  return Response.success("领取成功!",returnMap);
 			}

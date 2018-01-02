@@ -28,6 +28,7 @@ public class GoodsBasicInfoEntity {
     private Long goodsStockId;
     
     private String externalId;
+    private String skuId;
 
     /** 商品名称 **/
     private String goodsName;
@@ -314,6 +315,14 @@ public class GoodsBasicInfoEntity {
 
 	public void setGoodsCodeString(String goodsCodeString) {
 		this.goodsCodeString = goodsCodeString;
+	}
+
+	public String getSkuId() {
+		return skuId;
+	}
+
+	public void setSkuId(String skuId) {
+		this.skuId = skuId;
 	}
 	
 }

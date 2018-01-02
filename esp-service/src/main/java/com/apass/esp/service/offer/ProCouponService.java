@@ -3,12 +3,15 @@ package com.apass.esp.service.offer;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.enums.OfferRangeType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.query.ProCouponQuery;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.google.common.collect.Maps;
@@ -37,6 +40,8 @@ public class ProCouponService {
     private JdGoodsInfoService jdGoodsInfoService;
     @Autowired
     private ActivityCfgService activityCfgService;
+    @Autowired
+    public GoodsStockInfoService goodsStockInfoService;
 
     /**
      * 分页查询优惠券列表
@@ -76,6 +81,9 @@ public class ProCouponService {
     }
 
     public Integer inserProcoupon(ProCoupon proCoupon) {
+    	/**
+    	 * 如果是指定商品的优惠券:验证传入的商品编号是否存在
+    	 */
         if(StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDSP.getCode())){
             GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByGoodsCode(proCoupon.getGoodsCode());
             if(goodsInfoEntity == null){
@@ -104,6 +112,18 @@ public class ProCouponService {
                 //非京东商品把goods_code填充进similarGoodsCode
                 proCoupon.setSimilarGoodsCode(proCoupon.getGoodsCode());
             }
+        }
+        /**
+         * 如果是活动商品,如果优惠范围，为指定品牌，则验证传入的skuId,是否存在
+         */
+        if(StringUtils.equals(proCoupon.getType(), CouponType.COUPON_HDSP.getCode())){
+        	if(StringUtils.equals(proCoupon.getOfferRange()+"", OfferRangeType.RANGE_ZDSP.getCode())){
+        		GoodsInfoEntity goods = goodsService.selectGoodsByExternalId(proCoupon.getSkuId());
+        		GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(proCoupon.getSkuId());
+        		if(null == goods && null == stock){
+        			throw new RuntimeException("您输入的商品skuid不存在，请重新输入!");
+        		}
+        	}
         }
 
         ProCoupon coupon2 = new ProCoupon();

@@ -305,4 +305,12 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
         paramMap.put("skuIds",skuIds);
         return this.getSqlSession().selectList("selectGoodsByExternalIds", skuIds);
     }
+    
+    public GoodsInfoEntity seletGoodsInfoBySkuId(String skuId){
+    	return this.getSqlSession().selectOne("seletGoodsInfoBySkuId", skuId);
+    }
+
+    public int insertSelective(GoodsInfoEntity entity) {
+        return getSqlSession().insert("insertSelective", entity);
+    }
 }
