@@ -360,6 +360,7 @@ function ifLogout(data) {
 }
 
 function addTotalNum(id) {
+	$("#addTotalCouponNum").textbox('setValue','');//清空输入框
 	$("#addTotalCouponNumDiv").dialog({
 		title:'<span style="color: black">增加发放总量</span>',
 		resizable:true,
