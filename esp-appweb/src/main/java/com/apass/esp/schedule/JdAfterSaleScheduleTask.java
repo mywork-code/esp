@@ -114,7 +114,7 @@ public class JdAfterSaleScheduleTask {
             if(orderInfoEntity.getSource().equals(SourceType.JD.getCode())){
                 continue;
             }
-            ml.setOrderid(orderInfoEntity.getOrderId());
+            ml.setOrderid(orderInfoEntity.getExtOrderId());
             List<SkuObject> serviveList = null;
             try {
                 //TODO 根据客户账号和订单号分页查询服务单概要信息
