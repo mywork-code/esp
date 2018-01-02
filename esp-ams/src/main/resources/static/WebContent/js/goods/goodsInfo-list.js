@@ -3101,6 +3101,70 @@ function dropdown(selectId,type){
         			catename.push(catenamenew[a]);
         		}
         	}
+    		//当选择无时  清空10个输入框    刷新2个表格
+    		if(type=="add"){
+    			var ddd = document.getElementById("inputDiv").childNodes;
+    			var inputid = 0;
+    			var childattVlaue = $('#'+selectId).combobox('getValue');
+				for(var i = 0;i<ddd.length;i++){
+					var ddds = ddd[i].childNodes[0].childNodes[0];
+					if(ddds.id==selectId){
+						var dddsi = ddd[i].childNodes[1].childNodes;
+						for(var j = 0;j<dddsi.length;j++){
+							inputid = dddsi[j].id;
+							if(childattVlaue=='0'){
+								document.getElementById(inputid).value = "";
+							}
+						}
+						break;
+					}
+				}
+    			addFlushAttrValPar();
+    			//此处需要对三个数组处理
+    			//此处需要对三个数组处理
+    			var attnuma = inputid.split("+")[0];//第几个（属性和input）框  0 1 2
+    			if(attnuma==0){
+    				categorynameArr1=[];
+    			}
+    			if(attnuma==1){
+    				categorynameArr2=[];
+    			}
+    			if(attnuma==2){
+    				categorynameArr3=[];
+    			}
+    			flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
+    		}
+    		if(type=="edit"){
+    			var ddd = document.getElementById("inputDivEdit").childNodes;
+    			var childattVlaue = $('#'+selectId).combobox('getValue');
+    			var inputid = 0;
+				for(var i = 0;i<ddd.length;i++){
+					var ddds = ddd[i].childNodes[0].childNodes[0];
+					if(ddds.id==selectId){
+						var dddsi = ddd[i].childNodes[1].childNodes;
+						for(var j = 0;j<dddsi.length;j++){
+							inputid = dddsi[j].id;
+							if(childattVlaue=='0'){
+								document.getElementById(inputid).value = "";
+							}
+						}
+						break;
+					}
+				}
+    			editaddFlushAttrValPar(finalGoodId);
+    			//此处需要对三个数组处理
+    			var attnume = inputid.split("+")[0];//第几个（属性和input）框  0 1 2
+    			if(attnume==0){
+    				categorynameArr1=[];
+    			}
+    			if(attnume==1){
+    				categorynameArr2=[];
+    			}
+    			if(attnume==2){
+    				categorynameArr3=[];
+    			}
+    			function4(categorynameArr1,categorynameArr2,categorynameArr3);
+    		}
         }
 	});
 }
