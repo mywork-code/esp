@@ -305,6 +305,7 @@ public class ShoppingCartController {
      */
     @POST
     @Path("/viewSku")
+    @Deprecated
     public Response viewSku(Map<String, Object> paramMap) {
 
         String logStashSign = LogStashKey.CART_VIEWSKU.getValue();
