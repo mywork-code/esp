@@ -901,11 +901,17 @@ public class JdGoodsInfoService {
 		if (null != goodsId) {
 			goodsBasicInfo = goodsDao.select(goodsId);
 //			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+			/**
+			 * 首先根据商品的Id和SkuID，获取对应的活动信息,如果活动存在，并且没有过期，则正常运行
+			 */
 			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,skuId);
 
 			if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
 				ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoodsBo.getActivityId());
 				activityId = proGroupGoodsBo.getActivityId().toString();
+				/**
+				 * 根据活动Id，获取对应活动下的优惠券信息
+				 */
 				List<ProCoupon> proCoupons = couponManagerService.getCouponsByActivityId(activityId);
 				for (ProCoupon proCoupon : proCoupons) {
 					Boolean falge = false;
