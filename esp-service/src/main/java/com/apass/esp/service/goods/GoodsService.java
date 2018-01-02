@@ -732,7 +732,7 @@ public class GoodsService {
 				jdSimilarSkuVo.setStockDesc("有货");
 			}
 			// 返回活动id
-			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,goodsStockInfoEntity.getSkuId());
 			if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
 				proActivityId = proGroupGoodsBo.getActivityId();
 			}

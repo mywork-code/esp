@@ -351,7 +351,7 @@ public class JdGoodsInfoService {
 			//满减活动字段
 			String activityCfg = goodsService.getActivityInfo(goodsId);
 			  //添加活动id
-        	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+        	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getBySkuId(goodsId,skuId);
         	if(null !=proGroupGoodsBo){
         		jdSimilarSkuVo.setProActivityId(proGroupGoodsBo.getActivityId());
         	}
