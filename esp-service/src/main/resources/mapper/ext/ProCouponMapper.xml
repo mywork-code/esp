@@ -57,7 +57,7 @@
         SELECT <include refid="Base_Column_List" />
         FROM t_esp_pro_coupon
         WHERE
-        extend_type= 'YHLQ' AND id NOT IN
+        extend_type= 'YHLQ' AND is_delete = 'N' AND id NOT IN
         <foreach collection="ids" open="(" close=")" separator="," item="id">
             #{id}
         </foreach>
