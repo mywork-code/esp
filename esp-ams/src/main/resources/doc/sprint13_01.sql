@@ -12,7 +12,7 @@ alter table t_esp_goods_base_info add COLUMN brand_id bigint(20) not null defaul
 
 ALTER TABLE `t_esp_pro_coupon`
 ADD COLUMN `brand_id`  bigint(20) NOT NULL DEFAULT -1 COMMENT '品牌ID' ,
-ADD COLUMN `offer_range`  bigint(20) NOT NULL DEFAULT -1 COMMENT '优惠范围（1.品牌 2.品类 3.指定商品）',
+ADD COLUMN `offer_range`  tinyint(4) NOT NULL DEFAULT -1 COMMENT '优惠范围（1.品牌 2.品类 3.指定商品）',
 ADD COLUMN `category_id3`  varchar(20) NOT NULL DEFAULT '' COMMENT '三级类目id' ,
 ADD COLUMN `sku_id`  varchar(30) NOT NULL DEFAULT '' COMMENT '商品的sku_id' ;
 

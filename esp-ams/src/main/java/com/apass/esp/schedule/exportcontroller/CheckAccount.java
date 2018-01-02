@@ -1,6 +1,6 @@
 package com.apass.esp.schedule.exportcontroller;
 
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +44,29 @@ public class CheckAccount {
     @Autowired
     private TxnInfoService txnInfoService;
 
+    /**
+     * 电商平台订单明细
+     * @param request
+     */
     @RequestMapping("/orderdetail")
     public void exportOrderDetail(HttpServletRequest request){
         try{
             String beginDate = HttpWebUtils.getValue(request, "beginDate");
             LOGGER.info("开始时间，beginDate:{}",beginDate);
             //获取数据
-            List<CheckAccountOrderDetail> checkAccountOrderDetailList = getCheckOrderDetail(beginDate);
+//            List<CheckAccountOrderDetail> checkAccountOrderDetailList = getCheckOrderDetail(beginDate);
+
+            //从文件中读取要导出的订单号，存储在List集合中
+            List<Long> orderIds = Lists.newArrayList();
+            File file = new File("esp-ams/src/main/java/com/apass/esp/schedule/exportcontroller/order.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            String orderId = null;
+            while((orderId=br.readLine())!=null){
+                orderIds.add(Long.valueOf(orderId));
+            }
+
+            //根据订单号查表
+            List<CheckAccountOrderDetail> checkAccountOrderDetailList = orderService.selectOrderDetailsByOrderIds(orderIds);
 
             //重新包装数据
             for (CheckAccountOrderDetail chOrder: checkAccountOrderDetailList) {
@@ -120,7 +137,7 @@ public class CheckAccount {
     private void toExportOrderDetail(List<CheckAccountOrderDetail> checkAccountOrderDetailList) throws IOException {
         CsvWriter csvWriter = new CsvWriter("/趣花商城订单明细.csv",',', Charset.forName("gbk"));
         //表头
-        String[] headers = {"订单号","商户名称","用户名","下单时间","付款时间","订单状态","付款方式","购买价格","首付金额","额度支付","首付支付方式"};
+        String[] headers = {"订单号","商户名称","用户名","下单时间","付款时间","订单状态","付款方式","购买价格","首付金额","额度支付","首付支付方式","成本价"};
         csvWriter.writeRecord(headers);
         for(CheckAccountOrderDetail chOrder : checkAccountOrderDetailList){
             List<String> contentList = new ArrayList<String>();
@@ -135,6 +152,7 @@ public class CheckAccount {
             contentList.add(chOrder.getPartPayment()==null?"":chOrder.getPartPayment().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
             contentList.add(chOrder.getAnotherPayment()==null?"":chOrder.getAnotherPayment().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
             contentList.add(chOrder.getParTxnType());
+            contentList.add(chOrder.getGoodsCostPrice().compareTo(new BigDecimal(0))==0?"0.0":chOrder.getGoodsCostPrice().toString());
 
             csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
 

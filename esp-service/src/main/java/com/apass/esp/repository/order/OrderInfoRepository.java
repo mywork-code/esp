@@ -394,4 +394,8 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
 
         return getSqlSession().selectList(getSQL("selectByUserId"), param);
     }
+
+    public List<CheckAccountOrderDetail> selectOrderDetailsByOrderIds(Map<String, Object> paramMap) {
+        return getSqlSession().selectList(getSQL("selectOrderDetailsByOrderIds"), paramMap);
+    }
 }

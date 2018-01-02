@@ -406,9 +406,14 @@ $(function(){
 	//推广方式类型监听事件
 	$('#addExtendType').combobox({
 		onChange: function(param){
+			// $("#addCouponSill").textbox("clear");
+			// $("#addDiscountAmonut").textbox("clear");
+
 			if(param == 'YHLQ'){
-				$("#rangeTr").show();
+				$("#offerRangeTr").show();
 				$("#offerRange").combobox("setValue","");
+				$("#skuId").textbox("setValue","");
+				$("#externalIdTr_range").css("display","none");
 
 				$("#effectiveTimeTr").css("display","none");
 				$("#typeTd1").css("display","none");
@@ -424,6 +429,8 @@ $(function(){
 				$(".rangeTr").css("display","none");
 
 				$("#addType").combobox('setValue','');
+				$("#addType1").combobox("clear");
+
 				$("#typeTd1").show();
 				$("#typeTd2").css("display","none");
 				$("#effectiveTimeTr").show()
@@ -451,6 +458,15 @@ $(function(){
 				$("#goosCategoryTr_range").css("display","none");
 				$("#externalIdTr_range").show();
 			}
+		}
+	});
+	// $("#skuId").bind("blur", function () {
+	// 	alert("");
+	// });
+	$("#skuId").next("span").children().first().blur(function(){
+		//blur事件处理代码
+		if($("#skuId").textbox("getValue").length>20){
+			$("#skuId").textbox("clear")
 		}
 	});
 
@@ -495,14 +511,20 @@ $(function(){
 				return false;
 			}
 		}
+		debugger;
 		if(type==null || type==""){
 			$.messager.alert('<span style="color: black">提示</span>','请选择优惠券类型');
 			return false;
 		}
 
 		if(type == "ZDPL"){
+			debugger;
 			if($("#addExtendType").textbox("getValue") == "PTFF" || $("#addExtendType").textbox("getValue") == "XYH"){
 				if((categoryId1==null || categoryId1=="") && (categoryId2==null || categoryId2=="")){
+					$.messager.alert('<span style="color: black">提示</span>','请选择商品类目');
+					return false;
+				}
+				if($("#goodsCategoryCombo").combobox("getValue")=="请选择"||$("#goodsCategoryCombo").combobox("getValue")=="1_-1"){
 					$.messager.alert('<span style="color: black">提示</span>','请选择商品类目');
 					return false;
 				}
@@ -515,6 +537,41 @@ $(function(){
 					return false;
 				}
 			}
+		}
+
+		if($("#addExtendType").textbox("getValue") == "YHLQ"){
+			if($("#offerRange").combobox("getValue")==null || $("#offerRange").combobox("getValue")==""){
+				$.messager.alert('<span style="color: black">提示</span>','请选择优惠范围');
+				return false;
+			}
+
+			if($("#offerRange").combobox("getValue")=="1"){
+				if($("#brandId").combobox("getValue")=="请选择"){
+					$.messager.alert('<span style="color: black">提示</span>','请选择品牌');
+					return false;
+				}
+
+			}else if($("#offerRange").combobox("getValue")=="2"){
+				if($("#goodsCategoryCombo_range").combobox("getValue")=="请选择" || $("#goodsCategoryCombo_range").combobox("getValue")=="1_-1"){
+					$.messager.alert('<span style="color: black">提示</span>','请选择品类');
+					return false;
+				}
+			}else{
+				if($("#skuId").textbox("getValue")=="" || $("#skuId").textbox("getValue")==null){
+					$.messager.alert('<span style="color: black">提示</span>','请输入商品skuId');
+					return false;
+				}
+				if($("#skuId").textbox("getValue").length>20){
+					$.messager.alert('<span style="color: black">提示</span>','商品skuId不能大于20字符');
+					return false;
+				}
+				var externalId = parseInt($("#skuId").textbox("getValue"));
+				if(externalId<0){
+					$.messager.alert('<span style="color: black">提示</span>','商品skuId只能输入正整数');
+					return false;
+				}
+			}
+
 		}
 		if($("#sillType").val() == "Y"){
 			if($("#addCouponSill").textbox("getValue")==null || $("#addCouponSill").textbox("getValue") == ""){
@@ -545,40 +602,7 @@ $(function(){
 			return false;
 		}
 
-		if($("#addExtendType").textbox("getValue") == "YHLQ"){
-			if($("#offerRange").combobox("getValue")==null || $("#offerRange").combobox("getValue")==""){
-				$.messager.alert('<span style="color: black">提示</span>','请选择优惠范围');
-				return false;
-			}
 
-			if($("#offerRange").combobox("getValue")=="1"){
-				if($("#brandId").combobox("getValue")=="请选择"){
-					$.messager.alert('<span style="color: black">提示</span>','请选择品牌');
-					return false;
-				}
-
-			}else if($("#offerRange").combobox("getValue")=="2"){
-				if($("#goodsCategoryCombo_range").combobox("getValue")=="请选择"){
-					$.messager.alert('<span style="color: black">提示</span>','请选择品类');
-					return false;
-				}
-			}else{
-				if($("#skuId").textbox("getValue")=="" || $("#skuId").textbox("getValue")==null){
-					$.messager.alert('<span style="color: black">提示</span>','请输入商品skuId');
-					return false;
-				}
-				if($("#skuId").textbox("getValue").length>20){
-					$.messager.alert('<span style="color: black">提示</span>','商品skuId不能大于20字符');
-					return false;
-				}
-				var externalId = parseInt($("#skuId").textbox("getValue"));
-				if(externalId<0){
-					$.messager.alert('<span style="color: black">提示</span>','商品skuId只能输入正整数');
-					return false;
-				}
-			}
-
-		}
 
 		return true;
 	}
@@ -588,6 +612,7 @@ $(function(){
 
 //加载类目
 function goodsCategoryComboFun2(id) {
+	debugger;
 	$("#"+id).combotree({
 //        required : true,
 		loader : function(param, success, error) {
@@ -604,6 +629,7 @@ function goodsCategoryComboFun2(id) {
 			})
 		}
 	});
+	debugger;
 	$("#"+id).combotree('setValue', '请选择');
 }
 
@@ -639,8 +665,8 @@ function clearFunction() {
 	$("#addEffectiveTime").textbox("clear");
 	$("#goodsCategoryCombo").combobox("clear");
 	$("#addType1").combobox("clear");
-	$("#addType2").combobox("clear");
 	$("#addType2").combobox({ disabled: false });
+	$("#addType2").combobox("clear");
 	$("#addGoodsCode").textbox("clear");
 	$("#addCouponSill").textbox("clear");
 	$("#addCouponSill").textbox({disabled: false});

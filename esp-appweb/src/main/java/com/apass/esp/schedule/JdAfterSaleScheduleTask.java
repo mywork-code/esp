@@ -39,6 +39,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.xml.transform.Source;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,10 +62,6 @@ import java.util.Map;
 @Profile("Schedule")
 public class JdAfterSaleScheduleTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdAfterSaleScheduleTask.class);
-
-
-    @Autowired
-    private JdAfterSaleApiClient jdAfterSaleApiClient;
 
     @Autowired
     private OrderService orderService;
@@ -106,10 +103,13 @@ public class JdAfterSaleScheduleTask {
     public void handleJdConfirmPreInventoryTask() {
         //List<Integer> appendInfoSteps = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
         List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D05");
-        MessageListener ml=new MessageListener();
-        ml.setType("100");
         LOGGER.info("refund task begin...");
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
+            if(SourceType.JD.getCode().equals(orderInfoEntity.getSource())){
+                continue;
+            }
+            MessageListener ml=new MessageListener();
+            ml.setType("100");
             LOGGER.info("orderInfoEntity.getOrderId() {}",orderInfoEntity.getOrderId());
             if(orderInfoEntity.getSource().equals(SourceType.JD.getCode())){
                 continue;
