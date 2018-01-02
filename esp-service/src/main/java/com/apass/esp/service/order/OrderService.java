@@ -3158,19 +3158,21 @@ public class OrderService {
 		    				}
 							break;
 						case COUPON_HDSP ://活动商品
-							if(StringUtils.equals(goods.getBrandId(), coupon.getBrandId())){//品牌
-	    						total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-	    					}else if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
-	    	    					 StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
-	    	    					 StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//类目
-			    						total = total.add(purchase.getPayMoney());
-				    					goodslist.add(purchase.getGoodsStockId()+"");
-	    	    			}else if(StringUtils.isNotBlank(coupon.getSkuId()) && (StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
-	    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId()))){//skuid
-	    						total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-	    					}
+							if(StringUtils.isNotBlank(purchase.getProActivityId())){
+								if(StringUtils.equals(goods.getBrandId(), coupon.getBrandId())){//品牌
+		    						total = total.add(purchase.getPayMoney());
+			    					goodslist.add(purchase.getGoodsStockId()+"");
+		    					}else if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
+		    	    					 StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
+		    	    					 StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//类目
+				    						total = total.add(purchase.getPayMoney());
+					    					goodslist.add(purchase.getGoodsStockId()+"");
+		    	    			}else if(StringUtils.isNotBlank(coupon.getSkuId()) && (StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
+		    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId()))){//skuid
+		    						total = total.add(purchase.getPayMoney());
+			    					goodslist.add(purchase.getGoodsStockId()+"");
+		    					}
+							}
 							break;
 						case COUPON_QPL ://全品类
 							total = total.add(purchase.getPayMoney());
