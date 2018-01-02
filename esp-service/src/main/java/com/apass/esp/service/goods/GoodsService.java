@@ -496,7 +496,7 @@ public class GoodsService {
 	    returnMap.put("jdImagePathList",JdImagePathList);
 	    returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
 	    returnMap.put("merchantCode", goodsBasicInfo.getMerchantCode());
-	    returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
+//	    returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
 	    if(null !=jdSimilarSkuList){
 	        returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
 	        returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
@@ -653,8 +653,6 @@ public class GoodsService {
 		String activityCfg;
 		String support7dRefund;
 	
-		// 满减活动满减字段
-		activityCfg = getActivityInfo(goodsId);
 		// 是否支持7天无理由退货,Y、N
 		support7dRefund = goodsBasicInfo.getSupport7dRefund();
 		// 查询商品规格中的商品的价格和库存
@@ -731,6 +729,8 @@ public class GoodsService {
 			if (null != goodsStockInfoEntity.getStockCurrAmt() && goodsStockInfoEntity.getStockCurrAmt() > 0 && !isUnSupport) {
 				jdSimilarSkuVo.setStockDesc("有货");
 			}
+			// 满减活动满减字段
+			activityCfg = getActivityInfo(goodsId,goodsStockInfoEntity.getSkuId());
 			// 返回活动id
 			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,goodsStockInfoEntity.getSkuId());
 			if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
@@ -1039,7 +1039,7 @@ public class GoodsService {
 //	}
     returnMap.put("totalCurrentAmt", totalCurrentAmt);
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
-    returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
+//    returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
     returnMap.put("goodsStockList", goodsStockList);
     returnMap.put("unSupportProvince", goodsBasicInfo.getUnSupportProvince());
     returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
@@ -1098,8 +1098,10 @@ public class GoodsService {
   /**
    * (满减活动)通过goodsId查看该商品是否参加有效活动，如果参加返回相关数据
    */
-  public String getActivityInfo(Long goodsId){
-      ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+  public String getActivityInfo(Long goodsId,String  skuId){
+//      ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+      ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getBySkuId(goodsId,skuId);
+
       String activityCfgDesc="";
       if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
           ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoodsBo.getActivityId());

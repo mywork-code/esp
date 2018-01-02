@@ -878,7 +878,7 @@ public class ShopHomeController {
             	}
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
                 returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
-                returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
+//                returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
                 returnMap.put("support7dRefund",goodsService.getsupport7dRefund(Long.parseLong(externalId)));// 是否支持7天无理由退货,Y、N
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(goodsId);
@@ -1119,7 +1119,7 @@ public class ShopHomeController {
             // 商户编码
             returnMap.put("merchantCode", goodsInfo.getMerchantCode());
             // 满减活动字段
-            returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));
+//            returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));
 
             // 商品title
             returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());

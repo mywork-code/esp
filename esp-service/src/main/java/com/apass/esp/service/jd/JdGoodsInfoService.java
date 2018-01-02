@@ -349,7 +349,7 @@ public class JdGoodsInfoService {
 				support7dRefund=goodsService.getsupport7dRefund(Long.parseLong(skuId));
 			}
 			//满减活动字段
-			String activityCfg = goodsService.getActivityInfo(goodsId);
+			String activityCfg = goodsService.getActivityInfo(goodsId,skuId);
 			  //添加活动id
         	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getBySkuId(goodsId,skuId);
         	if(null !=proGroupGoodsBo){

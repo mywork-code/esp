@@ -191,9 +191,9 @@ public class WeiZhiGoodsInfoService {
 			// 是否支持7天无理由退货,Y、N
 			String support7dRefund = weiZhiProductService.getsupport7dRefund(skuId);
 			// 满减活动字段
-			String activityCfg = goodsService.getActivityInfo(goodsId);
+			String activityCfg = goodsService.getActivityInfo(goodsId,skuId);
 			// 添加活动id
-			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,skuId);
 			if (null != proGroupGoodsBo) {
 				jdSimilarSkuVo.setProActivityId(proGroupGoodsBo.getActivityId());
 			}
