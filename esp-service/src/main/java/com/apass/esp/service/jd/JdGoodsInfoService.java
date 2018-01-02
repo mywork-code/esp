@@ -317,12 +317,9 @@ public class JdGoodsInfoService {
 				} else {
 					saleAttrList.get(i).setSaleValueId("0" + i);
 				}
-				
 			}
 		}
 		Map<String,Object> LimitMap=new HashMap<>();
-//		Map<String,Object> LimitGoodsSkuMap=new HashMap<>();
-
 		// 查询商品规格中的商品的价格和库存
 		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		Iterator<String> iterator = skusSet.iterator();
@@ -359,7 +356,7 @@ public class JdGoodsInfoService {
         		jdSimilarSkuVo.setProActivityId(proGroupGoodsBo.getActivityId());
         	}
         	//获取商品的优惠券
-        	List<String> proCoupons=getProCouponList(goodsId);
+        	List<String> proCoupons=getProCouponList(goodsId,skuId);
         	if(proCoupons.size()>3){
     			jdSimilarSkuVo.setProCouponList(proCoupons.subList(0, 3));
         	}else{
@@ -397,7 +394,6 @@ public class JdGoodsInfoService {
 				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,skuId);
 				if(null !=limitGS){
 					LimitMap.put(skuId, skuIdOrder);
-//					LimitGoodsSkuMap.put(skuId, limitGS);
 					BigDecimal limitActivityPrice=limitGS.getActivityPrice();
 					limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
 					jdSimilarSkuVo.setPrice(price);//限时购活动价
@@ -600,7 +596,52 @@ public class JdGoodsInfoService {
 	/**
 	 * 获取商品详情中的的优惠券并按优惠力度从大到小排序
 	 */
-	public List<String> getProCouponList(Long goodsId){
+	public List<String> getProCouponList(Long goodsId,String  skuId){
+		List<String> proCouponStringList=new ArrayList<>();
+		List<ProCouponGoodsDetailVo> proCouponGoodsDetailVos=new ArrayList<>();
+		//获取与活动向关联的优惠券
+		if(null !=goodsId && StringUtils.isNotBlank(skuId)){
+	    	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getBySkuId(goodsId,skuId);
+	    	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
+	    		List<ProCoupon> proCoupons=couponManagerService.getCouponListsByActivityId(proGroupGoodsBo.getActivityId().toString());
+    			for (ProCoupon proCoupon : proCoupons) {
+    				ProCouponGoodsDetailVo proCouponGoodsDetailVo=new ProCouponGoodsDetailVo();
+    				proCouponGoodsDetailVo.setCouponSill(proCoupon.getCouponSill());
+    				proCouponGoodsDetailVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
+    				proCouponGoodsDetailVos.add(proCouponGoodsDetailVo);
+				}
+	    	}
+		}
+		//排序（按优惠力度的从大小排序）
+		if(proCouponGoodsDetailVos.size()>0){
+			for(int i=0;i<proCouponGoodsDetailVos.size()-1;i++){
+				for(int j=i+1;j<proCouponGoodsDetailVos.size();j++){
+					ProCouponGoodsDetailVo proCoupon1=proCouponGoodsDetailVos.get(i);
+					ProCouponGoodsDetailVo proCoupon2=proCouponGoodsDetailVos.get(j);
+					if(proCoupon1.getDiscountAmonut().compareTo(proCoupon2.getDiscountAmonut())<0){
+						proCouponGoodsDetailVos.set(i, proCoupon2);
+						proCouponGoodsDetailVos.set(j, proCoupon1);
+					}
+				}
+			}
+		}
+		for (ProCouponGoodsDetailVo proCouponGoodsDetailVo : proCouponGoodsDetailVos) {
+			BigDecimal zero = BigDecimal.ZERO;
+			if (proCouponGoodsDetailVo.getCouponSill().compareTo(zero) <= 0) {
+				String  couponSillString=proCouponGoodsDetailVo.getDiscountAmonut().intValue()+".1";
+				proCouponStringList.add("满" +couponSillString + "-"
+						+ proCouponGoodsDetailVo.getDiscountAmonut().intValue());
+			} else {
+				proCouponStringList.add("满" + proCouponGoodsDetailVo.getCouponSill().intValue() + "-"
+						+ proCouponGoodsDetailVo.getDiscountAmonut().intValue());
+			}
+		}
+		return proCouponStringList;
+	}
+	/**
+	 * 获取商品详情中的的优惠券并按优惠力度从大到小排序（原来的方法：根据goodsId查询）
+	 */
+	public List<String> getProCouponList2(Long goodsId){
 		List<String> proCouponStringList=new ArrayList<>();
 		List<ProCouponGoodsDetailVo> proCouponGoodsDetailVos=new ArrayList<>();
 		//获取与活动向关联的优惠券

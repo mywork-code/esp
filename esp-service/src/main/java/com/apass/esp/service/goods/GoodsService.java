@@ -396,6 +396,17 @@ public class GoodsService {
 	       LOGGER.error("改商品下没有对应的规格信息:{}", goodsId);
 	       throw new BusinessException("商品规格信息不存在");
 	    }
+	    boolean offShelfFlag = true;
+	    for (GoodsStockInfoEntity goodsStock : goodsList) {
+	      if (goodsStock.getStockCurrAmt() > 0) {
+	        offShelfFlag = false;
+	        break;
+	      }
+	    }
+	    //如果该商品下所有规格都没有库存则该商品的状态为下架状态
+	    if (offShelfFlag) {
+	    	returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
+	    }
 	    //获取参加了限时购的规格集合
 		TreeMap<Long, Object> mapOn = new TreeMap<>();//正在进行中的活动
 		TreeMap<Long, Object> mapNo = new TreeMap<>();//还没有开始的活动
@@ -415,17 +426,7 @@ public class GoodsService {
 				}
 			}
 		}
-	    boolean offShelfFlag = true;
-	    for (GoodsStockInfoEntity goodsStock : goodsList) {
-	      if (goodsStock.getStockCurrAmt() > 0) {
-	        offShelfFlag = false;
-	        break;
-	      }
-	    }
-	    //如果该商品下所有规格都没有库存则该商品的状态为下架状态
-	    if (offShelfFlag) {
-	    	returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
-	    }
+	  
 	    String  goodsStockId=(String) returnMap.get("goodsStockId");
 	    GoodsStockInfoEntity defaultGoodsPriceStock=new GoodsStockInfoEntity();
 	    BigDecimal defaultPrice=null;
@@ -491,42 +492,6 @@ public class GoodsService {
 	    if(jdSimilarSkuList != null){
 	        JdSimilarSkuToList = getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList,isUnSupport,userId);
 	    }
-//	    else{ 
-//	    	JdSimilarSkuToList=new ArrayList<>();
-//	        JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
-//	        JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
-//	        BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
-//	       	//根据skuId查询该规格是否参加了限时购活动
-//			LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsList.get(0).getSkuId());
-//			if(null !=limitGS){
-//			BigDecimal limitActivityPrice=limitGS.getActivityPrice();
-//			limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
-//			jdSimilarSkuVo.setPrice(price);//限时购活动价
-//			jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
-//			jdSimilarSkuVo.setLimitActivityPrice(limitActivityPrice);
-//			jdSimilarSkuVo.setLimitActivityPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
-//			jdSimilarSkuVo.setIsLimitActivity(true);
-//			jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
-//			jdSimilarSkuVo.setLimitPersonNum(limitGS.getLimitPersonNum());
-//			jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
-//			jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
-//			jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
-//			jdSimilarSkuVo.setLimitBuyStartTime(limitGS.getStartTime());
-//			jdSimilarSkuVo.setLimitBuyEndTime(limitGS.getEndTime());
-//			}else{
-//	          jdSimilarSkuVo.setPrice(price);
-//	          jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-//	                  BigDecimal.ROUND_DOWN));
-//			}
-//	        jdSimilarSkuVo.setGoodsId(goodsId.toString());
-//	        jdSimilarSkuVo.setSkuId(goodsList.get(0).getSkuId());
-//	        jdSimilarSkuVo.setGoodsStockId(goodsList.get(0).getId().toString());
-//	        jdSimilarSkuVo.setStockCurrAmt(goodsList.get(0).getStockCurrAmt());
-//	        jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
-//	        jdSimilarSkuTo.setSkuIdOrder("");
-//	        jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
-//	        JdSimilarSkuToList.add(jdSimilarSkuTo);
-//	    }
 
 	    returnMap.put("jdImagePathList",JdImagePathList);
 	    returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
@@ -546,20 +511,6 @@ public class GoodsService {
 	    	JdSimilarSkuToList=new ArrayList<>();
 	    	returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
 	    }
-	   
-	    //返回活动id
-	    ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-	    if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-	        returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
-	    }
-		//获取商品的优惠券
-	    List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
-		if(proCoupons.size()>3){
-			returnMap.put("proCouponList",proCoupons.subList(0, 3));
-		}else{
-			 returnMap.put("proCouponList",proCoupons);
-		}
-	    returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
   }
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
@@ -701,25 +652,11 @@ public class GoodsService {
 		Long proActivityId = null;
 		String activityCfg;
 		String support7dRefund;
-		// 返回活动id
-		ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
-		if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
-			proActivityId = proGroupGoodsBo.getActivityId();
-		}
+	
 		// 满减活动满减字段
 		activityCfg = getActivityInfo(goodsId);
 		// 是否支持7天无理由退货,Y、N
 		support7dRefund = goodsBasicInfo.getSupport7dRefund();
-
-		List<String> proCoupons = new ArrayList<>();
-		// 获取商品的优惠券
-		List<String> proCoupons2 = jdGoodsInfoService.getProCouponList(goodsId);
-		if (proCoupons2.size() > 3) {
-			proCoupons = proCoupons2.subList(0, 3);
-		} else {
-			proCoupons = proCoupons2;
-		}
-		
 		// 查询商品规格中的商品的价格和库存
 		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
@@ -793,6 +730,19 @@ public class GoodsService {
 			jdSimilarSkuVo.setStockDesc("无货");
 			if (null != goodsStockInfoEntity.getStockCurrAmt() && goodsStockInfoEntity.getStockCurrAmt() > 0 && !isUnSupport) {
 				jdSimilarSkuVo.setStockDesc("有货");
+			}
+			// 返回活动id
+			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+			if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
+				proActivityId = proGroupGoodsBo.getActivityId();
+			}
+			List<String> proCoupons = new ArrayList<>();
+			// 获取商品的优惠券
+			List<String> proCoupons2 = jdGoodsInfoService.getProCouponList(goodsId,goodsStockInfoEntity.getSkuId());
+			if (proCoupons2.size() > 3) {
+				proCoupons = proCoupons2.subList(0, 3);
+			} else {
+				proCoupons = proCoupons2;
 			}
 			jdSimilarSkuVo.setActivityCfg(activityCfg);
 			jdSimilarSkuVo.setProActivityId(proActivityId);
@@ -1075,18 +1025,18 @@ public class GoodsService {
         goodsStock.setStockCurrAmtDesc("库存充足");
       }
     }
-    //返回活动id
-    ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-    if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-        returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
-    }
-	//获取商品的优惠券
-    List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
-	if(proCoupons.size()>3){
-		returnMap.put("proCouponList",proCoupons.subList(0, 3));
-	}else{
-		 returnMap.put("proCouponList",proCoupons);
-	}
+//    //返回活动id
+//    ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+//    if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
+//        returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
+//    }
+//	//获取商品的优惠券
+//    List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
+//	if(proCoupons.size()>3){
+//		returnMap.put("proCouponList",proCoupons.subList(0, 3));
+//	}else{
+//		 returnMap.put("proCouponList",proCoupons);
+//	}
     returnMap.put("totalCurrentAmt", totalCurrentAmt);
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
     returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段

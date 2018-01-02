@@ -92,8 +92,6 @@ public class WeiZhiGoodsInfoService {
 				// introduction));// 商品详情
 				map.put("googsDetail", introduction);
 			}
-			// 商品的邮费
-			map.put("postage", "0");
 			// 查询商品图片
 			List<String> wzSkuPictureList = weiZhiProductService.getWeiZhiSingleProductSkuImage(sku.toString(), JdGoodsImageType.TYPEN1.getCode());
 			map.put("jdImagePathList", wzSkuPictureList);

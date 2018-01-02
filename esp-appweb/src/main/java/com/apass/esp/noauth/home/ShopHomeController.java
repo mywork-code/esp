@@ -868,8 +868,9 @@ public class ShopHomeController {
             	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
             	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
             	}
+            	String skuId=(String) returnMap.get("skuId");
             	//获取商品的优惠券
-            	List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
+            	List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId,skuId);
             	if(proCoupons.size()>3){
             		returnMap.put("proCouponList",proCoupons.subList(0, 3));
             	}else{
@@ -1101,13 +1102,16 @@ public class ShopHomeController {
             if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
                 returnMap.put("proActivityId", proGroupGoodsBo.getActivityId());
             }
+            String skuId=(String) returnMap.get("skuId");
             // 获取商品的优惠券
-            List<String> proCoupons = jdGoodsInfoService.getProCouponList(goodsId);
+            List<String> proCoupons = jdGoodsInfoService.getProCouponList(goodsId,skuId);
             if (proCoupons.size() > 3) {
                 returnMap.put("proCouponList", proCoupons.subList(0, 3));
             } else {
                 returnMap.put("proCouponList", proCoupons);
             }
+			// 商品的邮费
+            returnMap.put("postage", "0");
             // 商品名称
             returnMap.put("goodsName", goodsInfo.getGoodsName());
             // 商户编码
