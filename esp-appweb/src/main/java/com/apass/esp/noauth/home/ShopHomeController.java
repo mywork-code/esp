@@ -1065,9 +1065,11 @@ public class ShopHomeController {
                 String source =(String) returnMap.get("source");
                 if(StringUtils.equals(SourceType.JD.getCode(), source)){
                 	 jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
+                	 returnMap.put("skuId",goodsInfo.getExternalId());
                      limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsInfo.getExternalId());
                 }else{
                 	jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                	returnMap.put("skuId",jdGoodsStockInfoList.get(0).getSkuId());
                 	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockCurrAmt());
                     limitGS=limitCommonService.selectLimitByGoodsId(userId,jdGoodsStockInfoList.get(0).getSkuId());
                 }
