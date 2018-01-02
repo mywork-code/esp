@@ -111,9 +111,6 @@ public class JdAfterSaleScheduleTask {
             MessageListener ml=new MessageListener();
             ml.setType("100");
             LOGGER.info("orderInfoEntity.getOrderId() {}",orderInfoEntity.getOrderId());
-            if(orderInfoEntity.getSource().equals(SourceType.JD.getCode())){
-                continue;
-            }
             ml.setOrderid(orderInfoEntity.getExtOrderId());
             List<SkuObject> serviveList = null;
             try {
