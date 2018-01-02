@@ -3166,8 +3166,8 @@ public class OrderService {
 	    	    					 StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//类目
 			    						total = total.add(purchase.getPayMoney());
 				    					goodslist.add(purchase.getGoodsStockId()+"");
-	    	    			}else if(StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
-	    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId())){//skuid
+	    	    			}else if(StringUtils.isNotBlank(coupon.getSkuId()) && (StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
+	    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId()))){//skuid
 	    						total = total.add(purchase.getPayMoney());
 		    					goodslist.add(purchase.getGoodsStockId()+"");
 	    					}

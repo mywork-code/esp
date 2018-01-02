@@ -304,6 +304,7 @@ public class MyCouponManagerService {
 		vo.setCategoryId2(coupon.getCategoryId2());
 		vo.setCategoryId1(coupon.getCategoryId3());
 		vo.setSkuId(coupon.getSkuId());
+		vo.setBrandId(coupon.getBrandId()+"");
 		vo.setOfferRange(coupon.getOfferRange()+"");
 		vo.setSimilarGoodsCode(coupon.getSimilarGoodsCode());
 		if(StringUtils.isNotBlank(coupon.getGoodsCode())){
