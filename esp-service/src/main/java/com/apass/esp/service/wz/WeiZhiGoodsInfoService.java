@@ -92,8 +92,6 @@ public class WeiZhiGoodsInfoService {
 				// introduction));// 商品详情
 				map.put("googsDetail", introduction);
 			}
-			// 商品的邮费
-			map.put("postage", "0");
 			// 查询商品图片
 			List<String> wzSkuPictureList = weiZhiProductService.getWeiZhiSingleProductSkuImage(sku.toString(), JdGoodsImageType.TYPEN1.getCode());
 			map.put("jdImagePathList", wzSkuPictureList);
@@ -193,9 +191,9 @@ public class WeiZhiGoodsInfoService {
 			// 是否支持7天无理由退货,Y、N
 			String support7dRefund = weiZhiProductService.getsupport7dRefund(skuId);
 			// 满减活动字段
-			String activityCfg = goodsService.getActivityInfo(goodsId);
+			String activityCfg = goodsService.getActivityInfo(goodsId,skuId);
 			// 添加活动id
-			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,skuId);
 			if (null != proGroupGoodsBo) {
 				jdSimilarSkuVo.setProActivityId(proGroupGoodsBo.getActivityId());
 			}

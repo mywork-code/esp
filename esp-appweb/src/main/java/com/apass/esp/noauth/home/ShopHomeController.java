@@ -868,8 +868,9 @@ public class ShopHomeController {
             	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
             	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
             	}
+            	String skuId=(String) returnMap.get("skuId");
             	//获取商品的优惠券
-            	List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
+            	List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId,skuId);
             	if(proCoupons.size()>3){
             		returnMap.put("proCouponList",proCoupons.subList(0, 3));
             	}else{
@@ -877,7 +878,7 @@ public class ShopHomeController {
             	}
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
                 returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
-                returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
+//                returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
                 returnMap.put("support7dRefund",goodsService.getsupport7dRefund(Long.parseLong(externalId)));// 是否支持7天无理由退货,Y、N
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(goodsId);
@@ -1064,9 +1065,11 @@ public class ShopHomeController {
                 String source =(String) returnMap.get("source");
                 if(StringUtils.equals(SourceType.JD.getCode(), source)){
                 	 jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
+                	 returnMap.put("skuId",goodsInfo.getExternalId());
                      limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsInfo.getExternalId());
                 }else{
                 	jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                	returnMap.put("skuId",jdGoodsStockInfoList.get(0).getSkuId());
                 	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockCurrAmt());
                     limitGS=limitCommonService.selectLimitByGoodsId(userId,jdGoodsStockInfoList.get(0).getSkuId());
                 }
@@ -1096,24 +1099,27 @@ public class ShopHomeController {
                 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
                 JdSimilarSkuToList.add(jdSimilarSkuTo);
             }
-            // 添加活动id
-            ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
-            if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
-                returnMap.put("proActivityId", proGroupGoodsBo.getActivityId());
-            }
-            // 获取商品的优惠券
-            List<String> proCoupons = jdGoodsInfoService.getProCouponList(goodsId);
-            if (proCoupons.size() > 3) {
-                returnMap.put("proCouponList", proCoupons.subList(0, 3));
-            } else {
-                returnMap.put("proCouponList", proCoupons);
-            }
+//            // 添加活动id
+//            ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+//            if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
+//                returnMap.put("proActivityId", proGroupGoodsBo.getActivityId());
+//            }
+//            String skuId=(String) returnMap.get("skuId");
+//            // 获取商品的优惠券
+//            List<String> proCoupons = jdGoodsInfoService.getProCouponList(goodsId,skuId);
+//            if (proCoupons.size() > 3) {
+//                returnMap.put("proCouponList", proCoupons.subList(0, 3));
+//            } else {
+//                returnMap.put("proCouponList", proCoupons);
+//            }
+			// 商品的邮费
+            returnMap.put("postage", "0");
             // 商品名称
             returnMap.put("goodsName", goodsInfo.getGoodsName());
             // 商户编码
             returnMap.put("merchantCode", goodsInfo.getMerchantCode());
             // 满减活动字段
-            returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));
+//            returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));
 
             // 商品title
             returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());

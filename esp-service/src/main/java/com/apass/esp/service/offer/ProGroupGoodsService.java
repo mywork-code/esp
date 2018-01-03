@@ -368,6 +368,7 @@ public class ProGroupGoodsService {
 					}
 					proGroupGoodsVo.setGoodsCostPrice(stock.getGoodsCostPrice());
 					proGroupGoodsVo.setGoodsPrice(stock.getGoodsPrice());
+					proGroupGoodsVo.setSkuAttr(stock.getGoodsSkuAttr());
 				}
 				Category categroy = categoryMapper.selectByPrimaryKey(goods.getCategoryId3());
 				if(null != categroy){

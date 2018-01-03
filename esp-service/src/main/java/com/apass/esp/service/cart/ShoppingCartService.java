@@ -412,9 +412,20 @@ public class ShoppingCartService {
 					goodsInfoInCart = list1.get(i);
 					// 根据goodsId查询该商品是否在有效活动中
 					Long goodsId = goodsInfoInCart.getGoodsId();
-					ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+					GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(goodsId);
+					String skuId="";
+					//spring14将goodsId改变成skuId
+					if(SourceType.JD.getCode().equals(goodsInfo.getSource())
+		                    || SourceType.WZ.getCode().equals(goodsInfo.getSource())){
+						skuId=goodsInfo.getExternalId();
+					}else{
+					    GoodsStockInfoEntity goodsStockInfoEntity = goodsStockDao.select(goodsInfoInCart.getGoodsStockId());
+					    skuId=goodsStockInfoEntity.getSkuId();
+					}
+					ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,skuId);
 					if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {// 在活动中
-						ProGroupGoods groupGoods = groupGoodsMapper.selectLatestByGoodsId(goodsId);
+//						ProGroupGoods groupGoods = groupGoodsMapper.selectLatestByGoodsId(goodsId);
+						ProGroupGoods groupGoods = groupGoodsMapper.selectLatestBySkuId(skuId);
 						Long activityId = groupGoods.getActivityId();
 						ProActivityCfg activityCfg = activityCfgService.getById(activityId);
 						if (null != activityCfg) {

@@ -62,10 +62,10 @@ $(function () {
         }
     });
 
-
     $('#importFileList').datagrid({
         title: '商品池',
         fit: true,
+        fitColumns: false,
         rownumbers: true,
         pagination: true,
         singleSelect: false, //允许选择多行  
@@ -80,25 +80,14 @@ $(function () {
             }
         },
         columns: [[
-            {
+            {//复选框
             	field: 'ck', 
             	checkbox: true, 
             	width: '30'
-            },  //复选框
-            {
-                title: '商品编号',
-                field: 'goodsCode',
-                width: 150,
-                align: 'center'
-            }, {
-                title: 'skuid',
-                field: 'skuId',
-                width: 150,
-                align: 'center'
-            }, {
+            },{
                 title: '商品名称',
                 field: 'goodsName',
-                width: 120,
+                width: 100,
                 align: 'center',
                 formatter: function (value, row, index) {
                     if (null == value || "null" == value)
@@ -106,11 +95,25 @@ $(function () {
                     var msg = value + "";
                     return "<div  title='" + value + "'>" + value + "</div>";
                 }
-            },
-            {
+            },{
+            	title: '商品编码',
+                field: 'goodsCode',
+                width: 80,
+                align: 'center'
+            },{
+            	title : '商品规格',
+                field : 'skuAttr',
+                width : 80,
+                align : 'center',
+            },{
+            	title: 'skuid',
+                field: 'skuId',
+                width: 80,
+                align: 'center'
+            },{
                 title: '商品状态',
                 field: 'goodsStatus',
-                width: 120,
+                width: 80,
                 align: 'center',
                 formatter: function (value, row, index) {
                     if (value == 'G00') {
@@ -125,52 +128,52 @@ $(function () {
                         return "待审核";
                     }
                 }
-            }, {
-                title: '商品类目（三级）',
+            },{
+                title: '商品类目',
                 field: 'goodsCategory',
-                width: 120,
+                width: 80,
                 align: 'center'
-            }, {
+            },{
                 title: '成本价',
                 field: 'goodsCostPrice',
-                width: 120,
+                width: 80,
                 align: 'center'
-            }, {
+            },{
                 title: '售价',
                 field: 'goodsPrice',
-                width: 120,
+                width: 80,
                 align: 'center'
-            }, {
+            },{
                 title: '市场价',
                 field: 'marketPrice',
-                width: 120,
+                width: 80,
                 align: 'center'
-            }, {
+            },{
                 title: '活动价',
                 field: 'activityPrice',
-                width: 120,
+                width: 80,
                 align: 'center'
-            }, {
+            },{
                 title: '分组',
                 field: 'groupName',
-                width: 120,
+                width: 80,
                 align: 'center'
-            }, {
-                title: '备注',
+            },{
+                title: '上传标志',
                 field: 'detailDesc',
-                width: 120,
+                width: 80,
                 align: 'center',
                 formatter: function (value, row, index) {
                     if (value == '1') {
-                        return "导入成功";
+                        return "成功";
                     } else {
-                        return "导入失败";
+                        return "失败";
                     }
                 }
-            }, {
+            },{
                 title: '操作',
                 field: 'opt',
-                width: 120,
+                width: 100,
                 align: 'center',
                 formatter: function (value, row, index) {
                     var content = "";
@@ -197,11 +200,6 @@ $(function () {
             })
         }
     });
-    
-    
-    //goodsList
-    
-
     $("#createGroup").click(function () {
         $("#groupNameAdd").textbox('clear');
         $("#sordGroupAdd").textbox('clear');
