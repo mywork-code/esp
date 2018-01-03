@@ -506,8 +506,8 @@ public class SAPService {
         contentList.add(salOrder.getOrderId());
         contentList.add("");
         contentList.add(salOrder.getTotalDiscountAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-        contentList.add("");
-        contentList.add("");
+        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "HHmmss"));
         contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "HHmmss"));
         contentList.add("ajqh");
@@ -699,8 +699,8 @@ public class SAPService {
         }else{
           contentList.add("");
         }
-        contentList.add("");
-        contentList.add("");
+        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "HHmmss"));
         contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "HHmmss"));
         contentList.add("");
