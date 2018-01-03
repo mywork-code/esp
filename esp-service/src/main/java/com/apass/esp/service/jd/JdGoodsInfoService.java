@@ -955,21 +955,6 @@ public class JdGoodsInfoService {
 				 */
 				List<ProCoupon> proCoupons = couponManagerService.getCouponsByActivityId(activityId);
 				for (ProCoupon proCoupon : proCoupons) {
-					Boolean falge = false;
-					if (StringUtils.equals(proCoupon.getOfferRange() + "", OfferRangeType.RANGE_ZDPP.getCode())) {
-						if (StringUtils.equals(goodsBasicInfo.getBrandId(), proCoupon.getBrandId() + "")) {
-							falge = true;
-						}
-					} else if (StringUtils.equals(proCoupon.getOfferRange() + "", OfferRangeType.RANGE_ZDPL.getCode())) {
-						if (StringUtils.equals(goodsBasicInfo.getCategoryId1() + "", proCoupon.getCategoryId1())) {
-							falge = true;
-						}
-					} else if (StringUtils.equals(proCoupon.getOfferRange() + "", OfferRangeType.RANGE_ZDSP.getCode())) {
-						if (StringUtils.equals(proGroupGoodsBo.getSkuId(), proCoupon.getSkuId())) {
-							falge = true;
-						}
-					}
-					if (falge) {
 						ProCouponVo proCouponVo = new ProCouponVo();
 						proCouponVo.setId(proCoupon.getId());
 						proCouponVo.setActivityId(Long.parseLong(activityId));
@@ -984,7 +969,6 @@ public class JdGoodsInfoService {
 						proCouponVo.setEndTime(endTimeTimeString);
 						proCouponVo.setEffectiveTiem(startTimeString, endTimeTimeString);
 						proCouponVos.add(proCouponVo);
-					}
 				}
 			}
 		}
