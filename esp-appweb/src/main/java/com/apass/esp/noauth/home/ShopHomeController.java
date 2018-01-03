@@ -1098,20 +1098,22 @@ public class ShopHomeController {
                 jdSimilarSkuTo.setSkuIdOrder("");
                 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
                 JdSimilarSkuToList.add(jdSimilarSkuTo);
+                
+                // 添加活动id
+                String skuId = (String) returnMap.get("skuId");
+                ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,skuId);
+                if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
+                    jdSimilarSkuVo.setProActivityId(proGroupGoodsBo.getActivityId());
+                }
+                // 获取商品的优惠券
+                List<String> proCoupons = jdGoodsInfoService.getProCouponList(goodsId,skuId);
+                if (proCoupons.size() > 3) {
+                	jdSimilarSkuVo.setProCouponList(proCoupons.subList(0, 3));
+                } else {
+                	jdSimilarSkuVo.setProCouponList(proCoupons);
+                }
             }
-//            // 添加活动id
-//            ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
-//            if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
-//                returnMap.put("proActivityId", proGroupGoodsBo.getActivityId());
-//            }
-//            String skuId=(String) returnMap.get("skuId");
-//            // 获取商品的优惠券
-//            List<String> proCoupons = jdGoodsInfoService.getProCouponList(goodsId,skuId);
-//            if (proCoupons.size() > 3) {
-//                returnMap.put("proCouponList", proCoupons.subList(0, 3));
-//            } else {
-//                returnMap.put("proCouponList", proCoupons);
-//            }
+            
 			// 商品的邮费
             returnMap.put("postage", "0");
             // 商品名称
