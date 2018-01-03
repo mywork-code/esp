@@ -3158,7 +3158,7 @@ public class OrderService {
 		    				}
 							break;
 						case COUPON_HDSP ://活动商品
-							if(StringUtils.isNotBlank(purchase.getProActivityId())){
+							if(StringUtils.equals(coupon.getActivityId()+"", purchase.getProActivityId())){//如果商品参加的活动等于券所属的活动，才能进行计算
 								if(StringUtils.equals(goods.getBrandId(), coupon.getBrandId())){//品牌
 		    						total = total.add(purchase.getPayMoney());
 			    					goodslist.add(purchase.getGoodsStockId()+"");
