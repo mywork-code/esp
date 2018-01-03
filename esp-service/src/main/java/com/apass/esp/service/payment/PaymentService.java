@@ -670,7 +670,7 @@ public class PaymentService {
 					//验证不配送区域
 					Map<String,Object> resultMap = orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
 					//判断商品活动是否失效
-					ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(detail.getProActivityId(),detail.getGoodsId());
+					ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(detail.getProActivityId(),detail.getGoodsId(),detail.getGoodsStockId());
 					resultMap.put(OrderService.PRO_ACTIVITY_FLAG,validActivityFlag);
 					Boolean s = (Boolean)resultMap.get("unSupportProvince");
 		    		if(s || validActivityFlag == ActivityStatus.END){

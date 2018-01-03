@@ -1523,7 +1523,7 @@ public class OrderService {
             
             //验证商品参加的活动是否过期
             if(StringUtils.isNotBlank(purchase.getProActivityId())){
-	            ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
+	            ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId(),purchase.getGoodsStockId());
 	        	if(validActivityFlag != ActivityStatus.PROCESSING){
 	        		LOGGER.error("ActivityID为{}的活动,GoodsID为{}的商品，参加的活动无效!",purchase.getProActivityId(),purchase.getGoodsId());
 	        		throw new BusinessException("订单中包含无效活动的商品!");
@@ -2866,7 +2866,7 @@ public class OrderService {
             Map<String, Object> resultMaps = new HashMap<>();
             if (null != goods) {
                 //判断商品活动是否失效
-              ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
+              ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId(),purchase.getGoodsStockId());
               resultMaps.put(PRO_ACTIVITY_FLAG,validActivityFlag);
 
                 if (StringUtils.equals(goods.getSource(), SourceType.WZ.getCode())) {
