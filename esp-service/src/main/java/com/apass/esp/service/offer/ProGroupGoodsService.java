@@ -32,6 +32,7 @@ import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.mapper.ProGroupManagerMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
@@ -437,11 +438,23 @@ public class ProGroupGoodsService {
 	/**
 	 * 判断商品活动是否失效
 	 */
-	public ActivityStatus isValidActivity(String activityId,Long goodsId){
+	public ActivityStatus isValidActivity(String activityId,Long goodsId,Long stockId){
 		if(StringUtils.isEmpty(activityId)){
 			return ActivityStatus.NO;
 		}
-		ProGroupGoods groupGoods = groupGoodsMapper.selectByGoodsIdAndActivityId(goodsId,Long.valueOf(activityId));
+		/**
+		 * goodsId和stockID
+		 */
+		GoodsInfoEntity goods = goodsRepository.select(goodsId);
+    	String skuId = null;
+    	if(StringUtils.isNotBlank(goods.getSource())){
+    		skuId = goods.getExternalId();
+    	}else{
+    		GoodsStockInfoEntity stock = goodsStockInfoRepository.select(stockId);
+    		skuId = stock.getSkuId();
+    	}
+		
+		ProGroupGoods groupGoods = groupGoodsMapper.selectOneBySkuIdAndActivityId(skuId,Long.valueOf(activityId));
 		if(groupGoods == null){
 			return ActivityStatus.NO;
 		}
