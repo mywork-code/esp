@@ -1202,4 +1202,43 @@ public class GoodsBaseInfoController {
             return null;
         }
     }
+
+    /**
+     * 微知商品 main_goods_code 初始化值
+     */
+    @ResponseBody
+    @RequestMapping(value = "/initMainGoodsCode")
+    public Response initMainGoodsCode(){
+        /**
+         * 思路：
+         *  1，查询所有微知、且Goodscode为空的商品商品
+         *  2，遍历商品，查询相似skuId,填充mainGoodsCode
+         */
+        List<GoodsInfoEntity> goods = goodsService.selectGoodsByNullMaingoodscode();
+        LOGGER.info("需要初始化的商品有："+goods.size()+"个");
+
+        if(CollectionUtils.isEmpty(goods)){
+            return Response.fail("不存在需要初始化mainGoodsCode的微知商品");
+        }
+        for(GoodsInfoEntity entity: goods){
+            String goodsCode = entity.getGoodsCode();
+            //查询similar skuIds
+            TreeSet<String> similarSkuIds = jdGoodsInfoService.getJdSimilarSkuIdList(entity.getExternalId());
+            if(CollectionUtils.isEmpty(similarSkuIds)){
+                entity.setMainGoodsCode(goodsCode);
+                goodsService.updateService(entity);
+                continue;
+            }
+            for (String skuId: similarSkuIds) {
+                //根据skuId去goodsbase表中查,如果存在并且mainGoodsCode存在 存储mainGoodsCode
+                GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(skuId);
+                if(goodsInfoEntity != null){
+                    goodsInfoEntity.setMainGoodsCode(goodsCode);
+                    goodsService.updateService(goodsInfoEntity);
+                }
+            }
+        }
+
+        return Response.success("微知main_goods_code初始化成功");
+    }
 }

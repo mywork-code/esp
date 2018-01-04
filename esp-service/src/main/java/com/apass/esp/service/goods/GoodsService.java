@@ -2054,4 +2054,8 @@ public class GoodsService {
     	}
     	return goods;
     }
+
+    public List<GoodsInfoEntity> selectGoodsByNullMaingoodscode() {
+        return goodsDao.selectGoodsByNullMaingoodscode();
+    }
 }
