@@ -12,6 +12,11 @@ public interface BsdiffInfoEntityMapper extends GenericMapper<BsdiffInfoEntity, 
 
     List<BsdiffInfoEntity> selectAllBsdiff();
 
-    BsdiffInfoEntity selectByEntityQuery(BsdiffInfoEntity entity);
-    BsdiffInfoEntity selectBsdiffInfoByVo(BsdiffQuery query);
+    List<BsdiffInfoEntity> selectBsdiffInfoByVo(BsdiffQuery query);
+
+    List<BsdiffInfoEntity> selectAllBsdiffNewest();
+
+    BsdiffInfoEntity selectMaxBsdiffInfoById(String id);
+
+
 }

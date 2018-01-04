@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.BsdiffInfoEntityMapper" >
-<<<<<<< HEAD
-  <sql id="QueryBsdiffSql">
+  <sql id="queryVoSql">
     <where>
-      <if test="bsdiffVer != null and bsdiffVer != ''">
-        AND bsdiff_ver = #{bsdiffVer, jdbcType=VARCHAR}
+      <if test="lineId != null">
+        and line_id=#{lineId}
+      </if>
+
+      <if test="bsdiffVer != null">
+        and bsdiff_ver=#{bsdiffVer}
       </if>
     </where>
-=======
-  <sql id="queryVoSql">
-    <if test="lineId != null">
-      line_id=#{lineId}
-    </if>
-
-    <if test="bsdiffVer != null">
-      bsdiff_ver=#{bsdiffVer}
-    </if>
->>>>>>> 17a180e9ec8c78cbc3a05bf77778d15a306e8ae9
   </sql>
 
   <!--查询所有:按创建时间倒序排序-->
@@ -26,18 +19,40 @@
     from t_esp_bsdiff_info ORDER BY created_time DESC
   </select>
 
-<<<<<<< HEAD
-  <select id="selectByEntityQuery"  resultMap="BaseResultMap">
-    SELECT <include refid="Base_Column_List" />
-    from t_esp_bsdiff_info
-    <include refid="QueryBsdiffSql"/>
-    ORDER BY created_time DESC
-=======
+ <select id="selectAllBsdiffNewest" resultMap="BaseResultMap">
+   SELECT <include refid="Base_Column_List" />
+   from t_esp_bsdiff_info
+   where id in
+   (
+     SELECT
+     MAX(id) id
+     FROM
+     t_esp_bsdiff_info
+     GROUP BY
+     line_id
+   )
+   ORDER BY created_time DESC
+  </select>
+
   <!--查询所有:按创建时间倒序排序-->
   <select id="selectBsdiffInfoByVo" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List" />
-    from t_esp_bsdiff_info ORDER BY created_time DESC
+    from t_esp_bsdiff_info
     <include refid="queryVoSql"/>
->>>>>>> 17a180e9ec8c78cbc3a05bf77778d15a306e8ae9
+    ORDER BY created_time DESC
   </select>
+
+  <!--查询某个 id下最大版本号对应数据-->
+  <select id="selectMaxBsdiffInfoById" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    from t_esp_bsdiff_info where id = (
+      SELECT
+      MAX(id) id
+      FROM
+      t_esp_bsdiff_info
+      where line_id = #{value}
+    )
+  </select>
+
+
 </mapper>

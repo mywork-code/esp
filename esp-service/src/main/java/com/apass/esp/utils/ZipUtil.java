@@ -24,7 +24,6 @@ import java.util.zip.ZipOutputStream;
 @SuppressWarnings("unchecked")
 public class ZipUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZipUtil.class);
-    private static final int SIZE = 1048576;
 
     private String zipPath;
     private String zipName;
@@ -107,7 +106,6 @@ public class ZipUtil {
         List<FileEntitis> list = Lists.newArrayList();//存储文件清单
         int countStart = 0;//记录偏移量起始位
         int countEnd = 0;//记录偏移量最后位
-        File f = new File(descDir,zipFile.getName().split("\\.")[0]+".properties");//记录文件清单列表
 
         File pathFile = new File(descDir);
         if(!pathFile.exists()){
@@ -129,7 +127,7 @@ public class ZipUtil {
             countEnd=countStart+in.available();
             fileContent.setExcursionSize(String.valueOf(countStart)+","+String.valueOf(countEnd));
             //TODO 变更环境
-            fileContent.setUrl("http://espapp.sit.apass.cn/static/"+zipPath+f.getName());
+            fileContent.setUrl("http://espapp.sit.apass.cn/static/"+zipPath+zipEntryName);
             fileEntitis.setFileContent(fileContent);
             list.add(fileEntitis);
             countStart = countEnd+1;
