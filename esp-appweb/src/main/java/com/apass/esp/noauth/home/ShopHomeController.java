@@ -1101,6 +1101,9 @@ public class ShopHomeController {
                 
                 // 添加活动id
                 String skuId = (String) returnMap.get("skuId");
+                //满减活动字段
+    			String activityCfg = goodsService.getActivityInfo(goodsId,skuId);
+    			jdSimilarSkuVo.setActivityCfg(activityCfg);
                 ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,skuId);
                 if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
                     jdSimilarSkuVo.setProActivityId(proGroupGoodsBo.getActivityId());
