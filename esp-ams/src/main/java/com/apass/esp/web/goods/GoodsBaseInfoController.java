@@ -922,7 +922,7 @@ public class GoodsBaseInfoController {
         if (StringUtils.isNotEmpty(skuId)) {
             map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(skuId));
             map.put("view", view);
-           System.out.println(GsonUtils.toJson(map)); 
+           LOGGER.info(GsonUtils.toJson(map));
             return new ModelAndView("goods/goodsPreviewProductJD-view", map);
         }
         GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(id));
