@@ -390,7 +390,9 @@
                 </div>
                 <p class="title">${goodsName!}</p>
                 <p class="price">¥ ${goodsPrice!}</p>
-                <p><img id="yulanImg" src="${defaultImage}"/></p>
+                <#if defaultImage??>
+                    <p><img id="yulanImg" src="${defaultImage}"/></p>
+                </#if>
 
                 <div id="selectWrap" class="swiper-wrapper">
                     <#list jdSimilarSkuList as list>
