@@ -526,14 +526,18 @@ public class GoodsService {
 	    Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
 	    GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
 	    BigDecimal minPrice =(BigDecimal) result.get("minPrice");
-	    if(BigDecimal.ZERO.compareTo(minPrice)==0){
+	    if(null==minPrice || BigDecimal.ZERO.compareTo(minPrice)==0){
 	    	 returnMap.put("goodsPrice",null);
 	    }else{
 	    	 returnMap.put("goodsPrice",minPrice);
 	    }
 	    returnMap.put("googsDetail",goodsBasicInfo.getGoogsDetail());
 	    returnMap.put("goodsName",goodsBasicInfo.getGoodsName());
-	    returnMap.put("skuId",MinGoodsPriceStock.getSkuId());
+	    if(null !=MinGoodsPriceStock){
+	    	returnMap.put("skuId",MinGoodsPriceStock.getSkuId());
+	    }else{
+	    	returnMap.put("skuId",null);
+	    }
 	    // 查询商品图片
 	 	List<String> JdImagePathList=new ArrayList<>();
 	    List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
@@ -541,7 +545,7 @@ public class GoodsService {
 	    	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
 	    }
 	    List<JdSimilarSku>  jdSimilarSkuList=new ArrayList<>();
-	    if(StringUtils.isNotEmpty(MinGoodsPriceStock.getAttrValIds())){
+	    if(null !=MinGoodsPriceStock && StringUtils.isNotEmpty(MinGoodsPriceStock.getAttrValIds())){
 		   jdSimilarSkuList=getJdSimilarSkuListBygoodsId2(goodsId,MinGoodsPriceStock.getAttrValIds());
 	    }
 	    if(null ==jdSimilarSkuList ){
