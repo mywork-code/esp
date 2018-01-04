@@ -313,4 +313,8 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
     public int insertSelective(GoodsInfoEntity entity) {
         return getSqlSession().insert("insertSelective", entity);
     }
+
+    public List<GoodsInfoEntity> selectGoodsByNullMaingoodscode() {
+        return getSqlSession().selectList("selectGoodsByNullMaingoodscode");
+    }
 }
