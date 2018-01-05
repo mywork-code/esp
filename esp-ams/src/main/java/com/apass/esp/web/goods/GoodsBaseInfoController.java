@@ -903,7 +903,7 @@ public class GoodsBaseInfoController {
         returnMap.put("view", view);
         String image=goodsService.getDefaultImage(returnMap);
         returnMap.put("defaultImage", image);
-        System.out.println(GsonUtils.toJson(returnMap));
+        LOGGER.info(GsonUtils.toJson(returnMap));
         return new ModelAndView("goods/goodsPreviewProductNotJD-view", returnMap);
     }
     
