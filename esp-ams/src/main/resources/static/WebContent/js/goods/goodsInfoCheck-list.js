@@ -318,7 +318,6 @@ $(function() {
 	}
 	//预览商品
 	$.previewProduct =  function(id,source,eid) {
-        debugger;
         var subtitle = "商品预览-" + id;
         var parentTabs = parent.$('#tabs');
         var destAddress="";
