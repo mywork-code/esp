@@ -22,6 +22,7 @@ import java.io.*;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class BsdiffinfoService {
@@ -70,8 +71,11 @@ public class BsdiffinfoService {
         if(!StringUtils.equals("zip",split[1])){
             throw new RuntimeException("请上传zip文件 .");
         }
+		if(!(isNumeric(bsdiffVer) && isNumeric(split[0]))){
+			throw new RuntimeException("版本号和文件名必须是数字1,2,3...等");
+		}
         if(!StringUtils.equals(bsdiffVer,split[0])){
-            throw new RuntimeException("版本要与zip文件名一致.");
+            throw new RuntimeException("版本号要与zip文件名一致.");
         }
 
 		String zipName = bsdiffFile.getOriginalFilename();
@@ -200,11 +204,6 @@ public class BsdiffinfoService {
 			if(bw!=null){
 				bw.close();
 			}
-			if(ins!=null){
-				for(InputStream in : ins){
-					in.close();
-				}
-			}
 		}
 
 	}
@@ -232,4 +231,10 @@ public class BsdiffinfoService {
 	public BsdiffInfoEntity selectMaxBsdiffInfoById(String id) {
 		return bsdiffInfoEntityMapper.selectMaxBsdiffInfoById(id);
 	}
+
+	public static boolean isNumeric(String str) {
+		Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+		return pattern.matcher(str).matches();
+	}
+
 }

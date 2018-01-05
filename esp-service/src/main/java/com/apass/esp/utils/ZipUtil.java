@@ -117,43 +117,55 @@ public class ZipUtil {
             FileContent fileContent = new FileContent();
 
             ZipEntry entry = (ZipEntry)entries.nextElement();
+            if(entry.isDirectory()){
+                throw new RuntimeException("zip文件中不可有目录 ");
+            }
             String zipEntryName = entry.getName();
 
             fileEntitis.setId(zipEntryName);
             fileContent.setName(zipEntryName);
 
-            InputStream in = zip.getInputStream(entry);
+            InputStream in = null;
+            OutputStream out = null;
+            try{
+                in = zip.getInputStream(entry);
 
-            countEnd=countStart+in.available();
-            fileContent.setExcursionSize(String.valueOf(countStart)+","+String.valueOf(countEnd));
-            //TODO 变更环境
-            fileContent.setUrl("http://espapp.sit.apass.cn/static/"+zipPath+zipEntryName);
-            fileEntitis.setFileContent(fileContent);
-            list.add(fileEntitis);
-            countStart = countEnd+1;
+                countEnd=countStart+in.available();
+                fileContent.setExcursionSize(String.valueOf(countStart)+","+String.valueOf(countEnd));
+                //TODO 变更环境
+                fileContent.setUrl("http://espapp.sit.apass.cn/static/"+zipPath+zipEntryName);
+                fileEntitis.setFileContent(fileContent);
+                list.add(fileEntitis);
+                countStart = countEnd+1;
 
-            String outPath = (descDir+zipEntryName).replaceAll("\\\\", "/");;
-            //判断路径是否存在,不存在则创建文件路径
-            File file = new File(outPath.substring(0, outPath.lastIndexOf('/')));
-            if(!file.exists()){
-                file.mkdirs();
+                String outPath = (descDir+zipEntryName).replaceAll("\\\\", "/");;
+                //判断路径是否存在,不存在则创建文件路径
+                File file = new File(outPath.substring(0, outPath.lastIndexOf('/')));
+                if(!file.exists()){
+                    file.mkdirs();
+                }
+                //判断文件全路径是否为文件夹,如果是上面已经上传,不需要解压
+                if(new File(outPath).isDirectory()){
+                    continue;
+                }
+                //输出文件路径信息
+                LOGGER.info("路径："+outPath+",大小:"+in.available());
+
+                out = new FileOutputStream(outPath);
+                byte[] buf1 = new byte[1024];
+                int len;
+                while((len=in.read(buf1))>0){
+                    out.write(buf1,0,len);
+                }
+            }finally {
+                if(out != null){
+                    out.close();
+
+                }
+                if(in != null){
+                    in.close();
+                }
             }
-            //判断文件全路径是否为文件夹,如果是上面已经上传,不需要解压
-            if(new File(outPath).isDirectory()){
-                continue;
-            }
-            //输出文件路径信息
-            LOGGER.info("路径："+outPath+",大小:"+in.available());
-
-            OutputStream out = new FileOutputStream(outPath);
-            byte[] buf1 = new byte[1024];
-            int len;
-            while((len=in.read(buf1))>0){
-                out.write(buf1,0,len);
-            }
-
-            out.close();
-            in.close();
         }
         LOGGER.info("******************解压完毕********************");
         //list转成数组存储到.properties文件中
