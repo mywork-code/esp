@@ -1,5 +1,9 @@
 package com.apass.esp.domain.vo;
 
+import com.apass.esp.domain.entity.FileEntitis;
+
+import java.util.List;
+
 /**
  * Created by xiaohai on 2018/1/3.
  */
@@ -31,7 +35,7 @@ public class BsdiffResponse {
     /**
      * 对应的文件清单
      */
-    private String jsonList;
+    private List<FileEntitis> jsonList;
 
     public String getBsdiffVer() {
         return bsdiffVer;
@@ -73,11 +77,11 @@ public class BsdiffResponse {
         this.fileurl = fileurl;
     }
 
-    public String getJsonList() {
+    public List<FileEntitis> getJsonList() {
         return jsonList;
     }
 
-    public void setJsonList(String jsonList) {
+    public void setJsonList(List<FileEntitis> jsonList) {
         this.jsonList = jsonList;
     }
 }

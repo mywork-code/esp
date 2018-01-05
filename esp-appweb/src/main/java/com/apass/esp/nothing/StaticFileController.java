@@ -3,7 +3,7 @@ package com.apass.esp.nothing;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.BsdiffInfoEntity;
-import com.apass.esp.domain.entity.BsdiffQuery;
+import com.apass.esp.domain.entity.FileEntitis;
 import com.apass.esp.domain.entity.WeexInfoEntity;
 import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
 import com.apass.esp.domain.vo.BsdiffParamVo;
@@ -22,8 +22,6 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.MD5Utils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.sf.json.JSONArray;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -481,8 +479,9 @@ public class StaticFileController {
         while ((str=br.readLine())!=null){
             sb.append(str);
         }
+        List<FileEntitis> list = GsonUtils.convertList(sb.toString(),  new com.google.gson.reflect.TypeToken<List<FileEntitis>>(){});
 
-        bsr.setJsonList(sb.toString());
+        bsr.setJsonList(list);
         return bsr;
     }
 
