@@ -157,7 +157,8 @@
                 t3.goods_sku_attr goodsSkuAttr,
                 t3.goods_price  goodsPrice,
                 t3.market_price  marketPrice,
-                t3.goods_cost_price goodsCostPrice
+                t3.goods_cost_price goodsCostPrice,
+                t3.id stockId
             FROM
                 t_esp_goods_base_info t
             LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code

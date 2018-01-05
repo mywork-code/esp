@@ -13,6 +13,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.service.goods.GoodsStockInfoService;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 
@@ -103,6 +105,8 @@ public class ExportFileController {
 
     @Autowired
     private AwardDetailMapper awardDetailMapper;
+    @Autowired
+    private GoodsStockInfoService goodsStockInfoService;
 
     /**
      * 导出文件
@@ -884,9 +888,11 @@ public class ExportFileController {
                     
                     if (StringUtils.equals(b.getSource(), SourceType.JD.getCode())) {
                         b.setMerchantName(SourceType.JD.getMessage());
-                    }
-                    if(StringUtils.equals(b.getSource(), SourceType.WZ.getCode())){
+                    }else if(StringUtils.equals(b.getSource(), SourceType.WZ.getCode())){
                     	b.setMerchantName(SourceType.WZ.getMessage());
+                    }else {
+                        GoodsStockInfoEntity stock =  goodsStockInfoService.getById(b.getStockId());
+                        b.setExternalId(stock.getSkuId());
                     }
                     if (null != b.getListTime()) {
                         b.setListTimeString(b.getListTime());

@@ -132,7 +132,18 @@ public class GoodsInfoEntity {
     private Date createDate;
     //修改时间
     private Date updateDate;
-	public List<String> getStatuList() {
+
+    private Long stockId;
+
+    public Long getStockId() {
+        return stockId;
+    }
+
+    public void setStockId(Long stockId) {
+        this.stockId = stockId;
+    }
+
+    public List<String> getStatuList() {
         return statuList;
     }
     public void setStatuList(List<String> statuList) {
