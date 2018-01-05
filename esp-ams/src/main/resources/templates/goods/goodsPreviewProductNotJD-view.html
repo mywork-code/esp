@@ -390,22 +390,26 @@
                 </div>
                 <p class="title">${goodsName!}</p>
                 <p class="price">¥ ${goodsPrice!}</p>
-				<p><img id="yulanImg" src="${defaultImage}"/></p>
+                <#if defaultImage??>
+				    <p><img id="yulanImg" src="${defaultImage}"/></p>
+                </#if>
 
                 <div id="selectWrap" class="swiper-wrapper">
-                    <#list jdSimilarSkuList as list>
-                        <div class="category comList">
-                            <span class="Lititle">${list.saleName!}</span>
-                            <#list list.saleAttrList as list2>
-                                <div class="items"
-                                     data-sku="${list2.skuIdStr!}"
-                                     data-value="">
-                                    <a href="javascript:;" target='_self'>
-                                        ${list2.saleValue!}</a>
-                                </div>
-                            </#list>
-                        </div>
-                    </#list>
+                    <#if jdSimilarSkuList??>
+                        <#list jdSimilarSkuList as list>
+                            <div class="category comList">
+                                <span class="Lititle">${list.saleName!}</span>
+                                <#list list.saleAttrList as list2>
+                                    <div class="items"
+                                         data-sku="${list2.skuIdStr!}"
+                                         data-value="">
+                                        <a href="javascript:;" target='_self'>
+                                            ${list2.saleValue!}</a>
+                                    </div>
+                                </#list>
+                            </div>
+                        </#list>
+                    </#if>
                 </div>
             </div>
             <!-- 商品详情 -->

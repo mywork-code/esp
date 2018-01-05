@@ -162,6 +162,10 @@ public class JdGoodsInfoService {
 		skuPrice.add(sku);
 
 		GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(sku));
+		if(goodsInfoEntity == null){
+			logger.error("数据有误,skuId:{}对应goods_base表无数据",sku.toString());
+			throw new RuntimeException("数据有误");
+		}
 		List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
 		BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoEntity.getId(), goodsStockInfoEntityList.get(0).getGoodsStockId());
 		map.put("goodsPrice",goodsPrice);
