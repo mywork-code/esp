@@ -18,6 +18,12 @@ $(function(){
 			    hidden: true,
 			    align : 'center'
 			},
+			{
+				title : '提现流水号',
+				width : 150,
+				field : 'drawId',
+				align : 'center'
+			},
             {
                 title : '邀请人手机号',
                 field : 'mobile',
