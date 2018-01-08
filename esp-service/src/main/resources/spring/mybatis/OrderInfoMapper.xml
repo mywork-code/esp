@@ -904,7 +904,7 @@
 		FROM
 			t_esp_order_info
 		where
-		source = 'jd'
+		source = 'wz'
 		and orderstatus=#{orderStatus} and ext_parent_id!='-1'
 	</select>
 	

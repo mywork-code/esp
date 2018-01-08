@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.MessageListener;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
@@ -14,6 +15,8 @@ import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.MessageListenerMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
+import com.apass.esp.repository.goods.GoodsBasicRepository;
+import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.repository.refund.RefundDetailInfoRepository;
@@ -38,6 +41,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.xml.transform.Source;
 import java.math.BigDecimal;
@@ -91,6 +96,9 @@ public class JdAfterSaleScheduleTask {
     private OrderInfoRepository orderInfoRepository;
 
     @Autowired
+    private GoodsRepository goodsRepository;
+
+    @Autowired
     private TxnInfoMapper txnInfoMapper;
     @Autowired
     private MessageListenerMapper messageListenerMapper;
@@ -101,13 +109,10 @@ public class JdAfterSaleScheduleTask {
      */
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
-        //List<Integer> appendInfoSteps = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
         List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D05");
         LOGGER.info("refund task begin...");
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
-            if(SourceType.JD.getCode().equals(orderInfoEntity.getSource())){
-                continue;
-            }
+
             MessageListener ml=new MessageListener();
             ml.setType("100");
             LOGGER.info("orderInfoEntity.getOrderId() {}",orderInfoEntity.getOrderId());
@@ -252,7 +257,10 @@ public class JdAfterSaleScheduleTask {
         LOGGER.info("newAfsInfo.. {}",GsonUtils.toJson(serviceInfoList.get(0)));
         for (AfsServicebyCustomerPin afsCusPin : serviceInfoList) {
             RefundDetailInfoEntity refundDetailInfoEntity = new RefundDetailInfoEntity();
-            refundDetailInfoEntity.setGoodsId(afsCusPin.getWareId());
+            Long skuId = afsCusPin.getWareId();
+            GoodsInfoEntity goodsInfoEntity = goodsRepository.selectGoodsBySkuId(skuId.toString());
+            refundDetailInfoEntity.setGoodsId(goodsInfoEntity.getId());
+
             refundDetailInfoEntity.setOrderId(orderId);
             Integer i = afsCusPin.getAfsServiceStep();
             if (i == 20 || i == 60) {
