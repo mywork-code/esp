@@ -136,7 +136,7 @@ public class ZipUtil {
                 fileContent.setUrl("http://espapp.sit.apass.cn/static/"+zipPath+zipEntryName);
                 fileEntitis.setFileContent(fileContent);
                 list.add(fileEntitis);
-                countStart = countEnd+1;
+                countStart = countEnd;
 
                 String outPath = (descDir+zipEntryName).replaceAll("\\\\", "/");;
                 //判断路径是否存在,不存在则创建文件路径

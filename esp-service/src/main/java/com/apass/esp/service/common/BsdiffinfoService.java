@@ -125,10 +125,10 @@ public class BsdiffinfoService {
 					File newFile = new File(newFilePath);
 					File diffFile = new File(diffFilePath);
 
-					File temp1 = oldFile.length()<newFile.length()?oldFile:newFile;
-					File temp2 = oldFile.length()>newFile.length()?oldFile:newFile;
-					newFile = temp2;
-					oldFile = temp1;
+//					File temp1 = oldFile.length()<newFile.length()?oldFile:newFile;
+//					File temp2 = oldFile.length()>newFile.length()?oldFile:newFile;
+//					newFile = temp2;
+//					oldFile = temp1;
 
 					BSDiff.bsdiff(oldFile,newFile,diffFile);
 				}

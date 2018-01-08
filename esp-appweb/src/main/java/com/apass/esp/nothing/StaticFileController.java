@@ -22,6 +22,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.MD5Utils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.reflect.TypeToken;
 import net.sf.json.JSONArray;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -385,8 +386,9 @@ public class StaticFileController {
             }else{//返回对应增量更新的md5列表
                 List<String> ids = new ArrayList<>();//记录所有最新版本号的id
                 //解析json数组
-                JSONArray jsonarray = JSONArray.fromObject(jsonArr);
-                List<BsdiffParamVo> bspas = (List)JSONArray.toCollection(jsonarray, BsdiffParamVo.class);
+//                JSONArray jsonarray = JSONArray.fromObject(jsonArr);
+//                List<BsdiffParamVo> bspas = (List)JSONArray.toCollection(jsonarray, BsdiffParamVo.class);
+                List<BsdiffParamVo> bspas = GsonUtils.convertList(jsonArr,new TypeToken<List<BsdiffParamVo>>(){});
                 if(CollectionUtils.isEmpty(bspas)){
                     throw new RuntimeException("参数有误");
                 }
@@ -411,7 +413,7 @@ public class StaticFileController {
                 //未传id，但数据库存存在的情况
                 List<BsdiffInfoEntity> otherBsdiff = new ArrayList<>();
                 for(BsdiffInfoEntity bsdiff: bsdiffs){
-                    if(!ids.contains(bsdiff.getId())){
+                    if(!ids.contains(bsdiff.getLineId())){
                         otherBsdiff.add(bsdiff);
                     }
                 }
