@@ -245,7 +245,6 @@ public class ShopHomeController {
             if(!CollectionUtils.isEmpty(limitBuyActs)){
                 LimitBuyActBannerVo limitBuyActBannerVo = new LimitBuyActBannerVo();//返回app值
                 limitBuyAct = limitBuyActs.get(0);
-                //TODO 发生产时要在对应目录上传图片 /data/nfs/gfb/eshop/banner/limitbuy
                 limitBuyActBannerVo.setImgurl(espImageUrl + "/static"+ "/eshop/banner/limitbuy/20171227171809.jpg");
                 limitBuyActBannerVo.setStartDate(DateFormatUtil.dateToString(limitBuyAct.getStartDate(),"HH:mm"));
                 limitBuyActBannerVo.setEndDate(String.valueOf(limitBuyAct.getEndDate().getTime()));
@@ -1015,6 +1014,7 @@ public class ShopHomeController {
                 goodsInfo.setGoodsPrice(price);
                 goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
             }
+
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
@@ -1143,6 +1143,18 @@ public class ShopHomeController {
             LOGGER.error("获取商品基本信息失败");
             return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
         }
+    }
+
+    /**
+     * 商品详情页面选中规格时：更改轮播图和商品详情显示
+     * @param paramMap
+     * @return
+     */
+    @POST
+    @Path("/v3/loadDetailInfoById")
+    public Response onSelectSkuType(Map<String, Object> paramMap){
+        //TODO
+        return null;
     }
     /**
      * 
