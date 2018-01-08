@@ -32,6 +32,8 @@ public class SalesOrderPassOrRefund {
      * 订单创建时间
      */
     private Date createDate;
+
+    private Date updateDate;
     /**
      * 用户名
      */
@@ -44,6 +46,14 @@ public class SalesOrderPassOrRefund {
 
     /**供应商编号 */
     private String merchantCode;;
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
 
     public String getMerchantCode() {
         return merchantCode;
