@@ -986,6 +986,7 @@
 			orderinfo.telephone telephone,
 			sum(orderinfordetail.discount_amount) totalDiscountAmount,
 			orderinfo.create_date createDate,
+			orderinfo.update_date updateDate,
 			orderinfo.`name` name
 		from t_esp_order_info orderinfo
 		LEFT JOIN t_esp_refund_info refundinfo on orderinfo.order_id = refundinfo.order_id
