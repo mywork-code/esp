@@ -18,10 +18,11 @@
     <result column="release_date" property="releaseDate" jdbcType="TIMESTAMP" />
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="draw_id" property="drawId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, user_id, real_name, mobile, activity_id, tax_amount, amount, type, status, order_id, arrived_date, 
-    card_no, card_bank, release_date, create_date, update_date
+    card_no, card_bank, release_date, create_date, update_date,draw_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -37,12 +38,13 @@
     insert into t_esp_award_detail (user_id, real_name, mobile, activity_id, tax_amount, 
       amount, type, status, 
       order_id, arrived_date, card_no, 
-      card_bank, release_date, create_date, update_date
+      card_bank, release_date, create_date, update_date,draw_id
       )
     values (#{userId,jdbcType=BIGINT}, #{realName,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{activityId,jdbcType=BIGINT}, #{taxAmount,jdbcType=DECIMAL}, 
       #{amount,jdbcType=DECIMAL}, #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
       #{orderId,jdbcType=VARCHAR}, #{arrivedDate,jdbcType=TIMESTAMP}, #{cardNo,jdbcType=VARCHAR}, 
-      #{cardBank,jdbcType=VARCHAR}, #{releaseDate,jdbcType=TIMESTAMP}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
+      #{cardBank,jdbcType=VARCHAR}, #{releaseDate,jdbcType=TIMESTAMP}, #{createDate,jdbcType=TIMESTAMP},
+      #{updateDate,jdbcType=TIMESTAMP},#{drawId,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.AwardDetail" useGeneratedKeys="true" keyProperty="id" >
@@ -84,6 +86,9 @@
       <if test="updateDate != null" >
         update_date,
       </if>
+      <if test="drawId != null" >
+        draw_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="userId != null" >
@@ -121,6 +126,9 @@
       </if>
       <if test="updateDate != null" >
         #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="drawId != null" >
+        #{drawId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -171,6 +179,9 @@
       </if>
       <if test="updateDate != null" >
         update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="drawId != null" >
+        draw_id = #{drawId,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

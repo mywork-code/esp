@@ -36,6 +36,16 @@ public class AwardDetail {
 
     private Date updateDate;
 
+    private String drawId;
+
+    public String getDrawId() {
+        return drawId;
+    }
+
+    public void setDrawId(String drawId) {
+        this.drawId = drawId;
+    }
+
     public Long getId() {
         return id;
     }

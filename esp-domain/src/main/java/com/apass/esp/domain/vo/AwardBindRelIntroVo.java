@@ -58,6 +58,19 @@ public class AwardBindRelIntroVo {
 	 */
 	private Byte status;
 	private String statusDes;
+
+	/**
+	 * 提现流水号
+	 */
+	private String drawId;
+
+	public String getDrawId() {
+		return drawId;
+	}
+
+	public void setDrawId(String drawId) {
+		this.drawId = drawId;
+	}
 	
 	public Long getAwardDetailId() {
 		return awardDetailId;
