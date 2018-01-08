@@ -1,9 +1,12 @@
 package com.apass.esp.nothing;
 
 import com.tencent.tinker.bsdiff.BSDiff;
+import com.tencent.tinker.bsdiff.BSPatch;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by xiaohai on 2018/1/8.
@@ -17,11 +20,13 @@ public class Test {
         File newFile = new File(newFilePath);
         File diffFile = new File(diffFilePath);
 
-        File temp1 = oldFile.length()<newFile.length()?oldFile:newFile;
-        File temp2 = oldFile.length()>newFile.length()?oldFile:newFile;
-        newFile = temp2;
-        oldFile = temp1;
+//        File temp1 = oldFile.length()<newFile.length()?oldFile:newFile;
+//        File temp2 = oldFile.length()>newFile.length()?oldFile:newFile;
+//        newFile = temp2;
+//        oldFile = temp1;
+//
+//        BSDiff.bsdiff(oldFile,newFile,diffFile);
 
-        BSDiff.bsdiff(oldFile,newFile,diffFile);
+        BSPatch.patchFast(new FileInputStream(newFile), new FileInputStream(diffFile), new File("D:\\temp\\zip\\demo\\merge7.zip"));
     }
 }
