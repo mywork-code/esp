@@ -229,10 +229,8 @@ public class OrderRefundService {
      */
     public void handleReturningOrders() throws Exception {
         Date date = new Date();
-        Date startDate = DateFormatUtil.addDays(date, -2);
         Date endDate = DateFormatUtil.addDays(date, -1);
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("startDate", startDate);
         map.put("endDate", endDate);
         List<String> statuList = Lists.newArrayList();
         statuList.add(RefundStatus.REFUND_STATUS05.getCode());
@@ -281,7 +279,6 @@ public class OrderRefundService {
         }
         //查询售后失败的订单，改成交易完成
         Map<String, Object> refundFailMap = new HashMap<String, Object>();
-        refundFailMap.put("startDate", startDate);
         refundFailMap.put("endDate", endDate);
         List<String> rs06StatuList = Lists.newArrayList();
         rs06StatuList.add(RefundStatus.REFUND_STATUS06.getCode());
