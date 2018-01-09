@@ -33,6 +33,7 @@ import com.apass.esp.third.party.weizhi.entity.aftersale.SkuObject;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,7 +163,9 @@ public class JdAfterSaleScheduleTask {
             String refundStatus = getStatus(serviceInfoList);
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("orderId", orderInfoEntity.getOrderId());
-            if (!refundStatus.equalsIgnoreCase(RefundStatus.REFUND_STATUS01.getCode())) {
+            if (!refundStatus.equalsIgnoreCase(RefundStatus.REFUND_STATUS01.getCode())
+                    && !StringUtils.equals(refundStatus,RefundStatus.REFUND_STATUS06.getCode())
+                    && !StringUtils.equals(refundStatus,RefundStatus.REFUND_STATUS05.getCode())) {
                 //根据状态改变
                 paramMap.put("status", refundStatus);
                 if(refundStatus.equals(RefundStatus.REFUND_STATUS05.getCode())){
