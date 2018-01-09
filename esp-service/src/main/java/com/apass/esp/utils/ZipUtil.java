@@ -91,8 +91,8 @@ public class ZipUtil {
      * @param descDir
      * @author isea533
      */
-    public String unZipFiles(String zipPath,String descDir)throws IOException{
-        return unZipFiles(new File(zipPath), descDir);
+    public void unZipFiles(String zipPath,String descDir)throws IOException{
+        unZipFiles(new File(zipPath), descDir);
     }
     /**
      * 解压文件到指定目录,并生成文件清单存储在文件里,且生成合成文件
@@ -102,42 +102,23 @@ public class ZipUtil {
      */
     @SuppressWarnings("rawtypes")//禁止不使用泛型警告
     @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
-    public String unZipFiles(File zipFile,String descDir)throws IOException{
-        List<FileEntitis> list = Lists.newArrayList();//存储文件清单
-        int countStart = 0;//记录偏移量起始位
-        int countEnd = 0;//记录偏移量最后位
-
+    public void unZipFiles(File zipFile,String descDir)throws IOException{
         File pathFile = new File(descDir);
         if(!pathFile.exists()){
             pathFile.mkdirs();
         }
         ZipFile zip = new ZipFile(zipFile);
         for(Enumeration entries = zip.entries(); entries.hasMoreElements();){
-            FileEntitis fileEntitis = new FileEntitis();
-            FileContent fileContent = new FileContent();
-
             ZipEntry entry = (ZipEntry)entries.nextElement();
             if(entry.isDirectory()){
                 throw new RuntimeException("zip文件中不可有目录 ");
             }
             String zipEntryName = entry.getName();
 
-            fileEntitis.setId(zipEntryName);
-            fileContent.setName(zipEntryName);
-
             InputStream in = null;
             OutputStream out = null;
             try{
                 in = zip.getInputStream(entry);
-
-                countEnd=countStart+in.available();
-                fileContent.setExcursionSize(String.valueOf(countStart)+","+String.valueOf(countEnd));
-                //TODO 变更环境
-                fileContent.setUrl("http://espapp.sit.apass.cn/static/"+zipPath+zipEntryName);
-                fileEntitis.setFileContent(fileContent);
-                list.add(fileEntitis);
-                countStart = countEnd;
-
                 String outPath = (descDir+zipEntryName).replaceAll("\\\\", "/");;
                 //判断路径是否存在,不存在则创建文件路径
                 File file = new File(outPath.substring(0, outPath.lastIndexOf('/')));
@@ -168,16 +149,12 @@ public class ZipUtil {
             }
         }
         LOGGER.info("******************解压完毕********************");
-        //list转成数组存储到.properties文件中
-        String json = GsonUtils.toJson(list);
-
-        return json;
     }
 
-    public String unZipFiles(String rootPath, String zipPath, String zipName) throws IOException {
+    public void unZipFiles(String rootPath, String zipPath, String zipName) throws IOException {
         this.zipPath = zipPath;
         this.zipName = zipName;
-        return unZipFiles(rootPath+zipPath+zipName,rootPath+zipPath);
+        unZipFiles(rootPath+zipPath+zipName,rootPath+zipPath);
     }
 
 
