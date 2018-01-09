@@ -466,7 +466,10 @@ public class StaticFileController {
             bsr.setMd5_patch(md5_patch);
 
             //md5_merge为空
-            bsr.setMd5_merge(null);
+            String mergepath = bs.getMergeFilePath().substring(bs.getMergeFilePath().indexOf("static")+"static".length());
+            LOGGER.info("md5_merge的路径：{}",rootPath+mergepath);
+            String md5_merge = MD5Utils.getMD5(new File(rootPath+mergepath));
+            bsr.setMd5_merge(md5_merge);
 
             //patch文件url
             String patch_url = appWebDomain+"/static"+nfsBsdiffPath+PATCHPATH+"/"+bs.getLineId()+"/"+bs.getBsdiffVer()+"/"+patch_name;
