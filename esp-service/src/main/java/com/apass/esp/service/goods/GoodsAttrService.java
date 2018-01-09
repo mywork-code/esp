@@ -604,15 +604,14 @@ public class GoodsAttrService {//450
                 TreeSet<String> jdsku = jdGoodsInfoService.getJdSimilarSkuId(g.getExternalId());
                 for(String set : jdsku){
                     //根据SKUID查找库存   
-//                    List<String> skuIdList = new ArrayList<String>();
-//                    skuIdList.add(set);
-//                    GoodsInfoEntity goo = goodsService.getGoodsListBySkuIds(skuIdList).get(0);
                     GoodsInfoEntity goo = goodsService.getGoodsInfo(set);
-                    GoodsStockInfoEntity s = goodsStockInfoService.getGoodsStock(goo.getId()).get(0);
-                    BigDecimal goodsPrice = commonService.calculateGoodsPrice(s.getGoodsId(),s.getId());
-                    s.setGoodsPrice(goodsPrice);
-                    s.setSkuId(goo.getExternalId());
-                    listold.add(s);
+                    if(goo != null){
+                        GoodsStockInfoEntity s = goodsStockInfoService.getGoodsStock(goo.getId()).get(0);
+                        BigDecimal goodsPrice = commonService.calculateGoodsPrice(s.getGoodsId(),s.getId());
+                        s.setGoodsPrice(goodsPrice);
+                        s.setSkuId(goo.getExternalId());
+                        listold.add(s);
+                    }
                 }
             }
         }
