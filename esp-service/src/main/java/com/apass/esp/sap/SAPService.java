@@ -1021,7 +1021,8 @@ public class SAPService {
         contentList.add("01");
         contentList.add("");
         contentList.add("A");
-        contentList.add("06");
+        
+        contentList.add("04");
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(),"yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(), "HHmmss"));
         contentList.add("ajqh");
