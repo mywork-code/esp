@@ -208,7 +208,8 @@
 				 separator="," close=")">
 			#{item}
 		</foreach>
-		AND t1.update_date BETWEEN #{startDate} AND #{endDate}
+		<![CDATA[	AND t1.update_date < #{endDate}]]>
+
 	</select>
 
 
