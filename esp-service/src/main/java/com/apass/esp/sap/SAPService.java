@@ -42,7 +42,7 @@ import java.util.*;
 public class SAPService {
   public static final String ZPTMC = "中原项目组（安家趣花）";
   private static final Logger LOG = LoggerFactory.getLogger(SAPService.class);
-  private Map<Long,Object> financialVoucherAdjustmentGuidMap = new HashMap<>();//财务凭证guid
+  private Map<String,Object> financialVoucherAdjustmentGuidMap = new HashMap<>();//财务凭证guid
   private Map<String,Object> salesOrderGuidMap = new HashMap<>();//销售订单guid
   private Map<String,Object> purchaseOrderGuidMap = new HashMap<>();//采购订单guid
 
@@ -70,7 +70,7 @@ public class SAPService {
   private MerchantInforService merchantInforService;
 
   /**
-   * 上传财物凭证调整（首付款或全额）
+   * 财务凭证调整收款(首付款，全额)
    */
   public void sendCaiWuPingZhengCsv(String ip, int port, String username,
                                     String password, String path
@@ -522,7 +522,7 @@ public class SAPService {
   }
 
   /**
-   * 上传财物凭证调整（首付款或全额）
+   * 财务凭证调整收款(首付款，全额)
    */
   private void generateCaiWuPingZhengCsv() throws Exception {
     List<String> orderStatusList = new ArrayList<>();
@@ -548,7 +548,7 @@ public class SAPService {
         List<String> contentList = new ArrayList<String>();
         String guid = ListeningStringUtils.getUUID();
         contentList.add(guid);
-        financialVoucherAdjustmentGuidMap.put(txn.getTxnId(),guid);
+        financialVoucherAdjustmentGuidMap.put(txn.getTxnId()+"_"+txn.getOrderId(),guid);
         contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),"yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
@@ -595,7 +595,7 @@ public class SAPService {
         List<String> contentList = new ArrayList<String>();
         String uuid = ListeningStringUtils.getUUID();
         contentList.add(uuid);
-        financialVoucherAdjustmentGuidMap.put(Long.valueOf(cashRefundTxn.getOrderId()),uuid);
+        financialVoucherAdjustmentGuidMap.put(cashRefundTxn.getOrderId(),uuid);
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
@@ -836,6 +836,7 @@ public class SAPService {
     }
 
   private String getDateBegin() {
+
       Calendar cal = Calendar.getInstance();
       cal.add(Calendar.DATE, -1);
     return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
@@ -872,10 +873,10 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(txn.getTxnId()))){
+        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(txn.getTxnId()+"_"+txn.getOrderId()))){
           continue;
         }
-        contentList.add(getFinancialVoucherAdjustmentGuidMap(txn.getTxnId()));
+        contentList.add(getFinancialVoucherAdjustmentGuidMap(txn.getTxnId()+"_"+txn.getOrderId()));
         contentList.add(txn.getMainOrderId());
         contentList.add(i + "");
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
@@ -905,10 +906,10 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(Long.valueOf(cashRefundTxn.getOrderId())))){
+        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(cashRefundTxn.getOrderId()))){
           continue;
         }
-        contentList.add(getFinancialVoucherAdjustmentGuidMap(Long.valueOf(cashRefundTxn.getOrderId())));
+        contentList.add(getFinancialVoucherAdjustmentGuidMap(cashRefundTxn.getOrderId()));
         contentList.add(cashRefundTxn.getOrderId());
         contentList.add(i + "");
         if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())
@@ -1021,7 +1022,7 @@ public class SAPService {
         contentList.add("01");
         contentList.add("");
         contentList.add("A");
-        
+
         contentList.add("04");
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(),"yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(), "HHmmss"));
@@ -1225,7 +1226,7 @@ public class SAPService {
   }
 
 
-  private String getFinancialVoucherAdjustmentGuidMap(Long key){
+  private String getFinancialVoucherAdjustmentGuidMap(String key){
     String val = (String) financialVoucherAdjustmentGuidMap.get(key);
     return val;
   }
