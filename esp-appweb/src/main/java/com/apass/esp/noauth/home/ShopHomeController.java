@@ -14,6 +14,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.apass.esp.domain.enums.*;
+import com.apass.esp.repository.banner.BannerInfoRepository;
+import com.apass.esp.search.enums.IndexType;
+import com.apass.esp.third.party.jd.entity.product.Product;
+import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,13 +44,6 @@ import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
-import com.apass.esp.domain.enums.ActivityInfoStatus;
-import com.apass.esp.domain.enums.BannerType;
-import com.apass.esp.domain.enums.CategorySort;
-import com.apass.esp.domain.enums.CityJdEnums;
-import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.LimitBuyStatus;
-import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.domain.vo.LimitBuyActBannerVo;
@@ -156,6 +154,11 @@ public class ShopHomeController {
     private LimitBuyActService limitBuyActService;
     @Autowired
     private LimitCommonService limitCommonService;
+
+    @Autowired
+    private WeiZhiProductApiClient weiZhiProductApiClient;
+    @Autowired
+    private BannerInfoRepository bannerInfoDao;
     /**
      * 首页初始化 加载banner和精品商品
      *
@@ -1151,10 +1154,89 @@ public class ShopHomeController {
      * @return
      */
     @POST
-    @Path("/v3/loadDetailInfoById")
+    @Path("/v3/onSelectSkuType")
     public Response onSelectSkuType(Map<String, Object> paramMap){
         //TODO
-        return null;
+        try{
+            //获取参数：验证
+            Map<String, Object> returnMap = new HashMap<>();
+            Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+            String userId = CommonUtils.getValue(paramMap, "userId");
+            String provinceCode = CommonUtils.getValue(paramMap, "provinceCode");
+            String cityCode = CommonUtils.getValue(paramMap, "cityCode");
+            String districtCode = CommonUtils.getValue(paramMap, "districtCode");
+            String townsCode = CommonUtils.getValue(paramMap, "townsCode");
+            if (null == goodsId) {
+                LOGGER.error("商品号不能为空!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+            }
+
+            //根据商品id查询商品信息
+            GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(goodsId);
+            if (null == goodsInfo) {
+                LOGGER.error("商品信息不存在:{}", goodsId);
+                throw new BusinessException("商品信息不存在");
+            }
+
+            //对所有的（wz，jd，第三方）进行校验
+            Date now = new Date();
+            if (now.before(goodsInfo.getListTime())
+                    || (null != goodsInfo.getDelistTime() && now.after(goodsInfo.getDelistTime()))
+                    || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+                goodsInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
+            }
+            returnMap.put("status", goodsInfo.getStatus());
+            String detail = goodsInfo.getGoogsDetail();
+            returnMap.put("googsDetail", detail);
+
+            String externalId = goodsInfo.getExternalId();// 外部商品id
+            //获取该商品是否支持7天退换及是否可售
+            Map<String,Object> support7AndCheck=weiZhiProductService.getsupport7dRefundAndCheckSales(externalId);
+            Boolean checkGoodsSales=(Boolean) support7AndCheck.get("checkGoodsSalesOrNot");
+
+
+            // 查询商品图片
+            List<String> JdImagePathList=new ArrayList<>();
+            List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
+            for (BannerInfoEntity banner : goodsBannerList) {
+                JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
+            }
+            returnMap.put("jdImagePathList",JdImagePathList);
+
+            if (SourceType.JD.getCode().equals(goodsInfo.getSource())
+                    || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
+                String jddetail = "";
+                // 从ES中查询商品详情信息
+                Goods goods = IndexManager.getDocument("goods", IndexType.GOODS, Integer.valueOf(String.valueOf(goodsId)));
+                if (null != goods && StringUtils.isNotBlank(goods.getGoodsDetail())) {
+                    jddetail = goods.getGoodsDetail().replaceAll("src=\"//", "src=\"http://");
+                } else {
+                    // 查询商品名称
+                    Product product = weiZhiProductApiClient.getWeiZhiProductDetail(externalId);
+                    jddetail = product.getIntroduction().replaceAll("src=\"//", "src=\"http://").replaceAll("href=\'//",
+                            "href=\'http://");
+                }
+
+                String introduction = jddetail.replaceAll("width", "width");
+                returnMap.put("googsDetail", introduction);
+
+                List<String> wzSkuPictureList = weiZhiProductService.getWeiZhiSingleProductSkuImage(externalId, JdGoodsImageType.TYPEN1.getCode());
+                returnMap.put("jdImagePathList", wzSkuPictureList);
+
+                if (StringUtils.isNotBlank(externalId) && !checkGoodsSales) {
+                    returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
+                }
+            }
+
+            return Response.success("加载成功", returnMap);
+        }catch (BusinessException e) {
+            LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
+            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+        } catch (Exception e) {
+            LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
+            LOGGER.error("获取商品基本信息失败");
+            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+        }
     }
     /**
      * 
