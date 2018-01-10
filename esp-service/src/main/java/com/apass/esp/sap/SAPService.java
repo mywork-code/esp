@@ -364,12 +364,8 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       int rowNum = 1;//行号
       for (TxnOrderInfo txn : txnList) {
-        String orderId = txn.getMainOrderId();
-        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
+
         if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
-          continue;
-        }
-        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
           continue;
         }
         List<String> contentList = new ArrayList<String>();
@@ -1034,39 +1030,39 @@ public class SAPService {
       String[] headers = {"GUID", "P_GUID", "ZPTLSH", "ITEM", "ZFYLX", "WRBTR","ZLSH_VBS","ZDZ_LSH","ZLSH_YH","ZDDBJ"};
       csvWriter.writeRecord(headers);
       int i = 0;
-
       for (TxnOrderInfo txn : txnList) {
         i++;
-        String orderId = txn.getMainOrderId();
-        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
-
-        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户
-          continue;
-        }
-        List<String> contentList = new ArrayList<String>();
-        contentList.add(ListeningStringUtils.getUUID());
-        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())))){
-          continue;
-        }
-        contentList.add(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())));
-        contentList.add(txn.getMainOrderId());
-        contentList.add(i + "");
-        if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
+        String mainOrderId = txn.getMainOrderId();
+        List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+        for(OrderInfoEntity orderInfoEntity : orderList){
+          if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户
+            continue;
+          }
+          List<String> contentList = new ArrayList<String>();
+          contentList.add(ListeningStringUtils.getUUID());
+          if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())))){
+            continue;
+          }
+          contentList.add(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())));
+          contentList.add(txn.getMainOrderId());
+          contentList.add(i + "");
+          if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
+                  || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
             contentList.add("Z067");
-        } else {
-          contentList.add("Z051");
-        }
-        if(txn.getTxnAmt().compareTo(new BigDecimal(0)) == 0){
+          } else {
+            contentList.add("Z051");
+          }
+          if(txn.getTxnAmt().compareTo(new BigDecimal(0)) == 0){
+            contentList.add("");
+          }else{
+            contentList.add(txn.getTxnAmt() + "");
+          }
           contentList.add("");
-        }else{
-          contentList.add(txn.getTxnAmt() + "");
+          contentList.add(txn.getMainOrderId());
+          contentList.add("");
+          contentList.add("");
+          csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         }
-        contentList.add("");
-        contentList.add(txn.getMainOrderId());
-        contentList.add("");
-        contentList.add("");
-        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
 
       //获取退款单号，银联：CR+订单id；支付宝：订单id
