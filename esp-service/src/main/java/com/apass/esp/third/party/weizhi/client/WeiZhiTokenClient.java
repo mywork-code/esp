@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.apass.esp.common.utils.JsonUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -48,6 +49,7 @@ public class WeiZhiTokenClient {
 		parameters.add(param6); 
 
 		UrlEncodedFormEntity ent = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		LOGGER.info("----getToken------ params:{}", JsonUtil.toJsonString(parameters));
 		String responseJson = null;
 		TokenEntity token = null;
 		try {
@@ -63,7 +65,7 @@ public class WeiZhiTokenClient {
 
 			}
 		} catch (Exception e) {
-			LOGGER.error("getToken response {} return is not 200");
+			LOGGER.error("getToken response {} return is not 200",e);
 		}
 		return token;
 	}
