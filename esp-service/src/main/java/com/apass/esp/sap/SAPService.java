@@ -454,14 +454,13 @@ public class SAPService {
         if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.SF_CODE.getCode())
                 || cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
-          //TODO 有问题,是存cashRefundTxn.getOriTxnCode()还是 ""?
-          contentList.add("");
+          contentList.add(cashRefundTxn.getOriTxnCode());
           contentList.add("400004");
         } else if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
                 || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           //TODO 有问题,仿照收款时的插入,但放款无txnId
-          contentList.add(cashRefundTxn.getOriTxnCode());
+          contentList.add("");
           contentList.add("400016");
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
