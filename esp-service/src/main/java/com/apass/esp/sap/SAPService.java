@@ -499,7 +499,8 @@ public class SAPService {
           for (OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList) {
             contentList.add(orderDetailInfoEntity.getGoodsName());
             contentList.add("");
-            contentList.add(orderDetailInfoEntity.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            BigDecimal goodsPrice = orderDetailInfoEntity.getGoodsPrice()==null?new BigDecimal(0):orderDetailInfoEntity.getGoodsPrice();
+            contentList.add(goodsPrice.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
             contentList.add("EA");
             contentList.add(String.valueOf(orderDetailInfoEntity.getGoodsNum()));
             csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
@@ -564,7 +565,9 @@ public class SAPService {
           if(CollectionUtils.isNotEmpty(orderDetailInfoEntityList)){
             BigDecimal totalAmt = BigDecimal.ZERO;
             for(OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList){
-              totalAmt = orderDetailInfoEntity.getCouponMoney().add(orderDetailInfoEntity.getDiscountAmount());
+              BigDecimal couponMon =  orderDetailInfoEntity.getCouponMoney()==null?new BigDecimal(0):orderDetailInfoEntity.getCouponMoney();
+              BigDecimal discoun = orderDetailInfoEntity.getDiscountAmount()==null?new BigDecimal(0):orderDetailInfoEntity.getDiscountAmount();
+              totalAmt = couponMon.add(discoun);
             }
             contentList.add(totalAmt.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
           }else{
@@ -609,7 +612,10 @@ public class SAPService {
        if(CollectionUtils.isNotEmpty(orderDetailInfoEntityList)){
          BigDecimal totalAmt = BigDecimal.ZERO;
          for(OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList){
-           totalAmt = orderDetailInfoEntity.getCouponMoney().add(orderDetailInfoEntity.getDiscountAmount());
+//           totalAmt = orderDetailInfoEntity.getCouponMoney().add(orderDetailInfoEntity.getDiscountAmount());
+           BigDecimal couponMon =  orderDetailInfoEntity.getCouponMoney()==null?new BigDecimal(0):orderDetailInfoEntity.getCouponMoney();
+           BigDecimal discoun = orderDetailInfoEntity.getDiscountAmount()==null?new BigDecimal(0):orderDetailInfoEntity.getDiscountAmount();
+           totalAmt = couponMon.add(discoun);
          }
          contentList.add(totalAmt.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
        }else{
@@ -912,7 +918,8 @@ public class SAPService {
         if(CollectionUtils.isNotEmpty(orderDetailInfoEntityList)){
           for(OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList){
             contentList.add(orderDetailInfoEntity.getGoodsName());
-            contentList.add(orderDetailInfoEntity.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            BigDecimal goodPrice = orderDetailInfoEntity.getGoodsPrice()==null?new BigDecimal(0):orderDetailInfoEntity.getGoodsPrice();
+            contentList.add(goodPrice.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
             contentList.add("EA");
             contentList.add(String.valueOf(orderDetailInfoEntity.getGoodsNum()));
             csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
