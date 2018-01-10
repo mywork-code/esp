@@ -45,7 +45,7 @@ import java.util.*;
 public class SAPService {
   public static final String ZPTMC = "中原项目组（安家趣花）";
   private static final Logger LOG = LoggerFactory.getLogger(SAPService.class);
-  private Map<Long,Object> financialVoucherAdjustmentGuidMap = new HashMap<>();//财务凭证guid
+  private Map<String,Object> financialVoucherAdjustmentGuidMap = new HashMap<>();//财务凭证guid
   private Map<String,Object> salesOrderGuidMap = new HashMap<>();//销售订单guid
   private Map<String,Object> purchaseOrderGuidMap = new HashMap<>();//采购订单guid
   private static final String ZHIFU = "zf_";//支付
@@ -79,7 +79,7 @@ public class SAPService {
   private OrderDetailInfoRepository orderDetailInfoRepository;
 
   /**
-   * 上传财物凭证调整（首付款或全额）
+   * 财务凭证调整收款(首付款，全额)
    */
   public void sendCaiWuPingZhengCsv(String ip, int port, String username,
                                     String password, String path
@@ -584,13 +584,16 @@ public class SAPService {
   }
 
   /**
-   * 上传财物凭证调整（首付款或全额）
+   * 财务凭证调整(首付款或全额)
    */
   private void generateCaiWuPingZhengCsv() throws Exception {
-    List<String> orderStatusList = new ArrayList<>();
-    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    List<String> typeCodeList = new ArrayList<>();
+    typeCodeList.add(TxnTypeCode.SF_CODE.getCode());
+    typeCodeList.add(TxnTypeCode.KQEZF_CODE.getCode());
+    typeCodeList.add(TxnTypeCode.ALIPAY_CODE.getCode());
+    typeCodeList.add(TxnTypeCode.ALIPAY_SF_CODE.getCode());
 
-    List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
+    List<TxnOrderInfo> txnList =txnInfoService.selectByTxnTypeCodeList(typeCodeList,getDateBegin(),getDateEnd());
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH, ',', Charset.forName("utf-8"));
       //第一行空着
@@ -610,7 +613,7 @@ public class SAPService {
         List<String> contentList = new ArrayList<String>();
         String guid = ListeningStringUtils.getUUID();
         contentList.add(guid);
-        financialVoucherAdjustmentGuidMap.put(txn.getTxnId(),guid);
+        financialVoucherAdjustmentGuidMap.put(String.valueOf(txn.getTxnId()),guid);
         contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),"yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
@@ -657,7 +660,7 @@ public class SAPService {
         List<String> contentList = new ArrayList<String>();
         String uuid = ListeningStringUtils.getUUID();
         contentList.add(uuid);
-        financialVoucherAdjustmentGuidMap.put(Long.valueOf(cashRefundTxn.getOrderId()),uuid);
+        financialVoucherAdjustmentGuidMap.put(cashRefundTxn.getOrderId(),uuid);
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
@@ -896,6 +899,7 @@ public class SAPService {
     }
 
   private String getDateBegin() {
+
       Calendar cal = Calendar.getInstance();
       cal.add(Calendar.DATE, -1);
     return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
@@ -910,10 +914,13 @@ public class SAPService {
    * 财务凭证调整明细
    */
   private void generateCaiWuPingZhengCsv2() throws Exception {
-    List<String> orderStatusList = new ArrayList<>();
-    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    List<String> typeCodeList = new ArrayList<>();
+    typeCodeList.add(TxnTypeCode.SF_CODE.getCode());
+    typeCodeList.add(TxnTypeCode.KQEZF_CODE.getCode());
+    typeCodeList.add(TxnTypeCode.ALIPAY_CODE.getCode());
+    typeCodeList.add(TxnTypeCode.ALIPAY_SF_CODE.getCode());
 
-    List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
+    List<TxnOrderInfo> txnList =txnInfoService.selectByTxnTypeCodeList(typeCodeList,getDateBegin(),getDateEnd());
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH2, ',', Charset.forName("UTF-8"));
       //第一行空着
@@ -932,10 +939,10 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(txn.getTxnId()))){
+        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())))){
           continue;
         }
-        contentList.add(getFinancialVoucherAdjustmentGuidMap(txn.getTxnId()));
+        contentList.add(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())));
         contentList.add(txn.getMainOrderId());
         contentList.add(i + "");
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
@@ -955,6 +962,7 @@ public class SAPService {
         contentList.add("");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
+
       //获取退款单号，银联：CR+订单id；支付宝：订单id
       List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
               getDateBegin(), getDateEnd());
@@ -965,10 +973,10 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(Long.valueOf(cashRefundTxn.getOrderId())))){
+        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(cashRefundTxn.getOrderId()))){
           continue;
         }
-        contentList.add(getFinancialVoucherAdjustmentGuidMap(Long.valueOf(cashRefundTxn.getOrderId())));
+        contentList.add(getFinancialVoucherAdjustmentGuidMap(cashRefundTxn.getOrderId()));
         contentList.add(cashRefundTxn.getOrderId());
         contentList.add(i + "");
         if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())
@@ -1081,7 +1089,6 @@ public class SAPService {
         contentList.add("01");
         contentList.add("");
         contentList.add("A");
-        
         contentList.add("04");
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(),"yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(), "HHmmss"));
@@ -1285,7 +1292,7 @@ public class SAPService {
   }
 
 
-  private String getFinancialVoucherAdjustmentGuidMap(Long key){
+  private String getFinancialVoucherAdjustmentGuidMap(String key){
     String val = (String) financialVoucherAdjustmentGuidMap.get(key);
     return val;
   }
