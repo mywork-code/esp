@@ -323,10 +323,19 @@ public class LimitGoodsSkuService {
     public Boolean checkoutSkuId(String skuId) {
         try{
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
-            List<String> strlist = new ArrayList<String>();
-            strlist.add(skuId);
-            List<GoodsInfoEntity> goods = goodsService.getGoodsListBySkuIds(strlist);
-            if(stock==null&&(goods==null||goods.size()==0)){
+            GoodsInfoEntity goods = null;
+            if(stock!=null){
+                goods = goodsService.selectByGoodsId(stock.getGoodsId());
+            }else {
+                List<String> strlist = new ArrayList<String>();
+                strlist.add(skuId);
+                List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
+                if (goodsList != null && goodsList.size() > 0) {
+                    goods = goodsList.get(0);
+                    stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
+                }
+            }
+            if(goods==null){
                 return true;
             }else{
                 return false;
