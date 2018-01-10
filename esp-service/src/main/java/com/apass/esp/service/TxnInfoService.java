@@ -109,8 +109,8 @@ public class TxnInfoService {
      * @param dateEnd
      * @return
      */
-    public List<TxnOrderInfo> selectVBSBusinessNumList(List<String> orderStatusList, String dateBegin, String dateEnd) {
-        return txnInfoMapper.selectVBSBusinessNumList(orderStatusList,dateBegin,dateEnd);
+    public List<TxnOrderInfo> selectVBSBusinessNumList( String dateBegin, String dateEnd) {
+        return txnInfoMapper.selectVBSBusinessNumList(dateBegin,dateEnd);
     }
 
     public List<TxnInfoEntity> selectRepayTxnByUserId(Long userId,String startDate,String endDate){
