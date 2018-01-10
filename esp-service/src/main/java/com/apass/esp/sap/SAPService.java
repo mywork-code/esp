@@ -466,7 +466,7 @@ public class SAPService {
   }
 
   /**
-   * 销售订单(通过,退货)
+   * 销售订单(通过,退货) ---》支付，退款，退货
    */
   private void generateSalesOrderCsv() {
     List<String> orderStatusList = new ArrayList<>();
@@ -769,9 +769,7 @@ public class SAPService {
    */
   private void transVBSBusinessNumCvs() {
     CsvWriter csvWriter = null;
-    List<String> orderStatusList = new ArrayList<>();
-    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
-    List<TxnOrderInfo> txnList = txnInfoService.selectVBSBusinessNumList(orderStatusList, getDateBegin(), getDateEnd());
+    List<TxnOrderInfo> txnList = txnInfoService.selectVBSBusinessNumList(getDateBegin(), getDateEnd());
 
     try {
       csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("UTF-8"));
