@@ -459,8 +459,8 @@ public class SAPService {
         } else if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
                 || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
-          //TODO 有问题,仿照收款时的插入,但放款无txnId
-          contentList.add("");
+          //商户订单号在对方系统中存在
+          contentList.add(cashRefundTxn.getOrderId());
           contentList.add("400016");
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
