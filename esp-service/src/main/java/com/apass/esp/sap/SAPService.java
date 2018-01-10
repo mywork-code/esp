@@ -495,79 +495,82 @@ public class SAPService {
     List<TxnOrderInfo> txnList =txnInfoService.selectByTxnTypeCodeList(typeCodeList,getDateBegin(),getDateEnd());
 
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("UTF-8"));
-      //第一行空着
-      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
-      //表头
-      String[] headers = {"GUID", "ZP_GUID", "ZLSH_M", "MATNR", "MAKTX", "ZSPGG", "NETPR", "BSTME", "KWMENG"};
-      csvWriter.writeRecord(headers);
+        CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("UTF-8"));
+        //第一行空着
+        csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
+        //表头
+        String[] headers = {"GUID", "ZP_GUID", "ZLSH_M", "MATNR", "MAKTX", "ZSPGG", "NETPR", "BSTME", "KWMENG"};
+        csvWriter.writeRecord(headers);
+
       int rowNum = 1;//行号
       for (TxnOrderInfo txn : txnList) {
         String orderId = txn.getMainOrderId();
         OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
-        if(StringUtils.isEmpty(getSalesOrderGuidMap(txn.getMainOrderId()))){
+        if (StringUtils.isEmpty(getSalesOrderGuidMap(ZHIFU + orderId))) {
           continue;
         }
-        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
+        if (ifExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户,false:不包含，true:包含
           continue;
         }
-
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        contentList.add(getSalesOrderGuidMap(ZHIFU+txn.getMainOrderId()));
+        contentList.add(getSalesOrderGuidMap(ZHIFU + orderId));
         contentList.add(String.valueOf(rowNum));
         contentList.add("200001");
+
         List<OrderDetailInfoEntity> orderDetailInfoEntityList = orderDetailInfoRepository.queryOrderDetailBySubOrderId(orderId);
-        if(CollectionUtils.isNotEmpty(orderDetailInfoEntityList)){
-          for(OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList){
+        if (CollectionUtils.isNotEmpty(orderDetailInfoEntityList)) {
+          for (OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList) {
             contentList.add(orderDetailInfoEntity.getGoodsName());
+            contentList.add("");
             contentList.add(orderDetailInfoEntity.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
             contentList.add("EA");
             contentList.add(String.valueOf(orderDetailInfoEntity.getGoodsNum()));
             csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
             rowNum = rowNum + 1;
           }
-        }else{
-          continue;
         }
       }
 
-      // step2:退款
-      //step2:查询退款订单
-      //获取退款单号，银联：CR+订单id；支付宝：订单id
-      List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
-              getDateBegin(), getDateEnd());
-      for(CashRefundTxn cashRefundTxn : cashRefundTxnList){
-        String orderId = cashRefundTxn.getOrderId();
-        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
-        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){
-          continue;
-        }
-        List<String> contentList = new ArrayList<String>();
-        contentList.add(ListeningStringUtils.getUUID());
-        salesOrderGuidMap.get(TUIKUAN+orderId);
-        contentList.add(String.valueOf(rowNum));
-        contentList.add("200001");
-
-        List<OrderDetailInfoEntity> orderDetailInfoEntityList = orderDetailInfoRepository.queryOrderDetailBySubOrderId(orderId);
-        if(CollectionUtils.isNotEmpty(orderDetailInfoEntityList)){
-          for(OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList){
-            contentList.add(orderDetailInfoEntity.getGoodsName());
-            contentList.add(orderDetailInfoEntity.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-            contentList.add("EA");
-            contentList.add(String.valueOf(orderDetailInfoEntity.getGoodsNum()));
-            csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
-            rowNum = rowNum + 1;
+        //step2:查询退款订单
+        //获取退款单号，银联：CR+订单id；支付宝：订单id
+        List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
+                getDateBegin(), getDateEnd());
+        for (CashRefundTxn cashRefundTxn : cashRefundTxnList) {
+          String orderId = cashRefundTxn.getOrderId();
+          OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
+          if (StringUtils.isEmpty(getSalesOrderGuidMap(TUIKUAN + orderId))) {
+            continue;
           }
-        }else{
-          continue;
-        }
-      }
+          if (ifExistMerchant(orderInfoEntity.getMerchantCode())) {
+            continue;
+          }
+          List<String> contentList = new ArrayList<String>();
+          contentList.add(ListeningStringUtils.getUUID());
+          contentList.add(getSalesOrderGuidMap(TUIKUAN + orderId));
+          contentList.add(String.valueOf(rowNum));
+          contentList.add("200001");
 
-      //step3:退货？
-      //TODO
-      salesOrderGuidMap.clear();
-      csvWriter.close();
+          List<OrderDetailInfoEntity> orderDetailInfoEntityList = orderDetailInfoRepository.queryOrderDetailBySubOrderId(orderId);
+          if (CollectionUtils.isNotEmpty(orderDetailInfoEntityList)) {
+            for (OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList) {
+              contentList.add(orderDetailInfoEntity.getGoodsName());
+              contentList.add("");
+              contentList.add(orderDetailInfoEntity.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+              contentList.add("EA");
+              contentList.add(String.valueOf(orderDetailInfoEntity.getGoodsNum()));
+              csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+              rowNum = rowNum + 1;
+            }
+          } else {
+            continue;
+          }
+        }
+        //step3:退货？
+        //TODO
+        salesOrderGuidMap.clear();
+        csvWriter.close();
+
     } catch (Exception e) {
       LOG.error("generateSalesOrderInfoCsv error...", e);
     }
