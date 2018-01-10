@@ -1030,7 +1030,7 @@ public class ShopHomeController {
                 } else {
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region,userId,support7AndCheck);
-                    returnMap.put("source", SourceType.JD.getCode());
+                    returnMap.put("source", SourceType.WZ.getCode());
                     returnMap.put("status", goodsInfo.getStatus());
                     // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
                     if (StringUtils.isNotBlank(externalId) && !checkGoodsSales) {
