@@ -1182,8 +1182,8 @@ public class SAPService {
         contentList.add("");
         contentList.add("A");
         contentList.add("04");
-        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(),"yyyyMMdd"));
-        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(), "HHmmss"));
+        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(),"yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "HHmmss"));
         contentList.add("ajqh");
         contentList.add(String.valueOf(rowNum));
         contentList.add(cashRefundTxn.getAmt().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
@@ -1203,10 +1203,8 @@ public class SAPService {
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
-
         contentList.add(cashRefundTxn.getOrderId());
         contentList.add(cashRefundTxn.getOrderId());
-
 
         if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.SF_CODE.getCode())
                 || cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
@@ -1223,8 +1221,6 @@ public class SAPService {
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         rowNum = rowNum + 1;
       }
-
-
 
     } catch (Exception e) {
       LOG.error("generatePaymentOrFullPaymentCsv error...", e);
