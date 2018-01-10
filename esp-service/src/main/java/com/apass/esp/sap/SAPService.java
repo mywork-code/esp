@@ -374,8 +374,8 @@ public class SAPService {
         contentList.add("");
         contentList.add("B");
         contentList.add("03");
-        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),"yyyyMMdd"));
-        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss"));
+        contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(),"yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "HHmmss"));
         contentList.add("ajqh");
         contentList.add(String.valueOf(rowNum));
         contentList.add(txn.getTxnAmt().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
