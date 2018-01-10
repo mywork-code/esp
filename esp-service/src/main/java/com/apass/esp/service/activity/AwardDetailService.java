@@ -172,7 +172,7 @@ public class AwardDetailService {
 	public int addAwardDetail(AwardDetailDto awardDetailDto) {
 		AwardDetail awardDetail = new AwardDetail();
 		BeanUtils.copyProperties(awardDetail, awardDetailDto);
-		return awardDetailMapper.insert(awardDetail);
+		return awardDetailMapper.insertSelective(awardDetail);
 	}
 
 	/**
