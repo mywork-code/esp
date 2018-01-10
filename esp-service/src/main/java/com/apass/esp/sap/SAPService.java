@@ -1032,7 +1032,6 @@ public class SAPService {
       int i = 0;
       for (TxnOrderInfo txn : txnList) {
         i++;
-        String mainOrderId = txn.getMainOrderId();
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
         if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())))){
