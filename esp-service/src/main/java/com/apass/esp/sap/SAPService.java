@@ -363,11 +363,12 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       int rowNum = 1;//行号
       for (TxnOrderInfo txn : txnList) {
+        String orderId = txn.getMainOrderId();
+        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
         if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
           continue;
         }
-
-        if(ifExistMerchant(txn.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
+        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
           continue;
         }
         List<String> contentList = new ArrayList<String>();
@@ -482,11 +483,15 @@ public class SAPService {
    * 销售订单明细
    */
   private void generateSalesOrderInfoCsv() {
-    List<String> orderStatusList = new ArrayList<>();
-    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
-    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
+    //仿照销售订单
+    // step1:支付
+    List<String> typeCodeList = new ArrayList<>();
+    typeCodeList.add(TxnTypeCode.SF_CODE.getCode());
+    typeCodeList.add(TxnTypeCode.KQEZF_CODE.getCode());
+    typeCodeList.add(TxnTypeCode.ALIPAY_CODE.getCode());
+    typeCodeList.add(TxnTypeCode.ALIPAY_SF_CODE.getCode());
 
-    List<SalesOrderInfo> salOrderList = orderService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
+    List<TxnOrderInfo> txnList =txnInfoService.selectByTxnTypeCodeList(typeCodeList,getDateBegin(),getDateEnd());
 
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("UTF-8"));
@@ -496,32 +501,72 @@ public class SAPService {
       String[] headers = {"GUID", "ZP_GUID", "ZLSH_M", "MATNR", "MAKTX", "ZSPGG", "NETPR", "BSTME", "KWMENG"};
       csvWriter.writeRecord(headers);
       int rowNum = 1;//行号
-      for (SalesOrderInfo salOrder : salOrderList) {
+      for (TxnOrderInfo txn : txnList) {
+        String orderId = txn.getMainOrderId();
+        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
+        if(StringUtils.isEmpty(getSalesOrderGuidMap(txn.getMainOrderId()))){
+          continue;
+        }
+        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
+          continue;
+        }
 
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        if(StringUtils.isEmpty(getSalesOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())))){
-          continue;
-        }
-        if(ifExistMerchant(salOrder.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
-          continue;
-        }
-
-        contentList.add(getSalesOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())));
+        contentList.add(getSalesOrderGuidMap(ZHIFU+txn.getMainOrderId()));
         contentList.add(String.valueOf(rowNum));
         contentList.add("200001");
-        contentList.add(salOrder.getGoodsName());
-        contentList.add(salOrder.getGoodsModel());
-        contentList.add(salOrder.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-        contentList.add("EA");
-        contentList.add(salOrder.getGoodNum().toString());
-
-        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
-        rowNum = rowNum + 1;
+        List<OrderDetailInfoEntity> orderDetailInfoEntityList = orderDetailInfoRepository.queryOrderDetailBySubOrderId(orderId);
+        if(CollectionUtils.isNotEmpty(orderDetailInfoEntityList)){
+          for(OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList){
+            contentList.add(orderDetailInfoEntity.getGoodsName());
+            contentList.add(orderDetailInfoEntity.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            contentList.add("EA");
+            contentList.add(String.valueOf(orderDetailInfoEntity.getGoodsNum()));
+            csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+            rowNum = rowNum + 1;
+          }
+        }else{
+          continue;
+        }
       }
+
+      // step2:退款
+      //step2:查询退款订单
+      //获取退款单号，银联：CR+订单id；支付宝：订单id
+      List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
+              getDateBegin(), getDateEnd());
+      for(CashRefundTxn cashRefundTxn : cashRefundTxnList){
+        String orderId = cashRefundTxn.getOrderId();
+        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
+        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){
+          continue;
+        }
+        List<String> contentList = new ArrayList<String>();
+        contentList.add(ListeningStringUtils.getUUID());
+        salesOrderGuidMap.get(TUIKUAN+orderId);
+        contentList.add(String.valueOf(rowNum));
+        contentList.add("200001");
+
+        List<OrderDetailInfoEntity> orderDetailInfoEntityList = orderDetailInfoRepository.queryOrderDetailBySubOrderId(orderId);
+        if(CollectionUtils.isNotEmpty(orderDetailInfoEntityList)){
+          for(OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList){
+            contentList.add(orderDetailInfoEntity.getGoodsName());
+            contentList.add(orderDetailInfoEntity.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            contentList.add("EA");
+            contentList.add(String.valueOf(orderDetailInfoEntity.getGoodsNum()));
+            csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+            rowNum = rowNum + 1;
+          }
+        }else{
+          continue;
+        }
+      }
+
+      //step3:退货？
+      
       salesOrderGuidMap.clear();
       csvWriter.close();
-
     } catch (Exception e) {
       LOG.error("generateSalesOrderInfoCsv error...", e);
     }
@@ -549,14 +594,14 @@ public class SAPService {
           "ZERDAT","ZERZET","ERDAT", "ERZET", "ZSJLY"};
       csvWriter.writeRecord(headers);
       for (TxnOrderInfo txn : txnList) {
+        String orderId = txn.getMainOrderId();
+        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
         if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
           continue;
         }
-        if(ifExistMerchant(txn.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
+        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
           continue;
         }
-        String orderId = txn.getOrderId();
-        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
 
         List<String> contentList = new ArrayList<String>();
         String guid = ListeningStringUtils.getUUID();
@@ -587,8 +632,6 @@ public class SAPService {
         contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "HHmmss"));
         contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "HHmmss"));
-
-
 
         contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),"yyyyMMdd"));
         contentList.add("2");
@@ -624,43 +667,6 @@ public class SAPService {
         contentList.add("ajqh");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
-
-
-
-
-      //注释的都是错误代码
-//      for (SalesOrderPassOrRefund salOrder : salOrderList) {
-//        if(ifExistMerchant(salOrder.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
-//          continue;
-//        }
-//        List<String> contentList = new ArrayList<String>();
-//        String guid = ListeningStringUtils.getUUID();
-//        contentList.add(guid);
-//        salesOrderGuidMap.put(salOrder.getOrderId(),guid);
-//        contentList.add("6008");
-//        contentList.add(salOrder.getOrderId());
-//        if (StringUtils.isNotBlank(salOrder.getRefundOrderId()) && StringUtils.equals(salOrder.getOrderId(), salOrder.getRefundOrderId())) {
-//          contentList.add("Y002");
-//        } else {
-//          contentList.add("Y001");
-//        }
-//        contentList.add("");
-//        contentList.add(salOrder.getName());
-//        contentList.add("");
-//        contentList.add(salOrder.getTelephone());
-//        contentList.add("");
-//        contentList.add("1");
-//        contentList.add(salOrder.getOrderId());
-//        contentList.add("");
-//        contentList.add(salOrder.getTotalDiscountAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-//        contentList.add(DateFormatUtil.dateToString(salOrder.getUpdateDate(), "yyyyMMdd"));
-//        contentList.add(DateFormatUtil.dateToString(salOrder.getUpdateDate(), "HHmmss"));
-//        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "yyyyMMdd"));
-//        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "HHmmss"));
-//        contentList.add("ajqh");
-//        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
-//      }
-
 
       //step2:查询退款订单
       //获取退款单号，银联：CR+订单id；支付宝：订单id
@@ -706,16 +712,7 @@ public class SAPService {
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
 
-      //step3:查询退货订单
-      
-
-
-
-
-
-
-
-
+      //step3:查询退货订单(退货订单不是走线下吗？)
       csvWriter.close();
 
     } catch (Exception e) {
@@ -744,10 +741,12 @@ public class SAPService {
           "ZZHH_NO", "ZZJF","ZDBF","ZFWF","ZPTFWF", "ZDFF","ZSJLY"};
       csvWriter.writeRecord(headers);
       for (TxnOrderInfo txn : txnList) {
+        String orderId = txn.getMainOrderId();
+        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
         if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
           continue;
         }
-        if(ifExistMerchant(txn.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
+        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
           continue;
         }
 
@@ -1071,10 +1070,12 @@ public class SAPService {
       int i = 0;
       for (TxnOrderInfo txn : txnList) {
         ++i;
+        String orderId = txn.getMainOrderId();
+        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
         if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
           continue;
         }
-        if(ifExistMerchant(txn.getMerchantCode())){//判断sap是否包含此商户
+        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户
           continue;
         }
         List<String> contentList = new ArrayList<String>();
@@ -1168,10 +1169,12 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       Integer rowNum = new Integer("1");//行号
       for (TxnOrderInfo txn : txnList) {
+        String orderId = txn.getMainOrderId();
+        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
         if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
           continue;
         }
-        if(ifExistMerchant(txn.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
+        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
           continue;
         }
         List<String> contentList = new ArrayList<String>();
