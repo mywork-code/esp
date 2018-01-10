@@ -660,51 +660,51 @@ public class SAPService {
           "ZZHH_NO", "ZZJF","ZDBF","ZFWF","ZPTFWF", "ZDFF","ZSJLY"};
       csvWriter.writeRecord(headers);
       for (TxnOrderInfo txn : txnList) {
-        String orderId = txn.getMainOrderId();
-        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
-
-        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
-          continue;
+        String mainOrderId = txn.getMainOrderId();
+        List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+        for(OrderInfoEntity orderInfoEntity : orderList){
+            if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
+              continue;
+            }
+            List<String> contentList = new ArrayList<String>();
+            String guid = ListeningStringUtils.getUUID();
+            contentList.add(guid);
+            financialVoucherAdjustmentGuidMap.put(String.valueOf(txn.getTxnId()),guid);
+            contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),"yyyyMMdd"));
+            contentList.add("2");
+            contentList.add("3");
+            if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
+                || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
+              contentList.add("Y");
+            } else {
+              contentList.add("N");
+            }
+            contentList.add("1");
+            contentList.add(ZPTMC);
+            contentList.add(SAPConstants.PLATFORM_CODE);
+            contentList.add(txn.getMainOrderId());
+            if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
+                || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
+              //银联
+              contentList.add("898310148160258");
+              contentList.add("6008");
+              contentList.add("97990155300001887");
+            } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+                || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
+              //支付宝
+              contentList.add("100002039");
+              contentList.add("6008");
+              contentList.add("97990155300001887");
+            }
+            contentList.add("6008");
+            contentList.add("");
+            contentList.add("");
+            contentList.add("6008");
+            contentList.add("");
+            contentList.add("ajqh");
+            csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+          }
         }
-
-        List<String> contentList = new ArrayList<String>();
-        String guid = ListeningStringUtils.getUUID();
-        contentList.add(guid);
-        financialVoucherAdjustmentGuidMap.put(String.valueOf(txn.getTxnId()),guid);
-        contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),"yyyyMMdd"));
-        contentList.add("2");
-        contentList.add("3");
-        if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
-          contentList.add("Y");
-        } else {
-          contentList.add("N");
-        }
-        contentList.add("1");
-        contentList.add(ZPTMC);
-        contentList.add(SAPConstants.PLATFORM_CODE);
-        contentList.add(txn.getMainOrderId());
-        if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
-          //银联
-          contentList.add("898310148160258");
-          contentList.add("6008");
-          contentList.add("97990155300001887");
-        } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
-          //支付宝
-          contentList.add("100002039");
-          contentList.add("6008");
-          contentList.add("97990155300001887");
-        }
-        contentList.add("6008");
-        contentList.add("");
-        contentList.add("");
-        contentList.add("6008");
-        contentList.add("");
-        contentList.add("ajqh");
-        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
-      }
 
       //获取退款单号，银联：CR+订单id；支付宝：订单id
       List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
@@ -827,7 +827,7 @@ public class SAPService {
 
           csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         }
-        }
+       }
 
       //step2:退款
       List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
@@ -1044,8 +1044,9 @@ public class SAPService {
       String[] headers = {"GUID", "P_GUID", "ZPTLSH", "ITEM", "ZFYLX", "WRBTR","ZLSH_VBS","ZDZ_LSH","ZLSH_YH","ZDDBJ"};
       csvWriter.writeRecord(headers);
       int i = 0;
+
       for (TxnOrderInfo txn : txnList) {
-        ++i;
+        i++;
         String orderId = txn.getMainOrderId();
         OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
 
