@@ -660,7 +660,7 @@ public class SAPService {
         String guid = ListeningStringUtils.getUUID();
         contentList.add(guid);
         financialVoucherAdjustmentGuidMap.put(String.valueOf(txn.getTxnId()),guid);
-        contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),"yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(),"yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
@@ -1035,7 +1035,6 @@ public class SAPService {
       int i = 0;
       for (TxnOrderInfo txn : txnList) {
         i++;
-        String mainOrderId = txn.getMainOrderId();
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
         if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())))){
