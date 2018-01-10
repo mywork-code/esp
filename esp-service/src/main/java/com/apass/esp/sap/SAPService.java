@@ -1036,36 +1036,30 @@ public class SAPService {
       for (TxnOrderInfo txn : txnList) {
         i++;
         String mainOrderId = txn.getMainOrderId();
-        List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
-        for(OrderInfoEntity orderInfoEntity : orderList){
-          if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户
-            continue;
-          }
-          List<String> contentList = new ArrayList<String>();
-          contentList.add(ListeningStringUtils.getUUID());
-          if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())))){
-            continue;
-          }
-          contentList.add(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())));
-          contentList.add(txn.getMainOrderId());
-          contentList.add(i + "");
-          if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
-                  || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
-            contentList.add("Z067");
-          } else {
-            contentList.add("Z051");
-          }
-          if(txn.getTxnAmt().compareTo(new BigDecimal(0)) == 0){
-            contentList.add("");
-          }else{
-            contentList.add(txn.getTxnAmt() + "");
-          }
-          contentList.add("");
-          contentList.add(txn.getMainOrderId());
-          contentList.add("");
-          contentList.add("");
-          csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+        List<String> contentList = new ArrayList<String>();
+        contentList.add(ListeningStringUtils.getUUID());
+        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())))){
+          continue;
         }
+        contentList.add(getFinancialVoucherAdjustmentGuidMap(String.valueOf(txn.getTxnId())));
+        contentList.add(txn.getMainOrderId());
+        contentList.add(i + "");
+        if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
+                || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
+          contentList.add("Z067");
+        } else {
+          contentList.add("Z051");
+        }
+        if(txn.getTxnAmt().compareTo(new BigDecimal(0)) == 0){
+          contentList.add("");
+        }else{
+          contentList.add(txn.getTxnAmt() + "");
+        }
+        contentList.add("");
+        contentList.add(txn.getMainOrderId());
+        contentList.add("");
+        contentList.add("");
+        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
 
       //获取退款单号，银联：CR+订单id；支付宝：订单id
