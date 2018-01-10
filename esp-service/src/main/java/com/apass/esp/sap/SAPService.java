@@ -890,14 +890,6 @@ public class SAPService {
    *
    */
   private void transPurchaseOrderCvs() {
-    //step1:支付
-    List<String> typeCodeList = new ArrayList<>();
-    typeCodeList.add(TxnTypeCode.SF_CODE.getCode());
-    typeCodeList.add(TxnTypeCode.KQEZF_CODE.getCode());
-    typeCodeList.add(TxnTypeCode.ALIPAY_CODE.getCode());
-    typeCodeList.add(TxnTypeCode.ALIPAY_SF_CODE.getCode());
-
-    List<TxnOrderInfo> txnList =txnInfoService.selectByTxnTypeCodeList(typeCodeList,getDateBegin(),getDateEnd());
 
     try {
       CsvWriter csvWriter  = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
@@ -909,14 +901,6 @@ public class SAPService {
       int rowNum = 1;//行号
       for(String key :purchaseOrderGuidMap.keySet()){
         String orderId = key.split("_")[1];
-
-        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
-        if(StringUtils.isEmpty(getPurchaseOrderGuidMap(ZHIFU+orderId))){
-          continue;
-        }
-        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
-          continue;
-        }
 
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
