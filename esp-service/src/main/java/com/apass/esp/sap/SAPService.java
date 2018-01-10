@@ -1039,7 +1039,7 @@ public class SAPService {
         if(StringUtils.isEmpty(getPurchaseOrderGuidMap(ZHIFU+orderId))){
           continue;
         }
-        getPurchaseOrderGuidMap(TUIKUAN+orderId);
+        contentList.add(getPurchaseOrderGuidMap(TUIKUAN+orderId));
         contentList.add(String.valueOf(rowNum));
         contentList.add("200001");
 
