@@ -429,8 +429,8 @@ public class SAPService {
         contentList.add("");
         contentList.add("A");
         contentList.add("04");
-        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(),"yyyyMMdd"));
-        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(), "HHmmss"));
+        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(),"yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "HHmmss"));
         contentList.add("ajqh");
         contentList.add(String.valueOf(rowNum));
         rowNum = rowNum + 1;
