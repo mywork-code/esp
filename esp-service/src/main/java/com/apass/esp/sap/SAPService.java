@@ -427,9 +427,6 @@ public class SAPService {
 
       for (CashRefundTxn cashRefundTxn : cashRefundTxnList) {
 
-        if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.XYZF_CODE.getCode())) {
-          continue;
-        }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
         contentList.add("01");
