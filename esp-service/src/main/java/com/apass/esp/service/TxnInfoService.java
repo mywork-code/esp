@@ -120,4 +120,8 @@ public class TxnInfoService {
     public Integer getTotalCreditPayNum(Long userId){
       return txnInfoMapper.getTotalCreditPayNum(userId);
     }
+
+  public List<TxnOrderInfo> selectByTxnTypeCodeList(List<String> typeCodeList, String dateBegin, String dateEnd) {
+    return txnInfoMapper.selectByTxnTypeCodeList(typeCodeList, dateBegin, dateEnd);
+  }
 }

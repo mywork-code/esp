@@ -53,15 +53,15 @@ public class SAPScheduleTask {
 //		String path = basePath + "\\" + "2017\\11";
 		String path = basePath;
 		sapService.sendCaiWuPingZhengCsv(ip,port,username,password,path);
-		sapService.sendCaiWuPingZhengCsv2(ip,port,username,password,path);
-		sapService.commodityReturnFlow(ip,port,username,password,path);
-		sapService.salesOrder(ip, port, username, password, path);
-		sapService.salesOrderInfo(ip, port, username, password, path);
-		sapService.transVBSBusinessNumCvs(ip, port, username, password, path);
-		sapService.transPurchaseReturnSalesCvs(ip, port, username, password, path);
-		sapService.transPurchaseOrderCvs(ip, port, username, password, path);
-		sapService.transPurchaseOrReturnCvs(ip, port, username, password, path);
-		sapService.generateQuanEnHuanKuanCsv(ip,port,username,password,path);
+//		sapService.sendCaiWuPingZhengCsv2(ip,port,username,password,path);
+//		sapService.commodityReturnFlow(ip,port,username,password,path);
+//		sapService.salesOrder(ip, port, username, password, path);
+//		sapService.salesOrderInfo(ip, port, username, password, path);
+//		sapService.transVBSBusinessNumCvs(ip, port, username, password, path);
+//		sapService.transPurchaseReturnSalesCvs(ip, port, username, password, path);
+//		sapService.transPurchaseOrderCvs(ip, port, username, password, path);
+//		sapService.transPurchaseOrReturnCvs(ip, port, username, password, path);
+//		sapService.generateQuanEnHuanKuanCsv(ip,port,username,password,path);
 	}
 
 }
