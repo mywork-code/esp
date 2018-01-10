@@ -525,6 +525,7 @@ public class SAPService {
 //      }
 
       //step1:查询支付订单
+      //和财务凭证一样捞取订单
 
 
 
