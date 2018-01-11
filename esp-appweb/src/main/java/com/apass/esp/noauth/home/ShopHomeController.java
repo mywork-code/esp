@@ -1182,7 +1182,8 @@ public class ShopHomeController {
             returnMap.put("status", goodsInfo.getStatus());
             String detail = goodsInfo.getGoogsDetail();
             returnMap.put("googsDetail", detail);
-
+            returnMap.put("goodsTitle",goodsInfo.getGoodsTitle());
+            returnMap.put("goodsName",goodsInfo.getGoodsName());
 
             // 查询商品图片
             List<String> JdImagePathList=new ArrayList<>();
@@ -1191,6 +1192,7 @@ public class ShopHomeController {
                 JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
             }
             returnMap.put("jdImagePathList",JdImagePathList);
+
 
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
@@ -1213,6 +1215,8 @@ public class ShopHomeController {
 
                 String introduction = jddetail.replaceAll("width", "width");
                 returnMap.put("googsDetail", introduction);
+                returnMap.put("goodsTitle",goods.getGoodsTitle());
+                returnMap.put("goodsName",goods.getGoodsName());
 
                 List<String> wzSkuPictureList = weiZhiProductService.getWeiZhiSingleProductSkuImage(externalId, JdGoodsImageType.TYPEN1.getCode());
                 returnMap.put("jdImagePathList", wzSkuPictureList);
