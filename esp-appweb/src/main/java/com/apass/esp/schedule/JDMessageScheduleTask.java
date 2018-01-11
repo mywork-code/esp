@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class JDMessageScheduleTask {
     @Autowired
     private WeiZhiMessageClient weiZhiMessageClient;
 
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0 0/1 * * *")
     public void handleJDMessageScheduleTask() {
      List<JdMessageEnum> messageEnumList = new ArrayList<>();
         messageEnumList.add(JdMessageEnum.DELIVERED_ORDER);
@@ -55,7 +56,7 @@ public class JDMessageScheduleTask {
             try {
                 jdApiMessageList = weiZhiMessageClient.getMsg(messageEnum.getType());
             } catch (Exception e) {
-                LOGGER.error("handleJDMessageScheduleTask getMessage error...");
+                LOGGER.error("handleJDMessageScheduleTask getMessage error...",e);
                 return;
             }
             for (JdApiMessage jdApiMessage : jdApiMessageList ) {

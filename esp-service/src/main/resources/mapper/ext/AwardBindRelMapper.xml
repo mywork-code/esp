@@ -183,4 +183,14 @@
 		<include refid="queryCriteria" />
 		ORDER BY mobile
 	</select>
+	
+	<!-- 根据被邀请人手机号，查询出邀请人 -->
+	<select id="selectUserByInviteMobile" resultMap="BaseResultMap" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		t_esp_award_bind_rel
+		where invite_mobile = #{mobile} 
+		ORDER BY mobile
+	</select>
 </mapper>

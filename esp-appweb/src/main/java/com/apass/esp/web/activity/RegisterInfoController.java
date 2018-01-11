@@ -521,7 +521,16 @@ public class RegisterInfoController {
 					aRel.setIsNew(new Byte("1"));// 被邀请人是新用户
 					aRel.setCreateDate(new Date());
 					aRel.setUpdateDate(new Date());
-					int res = awardBindRelService.insertAwardBindRel(aRel);
+					
+					/**
+					 * 此处新增判断
+					 * （根据线下沟通，15266823865、13882655237、15073857658、18114470520、15266777502，以上5个手机号为代理商用户，
+					 * 其所有被邀请人不能再已邀请人身份和其他人进行绑定关系及获取转介绍奖励。）2018-01-11
+					 */
+					AwardBindRel relExsit = awardBindRelService.selectUserByInviteMobile(aRel.getMobile());
+					if(null == relExsit){
+						int res = awardBindRelService.insertAwardBindRel(aRel);
+					}
 					return Response.success("注册成功！");
 				} else{
 					logger.error("校验失败，您已与其他用户绑定过关系!");
