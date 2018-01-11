@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.third.party.jd.entity.aftersale.SendSku;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.mapper.JdCategoryMapper;
@@ -78,6 +80,9 @@ public class TestWZController {
 	@Autowired
 	private JdCategoryMapper jdCategoryMapper;
 	private WeiZhiMessageClient weiZhiMessageClient;
+	
+	@Autowired
+	private AwardBindRelService awardBindRelService;
 
 
 	@Autowired
@@ -856,4 +861,21 @@ public class TestWZController {
 		}
 		return Response.successResponse(resp);
 	}
+	
+	
+	/**
+	 * 测试获取消息
+	 */
+	@RequestMapping(value = "/justTest", method = RequestMethod.POST)
+	@ResponseBody
+	public Response getWZMsg(){
+		AwardBindRel rel = null;
+		try {
+		    rel = awardBindRelService.selectUserByInviteMobile("17621964882");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Response.successResponse(rel);
+	}
+	
 }
