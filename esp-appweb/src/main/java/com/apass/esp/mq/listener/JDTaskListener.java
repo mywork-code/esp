@@ -405,7 +405,6 @@ public class JDTaskListener implements MessageListener {
         }
       }
     }
-    LOGGER.info("jdTaskListener start consume message............");
   }
 
   private void addCategory(String category, int level) {
@@ -429,6 +428,9 @@ public class JDTaskListener implements MessageListener {
     jdCategory.setCategoryId1(0l);
     jdCategory.setCategoryId2(0l);
     jdCategory.setCategoryId3(0l);
+    Date now = new Date();
+    jdCategory.setCreateDate(now);
+    jdCategory.setUpdateDate(now);
       jdCategoryMapper.insertSelective(jdCategory);
     } catch (Exception e) {
       LOGGER.error("insert jdCategoryMapper sql error",e);
