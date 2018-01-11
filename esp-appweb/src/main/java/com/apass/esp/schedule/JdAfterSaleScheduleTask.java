@@ -108,7 +108,7 @@ public class JdAfterSaleScheduleTask {
     /**
      * 京东售后状态更新
      */
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0 2 * * *")
     public void handleJdConfirmPreInventoryTask() {
         List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D05");
         LOGGER.info("refund task begin...");
@@ -145,7 +145,7 @@ public class JdAfterSaleScheduleTask {
                 continue;
             }
             LOGGER.info("orderInfoEntity.getExtOrderId() {},result {}",orderInfoEntity.getExtOrderId(), GsonUtils.toJson(serviceInfoList));
-            Integer customerExpect = getCustomerExpect(serviceInfoList, orderInfoEntity.getOrderId());
+            Integer customerExpect = getCustomerExpect(serviceInfoList, orderInfoEntity.getOrderId(),orderInfoEntity.getExtOrderId());
 
             Map<String, Object> map = new HashMap<>();
             map.put("orderId", orderInfoEntity.getOrderId());
@@ -253,10 +253,10 @@ public class JdAfterSaleScheduleTask {
      * @param jsonArray
      * @return
      */
-    private Integer getCustomerExpect(List<AfsServicebyCustomerPin> serviceInfoList, String orderId) {
+    private Integer getCustomerExpect(List<AfsServicebyCustomerPin> serviceInfoList, String orderId,String extOrderId) {
         MessageListener ml=new MessageListener();
         ml.setType("100");
-        ml.setOrderid(orderId);
+        ml.setOrderid(extOrderId);
         LOGGER.info("newAfsInfo.. {}",GsonUtils.toJson(serviceInfoList.get(0)));
         for (AfsServicebyCustomerPin afsCusPin : serviceInfoList) {
             RefundDetailInfoEntity refundDetailInfoEntity = new RefundDetailInfoEntity();
