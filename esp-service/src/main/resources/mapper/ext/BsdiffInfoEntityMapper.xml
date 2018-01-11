@@ -2,13 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.BsdiffInfoEntityMapper" >
   <sql id="queryVoSql">
-    <if test="lineId != null">
-      line_id=#{lineId}
-    </if>
+    <where>
+      <if test="lineId != null">
+        and line_id=#{lineId}
+      </if>
 
-    <if test="bsdiffVer != null">
-      bsdiff_ver=#{bsdiffVer}
-    </if>
+      <if test="bsdiffVer != null">
+        and bsdiff_ver=#{bsdiffVer}
+      </if>
+    </where>
   </sql>
 
   <!--查询所有:按创建时间倒序排序-->
@@ -17,10 +19,40 @@
     from t_esp_bsdiff_info ORDER BY created_time DESC
   </select>
 
+ <select id="selectAllBsdiffNewest" resultMap="BaseResultMap">
+   SELECT <include refid="Base_Column_List" />
+   from t_esp_bsdiff_info
+   where id in
+   (
+     SELECT
+     MAX(id) id
+     FROM
+     t_esp_bsdiff_info
+     GROUP BY
+     line_id
+   )
+   ORDER BY created_time DESC
+  </select>
+
   <!--查询所有:按创建时间倒序排序-->
   <select id="selectBsdiffInfoByVo" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List" />
-    from t_esp_bsdiff_info ORDER BY created_time DESC
+    from t_esp_bsdiff_info
     <include refid="queryVoSql"/>
+    ORDER BY created_time DESC
   </select>
+
+  <!--查询某个 id下最大版本号对应数据-->
+  <select id="selectMaxBsdiffInfoById" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    from t_esp_bsdiff_info where id = (
+      SELECT
+      MAX(id) id
+      FROM
+      t_esp_bsdiff_info
+      where line_id = #{value}
+    )
+  </select>
+
+
 </mapper>

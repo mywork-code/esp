@@ -121,6 +121,7 @@ $ (function (){
 
 	$("#bsDiffUpload").click(function () {
 		$("#bsdiffFile").val("");
+		$("#lineId").val("");
 		$("#bsdiffVer").val("");
 
 		$("#bsdiffDiv").dialog({

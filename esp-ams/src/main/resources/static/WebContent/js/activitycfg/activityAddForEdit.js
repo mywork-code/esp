@@ -21,8 +21,9 @@ $(function(){
 		queryParams: {
 			"extendType" : "YHLQ",
 		},
-		onLoadSuccess:function () {
-
+		onLoadSuccess:function (data) {
+			// debugger;
+			// $(this).combobox('setValue','');
 		}
 	});
 	//活动id
@@ -33,6 +34,7 @@ $(function(){
 		type : "post",
 		dataType : "json",
 		success : function(data) {
+			debugger;
 			var resp = data.data;
 			if(data.status=="1"){
 				console.log(data);
