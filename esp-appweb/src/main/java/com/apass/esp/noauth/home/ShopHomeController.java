@@ -1183,11 +1183,6 @@ public class ShopHomeController {
             String detail = goodsInfo.getGoogsDetail();
             returnMap.put("googsDetail", detail);
 
-            String externalId = goodsInfo.getExternalId();// 外部商品id
-            //获取该商品是否支持7天退换及是否可售
-            Map<String,Object> support7AndCheck=weiZhiProductService.getsupport7dRefundAndCheckSales(externalId);
-            Boolean checkGoodsSales=(Boolean) support7AndCheck.get("checkGoodsSalesOrNot");
-
 
             // 查询商品图片
             List<String> JdImagePathList=new ArrayList<>();
@@ -1199,6 +1194,11 @@ public class ShopHomeController {
 
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
+                String externalId = goodsInfo.getExternalId();// 外部商品id
+                //获取该商品是否支持7天退换及是否可售
+                Map<String,Object> support7AndCheck=weiZhiProductService.getsupport7dRefundAndCheckSales(externalId);
+                Boolean checkGoodsSales=(Boolean) support7AndCheck.get("checkGoodsSalesOrNot");
+
                 String jddetail = "";
                 // 从ES中查询商品详情信息
                 Goods goods = IndexManager.getDocument("goods", IndexType.GOODS, Integer.valueOf(String.valueOf(goodsId)));
