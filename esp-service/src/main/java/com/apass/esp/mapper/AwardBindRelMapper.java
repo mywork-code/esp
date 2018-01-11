@@ -89,4 +89,11 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
   List<ActivityDetailStatisticsVo> getUserIdListByActivityId(ActivityBindRelStatisticQuery query);
 
   List<AwardBindRel> selectAllUserByCreateDate(Map<String,Object> paramMap);
+  
+  /**
+   * 根据被邀请人手机号，查询出邀请人
+   * @param query
+   * @return
+   */
+  List<AwardBindRel> selectUserByInviteMobile(ActivityBindRelStatisticQuery query);
 }

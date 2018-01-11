@@ -7,6 +7,8 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,5 +110,42 @@ public class AwardBindRelService {
 		paramMap.put("startCreateDate",startCreateDate);
 		paramMap.put("mobiles",list);
 		return wihdrawBindRelMapper.selectAllUserByCreateDate(paramMap);
+	}
+	
+	/**
+	 * 根据用户的mobile,判断是否可以进行关系绑定
+	 * 根据线下沟通，15266823865、13882655237、15073857658、18114470520、15266777502，
+	 * 以上5个手机号为代理商用户，
+	 * 其所有被邀请人不能再已邀请人身份和其他人进行绑定关系及获取转介绍奖励。
+	 * @param mobile
+	 * @return
+	 */
+	public AwardBindRel selectUserByInviteMobile(String mobile){
+		
+		/**
+		 * 首先根据传入邀请人的手机号，查询出邀请人的上一级邀请人手机号
+		 */
+		ActivityBindRelStatisticQuery query = new ActivityBindRelStatisticQuery();
+		query.setMobile(mobile);
+		List<AwardBindRel> users = wihdrawBindRelMapper.selectUserByInviteMobile(query);
+		
+		List<String> list = Lists.newArrayList();
+		list.add("15266823865");
+		list.add("13882655237");
+		list.add("15073857658");
+		list.add("18114470520");
+		list.add("15266777502");
+		
+		
+		for (AwardBindRel awardBindRel : users) {
+			/**
+			 * 如果上一级的邀请人的手机号，存在于固定的list中，则返回该对象
+			 */
+			if(list.contains(awardBindRel.getMobile())){
+				return awardBindRel;
+			}
+		}
+		
+		return null;
 	}
 }
