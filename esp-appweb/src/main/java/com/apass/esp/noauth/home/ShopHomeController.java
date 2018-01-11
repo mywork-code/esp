@@ -1156,16 +1156,10 @@ public class ShopHomeController {
     @POST
     @Path("/v3/onSelectSkuType")
     public Response onSelectSkuType(Map<String, Object> paramMap){
-        //TODO
         try{
             //获取参数：验证
             Map<String, Object> returnMap = new HashMap<>();
             Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
-            String userId = CommonUtils.getValue(paramMap, "userId");
-            String provinceCode = CommonUtils.getValue(paramMap, "provinceCode");
-            String cityCode = CommonUtils.getValue(paramMap, "cityCode");
-            String districtCode = CommonUtils.getValue(paramMap, "districtCode");
-            String townsCode = CommonUtils.getValue(paramMap, "townsCode");
             if (null == goodsId) {
                 LOGGER.error("商品号不能为空!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
