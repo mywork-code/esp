@@ -106,6 +106,14 @@
 		AND user_id = #{userId}
 	]]>
 	</update>
+	
+	<update id="updateAddressStatusById" parameterType="java.lang.Long">
+	<![CDATA[
+		UPDATE t_esp_address_info SET is_default = "0"
+		WHERE is_default = "1"
+		AND id = #{Id}
+	]]>
+	</update>
 	<!-- 更新用户的地址信息 -->
 	<update id="updateAddressInfo" parameterType="AddressInfoEntity">
 	<![CDATA[
