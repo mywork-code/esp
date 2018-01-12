@@ -105,10 +105,12 @@ public class AddressService {
     @Transactional(rollbackFor = Exception.class)
     public Long addAddressInfoV1(AddressInfoEntity addAddressInfo) throws BusinessException {
         try {
-            if (StringUtils.isNoneBlank(addAddressInfo.getIsDefault())
-                    && addAddressInfo.getIsDefault().equals("1")) {
+            if (StringUtils.equals(addAddressInfo.getIsDefault(), "1")) {
                 // 将原来的默认地址置为非默认的
-                addressInfoRepository.updateAddressStatus(addAddressInfo.getUserId());
+            	AddressInfoEntity address = addressInfoRepository.queryOneAddressByUserId(addAddressInfo.getUserId());
+            	if(null != address && StringUtils.equals(address.getIsDefault(), "1")){
+            		addressInfoRepository.updateAddressStatusById(addAddressInfo.getId());
+            	}
             }
             // 将地址插入数据库
             addPropertiesToEntity(addAddressInfo);
@@ -122,7 +124,7 @@ public class AddressService {
             throw new BusinessException("新增地址信息失败！", BusinessErrorCode.ADD_INFO_FAILED);
         }
     }
-
+    
     /**
      * 更新地址信息
      * 
@@ -166,8 +168,10 @@ public class AddressService {
 
         try {
             if (YesNo.isYes(isDefault)) {
-                // 将原来的默认地址置为非默认的
-                addressInfoRepository.updateAddressStatus(addInfo.getUserId());
+            	AddressInfoEntity address = addressInfoRepository.queryOneAddressByUserId(addInfo.getUserId());
+            	if(null != address && StringUtils.equals(address.getIsDefault(), "1")){
+            		addressInfoRepository.updateAddressStatusById(addInfo.getId());
+            	}
             }
             // 更新地址的信息
             addPropertiesToEntity(addInfo);

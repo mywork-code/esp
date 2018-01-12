@@ -49,6 +49,14 @@ public class AddressInfoRepository extends BaseMybatisRepository<AddressInfoEnti
 		}
 	}
 	
+	public void updateAddressStatusById(Long Id) throws BusinessException {
+		try {
+			getSqlSession().update(getSQL("updateAddressStatusById"), Id);
+		} catch (Exception e) {
+			throw new BusinessException("将原来默认地址修改为非默认地址失败", e);
+		}
+	}
+	
 	/**
 	 * 更新地址信息
 	 * 
