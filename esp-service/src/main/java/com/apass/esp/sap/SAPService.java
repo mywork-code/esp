@@ -367,10 +367,14 @@ public class SAPService {
       for (TxnOrderInfo txn : txnList) {
         String mainOrderId = txn.getMainOrderId();
         List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+        boolean flag = false;
         for(OrderInfoEntity orderInfoEntity: orderList) {
-          if (ifExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
-            continue;
+          if (!ifNotExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+            flag = true;
           }
+        }
+        if(!flag){
+          continue;
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
@@ -426,7 +430,10 @@ public class SAPService {
               getDateBegin(), getDateEnd());
 
       for (CashRefundTxn cashRefundTxn : cashRefundTxnList) {
-
+        OrderInfoEntity orderInfoEntity = orderService.selectByOrderId(cashRefundTxn.getOrderId());
+        if (ifNotExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+          continue;
+        }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
         contentList.add("01");
@@ -547,7 +554,7 @@ public class SAPService {
         String mainOrderId = txn.getMainOrderId();
         List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
         for(OrderInfoEntity orderInfoEntity : orderList){
-          if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
+          if(ifNotExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
             continue;
           }
           String orderId = orderInfoEntity.getOrderId();
@@ -594,7 +601,7 @@ public class SAPService {
       for(CashRefundTxn cashRefundTxn : cashRefundTxnList){
         String orderId = cashRefundTxn.getOrderId();
         OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
-        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){
+        if(ifNotExistMerchant(orderInfoEntity.getMerchantCode())){
           continue;
         }
         List<String> contentList = new ArrayList<String>();
@@ -665,10 +672,14 @@ public class SAPService {
       for (TxnOrderInfo txn : txnList) {
         String mainOrderId = txn.getMainOrderId();
         List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+        boolean flag = false;
         for(OrderInfoEntity orderInfoEntity: orderList) {
-          if (ifExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
-            continue;
+          if (!ifNotExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+            flag = true;
           }
+        }
+        if(!flag){
+          continue;
         }
 
         List<String> contentList = new ArrayList<String>();
@@ -714,6 +725,10 @@ public class SAPService {
       List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
           getDateBegin(), getDateEnd());
       for (CashRefundTxn cashRefundTxn : cashRefundTxnList) {
+        OrderInfoEntity orderInfoEntity = orderService.selectByOrderId(cashRefundTxn.getOrderId());
+        if (ifNotExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+          continue;
+        }
         List<String> contentList = new ArrayList<String>();
         String uuid = ListeningStringUtils.getUUID();
         contentList.add(uuid);
@@ -789,7 +804,7 @@ public class SAPService {
         List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
         for(OrderInfoEntity orderInfoEntity: orderList){
           String orderId = orderInfoEntity.getOrderId();
-          if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
+          if(ifNotExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
             continue;
           }
           List<String> contentList = new ArrayList<String>();
@@ -839,7 +854,7 @@ public class SAPService {
       for(CashRefundTxn cashRefundTxn : cashRefundTxnList){
         String orderId = cashRefundTxn.getOrderId();
         OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
-        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){
+        if(ifNotExistMerchant(orderInfoEntity.getMerchantCode())){
           continue;
         }
         List<String> contentList = new ArrayList<String>();
@@ -912,7 +927,7 @@ public class SAPService {
       for(String key :purchaseOrderGuidMap.keySet()){
         String orderId = key.split("_")[1];
         OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
-        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
+        if(ifNotExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
           continue;
         }
         List<OrderDetailInfoEntity> orderDetailInfoEntityList = orderDetailInfoRepository.queryOrderDetailBySubOrderId(orderId);
@@ -964,7 +979,7 @@ public class SAPService {
 
       for (TxnOrderInfo txn : txnList) {
           TxnOrderInfoForBss txnOrderInfoForBss = txnOrderInfoToTxnOrderInfoForBss(txn);
-          if(ifExistMerchant(txn.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
+          if(ifNotExistMerchant(txn.getMerchantCode())){//判断sap是否包含此商户，如果不包含，过滤
             continue;
           }
 
@@ -1049,12 +1064,15 @@ public class SAPService {
       for (TxnOrderInfo txn : txnList) {
         String mainOrderId = txn.getMainOrderId();
         List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+        boolean flag = false;
         for(OrderInfoEntity orderInfoEntity: orderList) {
-          if (ifExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
-            continue;
+          if (!ifNotExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+            flag = true;
           }
         }
-
+        if(!flag){
+          continue;
+        }
         i++;
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
@@ -1086,6 +1104,10 @@ public class SAPService {
       List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
               getDateBegin(), getDateEnd());
       for (CashRefundTxn cashRefundTxn : cashRefundTxnList) {
+        OrderInfoEntity orderInfoEntity = orderService.selectByOrderId(cashRefundTxn.getOrderId());
+        if (ifNotExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+          continue;
+        }
         ++i;
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
@@ -1144,12 +1166,18 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       Integer rowNum = new Integer("1");//行号
       for (TxnOrderInfo txn : txnList) {
-        String orderId = txn.getMainOrderId();
-        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId(orderId);
-
-        if(ifExistMerchant(orderInfoEntity.getMerchantCode())){//判断sap是否包含此商户,false:不包含，true:包含
+        String mainOrderId = txn.getMainOrderId();
+        List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+        boolean flag = false;
+        for(OrderInfoEntity orderInfoEntity: orderList) {
+          if (!ifNotExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+            flag = true;
+          }
+        }
+        if(!flag){
           continue;
         }
+
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
         contentList.add("01");
@@ -1423,7 +1451,7 @@ public class SAPService {
    * @param merchantCode 商户号
    * @return ture;不包含，false：包含
      */
-  private boolean ifExistMerchant(String merchantCode){
+  private boolean ifNotExistMerchant(String merchantCode){
     boolean flag = true;
     MerchantCode merchant = null;
     MerchantCode[] codeArr = MerchantCode.values();
