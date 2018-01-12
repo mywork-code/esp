@@ -6,13 +6,14 @@ import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.RepaySchedule.RepayScheduleEntity;
-import com.apass.esp.domain.entity.bill.*;
+import com.apass.esp.domain.entity.bill.SapData;
+import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.CashRefundTxnStatus;
 import com.apass.esp.domain.enums.MerchantCode;
-import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.RepayFlowMapper;
@@ -364,9 +365,12 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       int rowNum = 1;//行号
       for (TxnOrderInfo txn : txnList) {
-
-        if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
-          continue;
+        String mainOrderId = txn.getMainOrderId();
+        List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+        for(OrderInfoEntity orderInfoEntity: orderList) {
+          if (ifExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+            continue;
+          }
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
@@ -659,6 +663,14 @@ public class SAPService {
           "ZZHH_NO", "ZZJF","ZDBF","ZFWF","ZPTFWF", "ZDFF","ZSJLY"};
       csvWriter.writeRecord(headers);
       for (TxnOrderInfo txn : txnList) {
+        String mainOrderId = txn.getMainOrderId();
+        List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+        for(OrderInfoEntity orderInfoEntity: orderList) {
+          if (ifExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+            continue;
+          }
+        }
+
         List<String> contentList = new ArrayList<String>();
         String guid = ListeningStringUtils.getUUID();
         contentList.add(guid);
@@ -1035,6 +1047,14 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       int i = 0;
       for (TxnOrderInfo txn : txnList) {
+        String mainOrderId = txn.getMainOrderId();
+        List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+        for(OrderInfoEntity orderInfoEntity: orderList) {
+          if (ifExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+            continue;
+          }
+        }
+
         i++;
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
