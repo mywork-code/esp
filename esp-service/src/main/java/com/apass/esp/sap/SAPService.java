@@ -1229,7 +1229,7 @@ public class SAPService {
               getDateBegin(), getDateEnd());
       for (CashRefundTxn cashRefundTxn : cashRefundTxnList) {
         OrderInfoEntity orderInfoEntity = orderService.selectByOrderId(cashRefundTxn.getOrderId());
-        if (!ifNotExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
+        if (ifNotExistMerchant(orderInfoEntity.getMerchantCode())) {//判断sap是否包含此商户，如果不包含，过滤
           continue;
         }
 
