@@ -91,16 +91,8 @@ public class JdAfterSaleScheduleTask {
     private OrderRefundRepository orderRefundRepository;
 
     @Autowired
-    private CashRefundMapper cashRefundMapper;
-
-    @Autowired
-    private OrderInfoRepository orderInfoRepository;
-
-    @Autowired
     private GoodsRepository goodsRepository;
 
-    @Autowired
-    private TxnInfoMapper txnInfoMapper;
     @Autowired
     private MessageListenerMapper messageListenerMapper;
     @Autowired
@@ -163,9 +155,7 @@ public class JdAfterSaleScheduleTask {
             String refundStatus = getStatus(serviceInfoList);
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("orderId", orderInfoEntity.getOrderId());
-            if (!refundStatus.equalsIgnoreCase(RefundStatus.REFUND_STATUS01.getCode())
-                    && !StringUtils.equals(refundStatus,RefundStatus.REFUND_STATUS06.getCode())
-                    && !StringUtils.equals(refundStatus,RefundStatus.REFUND_STATUS05.getCode())) {
+            if (!refundStatus.equalsIgnoreCase(RefundStatus.REFUND_STATUS01.getCode())) {
                 //根据状态改变
                 paramMap.put("status", refundStatus);
                 if(refundStatus.equals(RefundStatus.REFUND_STATUS05.getCode())){
@@ -243,6 +233,8 @@ public class JdAfterSaleScheduleTask {
             insertProcess(refundId, RefundStatus.REFUND_STATUS04.getCode(), "",orderId);
         } else if (i == 40 || i == 50) {
             insertProcess(refundId, RefundStatus.REFUND_STATUS05.getCode(), "",orderId);
+        } else if(i == 10 || i == 21 || i == 22){
+            insertProcess(refundId, RefundStatus.REFUND_STATUS01.getCode(), "",orderId);
         }
     }
 
@@ -274,26 +266,29 @@ public class JdAfterSaleScheduleTask {
             	}
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS06.getCode());
             } else if (i == 31) {
-            	ml.setResult("京东收货");
+            	ml.setResult("微知收货");
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS02.getCode());
             } else if (i == 32) {
-            	ml.setResult("京东收货");
+            	ml.setResult("商家收货");
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS03.getCode());
-            } else if (i == 34 || i == 40) {
-            	if(i == 34){
-                	ml.setResult("商家处理");
+            } else if ( i == 33|| i == 34) {
+            	if(i == 33){
+                	ml.setResult("微知处理");
             	}else{
-                	ml.setResult("用户确认");
+                	ml.setResult("商家处理");
             	}
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS04.getCode());
-            } else if (i == 50) {
-            	ml.setResult("完成");
+            } else if (i == 40 || i == 50) {
+                if(i == 40){
+                    ml.setResult("用户确认");
+                }else{
+                    ml.setResult("完成");
+                }
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS05.getCode());
             } else {
-            	if(i==10){ml.setResult("完成");}
+            	if(i==10){ml.setResult("申请阶段");}
             	else if(i==21){ml.setResult("客服审核");}
             	else if(i==22){ml.setResult("商家审核");}
-            	else if(i==33){ml.setResult("京东处理");}
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS01.getCode());
             }
             ml.setCreatedTime(new Date());
@@ -318,24 +313,10 @@ public class JdAfterSaleScheduleTask {
             map.put("nodeName", status);
             List<ServiceProcessEntity> list1 = serviceProcessService.queryServiceProcessByParam(map);
             if (CollectionUtils.isEmpty(list1)) {
-                if(status.equalsIgnoreCase(RefundStatus.REFUND_STATUS05.getCode())){
-                    //RS05时 退款  退款额度
-                    CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
-                    OrderInfoEntity orderEntity = orderInfoRepository.selectByOrderId(orderId);
-                    List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(cashRefund.getMainOrderId());
-                    if (CollectionUtils.isNotEmpty(txnInfoEntityList)) {
-                        BigDecimal txnAmt = new BigDecimal(0);
-                        Date date = new Date();
-                        if (txnInfoEntityList.size() == 1) {
-                            
-                        }
-                    }
-
-                }
                 afterSaleService.insertServiceProcessInfo(refundId, status, modeMessage);
             }
         } catch (Exception e) {
-            LOGGER.error("refundId {} status {} 插入进度失败", refundId, status);
+            LOGGER.error("refundId {} status {} 插入进度失败", refundId, status,e);
         }
     }
 }
