@@ -708,7 +708,12 @@ public class AfterSaleService {
 
         // 退换货信息
         RefundInfoEntity refundInfo = refundInfoList.get(0);
-        serviceProcessDto.setSource(orderInfo.getSource());
+        //TODO：ios页面source还是用的jd
+        if(StringUtils.isEmpty(orderInfo.getSource())){
+            serviceProcessDto.setSource(orderInfo.getSource());
+        }else{
+            serviceProcessDto.setSource("jd");
+        }
         serviceProcessDto.setRefundId(refundInfo.getId());
         serviceProcessDto.setStatus(refundInfo.getStatus());
         serviceProcessDto.setRefundType(refundInfo.getRefundType());
