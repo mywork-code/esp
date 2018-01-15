@@ -180,7 +180,6 @@
 			<foreach collection="status" item="item" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			<!-- AND t1.completion_time BETWEEN #{startDate} AND #{endDate} -->
 			<![CDATA[
 			AND t1.completion_time < #{endDate}
 			]]>
