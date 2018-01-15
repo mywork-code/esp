@@ -326,7 +326,7 @@ public class InvoiceService {
 
         if(InvoiceHeadTypeEnum.getEnum(in.getHeadType()) == InvoiceHeadTypeEnum.COMPANY){
             //单位
-            faPiaoKJ.setGhfmc(InvoiceHeadTypeEnum.getEnum(in.getHeadType()).getDesc());
+            faPiaoKJ.setGhfmc(in.getCompanyName());
             faPiaoKJ.setGhfNsrsbh(in.getTaxpayerNum());
         }else{
             //个人
