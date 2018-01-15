@@ -930,7 +930,12 @@ public class AfterSaleService {
         orderDetailInfoDto.setStatus(orderInfo.getStatus());
         orderDetailInfoDto.setOrderDetailInfoList(goodsListInEachOrder);
         orderDetailInfoDto.setOrderCreateDate(orderInfo.getCreateDate());
-        orderDetailInfoDto.setSource(orderInfo.getSource());
+        //TODO：ios页面source还是用的jd
+        if(StringUtils.isEmpty(orderInfo.getSource())){
+            orderDetailInfoDto.setSource(orderInfo.getSource());
+        }else{
+            orderDetailInfoDto.setSource("jd");
+        }
 
         resultMap.put("serviceProcessDto", serviceProcessDto);
         resultMap.put("refundOrderInfo", orderDetailInfoDto);
