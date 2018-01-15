@@ -712,7 +712,7 @@ public class AfterSaleService {
         serviceProcessDto.setRefundId(refundInfo.getId());
         serviceProcessDto.setStatus(refundInfo.getStatus());
         serviceProcessDto.setRefundType(refundInfo.getRefundType());
-        if ("jd".equalsIgnoreCase(orderInfo.getSource())) {
+        if (SourceType.WZ.getCode().equalsIgnoreCase(orderInfo.getSource())) {
             if (StringUtils.isNotEmpty(refundInfo.getJdReturnType())) {
                 serviceProcessDto.setJdReturnType(refundInfo.getJdReturnType().equalsIgnoreCase("上门取件") ? "4"
                         : "40");
@@ -723,7 +723,7 @@ public class AfterSaleService {
                 refundInfo.setJdReturnType("4");
             }
         }
-        if (!"jd".equalsIgnoreCase(orderInfo.getSource())) {
+        if (!SourceType.WZ.getCode().equalsIgnoreCase(orderInfo.getSource())) {
             /**
              * 根据商户的编码获取商户的详细信息，然后获取商户的退货地址
              */
@@ -815,7 +815,7 @@ public class AfterSaleService {
         RefundDetailInfoQueryDto.setOrderId(orderId);
         List<RefundDetailInfoEntity> refundDetailInfoList = refundDetailInfoDao
                 .filter(RefundDetailInfoQueryDto);
-        if ("jd".equalsIgnoreCase(orderInfo.getSource())) {
+        if (SourceType.WZ.getCode().equalsIgnoreCase(orderInfo.getSource())) {
             if (!RefundStatus.REFUND_STATUS01.getCode().equalsIgnoreCase(serviceProcessDto.getStatus())) {
                 List<SkuObject> skuObjects = null;
                 try {
