@@ -106,8 +106,11 @@ public class AfterSaleController {
 
         try {
             int imageNumVal = Integer.parseInt(imageNum);
-            BigDecimal returnPriceVal = new BigDecimal(returnPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal returnPriceVal = null;
+            if(StringUtils.isEmpty(returnPrice)){
+                returnPriceVal = new BigDecimal(returnPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
 
+            }
             if (StringUtils.isBlank(userId)) {
                 logger.error("用户名不能为空");
                 return Response.fail("用户名不能为空");
