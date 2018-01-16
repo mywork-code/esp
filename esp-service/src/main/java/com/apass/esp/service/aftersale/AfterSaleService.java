@@ -171,10 +171,14 @@ public class AfterSaleService {
         }
 
         /** 3. 校验 服务端计算的退货金额 与 页面传过来的是否一致 */
-        if (operate.equals(YesNo.NO.getCode()) && (refundAmt.compareTo(returnPriceVal) != 0
-        && refundAmt.subtract(returnPriceVal).abs().floatValue() != 0.01f) ) {
-            LOG.info(requestId, "退货金额计算错误", String.valueOf(refundAmt));
-            throw new BusinessException("退货金额错误", BusinessErrorCode.PARAM_VALUE_ERROR);
+        if(returnPriceVal == null){
+            returnPriceVal = refundAmt;
+        }else{
+            if (operate.equals(YesNo.NO.getCode()) && (refundAmt.compareTo(returnPriceVal) != 0
+                    && refundAmt.subtract(returnPriceVal).abs().floatValue() != 0.01f) ) {
+                LOG.info(requestId, "退货金额计算错误", String.valueOf(refundAmt));
+                throw new BusinessException("退货金额错误", BusinessErrorCode.PARAM_VALUE_ERROR);
+            }
         }
 
         // 如果是京东商品，校验是否可售后，支持服务的类型。以及商品的返回方式
