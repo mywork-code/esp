@@ -226,4 +226,47 @@
         select count(txn_id) from t_apass_txn_info
          where user_id = #{userId} and txn_type = 'T02' and status = 'S'
     </select>
+
+
+    <!--财务凭证调整收款(首付款，全额)，财务凭证调整明细-->
+    <select id ="selectByTxnTypeCodeList" resultType="com.apass.esp.domain.entity.bill.TxnOrderInfo">
+        select
+            tx.txn_id txnId,
+            tx.order_id mainOrderId,
+            tx.user_id userId,
+            tx.txn_type txnType,
+            tx.txn_date txnDate,
+            tx.txn_amt txnAmt,
+            tx.post_date postDate,
+            tx.txn_desc txnDesc,
+            tx.orig_txn_id origTxnId,
+            tx.orig_trans_date origTransDate,
+            tx.loan_id loanId,
+            tx.status status,
+            tx.CREATE_DATE createDate
+        from t_apass_txn_info tx
+        where tx.txn_type in
+        <foreach collection="typeCodeList" item="item" open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+        and status = 'S'
+        <![CDATA[ and tx.txn_date >= #{dateBegin}]]>
+        <![CDATA[ and tx.txn_date < #{dateEnd}]]>
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </mapper>
