@@ -129,7 +129,7 @@ public class GoodsBatchPutawayController {
                             break;
                         }
                     }
-                    Goods entity = goodsService.goodsInfoToGoods(goods);
+                    Goods entity = goodsService.goodsInfoToGoods(goodsService.selectByGoodsId(goods.getId()));
                     //如果ES中没有商品规格中任何一个，则添加到ES中
                     if(goodsInESNumFalg){
                           goodsEsDao.add(entity);

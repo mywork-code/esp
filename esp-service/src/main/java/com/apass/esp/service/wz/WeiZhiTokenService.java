@@ -54,17 +54,17 @@ public class WeiZhiTokenService {
 	 * @throws Exception
 	 */
 	public String getTokenFromRedis() throws Exception {
-		String token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
-		if(StringUtils.isNotBlank(token)){
-			String expiredTime = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.EXPIRED_TIME);
-			Date date = DateFormatUtil.string2date(expiredTime, "");
-			if(null != date && date.getTime() >  new Date().getTime()){
-				return token;
-			}
-		}
-		getToken();
-		token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
-//		String token =weiZhiTokenClient.getToken().getAccess_token();
+//		String token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
+//		if(StringUtils.isNotBlank(token)){
+//			String expiredTime = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.EXPIRED_TIME);
+//			Date date = DateFormatUtil.string2date(expiredTime, "");
+//			if(null != date && date.getTime() >  new Date().getTime()){
+//				return token;
+//			}
+//		}
+//		getToken();
+//		token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
+		String token =weiZhiTokenClient.getToken().getAccess_token();
 		return token;
 	}
 }
