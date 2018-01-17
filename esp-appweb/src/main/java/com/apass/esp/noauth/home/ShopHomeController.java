@@ -409,6 +409,7 @@ public class ShopHomeController {
      *
      * @return
      */
+    @Deprecated
     @POST
     @Path("/loadGoodsListByCategoryId2")
     public Response loadGoodsListByCategoryId2(Map<String, Object> paramMap) {

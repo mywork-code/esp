@@ -1219,15 +1219,19 @@ public class GoodsService {
     // Long maxPriceStockId = 0L;
     if (null != goodsStockList && goodsStockList.size() > 0) {
       minPrice = goodsStockList.get(0).getGoodsPrice();
+      minPrice = (minPrice==null)?new BigDecimal(0):minPrice;
       for (GoodsStockInfoEntity stock : goodsStockList) {
         // if (stock.getGoodsPrice().compareTo(maxPrice) > 0) {
         // maxPrice = stock.getGoodsPrice();
         // maxPriceStockId = stock.getId();
         // }
-        if (minPrice.compareTo(stock.getGoodsPrice()) >= 0) {
-          minPrice = stock.getGoodsPrice();
-          minPriceStockId = stock.getId();
-          skuAttr = stock.getGoodsSkuAttr();
+
+        BigDecimal stockPrice = stock.getGoodsPrice();
+        stockPrice = (stockPrice==null)?new BigDecimal(0):stockPrice;
+        if (minPrice.compareTo(stockPrice) >= 0) {
+            minPrice = stock.getGoodsPrice();
+            minPriceStockId = stock.getId();
+            skuAttr = stock.getGoodsSkuAttr();
         }
       }
       map.put("minPrice", minPrice);
