@@ -642,7 +642,6 @@ public class GoodsBaseInfoController {
     @LogAnnotion(operationType = "商品下架", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public String shelf(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
-        // String source = HttpWebUtils.getValue(request, "source");
         GoodsInfoEntity entity = new GoodsInfoEntity();
         entity.setId(Long.valueOf(id));
         entity.setStatus(GoodStatus.GOOD_DOWN.getCode());

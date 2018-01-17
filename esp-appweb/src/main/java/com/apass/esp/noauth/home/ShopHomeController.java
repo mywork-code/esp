@@ -1038,6 +1038,7 @@ public class ShopHomeController {
                     // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
                     if (StringUtils.isNotBlank(externalId) && !checkGoodsSales) {
                         returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
+                        goodsService.goodDownAndRemoveFromES(Long.valueOf(goodsId));
                     }
                 }
                 // 是否支持7天无理由退货,Y、N

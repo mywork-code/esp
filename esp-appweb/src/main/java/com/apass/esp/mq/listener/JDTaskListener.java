@@ -16,6 +16,7 @@ import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
+import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
@@ -65,6 +66,8 @@ public class JDTaskListener implements MessageListener {
   @Autowired
   private WeiZhiProductApiClient weiZhiProductApiClient;
 
+  @Autowired
+  private OrderService orderService;
 
 
   @Override
@@ -106,6 +109,12 @@ public class JDTaskListener implements MessageListener {
         messageListenerMapper.insertSelective(ml);
         return;
       }
+
+      //检查商品是否可售
+        if(!orderService.checkGoodsSalesOrNot(skuId)){
+          goodsService.goodDownAndRemoveFromES(goodsInfoEntity.getId());
+        }
+
       List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getGoodId());
       if (CollectionUtils.isEmpty(goodsStockInfoEntityList)) {
         ml.setStatus("0");

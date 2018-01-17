@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import com.apass.esp.search.dao.GoodsEsDao;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -131,6 +133,8 @@ public class GoodsService {
     private CategoryInfoService categoryInfoService;
     @Autowired
     private JdGoodsService jdGoodsService;
+    @Autowired
+    private GoodsEsDao goodsEsDao;
     /**
      * 修改
      * @param entity
@@ -2000,20 +2004,7 @@ public class GoodsService {
     }
     return null;
   }
-    /**
-     * 添加banner使用
-     * @param param
-     * @return
-     */
-//    public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param,SourceType sourceType) {
-//        GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
-//        entity.setGoodsCode(Long.parseLong(param));
-//        entity.setExternalId(param);
-//        entity.setSource(sourceType.getCode());
-//        return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
-//    }
 
-    
     public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param) {
         GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
         entity.setGoodsCode(Long.parseLong(param));
@@ -2061,5 +2052,25 @@ public class GoodsService {
 
     public List<GoodsInfoEntity> selectGoodsByNullMaingoodscode() {
         return goodsDao.selectGoodsByNullMaingoodscode();
+    }
+
+    /**
+     * 微知商品不可售时，将商品更新下架状态并从es中删除
+     */
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
+    public void goodDownAndRemoveFromES(Long goodsId){
+        GoodsInfoEntity entity = new GoodsInfoEntity();
+        entity.setId(goodsId);
+        entity.setStatus(GoodStatus.GOOD_DOWN.getCode());
+        entity.setUpdateDate(new Date());
+        entity.setDelistTime(new Date());
+        entity.setUpdateUser("wzAdmin2");
+        Integer count = goodsDao.updateGoods(entity);
+        if(count == 1){
+            Goods goods = new Goods();
+            goods.setId(goodsId.intValue());
+            LOGGER.info("商品下架，删除索引传递的参数:{}", GsonUtils.toJson(goods));
+            goodsEsDao.delete(goods);
+        }
     }
 }
