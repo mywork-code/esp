@@ -4,8 +4,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+
+import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,10 +51,13 @@ public class GoodsBatchPutawayController {
     private OrderService orderService;
     @Autowired
     private GoodsEsDao goodsEsDao;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoodsBatchPutawayController.class);
     @ResponseBody
     @RequestMapping("/batchPutaway")
     @LogAnnotion(operationType = "wz商品批量上架", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public void batchPutaway() {
+        LOGGER.info("wz商品批量上架方法执行......");
         try{
             //上架方法参考 见GoodsBaseInfoController   shelves 方法
             Map<String,Object> params = Maps.newHashMap();
@@ -59,6 +66,7 @@ public class GoodsBatchPutawayController {
             params.put("isDelete","01");
             List<GoodsInfoEntity> goodsList= goodsService.selectByCategoryId2AndsordNo(params);
             for(GoodsInfoEntity goods : goodsList){
+                LOGGER.info("wz商品批量上架方法，goodId:{}",goods.getId());
                 List<GoodsStockInfoEntity> stockList = goodsStockInfoService.getGoodsStock(goods.getId());
                 String skuId = goods.getExternalId();
                 String user = SpringSecurityUtils.getCurrentUser();
@@ -113,27 +121,9 @@ public class GoodsBatchPutawayController {
                     goods.setRemark("商品批量复核");
                     goodsService.updateService(goods);
                     //TODO在ES中相似规格的商品只上架一件（即：如果商品多规格则在ES中添加一个规格）
-                    Boolean goodsInESNumFalg=true;
-                    TreeSet<String> similarSkuIds=jdGoodsInfoService.getJdSimilarSkuIdList(skuId);
-                    if(CollectionUtils.isNotEmpty(similarSkuIds)){
-                        similarSkuIds.remove(skuId);
-                    }
-                    for (String string : similarSkuIds) {
-                        GoodsInfoEntity goodsInfo=goodsService.selectGoodsByExternalId(string);
-                        Goods goodsfromES=null;
-                        if(null !=goodsInfo){
-                            goodsfromES=IndexManager.goodSearchFromESBySkuId(goodsInfo.getId());
-                        }
-                        if(null !=goodsfromES){//该商品的相似规格已经在ES中存在
-                            goodsInESNumFalg=false;
-                            break;
-                        }
-                    }
                     Goods entity = goodsService.goodsInfoToGoods(goodsService.selectByGoodsId(goods.getId()));
                     //如果ES中没有商品规格中任何一个，则添加到ES中
-                    if(goodsInESNumFalg){
-                          goodsEsDao.add(entity);
-                    }
+                    goodsEsDao.update(entity);
                 }
             }
         }catch(Exception e){

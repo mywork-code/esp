@@ -20,6 +20,8 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.RandomUtils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +31,7 @@ import java.util.List;
 
 @Component
 public class CommonService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonService.class);
     @Autowired
     private ActivityInfoRepository actityInfoDao;
     @Autowired
@@ -54,7 +56,12 @@ public class CommonService {
      * @throws BusinessException
      */
 	public BigDecimal calculateGoodsPrice(Long goodsId, Long goodsStockId) throws BusinessException {
+        LOGGER.info("calculateGoodsPrice方法执行，参数goodsId:{},goodsStockId:{}",goodsId.toString(),goodsStockId.toString());
 		GoodsInfoEntity goods = goodsDao.select(goodsId);
+        if(goods == null){
+            LOGGER.error("数据有误,goodsId：{}",goodsId);
+            throw new RuntimeException("数据有误");
+        }
     	String skuId = null;
     	if(StringUtils.isNotBlank(goods.getSource())){
     		skuId = goods.getExternalId();

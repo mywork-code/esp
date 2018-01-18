@@ -241,6 +241,7 @@ public class TestController {
 		Map<String,Object> result=jdGoodsInfoService.getJdGoodsSimilarSku(Long.parseLong(sku));
     	 return Response.success("1",result);
     }
+
     /**
      * 查询商品是否上下架
      */
