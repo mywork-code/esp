@@ -1385,7 +1385,7 @@
         t.sord_no sordNo,
         t.un_support_province unSupportProvince,
         t.source source,
-        t.external_id externalId,
+        t.external_id externalId
         FROM
         t_esp_goods_base_info t
         <include refid="QueryGoodsSql" />

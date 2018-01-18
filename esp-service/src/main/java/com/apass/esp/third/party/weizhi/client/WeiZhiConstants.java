@@ -42,6 +42,7 @@ public class WeiZhiConstants {
             password = "zydc123456";
             clientSecret = "pm0G8ZzOQ2XItQnq9q1r";
             requestUrl = "http://openapi.viphrm.com";
+
         }
 
     }

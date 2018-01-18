@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
+import com.apass.esp.search.dao.GoodsEsDao;
+import com.apass.esp.search.entity.Goods;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -206,9 +210,6 @@ public class OrderService {
     private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
 
     @Autowired
-    private JdProductApiClient jdProductApiClient;
-
-    @Autowired
     private CashRefundMapper cashRefundMapper;
 
     @Autowired
@@ -271,7 +272,7 @@ public class OrderService {
 	private LimitGoodsSkuMapper limitGoodsSkuMapper;
 	@Autowired
 	private LimitBuyDetailMapper buydetailMapper;
-	
+
 
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -404,36 +405,6 @@ public class OrderService {
         }
     }
 
-    /**
-     * 查询被二次拒绝的订单
-     * 
-     * @throws BusinessException
-     */
-    public Pagination<OrderSubInfoEntity> queryOrderInfoRejectAgain(Page page) throws BusinessException {
-        try {
-            Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
-                    .queryOrderInfoRejectAgain(page);
-            return orderDetailInfoList;
-        } catch (Exception e) {
-            LOGGER.error("查询被二次拒绝的订单===>", e);
-            throw new BusinessException("查询被二次拒绝的订单！", e);
-        }
-    }
-
-    /**
-     * 通过订单号更新物流信息
-     *
-     * @return
-     */
-    @Transactional
-    public void updateLogisticsInfoByOrderId(Map<String, String> map) throws BusinessException {
-        try {
-            orderSubInfoRepository.updateLogisticsInfoByOrderId(map);
-        } catch (Exception e) {
-            LOGGER.error(" 更新物流信息失败", e);
-            throw new BusinessException(" 更新物流信息失败！", e);
-        }
-    }
 
     /**
      * 通过订单号更新物流信息、订单状态
@@ -862,6 +833,9 @@ public class OrderService {
 			return flag;
 		}
 	}
+
+
+
     /**
      * 验证京东商品是否支持7天退货
      */
