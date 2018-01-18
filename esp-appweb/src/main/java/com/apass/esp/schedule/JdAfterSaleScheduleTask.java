@@ -232,6 +232,9 @@ public class JdAfterSaleScheduleTask {
             insertProcess(refundId, RefundStatus.REFUND_STATUS03.getCode(), "",orderId);
             insertProcess(refundId, RefundStatus.REFUND_STATUS04.getCode(), "",orderId);
         } else if (i == 40 || i == 50) {
+            insertProcess(refundId, RefundStatus.REFUND_STATUS02.getCode(), "",orderId);
+            insertProcess(refundId, RefundStatus.REFUND_STATUS03.getCode(), "",orderId);
+            insertProcess(refundId, RefundStatus.REFUND_STATUS04.getCode(), "",orderId);
             insertProcess(refundId, RefundStatus.REFUND_STATUS05.getCode(), "",orderId);
         } else if(i == 10 || i == 21 || i == 22){
             insertProcess(refundId, RefundStatus.REFUND_STATUS01.getCode(), "",orderId);
