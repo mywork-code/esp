@@ -691,31 +691,32 @@ public class GoodsBaseInfoController {
                         Goods goods = goodsService.goodsInfoToGoods(entity2);
                         LOGGER.info("审核通过,添加索引传递的参数:{}",GsonUtils.toJson(goods));
                         //TODO在ES中相似规格的商品只上架一件（即：如果商品多规格则在ES中添加一个规格）
-                        String source=entity2.getSource();
-                        String skuId="";
-                        Boolean  goodsInESNumFalg=true;
-                        if(null !=source && SourceType.WZ.getCode().equals(source)){
-                        	skuId=entity2.getExternalId();
-                        	TreeSet<String> similarSkuIds=jdGoodsInfoService.getJdSimilarSkuIdList(skuId);
-                        	if(CollectionUtils.isNotEmpty(similarSkuIds)){
-                        		similarSkuIds.remove(skuId);
-                        	}
-                        	for (String string : similarSkuIds) {
-                        		GoodsInfoEntity goodsInfo=goodsService.selectGoodsByExternalId(string);
-                        		Goods goodsfromES=null;
-                        		if(null !=goodsInfo){
-                        			goodsfromES=IndexManager.goodSearchFromESBySkuId(goodsInfo.getId());
-                        		}
-                        		if(null !=goodsfromES){//该商品的相似规格已经在ES中存在
-                        			goodsInESNumFalg=false;
-                        			break;
-                        		}
-                        	}
-                        }
+//                        String source=entity2.getSource();
+//                        String skuId="";
+//                        Boolean  goodsInESNumFalg=true;
+//                        if(null !=source && SourceType.WZ.getCode().equals(source)){
+//                        	skuId=entity2.getExternalId();
+//
+//                        	TreeSet<String> similarSkuIds=jdGoodsInfoService.getJdSimilarSkuIdList(skuId);
+//                        	if(CollectionUtils.isNotEmpty(similarSkuIds)){
+//                        		similarSkuIds.remove(skuId);
+//                        	}
+//                        	for (String string : similarSkuIds) {
+//                        		GoodsInfoEntity goodsInfo=goodsService.selectGoodsByExternalId(string);
+//                        		Goods goodsfromES=null;
+//                        		if(null !=goodsInfo){
+//                        			goodsfromES=IndexManager.goodSearchFromESBySkuId(goodsInfo.getId());
+//                        		}
+//                        		if(null !=goodsfromES){//该商品的相似规格已经在ES中存在
+//                        			goodsInESNumFalg=false;
+//                        			break;
+//                        		}
+//                        	}
+//                        }
                         //如果ES中没有商品规格中任何一个，则添加到ES中
-                        if(goodsInESNumFalg){
-                        	  goodsEsDao.add(goods);
-                        }
+//                        if(goodsInESNumFalg){
+                        	  goodsEsDao.update(goods);
+//                        }
                     }
                 }
             }
