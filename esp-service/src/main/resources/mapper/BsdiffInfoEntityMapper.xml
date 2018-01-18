@@ -12,10 +12,10 @@
     <result column="source_file_path" property="sourceFilePath" jdbcType="VARCHAR" />
     <result column="merge_file_path" property="mergeFilePath" jdbcType="VARCHAR" />
     <result column="file_list_path" property="fileListPath" jdbcType="VARCHAR" />
-    <result column="if_compel_update" property="ifCompelUpdate" jdbcType="VARCHAR" />
+    <result column="if_compel_update" property="ifCompelUpdate" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, bsdiff_ver, created_time, updated_time, create_user, update_user, line_id, source_file_path, merge_file_path, file_list_path
+    id, bsdiff_ver, created_time, updated_time, create_user, update_user, line_id, source_file_path, merge_file_path, file_list_path,if_compel_update
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
