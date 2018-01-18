@@ -423,6 +423,7 @@ public class SystemParamController {
             bsdiffInfoEntity.setCreateUser(SpringSecurityUtils.getCurrentUser());
             bsdiffInfoEntity.setUpdatedTime(new Date());
             bsdiffInfoEntity.setUpdateUser(SpringSecurityUtils.getCurrentUser());
+            bsdiffInfoEntity.setIfCompelUpdate(bsdiffVo.getIfCompelUpdate());
             bsdiffinfoEntityService.bsdiffUpload(bsdiffVo,bsdiffInfoEntity);
         }catch (Exception e){
             LOG.error("增量添加上传失败",e);

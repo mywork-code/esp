@@ -123,6 +123,7 @@ $ (function (){
 		$("#bsdiffFile").val("");
 		$("#lineId").val("");
 		$("#bsdiffVer").val("");
+		$("#ifCompelUpdate").combobox("clear");
 
 		$("#bsdiffDiv").dialog({
 			title : "增量更新上传zip包",

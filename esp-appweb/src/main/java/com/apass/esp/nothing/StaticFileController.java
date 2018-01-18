@@ -325,6 +325,7 @@ public class StaticFileController {
         return Response.successResponse(commissionWalletVos);
     }
 
+    @Deprecated
     @RequestMapping(value = "bsdiff/download2")
     @ResponseBody
     public Response downLoad2(@RequestBody(required=true) Map<String,Object> paramMap){
@@ -445,6 +446,7 @@ public class StaticFileController {
      */
     private BsdiffResponse getBsdiffResponse(BsdiffInfoEntity bs,boolean bo,BsdiffParamVo bsvo) throws IOException {
         BsdiffResponse bsr = new BsdiffResponse();
+        bsr.setIfCompelUpdate(bs.getIfCompelUpdate());
         bsr.setBsdiffVer(bs.getBsdiffVer());
         bsr.setLineId(bs.getLineId());
         if(bo){
