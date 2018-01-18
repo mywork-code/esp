@@ -37,6 +37,20 @@ public class BsdiffResponse {
      */
     private List<FileEntitis> jsonList;
 
+    /**
+     * 是否强制更新
+     * @return
+     */
+    private byte ifCompelUpdate;
+
+    public byte getIfCompelUpdate() {
+        return ifCompelUpdate;
+    }
+
+    public void setIfCompelUpdate(byte ifCompelUpdate) {
+        this.ifCompelUpdate = ifCompelUpdate;
+    }
+
     public String getBsdiffVer() {
         return bsdiffVer;
     }

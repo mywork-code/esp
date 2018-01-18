@@ -23,6 +23,16 @@ public class BsdiffInfoEntity {
 
     private String fileListPath;
 
+    private byte ifCompelUpdate;
+
+    public byte getIfCompelUpdate() {
+        return ifCompelUpdate;
+    }
+
+    public void setIfCompelUpdate(byte ifCompelUpdate) {
+        this.ifCompelUpdate = ifCompelUpdate;
+    }
+
     public String getLineId() {
         return lineId;
     }

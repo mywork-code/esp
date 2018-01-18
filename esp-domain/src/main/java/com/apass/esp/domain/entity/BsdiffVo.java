@@ -8,7 +8,16 @@ import org.springframework.web.multipart.MultipartFile;
 public class BsdiffVo {
     private String bsdiffVer;
     private String lineId;
+    private byte ifCompelUpdate;
     private MultipartFile bsdiffFile;
+
+    public byte getIfCompelUpdate() {
+        return ifCompelUpdate;
+    }
+
+    public void setIfCompelUpdate(byte ifCompelUpdate) {
+        this.ifCompelUpdate = ifCompelUpdate;
+    }
 
     public String getLineId() {
         return lineId;

@@ -12,6 +12,7 @@
     <result column="source_file_path" property="sourceFilePath" jdbcType="VARCHAR" />
     <result column="merge_file_path" property="mergeFilePath" jdbcType="VARCHAR" />
     <result column="file_list_path" property="fileListPath" jdbcType="VARCHAR" />
+    <result column="if_compel_update" property="ifCompelUpdate" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, bsdiff_ver, created_time, updated_time, create_user, update_user, line_id, source_file_path, merge_file_path, file_list_path
@@ -29,11 +30,11 @@
   <insert id="insert" parameterType="com.apass.esp.domain.entity.BsdiffInfoEntity" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_bsdiff_info (bsdiff_ver, created_time,
       updated_time, create_user, update_user,line_id,source_file_path,
-      merge_file_path, file_list_path)
+      merge_file_path, file_list_path,if_compel_update)
     values (#{bsdiffVer,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP},
       #{updateDate,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR},
       #{lineId,jdbcType=VARCHAR}, #{sourceFilePath,jdbcType=VARCHAR}, #{mergeFilePath,jdbcType=VARCHAR},
-      #{fileListPath,jdbcType=VARCHAR}
+      #{fileListPath,jdbcType=VARCHAR},#{ifCompelUpdate}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.BsdiffInfoEntity" useGeneratedKeys="true" keyProperty="id" >
@@ -66,6 +67,9 @@
       <if test="fileListPath != null" >
         file_list_path,
       </if>
+      <if test="ifCompelUpdate != null" >
+        if_compel_update
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="bsdiffVer != null" >
@@ -93,7 +97,10 @@
         #{mergeFilePath,jdbcType=VARCHAR},
       </if>
       <if test="fileListPath != null" >
-        #{fileListPath,jdbcType=VARCHAR}
+        #{fileListPath,jdbcType=VARCHAR},
+      </if>
+      <if test="ifCompelUpdate != null" >
+        #{ifCompelUpdate}
       </if>
     </trim>
   </insert>
@@ -125,7 +132,10 @@
         #{mergeFilePath,jdbcType=VARCHAR},
       </if>
       <if test="fileListPath != null" >
-        #{fileListPath,jdbcType=VARCHAR}
+        #{fileListPath,jdbcType=VARCHAR},
+      </if>
+      <if test="ifCompelUpdate != null" >
+        #{ifCompelUpdate}
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -140,7 +150,8 @@
       line_id = #{lineId,jdbcType=VARCHAR},
       source_file_path = #{sourceFilePath,jdbcType=VARCHAR},
       merge_file_path = #{mergeFilePath,jdbcType=VARCHAR},
-      file_list_path = #{fileListPath,jdbcType=VARCHAR}
+      file_list_path = #{fileListPath,jdbcType=VARCHAR},
+      if_compel_update = #{ifCompelUpdate}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
