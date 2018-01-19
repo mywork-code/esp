@@ -1,6 +1,7 @@
 package com.apass.esp.service.refund;
 import com.apass.esp.domain.dto.refund.RefundedOrderInfoDto;
 import com.apass.esp.domain.entity.Invoice;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.entity.refund.ServiceProcessEntity;
 import com.apass.esp.domain.enums.InvoiceStatusEnum;
@@ -273,8 +274,15 @@ public class OrderRefundService {
                     throw new RuntimeException("数据有误");
                 }
             }else{
-                //换货的订单改成交易完成
                 orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
+                //换货的订单改成交易完成
+                OrderInfoEntity order = orderInfoRepository.selectByOrderId(dto.getOrderId());
+                Boolean falg = invoiceService.invoiceCheck(order);
+                if(falg){
+                    LOGGER.info("自动开具发票成功!orderId:{}", dto.getOrderId());
+                }else{
+                    LOGGER.info("自动开具发票失败!orderId:{}", dto.getOrderId());
+                }
             }
         }
         //查询售后失败的订单，改成交易完成
