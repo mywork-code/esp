@@ -1,11 +1,10 @@
 package com.apass.esp.third.party.weizhi.entity;
-
 import java.util.List;
-
+import java.util.Map;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
-
 public class WZJdSimilarSku {
 	private List<JdSimilarSku> result;
+	private Map<String,Object> imageHeader;
 	private Boolean success;
 	private String resultCode;
 	private String resultMessage;
@@ -33,5 +32,10 @@ public class WZJdSimilarSku {
 	public void setResultMessage(String resultMessage) {
 		this.resultMessage = resultMessage;
 	}
-	
+    public Map<String,Object> getImageHeader() {
+        return imageHeader;
+    }
+    public void setImageHeader(Map<String,Object> imageHeader) {
+        this.imageHeader = imageHeader;
+    }
 }

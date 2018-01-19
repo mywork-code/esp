@@ -352,7 +352,11 @@ public class InvoiceService {
         for(OrderDetailInfoEntity de : delist){
             GoodsInfoEntity goods = goodsService.selectByGoodsId(de.getGoodsId());
             FaPiaoKJXM faPiaoKJXM = new FaPiaoKJXM();
-            faPiaoKJXM.setXmmc(de.getGoodsName());
+            if("明细".equals(in.getContent())){
+                faPiaoKJXM.setXmmc(de.getGoodsName());
+            }else{
+                faPiaoKJXM.setXmmc(in.getContent());
+            }
 
             faPiaoKJXM.setHsbz("1");
             faPiaoKJXM.setFphxz("0");

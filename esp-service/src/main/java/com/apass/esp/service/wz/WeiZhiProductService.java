@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.entity.jd.JdProductState;
+import com.apass.esp.domain.entity.jd.JdSaleAttr;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
@@ -293,14 +294,46 @@ public class WeiZhiProductService {
 	}
 	/**
 	 * 相似商品查询
+	 * @param skuId
+	 * @return
+	 * @throws Exception
 	 */
 	public List<JdSimilarSku> getWeiZhiSimilarSku(String skuId) throws Exception {
-		WZJdSimilarSku wZJdSimilarSku=weiZhiProductApiClient.getWeiZhiSimilarSku(skuId,3);
-		List<JdSimilarSku> list = new ArrayList<>();
-		if(CollectionUtils.isNotEmpty(wZJdSimilarSku.getResult())){
-			list = wZJdSimilarSku.getResult();
-		}
-		return list;
+	    return this.getWeiZhiSimilarSku(skuId,3).getResult();
+	}
+	/**
+	 * 同类商品查询    商品图片填充  根据sizetype
+	 * @param skuId
+	 * @param sizetype
+	 * @return
+	 * @throws Exception
+	 */
+	public WZJdSimilarSku getWeiZhiSimilarSku(String skuId,Integer sizetype) throws Exception {
+	    WZJdSimilarSku wZJdSimilarSku=weiZhiProductApiClient.getWeiZhiSimilarSku(skuId,sizetype);
+	    Map<String,Object> imageheadmap = wZJdSimilarSku.getImageHeader();
+	    Object imagehead = null;
+	    if(sizetype==0){
+	        imagehead = imageheadmap.get("originUrl");
+	    }else if(sizetype==1){
+	        imagehead = imageheadmap.get("bigUrl");
+	    }else if(sizetype==2){
+            imagehead = imageheadmap.get("middleUrl");
+        }else if(sizetype==3){
+            imagehead = imageheadmap.get("smallUrl");
+        }
+	    if(imagehead!=null){
+	        List<JdSimilarSku> skulist = wZJdSimilarSku.getResult();
+	        for(JdSimilarSku similarSku : skulist){
+	            List<JdSaleAttr> saleattrlist = similarSku.getSaleAttrList();
+	            for(JdSaleAttr saleattr : saleattrlist){
+	                String imagepath = saleattr.getImagePath();
+	                String head = imagehead.toString();
+	                String wholeimagepath = head + imagepath;
+	                saleattr.setImagePath(wholeimagepath);
+	            }
+	        }
+	    }
+        return wZJdSimilarSku;
 	}
 	/**
 	 * 统一余额查询接口
