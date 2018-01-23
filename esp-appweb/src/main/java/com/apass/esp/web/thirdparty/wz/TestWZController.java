@@ -718,7 +718,7 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/getCategory", method = RequestMethod.POST)
 	@ResponseBody
-	public Response getCategory(@RequestBody Map<String, Object> paramMap){
+	public Response getCategory(){
 		long startTime = System.currentTimeMillis();
 		LOGGER.info("微知商品初始化接口接口开始执行了,开始时间:startTime:{}",startTime+"");
 		//分页参数
