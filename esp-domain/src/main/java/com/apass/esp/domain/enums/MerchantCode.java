@@ -40,7 +40,8 @@ public enum MerchantCode {
     MERCHANT_LIKE_JUhefu("聚合付（深圳）信息科技有限公司", "400016",""),
     MERCHANT_LIKE_ELECTRONIC("上海礼客电子商务有限公司", "",""),
     MERCHANT_LIKE_INDUSTRY("上海立客实业有限公司", "","0shmh13"),
-    MERCHANT_JINGDONG("北京京东世纪信息技术有限公司","400002","0000097");
+    MERCHANT_JINGDONG("北京京东世纪信息技术有限公司","400002","0000097"),
+    MERCHANT_WEIZHI("微知（上海）服务外包有限公司","400685","05103");
     private String name;
     private String code;
     private String val; //数据库商户编码
