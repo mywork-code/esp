@@ -14,6 +14,7 @@ import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.payment.PaymentService;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -49,6 +50,7 @@ import java.util.Map;
 public class PayCallback {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PayCallback.class);
+	private static final String callbackFlag = "callbackFlag_";
 
 	@Autowired
 	private PaymentService paymentService;
@@ -64,6 +66,9 @@ public class PayCallback {
 
 	@Autowired
 	public AwardDetailService awardDetailService;
+
+	@Autowired
+	private CacheManager cacheManager;
 	
 	/**
 	 * BSS支付成功或失败回调
@@ -78,22 +83,31 @@ public class PayCallback {
 		String methodDesc = LogStashKey.PAY_CALLBACK.getName();
 		String status = CommonUtils.getValue(paramMap, "status"); // 支付状态[成功 失败]
 		String orderId = CommonUtils.getValue(paramMap, "orderId"); // 订单号
+		String key = callbackFlag + orderId;
+		String flag = cacheManager.get(key);
+		cacheManager.set(key,"true",60*60*3);//3小时过期
+		if(StringUtils.isEmpty(flag)){
+			String requestId = logStashSign + "_" + orderId;
+			LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
-		String requestId = logStashSign + "_" + orderId;
-		LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
+			if (StringUtils.isAnyEmpty(status, orderId)) {
+				LOGGER.error("请选择支付方式!");
+				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+			}
+			try {
+				paymentService.callback(requestId, orderId, status);
+			} catch (Exception e) {
+				LOGGER.error("订单支付失败", e);
+				return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
+			}
+			if(YesNo.isYes(status)){
+				addRebateRecord(status, orderId);
+			}
+			return Response.success("支付成功");
+		}else{
+			return Response.fail("重复请求");
+		}
 
-		if (StringUtils.isAnyEmpty(status, orderId)) {
-			LOGGER.error("请选择支付方式!");
-			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-		}
-		try {
-			paymentService.callback(requestId, orderId, status);
-		} catch (Exception e) {
-			LOGGER.error("订单支付失败", e);
-			return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
-		}
-		addRebateRecord(status, orderId);
-		return Response.success("支付成功");
 	}
 	
 	/**
