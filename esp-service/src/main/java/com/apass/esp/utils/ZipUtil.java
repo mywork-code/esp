@@ -110,10 +110,11 @@ public class ZipUtil {
         ZipFile zip = new ZipFile(zipFile);
         for(Enumeration entries = zip.entries(); entries.hasMoreElements();){
             ZipEntry entry = (ZipEntry)entries.nextElement();
-            if(entry.isDirectory()){
-                throw new RuntimeException("zip文件中不可有目录 ");
-            }
             String zipEntryName = entry.getName();
+            //如果zip中有.开头文件名或者是文件夹，忽略
+            if(zipEntryName.startsWith(".") || entry.isDirectory()){
+                continue;
+            }
 
             InputStream in = null;
             OutputStream out = null;
