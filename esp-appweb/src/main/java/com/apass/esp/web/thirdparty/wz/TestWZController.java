@@ -800,11 +800,11 @@ public class TestWZController {
 					}
 				}
 			}catch (Exception e){
-				LOGGER.error("微知商品初始化失败", e);
-				return Response.fail("微知商品初始化失败!");
+				LOGGER.error("微知类目初始化失败", e);
+				return Response.fail("微知类目初始化失败!");
 			}
 		}
-		return Response.success("微知商品初始化成功",weiZhiFirstCategorys);
+		return Response.success("微知类目初始化成功",weiZhiFirstCategorys);
 	}
 
 	/**
