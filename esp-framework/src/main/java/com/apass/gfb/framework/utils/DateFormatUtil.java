@@ -24,6 +24,7 @@ public class DateFormatUtil {
 	
     public static final String      ENG_DATE_FROMAT        = "EEE, d MMM yyyy HH:mm:ss z";
     public static final String      YYYY_MM_DD_HH_MM_SS    = "yyyy-MM-dd HH:mm:ss";
+    public static final String      YYYYMMDDHHMMSS    = "yyyyMMddHHmmss";
     public static final String      YYYY_MM_DD_HH_MM       = "yyyy-MM-dd HH:mm";
     public static final String      YYYY_MM_DD_HH_MM_SS_CN = "yyyy年MM月dd日   HH:mm:ss";
     public static final String      MM_DD_HH_MM            = "MM-dd HH:mm";

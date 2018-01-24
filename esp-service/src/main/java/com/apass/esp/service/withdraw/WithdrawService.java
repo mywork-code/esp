@@ -167,7 +167,7 @@ public class WithdrawService {
         awardDetail.setUpdateDate(new Date());
         awardDetail.setMobile((String)resultBind.get("mobile"));
         awardDetail.setRealName((String)resultBind.get("realName"));
-        awardDetail.setDrawId(DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS)+ RandomUtils.getRandom(8));
+        awardDetail.setDrawId(DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYYMMDDHHMMSS)+ RandomUtils.getRandom(8));
         
         //获取扣税金额
        // BigDecimal taxAmount = getTaxAmount(userId,amount);
