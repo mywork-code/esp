@@ -2,6 +2,7 @@ use esp;
 ALTER TABLE `t_esp_bsdiff_info`
 ADD COLUMN `if_compel_update`  tinyint(2) NOT NULL DEFAULT 0 COMMENT '是否强制更新1：是，0：否';
 
+DROP TABLE t_data_appuser_analysis;
 CREATE TABLE `t_data_appuser_analysis` (
 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
 `created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
@@ -9,6 +10,7 @@ CREATE TABLE `t_data_appuser_analysis` (
 `is_delete` varchar(2) NOT NULL DEFAULT '00' COMMENT '是否删除(00 默认值,  01 删除)',
 txn_id varchar(64) not null  default '' comment '格式:yyyyMMddHH;如2018012302',
 type TINYINT(4) not null comment '统计单位：1-hour;2-daily',
+platformids TINYINT(4) not null comment '0代表查询全平台,1代表Android，2代表iOS',
 newuser varchar(32) not null default '' comment '查询新增用户数',
 activeuser varchar(32) not null default '' comment '查询活跃用户数',
 versionupuser varchar(32) not null default '' comment '全版本上升级用户数，必须传一个版本参数',
@@ -23,12 +25,14 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='设备用户talkingdata分析';
 
 
+DROP TABLE t_data_appuser_retention;
 CREATE TABLE `t_data_appuser_retention` (
 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
 `created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
 `updated_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '修改时间' ,
 `is_delete` varchar(2) NOT NULL DEFAULT '00' COMMENT '是否删除(00 默认值,  01 删除)',
 txn_id varchar(64) not null  default '' comment '格式:yyyyMMdd;如20180123',
+platformids TINYINT(4) not null comment '0代表查询全平台,1代表Android，2代表iOS',
 day1retention varchar(32) not null default '' comment '新增用户次日留存率',
 day3retention varchar(32) not null default '' comment '新增用户3日留存率',
 day7retention varchar(32) not null default '' comment '新增用户7日留存率',
@@ -45,3 +49,4 @@ day7backuser varchar(32) not null default '' comment '7日以上流失用户中�
 day14backuser varchar(32) not null default '' comment '14日以上流失用户中的回流用户',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='用户talkingdata留存分析';
+
