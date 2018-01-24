@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,6 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("wz")
 public class TestWZController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestWZController.class);
+	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
 
 	private ConcurrentHashMap<String, JdCategory> concurrentHashMap = new ConcurrentHashMap<>();
@@ -795,6 +797,106 @@ public class TestWZController {
 			}
 		}
 		return Response.success("微知类目初始化成功",weiZhiFirstCategorys);
+	}
+
+	/**
+	 * 初始化指定类目下微知商品
+	 */
+	@RequestMapping(value = "/initGoodsByCateId", method = RequestMethod.POST)
+	@ResponseBody
+	public Response initGoodsByCateId(){
+		LOGGER.info("初始化指定类目下微知商品开始执行....",DateFormatUtil.dateToString(new Date()));
+		ClassLoader classLoader = TestWZController.class.getClassLoader();
+		InputStream in = classLoader.getResourceAsStream(FILE_SEPARATOR+"file"+FILE_SEPARATOR+"catIds.txt");
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))){
+//			File file = new File("file/catIds.txt");
+//			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+			String catId = null;
+			outter:while((catId=br.readLine())!=null){
+				LOGGER.info("微知catId:{}",catId);
+				int pageNumForSku = 1;
+				int skuCount = 0;
+				//根据三级类目查询商品编号。
+				WzSkuListPage wzSkuListPage = weiZhiProductService.getWeiZhiGetSku(pageNumForSku, 20, catId);//1,20,672+""
+				if(wzSkuListPage==null){
+					return Response.fail("微知接口返回失败！");
+				}
+				inner1:while (skuCount < wzSkuListPage.getTotalRows()){
+					if(pageNumForSku>1){
+						wzSkuListPage = weiZhiProductService.getWeiZhiGetSku(pageNumForSku, 20, catId);//1,20,672+""
+					}
+					pageNumForSku++;
+
+					if (CollectionUtils.isEmpty(wzSkuListPage.getSkuIds())) {
+						continue outter;
+					}
+					for (String skuId : wzSkuListPage.getSkuIds()) {
+						//判断商品是否已经存在
+						JdGoods jd = jdGoodsMapper.queryGoodsBySkuId(Long.valueOf(skuId));
+						if(jd != null){
+							continue;
+						}
+						//商品详情,往京东商品表和京东类目表中插数据
+						Product goodDetail = weiZhiProductService.getWeiZhiProductDetail(skuId);
+						if (null == goodDetail) {
+							continue;
+						}
+						List<Integer> categories = goodDetail.getCategories();//一级类目二级类目和三级类目
+
+						//插入商品表
+						JdGoods jdGoods = new JdGoods();
+						jdGoods.setFirstCategory(categories.get(0));
+						jdGoods.setSecondCategory(categories.get(1));
+						jdGoods.setThirdCategory(categories.get(2));
+						jdGoods.setSkuId(Long.valueOf(skuId));
+						jdGoods.setBrandName(goodDetail.getBrandName());
+						jdGoods.setImagePath(goodDetail.getImagePath());
+						jdGoods.setName(goodDetail.getName());
+						jdGoods.setProductArea(goodDetail.getProductArea());
+						//批量查询商品价格
+						List<String> skuList = Lists.newArrayList();
+						skuList.add(skuId);
+						List<WZPriceResponse> priceList = price.getWzPrice(skuList);
+
+						if (CollectionUtils.isNotEmpty(priceList)) {
+							try {
+								WZPriceResponse wzPriceResponse = priceList.get(0);
+								jdGoods.setJdPrice(new BigDecimal(wzPriceResponse.getJDPrice()));//京东价
+								jdGoods.setPrice(new BigDecimal(wzPriceResponse.getWzPrice()));//协议价
+							} catch (Exception e) {
+								LOGGER.error("批量商品价格查询结果为空,参数skuList:{}", GsonUtils.toJson(skuList));
+								continue;
+							}
+						}
+
+						jdGoods.setSaleUnit(goodDetail.getSaleUnit());
+//											jdGoods.setWareQd(wareQD);
+						jdGoods.setWeight(new BigDecimal(goodDetail.getWeight()));
+						jdGoods.setUpc(goodDetail.getUpc());
+						jdGoods.setState(goodDetail.getState() == 1 ? true : false);
+						jdGoods.setCreateDate(new Date());
+						jdGoods.setUpdateDate(new Date());
+						jdGoods.setSimilarSkus("");
+						try {
+							jdGoodsMapper.insertSelective(jdGoods);
+						} catch (Exception e) {
+							LOGGER.error("insert jdGoodsMapper sql skuid:{},Exception:{}", skuId, e);
+							//return Response.fail("插入京东商品表失败！"+e.toString());
+						}
+					}
+					skuCount = skuCount + wzSkuListPage.getSkuIds().size();
+					if (skuCount >= wzSkuListPage.getTotalRows()) {
+						break;
+					}
+				}
+			}
+		}catch (Exception e){
+			LOGGER.error("初始化指定类目下微知商品失败,Exception:{}",e);
+			return Response.fail("初始化指定类目下微知商品失败");
+		}
+
+		LOGGER.info("初始化指定类目下微知商品开始执行....",DateFormatUtil.dateToString(new Date()));
+		return Response.fail("初始化指定类目下微知商品成功！");
 	}
 
 	/**
