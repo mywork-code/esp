@@ -13,6 +13,7 @@ import java.util.TreeMap;
 
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -657,7 +658,6 @@ public class GoodsService {
 	 */
 	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId,List<JdSimilarSku> list,Boolean isUnSupport,String userId) throws BusinessException {
 		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
-		Long proActivityId = null;
 		String activityCfg;
 		String support7dRefund;
 	
@@ -667,6 +667,11 @@ public class GoodsService {
 		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
 		for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
+            Long proActivityId = null;
+            // 返回活动id
+            if(goodsStockInfoEntity.getSkuId().equals("505063466143")){
+                System.out.println(GsonUtils.toJson(goodsStockInfoEntity));
+            }
 			JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
 			String attrValIds=goodsStockInfoEntity.getAttrValIds();
 			String[] attrValIdsList=attrValIds.split(":");
@@ -706,6 +711,7 @@ public class GoodsService {
 				}
 			}
 			jdSimilarSkuTo.setSkuIdOrder(attrValIds2);
+
 			JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
 			jdSimilarSkuVo.setSkuId(goodsStockInfoEntity.getSkuId());
 			jdSimilarSkuVo.setGoodsId(goodsId.toString());
@@ -739,7 +745,7 @@ public class GoodsService {
 			}
 			// 满减活动满减字段
 			activityCfg = getActivityInfo(goodsId,goodsStockInfoEntity.getSkuId());
-			// 返回活动id
+
 			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getBySkuId(goodsId,goodsStockInfoEntity.getSkuId());
 			if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
 				proActivityId = proGroupGoodsBo.getActivityId();
