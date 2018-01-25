@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
-import com.apass.esp.domain.vo.UserSessionVo;
+import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.mapper.DataAppuserAnalysisMapper;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
@@ -60,7 +60,7 @@ public class DataAppuserAnalysisService {
 	 * @param platformids
 	 */
 	@Transactional(rollbackFor = { Exception.class,RuntimeException.class })
-	public void insertAnalysisData(UserSessionVo vo,String type,String platformids){
+	public void insertAnalysisData(DataAppuserAnalysisDto vo,String type,String platformids){
 		DataAppuserAnalysis analysis = new DataAppuserAnalysis();
 		Date date = new Date();
 		analysis.setActiveuser(vo.getActiveusers());
@@ -90,7 +90,7 @@ public class DataAppuserAnalysisService {
 	 * @param platformids
 	 */
 	@Transactional(rollbackFor = { Exception.class,RuntimeException.class })
-	public void insertAnalysis(UserSessionVo vo,String type,String platformids){
+	public void insertAnalysis(DataAppuserAnalysisDto vo,String type,String platformids){
 		DataAppuserAnalysis analysis = new DataAppuserAnalysis();
 		Date date = new Date();
 		String dataStr = DateFormatUtil.dateToString(new Date(), "yyyyMMdd");
