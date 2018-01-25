@@ -50,11 +50,21 @@ public class OperationAnalysisController {
      * 用户留存数据载入
      * @param map
      * 参数含有
-	 * dateType
-	 * dateStart
-	 * dateEnd
-	 * platformids
-     * @return
+	 * dateStart  起止日期
+	 * dateEnd 起止日期
+	 * platformids 平台类型
+     * @return  map
+     * 含有
+     * {
+     * mag:"用户留存数据载入成功"
+     * data:
+     * 	{
+     * 		newList = 【newList】
+     * 		activityList = 【activityList】
+     * 	}
+     * }
+     * newList:[DataAppuserRetentionVo]
+     * activityList:[DataAppuserRetentionVo]
      */
     @ResponseBody
     @RequestMapping("/getAppuserRetentionList")
