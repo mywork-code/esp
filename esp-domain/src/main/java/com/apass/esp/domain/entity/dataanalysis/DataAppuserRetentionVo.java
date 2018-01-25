@@ -1,6 +1,7 @@
 package com.apass.esp.domain.entity.dataanalysis;
 import com.apass.esp.domain.entity.DataAppuserRetention;
 public class DataAppuserRetentionVo extends DataAppuserRetention {
+	private String dayData;
 	private String dayType;
     private String day1;
     private String day3;
@@ -11,6 +12,12 @@ public class DataAppuserRetentionVo extends DataAppuserRetention {
     private String day14churnuser;
     private String day7backuser;
     private String day14backuser;
+    public String getDayData() {
+		return dayData;
+	}
+	public void setDayData(String dayData) {
+		this.dayData = dayData;
+	}
 	public String getDayType() {
 		return dayType;
 	}
