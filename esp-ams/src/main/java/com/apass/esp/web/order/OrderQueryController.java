@@ -318,6 +318,8 @@ public class OrderQueryController {
             } catch (BusinessException e) {
                 LOG.error("物流信息查询失败", e);
                 LOG.error("handlePageList->logisticsNo:{}物流信息查询失败", order.getLogisticsNo());
+                respBody.setMsg("物流信息不存在！");
+                return respBody;
             }
             
             if(logisticsFlag){
