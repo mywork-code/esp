@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.DataEsporderAnalysisMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.DataEsporderAnalysis" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+    <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
+    <result column="txn_id" property="txnId" jdbcType="VARCHAR" />
+    <result column="confirm_num" property="confirmNum" jdbcType="INTEGER" />
+    <result column="confirm_goods_num" property="confirmGoodsNum" jdbcType="INTEGER" />
+    <result column="confirm_amt" property="confirmAmt" jdbcType="DECIMAL" />
+    <result column="pay_num" property="payNum" jdbcType="INTEGER" />
+    <result column="pay_goods_num" property="payGoodsNum" jdbcType="INTEGER" />
+    <result column="pay_amt" property="payAmt" jdbcType="DECIMAL" />
+    <result column="percent_conv" property="percentConv" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, created_time, updated_time, is_delete, txn_id, confirm_num, confirm_goods_num, 
+    confirm_amt, pay_num, pay_goods_num, pay_amt, percent_conv
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_data_esporder_analysis
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_data_esporder_analysis
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.DataEsporderAnalysis" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_data_esporder_analysis (created_time, updated_time, is_delete, 
+      txn_id, confirm_num, confirm_goods_num, 
+      confirm_amt, pay_num, pay_goods_num, 
+      pay_amt, percent_conv)
+    values (#{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR}, 
+      #{txnId,jdbcType=VARCHAR}, #{confirmNum,jdbcType=INTEGER}, #{confirmGoodsNum,jdbcType=INTEGER}, 
+      #{confirmAmt,jdbcType=DECIMAL}, #{payNum,jdbcType=INTEGER}, #{payGoodsNum,jdbcType=INTEGER}, 
+      #{payAmt,jdbcType=DECIMAL}, #{percentConv,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.DataEsporderAnalysis" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_data_esporder_analysis
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+      <if test="isDelete != null" >
+        is_delete,
+      </if>
+      <if test="txnId != null" >
+        txn_id,
+      </if>
+      <if test="confirmNum != null" >
+        confirm_num,
+      </if>
+      <if test="confirmGoodsNum != null" >
+        confirm_goods_num,
+      </if>
+      <if test="confirmAmt != null" >
+        confirm_amt,
+      </if>
+      <if test="payNum != null" >
+        pay_num,
+      </if>
+      <if test="payGoodsNum != null" >
+        pay_goods_num,
+      </if>
+      <if test="payAmt != null" >
+        pay_amt,
+      </if>
+      <if test="percentConv != null" >
+        percent_conv,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null" >
+        #{isDelete,jdbcType=VARCHAR},
+      </if>
+      <if test="txnId != null" >
+        #{txnId,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmNum != null" >
+        #{confirmNum,jdbcType=INTEGER},
+      </if>
+      <if test="confirmGoodsNum != null" >
+        #{confirmGoodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="confirmAmt != null" >
+        #{confirmAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="payNum != null" >
+        #{payNum,jdbcType=INTEGER},
+      </if>
+      <if test="payGoodsNum != null" >
+        #{payGoodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="payAmt != null" >
+        #{payAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="percentConv != null" >
+        #{percentConv,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.DataEsporderAnalysis" >
+    update t_data_esporder_analysis
+    <set >
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null" >
+        is_delete = #{isDelete,jdbcType=VARCHAR},
+      </if>
+      <if test="txnId != null" >
+        txn_id = #{txnId,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmNum != null" >
+        confirm_num = #{confirmNum,jdbcType=INTEGER},
+      </if>
+      <if test="confirmGoodsNum != null" >
+        confirm_goods_num = #{confirmGoodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="confirmAmt != null" >
+        confirm_amt = #{confirmAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="payNum != null" >
+        pay_num = #{payNum,jdbcType=INTEGER},
+      </if>
+      <if test="payGoodsNum != null" >
+        pay_goods_num = #{payGoodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="payAmt != null" >
+        pay_amt = #{payAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="percentConv != null" >
+        percent_conv = #{percentConv,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.DataEsporderAnalysis" >
+    update t_data_esporder_analysis
+    set created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=VARCHAR},
+      txn_id = #{txnId,jdbcType=VARCHAR},
+      confirm_num = #{confirmNum,jdbcType=INTEGER},
+      confirm_goods_num = #{confirmGoodsNum,jdbcType=INTEGER},
+      confirm_amt = #{confirmAmt,jdbcType=DECIMAL},
+      pay_num = #{payNum,jdbcType=INTEGER},
+      pay_goods_num = #{payGoodsNum,jdbcType=INTEGER},
+      pay_amt = #{payAmt,jdbcType=DECIMAL},
+      percent_conv = #{percentConv,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

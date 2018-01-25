@@ -50,3 +50,34 @@ day14backuser varchar(32) not null default '' comment '14日以上流失用户�
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='用户talkingdata留存分析';
 
+
+DROP TABLE t_data_esporder_analysis;
+CREATE TABLE `t_data_esporder_analysis` (
+`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
+`created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
+`updated_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '修改时间' ,
+`is_delete` varchar(2) NOT NULL DEFAULT '00' COMMENT '是否删除(00 默认值,  01 删除)',
+txn_id varchar(64) not null  default '' comment '格式:yyyyMMdd;如20180123',
+confirm_num int not null  default 0 comment '下单人数',
+confirm_goods_num int not null  default 0 comment '下单商品件数',
+confirm_amt  decimal(15,4) not null  default 0 comment '下单总金额',
+pay_num int not null  default 0 comment '支付人数',
+pay_goods_num int not null  default 0 comment '支付商品件数',
+pay_amt  decimal(15,4) not null  default 0 comment '支付总金额',
+percent_conv decimal(15,8) not null  default 0 comment '下单支付转化率',
+
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='商城订单统计';
+
+
+DROP TABLE t_data_esporderdetail;
+CREATE TABLE `t_data_esporderdetail` (
+`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
+`created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
+`updated_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '修改时间' ,
+`is_delete` varchar(2) NOT NULL DEFAULT '00' COMMENT '是否删除(00 默认值,  01 删除)',
+order_analysis_id bigint not null  COMMENT '商城订单统计主键id',
+order_id varchar(128) NOT NULL COMMENT '订单编号',
+`paystatus` varchar(20) NOT NULL COMMENT '支付状态',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='商城订单明细统计';
