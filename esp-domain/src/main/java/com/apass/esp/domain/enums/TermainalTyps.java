@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum TermainalTyps {
     
+	TYPE_FULL("0","fullPlat"),
 	TYPE_ANDROID("1","android"),
     TYPE_IOS("2","ios");
     

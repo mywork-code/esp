@@ -1,6 +1,7 @@
 package com.apass.esp.mapper;
 
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
+import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 
 public interface DataAppuserAnalysisMapper extends GenericMapper<DataAppuserAnalysis,Long>{
@@ -10,5 +11,5 @@ public interface DataAppuserAnalysisMapper extends GenericMapper<DataAppuserAnal
 	 * @param txnId
 	 * @return
 	 */
-	DataAppuserAnalysis getDataAnalysisByTxnId(DataAppuserAnalysis analysis);
+	DataAppuserAnalysis getDataAnalysisByTxnId(DataAppuserAnalysisVo analysis);
 }

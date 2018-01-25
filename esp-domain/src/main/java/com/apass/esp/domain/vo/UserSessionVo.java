@@ -2,11 +2,21 @@ package com.apass.esp.domain.vo;
 
 public class UserSessionVo {
 	
+	private Long Id;
+	
 	private String hourly;
 	
 	private String newuser;
 	
 	private String session;
+	
+	public Long getId() {
+		return Id;
+	}
+
+	public void setId(Long id) {
+		Id = id;
+	}
 
 	public String getHourly() {
 		return hourly;

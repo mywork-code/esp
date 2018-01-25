@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,4 +78,35 @@ public class TalkDataService {
         return str;
     }
 
+    
+    public String getTalkingDataByDataAnalysis(Date beginDate, Date date, String metrics, String groupby,String type) {
+        try {
+            TimeUnit.SECONDS.sleep(11);
+        } catch (InterruptedException e) {
+            LOGGER.error("-----getTalkingData1 Exception---->",e);
+        }
+        TalkingDataDto talkingDataDto = new TalkingDataDto();
+        talkingDataDto.setGroupby(groupby);
+
+        ArrayList<String> arrayList = new ArrayList<String>();
+        arrayList.add(metrics);
+        talkingDataDto.setMetrics(arrayList);
+
+        Filter filter = new Filter();
+        if(StringUtils.isNotBlank(type)){//首先确定type不能为空，其次如果type传入的值为0，则不作为条件查询
+        	Integer typeId = Integer.parseInt(TermainalTyps.getCode(type));
+            if(null != typeId && typeId != 0){
+            	ArrayList<Integer> integerArrayList = new ArrayList<>();
+                integerArrayList.add(typeId);
+                filter.setPlatformids(integerArrayList);
+            }
+        }
+        filter.setStart(DateFormatUtil.dateToString(beginDate, DateFormatUtil.YYYY_MM_DD));
+        filter.setEnd(DateFormatUtil.dateToString(date, DateFormatUtil.YYYY_MM_DD));
+        talkingDataDto.setFilter(filter);
+
+        String str = commonHttpClient.talkingData(talkingDataDto);
+        return str;
+    }
+    
 }
