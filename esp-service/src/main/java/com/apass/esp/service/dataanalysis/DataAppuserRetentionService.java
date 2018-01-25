@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserRetention;
-import com.apass.esp.domain.entity.dataanalysis.DataAppuserRetentionVo;
+import com.apass.esp.domain.vo.DataAppuserRetentionVo;
 import com.apass.esp.mapper.DataAppuserRetentionMapper;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
