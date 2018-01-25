@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.DataAppuserAnalysisMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.DataAppuserAnalysis" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+    <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
+    <result column="txn_id" property="txnId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="platformids" property="platformids" jdbcType="TINYINT" />
+    <result column="newuser" property="newuser" jdbcType="VARCHAR" />
+    <result column="activeuser" property="activeuser" jdbcType="VARCHAR" />
+    <result column="versionupuser" property="versionupuser" jdbcType="VARCHAR" />
+    <result column="wau" property="wau" jdbcType="VARCHAR" />
+    <result column="mau" property="mau" jdbcType="VARCHAR" />
+    <result column="totaluser" property="totaluser" jdbcType="VARCHAR" />
+    <result column="bounceuser" property="bounceuser" jdbcType="VARCHAR" />
+    <result column="session" property="session" jdbcType="VARCHAR" />
+    <result column="sessionlength" property="sessionlength" jdbcType="VARCHAR" />
+    <result column="avgsessionlength" property="avgsessionlength" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, created_time, updated_time, is_delete, txn_id, type, platformids, newuser, activeuser, 
+    versionupuser, wau, mau, totaluser, bounceuser, session, sessionlength, avgsessionlength
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_data_appuser_analysis
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_data_appuser_analysis
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.DataAppuserAnalysis" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_data_appuser_analysis (created_time, updated_time, is_delete, 
+      txn_id, type, platformids, 
+      newuser, activeuser, versionupuser, 
+      wau, mau, totaluser, 
+      bounceuser, session, sessionlength, 
+      avgsessionlength)
+    values (#{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR}, 
+      #{txnId,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, #{platformids,jdbcType=TINYINT}, 
+      #{newuser,jdbcType=VARCHAR}, #{activeuser,jdbcType=VARCHAR}, #{versionupuser,jdbcType=VARCHAR}, 
+      #{wau,jdbcType=VARCHAR}, #{mau,jdbcType=VARCHAR}, #{totaluser,jdbcType=VARCHAR}, 
+      #{bounceuser,jdbcType=VARCHAR}, #{session,jdbcType=VARCHAR}, #{sessionlength,jdbcType=VARCHAR}, 
+      #{avgsessionlength,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.DataAppuserAnalysis" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_data_appuser_analysis
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+      <if test="isDelete != null" >
+        is_delete,
+      </if>
+      <if test="txnId != null" >
+        txn_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="platformids != null" >
+        platformids,
+      </if>
+      <if test="newuser != null" >
+        newuser,
+      </if>
+      <if test="activeuser != null" >
+        activeuser,
+      </if>
+      <if test="versionupuser != null" >
+        versionupuser,
+      </if>
+      <if test="wau != null" >
+        wau,
+      </if>
+      <if test="mau != null" >
+        mau,
+      </if>
+      <if test="totaluser != null" >
+        totaluser,
+      </if>
+      <if test="bounceuser != null" >
+        bounceuser,
+      </if>
+      <if test="session != null" >
+        session,
+      </if>
+      <if test="sessionlength != null" >
+        sessionlength,
+      </if>
+      <if test="avgsessionlength != null" >
+        avgsessionlength,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null" >
+        #{isDelete,jdbcType=VARCHAR},
+      </if>
+      <if test="txnId != null" >
+        #{txnId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="platformids != null" >
+        #{platformids,jdbcType=TINYINT},
+      </if>
+      <if test="newuser != null" >
+        #{newuser,jdbcType=VARCHAR},
+      </if>
+      <if test="activeuser != null" >
+        #{activeuser,jdbcType=VARCHAR},
+      </if>
+      <if test="versionupuser != null" >
+        #{versionupuser,jdbcType=VARCHAR},
+      </if>
+      <if test="wau != null" >
+        #{wau,jdbcType=VARCHAR},
+      </if>
+      <if test="mau != null" >
+        #{mau,jdbcType=VARCHAR},
+      </if>
+      <if test="totaluser != null" >
+        #{totaluser,jdbcType=VARCHAR},
+      </if>
+      <if test="bounceuser != null" >
+        #{bounceuser,jdbcType=VARCHAR},
+      </if>
+      <if test="session != null" >
+        #{session,jdbcType=VARCHAR},
+      </if>
+      <if test="sessionlength != null" >
+        #{sessionlength,jdbcType=VARCHAR},
+      </if>
+      <if test="avgsessionlength != null" >
+        #{avgsessionlength,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.DataAppuserAnalysis" >
+    update t_data_appuser_analysis
+    <set >
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null" >
+        is_delete = #{isDelete,jdbcType=VARCHAR},
+      </if>
+      <if test="txnId != null" >
+        txn_id = #{txnId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="platformids != null" >
+        platformids = #{platformids,jdbcType=TINYINT},
+      </if>
+      <if test="newuser != null" >
+        newuser = #{newuser,jdbcType=VARCHAR},
+      </if>
+      <if test="activeuser != null" >
+        activeuser = #{activeuser,jdbcType=VARCHAR},
+      </if>
+      <if test="versionupuser != null" >
+        versionupuser = #{versionupuser,jdbcType=VARCHAR},
+      </if>
+      <if test="wau != null" >
+        wau = #{wau,jdbcType=VARCHAR},
+      </if>
+      <if test="mau != null" >
+        mau = #{mau,jdbcType=VARCHAR},
+      </if>
+      <if test="totaluser != null" >
+        totaluser = #{totaluser,jdbcType=VARCHAR},
+      </if>
+      <if test="bounceuser != null" >
+        bounceuser = #{bounceuser,jdbcType=VARCHAR},
+      </if>
+      <if test="session != null" >
+        session = #{session,jdbcType=VARCHAR},
+      </if>
+      <if test="sessionlength != null" >
+        sessionlength = #{sessionlength,jdbcType=VARCHAR},
+      </if>
+      <if test="avgsessionlength != null" >
+        avgsessionlength = #{avgsessionlength,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.DataAppuserAnalysis" >
+    update t_data_appuser_analysis
+    set created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=VARCHAR},
+      txn_id = #{txnId,jdbcType=VARCHAR},
+      type = #{type,jdbcType=TINYINT},
+      platformids = #{platformids,jdbcType=TINYINT},
+      newuser = #{newuser,jdbcType=VARCHAR},
+      activeuser = #{activeuser,jdbcType=VARCHAR},
+      versionupuser = #{versionupuser,jdbcType=VARCHAR},
+      wau = #{wau,jdbcType=VARCHAR},
+      mau = #{mau,jdbcType=VARCHAR},
+      totaluser = #{totaluser,jdbcType=VARCHAR},
+      bounceuser = #{bounceuser,jdbcType=VARCHAR},
+      session = #{session,jdbcType=VARCHAR},
+      sessionlength = #{sessionlength,jdbcType=VARCHAR},
+      avgsessionlength = #{avgsessionlength,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
