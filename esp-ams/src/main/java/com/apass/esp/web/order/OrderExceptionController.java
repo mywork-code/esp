@@ -6,8 +6,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.apass.esp.schedule.*;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +24,14 @@ import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.merchant.MerchantInforRepository;
+import com.apass.esp.schedule.MailStatis2ScheduleTask;
+import com.apass.esp.schedule.OrderChannelStatisticsScheduleTask;
+import com.apass.esp.schedule.OrderInforMailSendScheduleTask;
+import com.apass.esp.schedule.OrderModifyStatusScheduleTask;
+import com.apass.esp.schedule.OrderTransactionDetailSchedeuleTask;
+import com.apass.esp.schedule.TalkingDataScheduleTask;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.talkingdata.TalkDataService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -35,19 +40,6 @@ import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 异常订单处理类，此类主要用作，支付宝二次退款的处理
@@ -87,6 +79,9 @@ public class OrderExceptionController {
     
     @Autowired
     private MailStatis2ScheduleTask task2;
+    
+    @Autowired
+    private TalkDataService talkData;
     /**
      * 订单信息页面
      */

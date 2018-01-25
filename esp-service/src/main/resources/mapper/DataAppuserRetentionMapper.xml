@@ -7,6 +7,7 @@
     <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
     <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
     <result column="txn_id" property="txnId" jdbcType="VARCHAR" />
+    <result column="platformids" property="platformids" jdbcType="TINYINT" />
     <result column="day1retention" property="day1retention" jdbcType="VARCHAR" />
     <result column="day3retention" property="day3retention" jdbcType="VARCHAR" />
     <result column="day7retention" property="day7retention" jdbcType="VARCHAR" />
@@ -23,7 +24,7 @@
     <result column="day14backuser" property="day14backuser" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, created_time, updated_time, is_delete, txn_id, day1retention, day3retention, 
+    id, created_time, updated_time, is_delete, txn_id, platformids, day1retention, day3retention, 
     day7retention, day14retention, day30retention, dauday1retention, dauday3retention, 
     dauday7retention, dauday14retention, dauday30retention, day7churnuser, day14churnuser, 
     day7backuser, day14backuser
@@ -40,19 +41,19 @@
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.DataAppuserRetention" useGeneratedKeys="true" keyProperty="id" >
     insert into t_data_appuser_retention (created_time, updated_time, is_delete, 
-      txn_id, day1retention, day3retention, 
-      day7retention, day14retention, day30retention, 
-      dauday1retention, dauday3retention, dauday7retention, 
-      dauday14retention, dauday30retention, day7churnuser, 
-      day14churnuser, day7backuser, day14backuser
-      )
+      txn_id, platformids, day1retention, 
+      day3retention, day7retention, day14retention, 
+      day30retention, dauday1retention, dauday3retention, 
+      dauday7retention, dauday14retention, dauday30retention, 
+      day7churnuser, day14churnuser, day7backuser, 
+      day14backuser)
     values (#{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR}, 
-      #{txnId,jdbcType=VARCHAR}, #{day1retention,jdbcType=VARCHAR}, #{day3retention,jdbcType=VARCHAR}, 
-      #{day7retention,jdbcType=VARCHAR}, #{day14retention,jdbcType=VARCHAR}, #{day30retention,jdbcType=VARCHAR}, 
-      #{dauday1retention,jdbcType=VARCHAR}, #{dauday3retention,jdbcType=VARCHAR}, #{dauday7retention,jdbcType=VARCHAR}, 
-      #{dauday14retention,jdbcType=VARCHAR}, #{dauday30retention,jdbcType=VARCHAR}, #{day7churnuser,jdbcType=VARCHAR}, 
-      #{day14churnuser,jdbcType=VARCHAR}, #{day7backuser,jdbcType=VARCHAR}, #{day14backuser,jdbcType=VARCHAR}
-      )
+      #{txnId,jdbcType=VARCHAR}, #{platformids,jdbcType=TINYINT}, #{day1retention,jdbcType=VARCHAR}, 
+      #{day3retention,jdbcType=VARCHAR}, #{day7retention,jdbcType=VARCHAR}, #{day14retention,jdbcType=VARCHAR}, 
+      #{day30retention,jdbcType=VARCHAR}, #{dauday1retention,jdbcType=VARCHAR}, #{dauday3retention,jdbcType=VARCHAR}, 
+      #{dauday7retention,jdbcType=VARCHAR}, #{dauday14retention,jdbcType=VARCHAR}, #{dauday30retention,jdbcType=VARCHAR}, 
+      #{day7churnuser,jdbcType=VARCHAR}, #{day14churnuser,jdbcType=VARCHAR}, #{day7backuser,jdbcType=VARCHAR}, 
+      #{day14backuser,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.DataAppuserRetention" useGeneratedKeys="true" keyProperty="id" >
     insert into t_data_appuser_retention
@@ -68,6 +69,9 @@
       </if>
       <if test="txnId != null" >
         txn_id,
+      </if>
+      <if test="platformids != null" >
+        platformids,
       </if>
       <if test="day1retention != null" >
         day1retention,
@@ -124,6 +128,9 @@
       </if>
       <if test="txnId != null" >
         #{txnId,jdbcType=VARCHAR},
+      </if>
+      <if test="platformids != null" >
+        #{platformids,jdbcType=TINYINT},
       </if>
       <if test="day1retention != null" >
         #{day1retention,jdbcType=VARCHAR},
@@ -184,6 +191,9 @@
       <if test="txnId != null" >
         txn_id = #{txnId,jdbcType=VARCHAR},
       </if>
+      <if test="platformids != null" >
+        platformids = #{platformids,jdbcType=TINYINT},
+      </if>
       <if test="day1retention != null" >
         day1retention = #{day1retention,jdbcType=VARCHAR},
       </if>
@@ -235,6 +245,7 @@
       updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       is_delete = #{isDelete,jdbcType=VARCHAR},
       txn_id = #{txnId,jdbcType=VARCHAR},
+      platformids = #{platformids,jdbcType=TINYINT},
       day1retention = #{day1retention,jdbcType=VARCHAR},
       day3retention = #{day3retention,jdbcType=VARCHAR},
       day7retention = #{day7retention,jdbcType=VARCHAR},

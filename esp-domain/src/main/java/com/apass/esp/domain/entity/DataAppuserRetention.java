@@ -13,6 +13,8 @@ public class DataAppuserRetention {
 
     private String txnId;
 
+    private Byte platformids;
+
     private String day1retention;
 
     private String day3retention;
@@ -79,6 +81,14 @@ public class DataAppuserRetention {
 
     public void setTxnId(String txnId) {
         this.txnId = txnId;
+    }
+
+    public Byte getPlatformids() {
+        return platformids;
+    }
+
+    public void setPlatformids(Byte platformids) {
+        this.platformids = platformids;
     }
 
     public String getDay1retention() {

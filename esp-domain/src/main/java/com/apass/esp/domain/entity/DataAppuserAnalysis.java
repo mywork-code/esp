@@ -15,6 +15,8 @@ public class DataAppuserAnalysis {
 
     private Byte type;
 
+    private Byte platformids;
+
     private String newuser;
 
     private String activeuser;
@@ -81,6 +83,14 @@ public class DataAppuserAnalysis {
 
     public void setType(Byte type) {
         this.type = type;
+    }
+
+    public Byte getPlatformids() {
+        return platformids;
+    }
+
+    public void setPlatformids(Byte platformids) {
+        this.platformids = platformids;
     }
 
     public String getNewuser() {
