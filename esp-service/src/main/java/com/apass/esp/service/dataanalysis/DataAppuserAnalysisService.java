@@ -1,12 +1,10 @@
 package com.apass.esp.service.dataanalysis;
 import java.util.Date;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
 import com.apass.esp.domain.vo.UserSessionVo;
@@ -14,9 +12,6 @@ import com.apass.esp.mapper.DataAppuserAnalysisMapper;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
 public class DataAppuserAnalysisService {
-	
-	private static final Logger logger = LoggerFactory.getLogger(DataAppuserAnalysisService.class);
-	
 	@Autowired
 	private DataAppuserAnalysisMapper analysisMapper;
 	/**
@@ -55,8 +50,12 @@ public class DataAppuserAnalysisService {
 	public Integer updateEntity(DataAppuserAnalysis entity){
 		return analysisMapper.updateByPrimaryKeySelective(entity);
 	}
-	
-	
+	/**
+	 * insertAnalysis
+	 * @param vo
+	 * @param type
+	 * @param platformids
+	 */
 	@Transactional(rollbackFor = { Exception.class,RuntimeException.class })
 	public void insertAnalysis(UserSessionVo vo,String type,String platformids){
 		DataAppuserAnalysis analysis = new DataAppuserAnalysis();
@@ -77,10 +76,24 @@ public class DataAppuserAnalysisService {
 			analysisMapper.updateByPrimaryKeySelective(analysis);
 		}
 	}
-	
-	
+	/**
+	 * getDataAnalysisByTxnId
+	 * @param analysis
+	 * @return
+	 */
 	public DataAppuserAnalysis getDataAnalysisByTxnId(DataAppuserAnalysisVo analysis){
 		return analysisMapper.getDataAnalysisByTxnId(analysis);
 	}
-	
+	/**
+	 * 运营分析数据载入  查询时间区间
+	 * 参数含有
+	 * @param map
+	 * @param dateStart  起止日期
+	 * @param dateEnd  起止日期
+	 * @param platformids  平台类型
+	 * @return
+	 */
+	public List<DataAppuserAnalysis> getAppuserAnalysisList(Map<String, Object> map) {
+		return analysisMapper.getAppuserAnalysisList(map);
+	}
 }
