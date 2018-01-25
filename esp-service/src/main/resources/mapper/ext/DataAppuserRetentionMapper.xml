@@ -4,6 +4,7 @@
 	<sql id="QueryConditionSql">
         <where>
             <if test="isDelete!=null and isDelete!=''"> AND is_delete = #{isDelete} </if>
+            <if test="txnId!=null and txnId!=''"> AND txn_id = #{txn_id} </if>
             <if test="dateStart!=null and dateStart!=''"> <![CDATA[AND txn_id >= #{dateStart}]]> </if>
             <if test="dateEnd!=null and dateEnd!=''"> <![CDATA[AND txn_id <= #{dateEnd}]]> </if>
             <if test="platformids!=null and platformids!=''"> AND platformids = #{platformids} </if>
