@@ -2,12 +2,14 @@ package com.apass.esp.service.dataanalysis;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
-import com.apass.esp.domain.vo.UserSessionVo;
+import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.mapper.DataAppuserAnalysisMapper;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
@@ -50,6 +52,37 @@ public class DataAppuserAnalysisService {
 	public Integer updateEntity(DataAppuserAnalysis entity){
 		return analysisMapper.updateByPrimaryKeySelective(entity);
 	}
+	
+	/**
+	 * 此方法对应的是每天插入一次数据
+	 * @param vo
+	 * @param type
+	 * @param platformids
+	 */
+	@Transactional(rollbackFor = { Exception.class,RuntimeException.class })
+	public void insertAnalysisData(DataAppuserAnalysisDto vo,String type,String platformids){
+		DataAppuserAnalysis analysis = new DataAppuserAnalysis();
+		Date date = new Date();
+		analysis.setActiveuser(vo.getActiveusers());
+		analysis.setAvgsessionlength(vo.getAvgsessionlengths());
+		analysis.setBounceuser(vo.getBounceusers());
+		analysis.setCreatedTime(date);
+		analysis.setMau(vo.getMaus());
+		analysis.setNewuser(vo.getNewuser());
+		analysis.setPlatformids(Byte.valueOf(platformids));
+		analysis.setSession(vo.getSession());
+		analysis.setSessionlength(vo.getSessionlengths());
+		analysis.setTotaluser(vo.getTotalusers());
+		analysis.setTxnId(vo.getDaily().replace("-", ""));
+		analysis.setType(Byte.valueOf(type));
+		analysis.setUpdatedTime(date);
+		analysis.setVersionupuser(vo.getVersionupusers());
+		analysis.setWau(vo.getWaus());
+		analysisMapper.insertSelective(analysis);
+	}
+	
+	/**
+	 * 此方法对应的是每小时更新或者插入的数据
 	/**
 	 * insertAnalysis
 	 * @param vo
@@ -57,16 +90,20 @@ public class DataAppuserAnalysisService {
 	 * @param platformids
 	 */
 	@Transactional(rollbackFor = { Exception.class,RuntimeException.class })
-	public void insertAnalysis(UserSessionVo vo,String type,String platformids){
+	public void insertAnalysis(DataAppuserAnalysisDto vo,String type,String platformids){
 		DataAppuserAnalysis analysis = new DataAppuserAnalysis();
 		Date date = new Date();
 		String dataStr = DateFormatUtil.dateToString(new Date(), "yyyyMMdd");
 		String txnId = dataStr + vo.getHourly().split(":")[0];
+		
 		if(null == vo.getId()){
 			analysis.setCreatedTime(date);
 			analysis.setType(Byte.valueOf(type));
 			analysis.setPlatformids(Byte.valueOf(platformids));
 			analysis.setTxnId(txnId);
+			analysis.setNewuser(vo.getNewuser());
+			analysis.setSession(vo.getSession());
+			analysis.setUpdatedTime(date);
 			analysisMapper.insertSelective(analysis);
 		}else{
 			analysis = analysisMapper.getDataAnalysisByTxnId(new DataAppuserAnalysisVo(txnId, platformids, type));
