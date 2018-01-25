@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
-import com.apass.esp.service.dataanalysis.DataAppuserAnalysisService;
 import com.apass.esp.service.dataanalysis.DataAppuserRetentionService;
-import com.apass.gfb.framework.utils.CommonUtils;
 /**
  * 报表相关数据  
  * 
@@ -20,7 +18,7 @@ import com.apass.gfb.framework.utils.CommonUtils;
  *
  */
 @Controller
-@RequestMapping("/operationAnalysisController")
+@RequestMapping("/dataanalysis/operationAnalysisController")
 public class OperationAnalysisController {
     private static final Logger logger = LoggerFactory.getLogger(OperationAnalysisController.class);
     @Autowired
