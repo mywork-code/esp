@@ -1166,7 +1166,9 @@ public class OrderService {
                     orderDetail.setMerchantCode(merchantCode);
                     orderDetail.setListTime(goods.getListTime());
                     if(null == goods.getDelistTime()){
-                        goods.setDelistTime(DateFormatUtil.string2date("1900-01-01 00:00:00",""));
+                        orderDetail.setDelistTime(DateFormatUtil.string2date("1900-01-01 00:00:00",""));
+                    }else{
+                        orderDetail.setDelistTime(goods.getDelistTime());
                     }
                     orderDetail.setProDate(goods.getProDate());
                     orderDetail.setKeepDate(goods.getKeepDate());
@@ -1298,10 +1300,11 @@ public class OrderService {
                 orderDetail.setGoodsLogoUrl(goodsStock.getStockLogo());
                 orderDetail.setMerchantCode(goods.getMerchantCode());
                 orderDetail.setListTime(goods.getListTime());
-                if(null != goods.getDelistTime()){
-                	orderDetail.setDelistTime(goods.getDelistTime());
+                if(null == goods.getDelistTime()){
+                    orderDetail.setDelistTime(DateFormatUtil.string2date("1900-01-01 00:00:00",""));
+                }else{
+                    orderDetail.setDelistTime(goods.getDelistTime());
                 }
-                orderDetail.setDelistTime(goods.getDelistTime());
                 orderDetail.setProDate(goods.getProDate());
                 orderDetail.setKeepDate(goods.getKeepDate());
                 orderDetail.setSupNo(goods.getSupNo());
@@ -3671,7 +3674,11 @@ public class OrderService {
                     orderDetail.setGoodsSellPt(goods.getGoodsSellPt());
                     orderDetail.setGoodsType(goods.getGoodsType());
                     orderDetail.setListTime(goods.getListTime());
-                    orderDetail.setDelistTime(goods.getDelistTime());
+                    if(null == goods.getDelistTime()){
+                        orderDetail.setDelistTime(DateFormatUtil.string2date("1900-01-01 00:00:00",""));
+                    }else{
+                        orderDetail.setDelistTime(goods.getDelistTime());
+                    }
                     orderDetail.setProDate(goods.getProDate());
                     orderDetail.setKeepDate(goods.getKeepDate());
                     orderDetail.setSupNo(goods.getSupNo());
