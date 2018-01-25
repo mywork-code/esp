@@ -1165,8 +1165,8 @@ public class OrderService {
                     orderDetail.setGoodsLogoUrl(goodsStock.getStockLogo());
                     orderDetail.setMerchantCode(merchantCode);
                     orderDetail.setListTime(goods.getListTime());
-                    if(null != goods.getDelistTime()){
-                    	orderDetail.setDelistTime(goods.getDelistTime());
+                    if(null == goods.getDelistTime()){
+                        goods.setDelistTime(DateFormatUtil.string2date("1900-01-01 00:00:00",""));
                     }
                     orderDetail.setProDate(goods.getProDate());
                     orderDetail.setKeepDate(goods.getKeepDate());
