@@ -7,14 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataAppuserRetention;
-import com.apass.esp.domain.entity.dataanalysis.DataAppuserRetentionVo;
+import com.apass.esp.domain.vo.DataAppuserRetentionVo;
 import com.apass.esp.mapper.DataAppuserRetentionMapper;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
 public class DataAppuserRetentionService {
 	@Autowired
 	private DataAppuserRetentionMapper dataAppuserRetentionMapper;
+	@Autowired
+	private DataAppuserAnalysisService dataAppuserAnalysisService;
 	/**
 	 * CREATE
 	 * @param entity
@@ -54,7 +57,6 @@ public class DataAppuserRetentionService {
 	/**
 	 * 用户留存数据载入
 	 * 参数含有
-	 * @param dateType
 	 * @param dateStart
 	 * @param dateEnd
 	 * @param platformids
@@ -110,5 +112,9 @@ public class DataAppuserRetentionService {
 		map.put("newEntity", newEntity);
 		map.put("activityEntity", activityEntity);
 		return map;
+	}
+	public Response getOperationAnalysisList(Map<String, Object> map) {
+		List<DataAppuserAnalysis> list = dataAppuserAnalysisService.getAppuserAnalysisList(map);
+		return null;
 	}
 }

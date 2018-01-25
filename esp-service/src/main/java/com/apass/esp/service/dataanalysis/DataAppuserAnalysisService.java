@@ -1,14 +1,19 @@
 package com.apass.esp.service.dataanalysis;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
+import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
+import com.apass.esp.domain.vo.UserSessionVo;
 import com.apass.esp.mapper.DataAppuserAnalysisMapper;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
 public class DataAppuserAnalysisService {
 	@Autowired
-	private DataAppuserAnalysisMapper dataAppuserAnalysisMapper;
+	private DataAppuserAnalysisMapper analysisMapper;
 	/**
 	 * CREATE
 	 * @param entity
@@ -16,7 +21,7 @@ public class DataAppuserAnalysisService {
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	public Integer createdEntity(DataAppuserAnalysis entity){
-		return dataAppuserAnalysisMapper.insertSelective(entity);
+		return analysisMapper.insertSelective(entity);
 	}
 	/**
 	 * DELETE
@@ -25,7 +30,7 @@ public class DataAppuserAnalysisService {
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	public Integer deleteEntity(Long id){
-		return dataAppuserAnalysisMapper.deleteByPrimaryKey(id);
+		return analysisMapper.deleteByPrimaryKey(id);
 	}
 	/**
 	 * DELETE
@@ -34,7 +39,7 @@ public class DataAppuserAnalysisService {
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	public Integer deleteEntity(DataAppuserAnalysis entity){
-		return dataAppuserAnalysisMapper.deleteByPrimaryKey(entity.getId());
+		return analysisMapper.deleteByPrimaryKey(entity.getId());
 	}
 	/**
 	 * UPDATE
@@ -43,6 +48,52 @@ public class DataAppuserAnalysisService {
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	public Integer updateEntity(DataAppuserAnalysis entity){
-		return dataAppuserAnalysisMapper.updateByPrimaryKeySelective(entity);
+		return analysisMapper.updateByPrimaryKeySelective(entity);
+	}
+	/**
+	 * insertAnalysis
+	 * @param vo
+	 * @param type
+	 * @param platformids
+	 */
+	@Transactional(rollbackFor = { Exception.class,RuntimeException.class })
+	public void insertAnalysis(UserSessionVo vo,String type,String platformids){
+		DataAppuserAnalysis analysis = new DataAppuserAnalysis();
+		Date date = new Date();
+		String dataStr = DateFormatUtil.dateToString(new Date(), "yyyyMMdd");
+		String txnId = dataStr + vo.getHourly().split(":")[0];
+		if(null == vo.getId()){
+			analysis.setCreatedTime(date);
+			analysis.setType(Byte.valueOf(type));
+			analysis.setPlatformids(Byte.valueOf(platformids));
+			analysis.setTxnId(txnId);
+			analysisMapper.insertSelective(analysis);
+		}else{
+			analysis = analysisMapper.getDataAnalysisByTxnId(new DataAppuserAnalysisVo(txnId, platformids, type));
+			analysis.setNewuser(vo.getNewuser());
+			analysis.setSession(vo.getSession());
+			analysis.setUpdatedTime(date);
+			analysisMapper.updateByPrimaryKeySelective(analysis);
+		}
+	}
+	/**
+	 * getDataAnalysisByTxnId
+	 * @param analysis
+	 * @return
+	 */
+	public DataAppuserAnalysis getDataAnalysisByTxnId(DataAppuserAnalysisVo analysis){
+		return analysisMapper.getDataAnalysisByTxnId(analysis);
+	}
+	/**
+	 * 运营分析数据载入  查询时间区间
+	 * 参数含有
+	 * @param map
+	 * @param dateStart  起止日期
+	 * @param dateEnd  起止日期
+	 * @param platformids  平台类型
+	 * @return
+	 */
+	public List<DataAppuserAnalysis> getAppuserAnalysisList(Map<String, Object> map) {
+		return analysisMapper.getAppuserAnalysisList(map);
 	}
 }

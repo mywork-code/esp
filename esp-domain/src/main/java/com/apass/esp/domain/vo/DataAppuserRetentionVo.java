@@ -1,4 +1,4 @@
-package com.apass.esp.domain.entity.dataanalysis;
+package com.apass.esp.domain.vo;
 import com.apass.esp.domain.entity.DataAppuserRetention;
 public class DataAppuserRetentionVo extends DataAppuserRetention {
 	private String dayData;
