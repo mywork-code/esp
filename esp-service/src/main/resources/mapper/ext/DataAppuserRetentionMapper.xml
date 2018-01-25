@@ -14,7 +14,7 @@
         	<include refid="Base_Column_List" />
 	    FROM
 	    	t_data_appuser_retention	
-	    <include refid="QueryConditionSql" />
+	    	<include refid="QueryConditionSql" />
         ORDER BY TXN_ID DESC
     </select>
 </mapper>

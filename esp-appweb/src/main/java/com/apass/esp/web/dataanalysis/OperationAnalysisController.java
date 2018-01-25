@@ -24,28 +24,7 @@ import com.apass.gfb.framework.utils.CommonUtils;
 public class OperationAnalysisController {
     private static final Logger logger = LoggerFactory.getLogger(OperationAnalysisController.class);
     @Autowired
-    private DataAppuserAnalysisService dataAppuserAnalysisService;
-    @Autowired
     private DataAppuserRetentionService dataAppuserRetentionService;
-    /**
-     * 运行分析数据载入
-     * @param map
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping("/getOperationAnalysisList")
-    public Response getOperationAnalysisList(@RequestBody Map<String, Object> map) {
-        try{
-            String dateType = CommonUtils.getValue(map, "dateType");
-            String dateStrat = CommonUtils.getValue(map, "dateStrat");
-            String dateEnd = CommonUtils.getValue(map, "dateEnd");
-            return null;
-//            return dataAppuserAnalysisService.getOperationAnalysisList(dateType,dateStrat,dateEnd);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return Response.fail("运行分析数据载入失败");
-        }
-    }
     /**
      * 用户留存数据载入
      * @param map
@@ -74,6 +53,26 @@ public class OperationAnalysisController {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return Response.fail("用户留存数据载入失败");
+        }
+    }
+    /**
+     * 运行分析数据载入
+     * @param map
+     * 参数含有
+	 * dateStart  起止日期
+	 * dateEnd 起止日期
+	 * platformids 平台类型
+     * @return map
+     * 含有 
+     */
+    @ResponseBody
+    @RequestMapping("/getOperationAnalysisList")
+    public Response getOperationAnalysisList(@RequestBody Map<String, Object> map) {
+        try{
+            return dataAppuserRetentionService.getOperationAnalysisList(map);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return Response.fail("运行分析数据载入失败");
         }
     }
 }
