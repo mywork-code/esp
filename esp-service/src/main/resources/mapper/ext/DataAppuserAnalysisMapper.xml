@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.DataAppuserAnalysisMapper" >
-  
+     <select id="getDataAnalysisByTxnId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_data_appuser_analysis
+        <where>  
+           	   <if test="txnId!=null and txnId!=''">
+                   and txn_id = #{txnId}
+               </if>
+           	   <if test="platformId!=null and platformId!=''">
+           	       and platformids = #{platformId}
+           	   </if>
+           	   <if test="type!=null and type!=''">
+           	       and type = #{type}
+           	   </if>
+       </where>
+    </select>
 </mapper>
