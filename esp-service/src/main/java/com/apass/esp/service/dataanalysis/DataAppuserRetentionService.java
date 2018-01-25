@@ -113,8 +113,4 @@ public class DataAppuserRetentionService {
 		map.put("activityEntity", activityEntity);
 		return map;
 	}
-	public Response getOperationAnalysisList(Map<String, Object> map) {
-		List<DataAppuserAnalysis> list = dataAppuserAnalysisService.getAppuserAnalysisList(map);
-		return null;
-	}
 }
