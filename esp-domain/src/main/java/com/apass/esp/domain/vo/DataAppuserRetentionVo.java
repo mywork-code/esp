@@ -2,7 +2,7 @@ package com.apass.esp.domain.vo;
 import com.apass.esp.domain.entity.DataAppuserRetention;
 public class DataAppuserRetentionVo extends DataAppuserRetention {
 	private String dayData;
-	private String dayType;
+	private String dataType;
     private String day1;
     private String day3;
     private String day7;
@@ -18,11 +18,11 @@ public class DataAppuserRetentionVo extends DataAppuserRetention {
 	public void setDayData(String dayData) {
 		this.dayData = dayData;
 	}
-	public String getDayType() {
-		return dayType;
+	public String getDataType() {
+		return dataType;
 	}
-	public void setDayType(String dayType) {
-		this.dayType = dayType;
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
 	}
 	public String getDay1() {
 		return day1;
