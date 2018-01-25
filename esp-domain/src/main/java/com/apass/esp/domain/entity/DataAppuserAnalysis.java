@@ -18,9 +18,8 @@ public class DataAppuserAnalysis {
     private Byte platformids;
 
     private String newuser;
-
+    private String registeruser;
     private String activeuser;
-
     private String versionupuser;
 
     private String wau;
@@ -96,11 +95,15 @@ public class DataAppuserAnalysis {
     public String getNewuser() {
         return newuser;
     }
-
     public void setNewuser(String newuser) {
         this.newuser = newuser;
     }
-
+    public String getRegisteruser() {
+		return registeruser;
+	}
+	public void setRegisteruser(String registeruser) {
+		this.registeruser = registeruser;
+	}
     public String getActiveuser() {
         return activeuser;
     }
