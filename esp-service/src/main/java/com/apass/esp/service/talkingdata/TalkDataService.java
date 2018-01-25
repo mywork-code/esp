@@ -77,7 +77,11 @@ public class TalkDataService {
         String str = commonHttpClient.talkingData(talkingDataDto);
         return str;
     }
-
+    
+    public String getTalkingDataByDataAnalysis(String metrics, String groupby,String type){
+    	Date date = new Date();
+    	return getTalkingDataByDataAnalysis(date, date, metrics, groupby, type);
+    }
     
     public String getTalkingDataByDataAnalysis(Date beginDate, Date date, String metrics, String groupby,String type) {
         try {
