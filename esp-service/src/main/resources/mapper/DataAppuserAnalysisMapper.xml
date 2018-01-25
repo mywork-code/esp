@@ -10,6 +10,9 @@
     <result column="type" property="type" jdbcType="TINYINT" />
     <result column="platformids" property="platformids" jdbcType="TINYINT" />
     <result column="newuser" property="newuser" jdbcType="VARCHAR" />
+    
+    <result column="registeruser" property="registeruser" jdbcType="VARCHAR" />
+    
     <result column="activeuser" property="activeuser" jdbcType="VARCHAR" />
     <result column="versionupuser" property="versionupuser" jdbcType="VARCHAR" />
     <result column="wau" property="wau" jdbcType="VARCHAR" />
@@ -21,7 +24,7 @@
     <result column="avgsessionlength" property="avgsessionlength" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, created_time, updated_time, is_delete, txn_id, type, platformids, newuser, activeuser, 
+    id, created_time, updated_time, is_delete, txn_id, type, platformids, newuser, registeruser, activeuser, 
     versionupuser, wau, mau, totaluser, bounceuser, session, sessionlength, avgsessionlength
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
@@ -35,18 +38,20 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.DataAppuserAnalysis" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_data_appuser_analysis (created_time, updated_time, is_delete, 
-      txn_id, type, platformids, 
-      newuser, activeuser, versionupuser, 
-      wau, mau, totaluser, 
-      bounceuser, session, sessionlength, 
-      avgsessionlength)
-    values (#{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR}, 
-      #{txnId,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, #{platformids,jdbcType=TINYINT}, 
-      #{newuser,jdbcType=VARCHAR}, #{activeuser,jdbcType=VARCHAR}, #{versionupuser,jdbcType=VARCHAR}, 
-      #{wau,jdbcType=VARCHAR}, #{mau,jdbcType=VARCHAR}, #{totaluser,jdbcType=VARCHAR}, 
-      #{bounceuser,jdbcType=VARCHAR}, #{session,jdbcType=VARCHAR}, #{sessionlength,jdbcType=VARCHAR}, 
-      #{avgsessionlength,jdbcType=VARCHAR})
+    insert into t_data_appuser_analysis 
+    	(created_time, updated_time, is_delete, 
+      	txn_id, type, platformids, 
+      	newuser, registeruser, activeuser, 
+      	versionupuser, wau, mau, totaluser, 
+      	bounceuser, session, sessionlength, 
+      	avgsessionlength)
+    values 
+    	(#{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR}, 
+      	#{txnId,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, #{platformids,jdbcType=TINYINT}, 
+      	#{newuser,jdbcType=VARCHAR}, #{registeruser,jdbcType=VARCHAR},#{activeuser,jdbcType=VARCHAR}, 
+      	#{versionupuser,jdbcType=VARCHAR}, #{wau,jdbcType=VARCHAR}, #{mau,jdbcType=VARCHAR}, 
+      	#{totaluser,jdbcType=VARCHAR}, #{bounceuser,jdbcType=VARCHAR}, #{session,jdbcType=VARCHAR}, 
+      	#{sessionlength,jdbcType=VARCHAR}, #{avgsessionlength,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.DataAppuserAnalysis" useGeneratedKeys="true" keyProperty="id" >
     insert into t_data_appuser_analysis
@@ -72,6 +77,7 @@
       <if test="newuser != null" >
         newuser,
       </if>
+      <if test="registeruser != null" >  registeruser, </if>
       <if test="activeuser != null" >
         activeuser,
       </if>
@@ -122,6 +128,7 @@
       <if test="newuser != null" >
         #{newuser,jdbcType=VARCHAR},
       </if>
+      <if test="registeruser != null" >  #{registeruser,jdbcType=VARCHAR}, </if>
       <if test="activeuser != null" >
         #{activeuser,jdbcType=VARCHAR},
       </if>
@@ -175,6 +182,7 @@
       <if test="newuser != null" >
         newuser = #{newuser,jdbcType=VARCHAR},
       </if>
+      <if test="registeruser != null" > newuser = #{registeruser,jdbcType=VARCHAR}, </if>
       <if test="activeuser != null" >
         activeuser = #{activeuser,jdbcType=VARCHAR},
       </if>
@@ -214,6 +222,7 @@
       type = #{type,jdbcType=TINYINT},
       platformids = #{platformids,jdbcType=TINYINT},
       newuser = #{newuser,jdbcType=VARCHAR},
+      registeruser = #{registeruser,jdbcType=VARCHAR},
       activeuser = #{activeuser,jdbcType=VARCHAR},
       versionupuser = #{versionupuser,jdbcType=VARCHAR},
       wau = #{wau,jdbcType=VARCHAR},

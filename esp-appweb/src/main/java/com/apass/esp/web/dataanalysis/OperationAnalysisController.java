@@ -36,7 +36,8 @@ public class OperationAnalysisController {
      * @return  map
      * 含有
      * {
-     * mag:"用户留存数据载入成功"
+     * status:1,
+     * mag:"用户留存数据载入成功",
      * data:
      * 	{
      * 		newList = 【newList】
@@ -65,6 +66,12 @@ public class OperationAnalysisController {
 	 * platformids 平台类型
      * @return map
      * 含有 
+     * 含有
+     * {
+     * status:1,
+     * mag:"运营分析数据载入成功",
+     * data:【orderAnalysisVo】
+     * }
      */
     @ResponseBody
     @RequestMapping("/getOperationAnalysisList")
