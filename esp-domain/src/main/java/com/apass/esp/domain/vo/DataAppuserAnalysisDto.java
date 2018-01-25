@@ -1,6 +1,6 @@
 package com.apass.esp.domain.vo;
 
-public class UserSessionVo {
+public class DataAppuserAnalysisDto {
 	
 	private Long Id;
 	
