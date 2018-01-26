@@ -14,15 +14,15 @@ public class DataEsporderdetail {
 
     private Long orderAnalysisId;
 
-    private Long orderDetailId;
+    private Long goodsId;
 
     private Integer confirmGoodsNum;
 
-    private Integer confirmAmt;
+    private BigDecimal confirmAmt;
 
     private Integer payGoodsNum;
 
-    private Integer payAmt;
+    private BigDecimal payAmt;
 
     private BigDecimal percentConv;
 
@@ -66,12 +66,12 @@ public class DataEsporderdetail {
         this.orderAnalysisId = orderAnalysisId;
     }
 
-    public Long getOrderDetailId() {
-        return orderDetailId;
+    public Long getGoodsId() {
+        return goodsId;
     }
 
-    public void setOrderDetailId(Long orderDetailId) {
-        this.orderDetailId = orderDetailId;
+    public void setGoodsId(Long goodsId) {
+        this.goodsId = goodsId;
     }
 
     public Integer getConfirmGoodsNum() {
@@ -82,11 +82,11 @@ public class DataEsporderdetail {
         this.confirmGoodsNum = confirmGoodsNum;
     }
 
-    public Integer getConfirmAmt() {
+    public BigDecimal getConfirmAmt() {
         return confirmAmt;
     }
 
-    public void setConfirmAmt(Integer confirmAmt) {
+    public void setConfirmAmt(BigDecimal confirmAmt) {
         this.confirmAmt = confirmAmt;
     }
 
@@ -98,11 +98,11 @@ public class DataEsporderdetail {
         this.payGoodsNum = payGoodsNum;
     }
 
-    public Integer getPayAmt() {
+    public BigDecimal getPayAmt() {
         return payAmt;
     }
 
-    public void setPayAmt(Integer payAmt) {
+    public void setPayAmt(BigDecimal payAmt) {
         this.payAmt = payAmt;
     }
 
