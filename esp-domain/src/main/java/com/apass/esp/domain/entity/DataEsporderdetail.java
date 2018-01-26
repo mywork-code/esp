@@ -1,5 +1,6 @@
 package com.apass.esp.domain.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class DataEsporderdetail {
@@ -13,9 +14,17 @@ public class DataEsporderdetail {
 
     private Long orderAnalysisId;
 
-    private String orderId;
+    private Long orderDetailId;
 
-    private String paystatus;
+    private Integer confirmGoodsNum;
+
+    private Integer confirmAmt;
+
+    private Integer payGoodsNum;
+
+    private Integer payAmt;
+
+    private BigDecimal percentConv;
 
     public Long getId() {
         return id;
@@ -57,19 +66,51 @@ public class DataEsporderdetail {
         this.orderAnalysisId = orderAnalysisId;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public Long getOrderDetailId() {
+        return orderDetailId;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setOrderDetailId(Long orderDetailId) {
+        this.orderDetailId = orderDetailId;
     }
 
-    public String getPaystatus() {
-        return paystatus;
+    public Integer getConfirmGoodsNum() {
+        return confirmGoodsNum;
     }
 
-    public void setPaystatus(String paystatus) {
-        this.paystatus = paystatus;
+    public void setConfirmGoodsNum(Integer confirmGoodsNum) {
+        this.confirmGoodsNum = confirmGoodsNum;
+    }
+
+    public Integer getConfirmAmt() {
+        return confirmAmt;
+    }
+
+    public void setConfirmAmt(Integer confirmAmt) {
+        this.confirmAmt = confirmAmt;
+    }
+
+    public Integer getPayGoodsNum() {
+        return payGoodsNum;
+    }
+
+    public void setPayGoodsNum(Integer payGoodsNum) {
+        this.payGoodsNum = payGoodsNum;
+    }
+
+    public Integer getPayAmt() {
+        return payAmt;
+    }
+
+    public void setPayAmt(Integer payAmt) {
+        this.payAmt = payAmt;
+    }
+
+    public BigDecimal getPercentConv() {
+        return percentConv;
+    }
+
+    public void setPercentConv(BigDecimal percentConv) {
+        this.percentConv = percentConv;
     }
 }

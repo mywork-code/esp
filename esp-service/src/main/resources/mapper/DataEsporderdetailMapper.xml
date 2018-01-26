@@ -7,11 +7,16 @@
     <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
     <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
     <result column="order_analysis_id" property="orderAnalysisId" jdbcType="BIGINT" />
-    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
-    <result column="paystatus" property="paystatus" jdbcType="VARCHAR" />
+    <result column="order_detail_id" property="orderDetailId" jdbcType="BIGINT" />
+    <result column="confirm_goods_num" property="confirmGoodsNum" jdbcType="INTEGER" />
+    <result column="confirm_amt" property="confirmAmt" jdbcType="INTEGER" />
+    <result column="pay_goods_num" property="payGoodsNum" jdbcType="INTEGER" />
+    <result column="pay_amt" property="payAmt" jdbcType="INTEGER" />
+    <result column="percent_conv" property="percentConv" jdbcType="DECIMAL" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, created_time, updated_time, is_delete, order_analysis_id, order_id, paystatus
+    id, created_time, updated_time, is_delete, order_analysis_id, order_detail_id, confirm_goods_num, 
+    confirm_amt, pay_goods_num, pay_amt, percent_conv
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -25,11 +30,13 @@
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.DataEsporderdetail" useGeneratedKeys="true" keyProperty="id" >
     insert into t_data_esporderdetail (created_time, updated_time, is_delete, 
-      order_analysis_id, order_id, paystatus
-      )
+      order_analysis_id, order_detail_id, confirm_goods_num, 
+      confirm_amt, pay_goods_num, pay_amt, 
+      percent_conv)
     values (#{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR}, 
-      #{orderAnalysisId,jdbcType=BIGINT}, #{orderId,jdbcType=VARCHAR}, #{paystatus,jdbcType=VARCHAR}
-      )
+      #{orderAnalysisId,jdbcType=BIGINT}, #{orderDetailId,jdbcType=BIGINT}, #{confirmGoodsNum,jdbcType=INTEGER}, 
+      #{confirmAmt,jdbcType=INTEGER}, #{payGoodsNum,jdbcType=INTEGER}, #{payAmt,jdbcType=INTEGER}, 
+      #{percentConv,jdbcType=DECIMAL})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.DataEsporderdetail" useGeneratedKeys="true" keyProperty="id" >
     insert into t_data_esporderdetail
@@ -46,11 +53,23 @@
       <if test="orderAnalysisId != null" >
         order_analysis_id,
       </if>
-      <if test="orderId != null" >
-        order_id,
+      <if test="orderDetailId != null" >
+        order_detail_id,
       </if>
-      <if test="paystatus != null" >
-        paystatus,
+      <if test="confirmGoodsNum != null" >
+        confirm_goods_num,
+      </if>
+      <if test="confirmAmt != null" >
+        confirm_amt,
+      </if>
+      <if test="payGoodsNum != null" >
+        pay_goods_num,
+      </if>
+      <if test="payAmt != null" >
+        pay_amt,
+      </if>
+      <if test="percentConv != null" >
+        percent_conv,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -66,11 +85,23 @@
       <if test="orderAnalysisId != null" >
         #{orderAnalysisId,jdbcType=BIGINT},
       </if>
-      <if test="orderId != null" >
-        #{orderId,jdbcType=VARCHAR},
+      <if test="orderDetailId != null" >
+        #{orderDetailId,jdbcType=BIGINT},
       </if>
-      <if test="paystatus != null" >
-        #{paystatus,jdbcType=VARCHAR},
+      <if test="confirmGoodsNum != null" >
+        #{confirmGoodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="confirmAmt != null" >
+        #{confirmAmt,jdbcType=INTEGER},
+      </if>
+      <if test="payGoodsNum != null" >
+        #{payGoodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="payAmt != null" >
+        #{payAmt,jdbcType=INTEGER},
+      </if>
+      <if test="percentConv != null" >
+        #{percentConv,jdbcType=DECIMAL},
       </if>
     </trim>
   </insert>
@@ -89,11 +120,23 @@
       <if test="orderAnalysisId != null" >
         order_analysis_id = #{orderAnalysisId,jdbcType=BIGINT},
       </if>
-      <if test="orderId != null" >
-        order_id = #{orderId,jdbcType=VARCHAR},
+      <if test="orderDetailId != null" >
+        order_detail_id = #{orderDetailId,jdbcType=BIGINT},
       </if>
-      <if test="paystatus != null" >
-        paystatus = #{paystatus,jdbcType=VARCHAR},
+      <if test="confirmGoodsNum != null" >
+        confirm_goods_num = #{confirmGoodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="confirmAmt != null" >
+        confirm_amt = #{confirmAmt,jdbcType=INTEGER},
+      </if>
+      <if test="payGoodsNum != null" >
+        pay_goods_num = #{payGoodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="payAmt != null" >
+        pay_amt = #{payAmt,jdbcType=INTEGER},
+      </if>
+      <if test="percentConv != null" >
+        percent_conv = #{percentConv,jdbcType=DECIMAL},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -104,8 +147,12 @@
       updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       is_delete = #{isDelete,jdbcType=VARCHAR},
       order_analysis_id = #{orderAnalysisId,jdbcType=BIGINT},
-      order_id = #{orderId,jdbcType=VARCHAR},
-      paystatus = #{paystatus,jdbcType=VARCHAR}
+      order_detail_id = #{orderDetailId,jdbcType=BIGINT},
+      confirm_goods_num = #{confirmGoodsNum,jdbcType=INTEGER},
+      confirm_amt = #{confirmAmt,jdbcType=INTEGER},
+      pay_goods_num = #{payGoodsNum,jdbcType=INTEGER},
+      pay_amt = #{payAmt,jdbcType=INTEGER},
+      percent_conv = #{percentConv,jdbcType=DECIMAL}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
