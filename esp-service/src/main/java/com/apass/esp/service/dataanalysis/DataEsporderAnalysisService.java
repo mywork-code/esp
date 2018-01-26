@@ -1,6 +1,8 @@
 package com.apass.esp.service.dataanalysis;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.BeanUtils;
@@ -157,6 +159,8 @@ public class DataEsporderAnalysisService {
 			}
 		}
 		percentConv = new BigDecimal(payNum).divide(new BigDecimal(confirmNum),4);
+		entity.setCreatedTime(new Date());
+		entity.setUpdatedTime(new Date());
 		entity.setConfirmNum(confirmNum);
 		entity.setConfirmGoodsNum(confirmGoodsNum);
 		entity.setConfirmAmt(confirmAmt);
@@ -172,6 +176,21 @@ public class DataEsporderAnalysisService {
 	 * @param orderlist
 	 */
 	private void createdOrderDetailEntity(Long orderAnalysisId, List<OrderInfoEntity> orderlist) {
+		Map<Long,List<OrderDetailInfoEntity>> map = new HashMap<Long,List<OrderDetailInfoEntity>>();
+		for(OrderInfoEntity order : orderlist){//所有订单详情  根据商品分组。
+			List<OrderDetailInfoEntity> orderDetaillist = orderDetailInfoService.queryOrderDetailInfo(order.getId());
+			for(OrderDetailInfoEntity orderDetail : orderDetaillist){
+				Long goodsId = orderDetail.getGoodsId();
+				if(map.get(goodsId)!=null){//所有订单详情  根据商品ID分组。
+					List<OrderDetailInfoEntity> value = map.get(goodsId);
+					value.add(orderDetail);
+				}else{
+					List<OrderDetailInfoEntity> value = new ArrayList<OrderDetailInfoEntity>();
+					value.add(orderDetail);
+					map.put(goodsId, value);
+				}
+			}
+		}
 		String orderDetailIdStr = "";
 		String orderDetailIdStrByPayfalg = "";
 		Integer confirmGoodsNum = 0;//下单商品件数
@@ -179,14 +198,13 @@ public class DataEsporderAnalysisService {
 		Integer payGoodsNum = 0;//支付商品件数
 		BigDecimal payAmt = new BigDecimal(0);//支付总金额
 		BigDecimal percentConv = new BigDecimal(0);//支付下单环比
-		for(OrderInfoEntity order : orderlist){
-			List<OrderDetailInfoEntity> orderDetaillist = orderDetailInfoService.queryOrderDetailInfo(order.getId());
-			for(OrderDetailInfoEntity orderDetail : orderDetaillist){
-				confirmGoodsNum = Integer.parseInt(orderDetail.getGoodsNum().toString());
-				if(order.getPayTime()!=null){//支付时间非空
-					
-				}
-			}
+		for(List<OrderDetailInfoEntity> value : map.values()){
+			
 		}
+		DataEsporderdetail entity = new DataEsporderdetail();
+		entity.setCreatedTime(new Date());
+		entity.setUpdatedTime(new Date());
+		entity.setIsDelete("00");
+		entity.setOrderAnalysisId(orderAnalysisId);
 	}
 }

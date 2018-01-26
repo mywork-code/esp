@@ -585,8 +585,7 @@ public class OrderService {
 //         */
 //        List<SkuNum> skuNumList = new ArrayList<>();
 //        List<PriceSnap> priceSnaps = new ArrayList<>();
-//        List<OrderDetailInfoEntity> details = orderDetailInfoRepository
-//                .queryOrderDetailListByOrderList(orders);
+//        List<OrderDetailInfoEntity> details = orderDetailInfoRepository.queryOrderDetailListByOrderList(orders);
 //        for (OrderDetailInfoEntity detail : details) {
 //            GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
 //            SkuNum num = new SkuNum(Long.valueOf(goods.getExternalId()), detail.getGoodsNum().intValue());
@@ -2801,28 +2800,20 @@ public class OrderService {
 
     public void updateJdGoodsSaleVolume(List<String> orderIdList) {
         // 更新销量
-        List<OrderDetailInfoEntity> orderDetailInfoEntityList = new ArrayList<>();
-        try {
-            orderDetailInfoEntityList = orderDetailInfoRepository
-                    .queryOrderDetailListByOrderList(orderIdList);
-        } catch (BusinessException e) {
-            LOGGER.error("orderDetailInfoRepository.queryOrderDetailListByOrderList error...");
-        }
-        if (!CollectionUtils.isEmpty(orderDetailInfoEntityList)) {
-            for (OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList) {
-                JdGoodSalesVolume jdGoodSalesVolume = new JdGoodSalesVolume();
-                long goodsId = orderDetailInfoEntity.getGoodsId();
-                int saleNum = orderDetailInfoEntity.getGoodsNum().intValue();
-                Date date = new Date();
-                jdGoodSalesVolume.setGoodsId(goodsId);
-                jdGoodSalesVolume.setSalesNum(saleNum);
-                jdGoodSalesVolume.setCreateDate(date);
-                jdGoodSalesVolume.setUpdateDate(date);
-                try {
-                    int insertValue = jdGoodSalesVolumeMapper.insertSelective(jdGoodSalesVolume);
-                } catch (Exception e) {
-                    LOGGER.error("updateJdGoodsSaleVolume goodsId {} saleNum {} ", goodsId, saleNum, e);
-                }
+        List<OrderDetailInfoEntity> orderDetailInfoEntityList = orderDetailInfoRepository.queryOrderDetailListByOrderList(orderIdList);
+        for (OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList) {
+            JdGoodSalesVolume jdGoodSalesVolume = new JdGoodSalesVolume();
+            long goodsId = orderDetailInfoEntity.getGoodsId();
+            int saleNum = orderDetailInfoEntity.getGoodsNum().intValue();
+            Date date = new Date();
+            jdGoodSalesVolume.setGoodsId(goodsId);
+            jdGoodSalesVolume.setSalesNum(saleNum);
+            jdGoodSalesVolume.setCreateDate(date);
+            jdGoodSalesVolume.setUpdateDate(date);
+            try {
+                int insertValue = jdGoodSalesVolumeMapper.insertSelective(jdGoodSalesVolume);
+            } catch (Exception e) {
+                LOGGER.error("updateJdGoodsSaleVolume goodsId {} saleNum {} ", goodsId, saleNum, e);
             }
         }
     }
