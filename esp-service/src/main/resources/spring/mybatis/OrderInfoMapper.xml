@@ -954,28 +954,21 @@
 		from t_esp_order_info
 		where create_date BETWEEN #{beginDate} AND #{endDate} AND create_date != #{endDate} and paystatus = 'P02'
 	</select>
-	
-	<select id="channelStatistics" parameterType="java.util.HashMap" resultType="OrderInfoEntity">
+	<!-- 根据时间区间查询订单 -->
+	<select id="getSectionOrderList" parameterType="java.util.HashMap" resultType="OrderInfoEntity">
 		SELECT
-			order_id orderId,
+			order_id id,
 			user_id userId,
 			order_amt orderAmt,
 			orderstatus status,
+			pay_time payTime,
 			create_date createDate,
 			update_date updateDate
 		FROM
 			t_esp_order_info
-		where 1=1
-		<if test="beginDate != null and beginDate != ''">
-			<![CDATA[ 
-		    and create_date >= #{beginDate} 
-		    ]]> 
-		</if>
-		<if test="endDate != null and endDate != ''">
-		    <![CDATA[ 
-		    and create_date <  #{endDate} 
-		    ]]> 
-		</if>
+		where 1=1 AND is_delete = '00'
+			<if test="beginDate != null and beginDate != ''"> <![CDATA[ and create_date >= #{beginDate} ]]> </if>
+			<if test="endDate != null and endDate != ''"> <![CDATA[ and create_date <  #{endDate} ]]> </if>
 	</select>
 	<select id="salesOrderPassOrRefund" resultType="com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund">
 		SELECT
