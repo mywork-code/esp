@@ -257,80 +257,65 @@ public class JdGoodsService {
     @Transactional(rollbackFor = Exception.class)
     public void disRelevanceJdCategory(Map<String, String> paramMap) throws BusinessException {
         LOGGER.info("取消关联京东类目，参数：{}",GsonUtils.toJson(paramMap));
-        List<JdGoods> JdGoodsList = disRelevanceValidate(paramMap);
-        List<String> idsGoods = new ArrayList<String>();// 商品表id
-        List<Long> idsStock = new ArrayList<Long>();// 库存表id
+        List<JdGoods> jdGoodsList = disRelevanceValidate(paramMap);
+        List<String> externalIdGoods = new ArrayList<String>();// 商品表externalId,用来删除商品表
+        List<Long> goodIdsStock = new ArrayList<Long>();// 库存表goodsId，用来删除库存表
         // 删除t_esp_goods_base_info和t_esp_goods_stock_info表中对应京东数据
-        if (JdGoodsList.size() > 100) {
-            for (int i = 0; i < JdGoodsList.size(); i++) {
-                int num = JdGoodsList.size() / 100;
-                if (i < 100 * num) {
-                    GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i)
-                            .getSkuId().toString());
-                    if (goodsInfoEntity == null) {
-                        LOGGER.error("数据库数据有误,externalId:{}", JdGoodsList.get(i).getSkuId().toString());
-                        throw new BusinessException("数据库数据有误");
-                        // continue;
-                    }
 
-                    idsStock.add(Long.valueOf(goodsInfoEntity.getId()));
-                    idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
-
-                    if ((i + 1) % 100 == 0) {
-                        if (!CollectionUtils.isEmpty(idsStock)) {
-                            goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
-                        }
-                        if (!CollectionUtils.isEmpty(idsGoods)) {
-                            goodsService.deleteJDGoodsBatch(idsGoods);
-                        }
-
-                        idsStock.clear();
-                        idsGoods.clear();
-                    }
-                } else {
-                    while (i < JdGoodsList.size()) {
-                        GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList
-                                .get(i).getSkuId().toString());
-                        if (goodsInfoEntity == null) {
-                            LOGGER.error("数据库数据有误,externalId:{}", JdGoodsList.get(i).getSkuId().toString());
-                            throw new BusinessException("数据库数据有误");
-                            // continue;
-                        }
-
-                        idsStock.add(Long.valueOf(goodsInfoEntity.getId()));
-                        idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
-                        i++;
-                    }
-                    if (!CollectionUtils.isEmpty(idsStock)) {
-                        goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
-                    }
-                    if (!CollectionUtils.isEmpty(idsGoods)) {
-                        goodsService.deleteJDGoodsBatch(idsGoods);
-                    }
-                }
-
-            }
-
-        } else {
-            for (int i = 0; i < JdGoodsList.size(); i++) {
-                GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i)
+        if (jdGoodsList.size() > 100) {
+            for (int i = 0; i < jdGoodsList.size(); i++) {
+                GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(jdGoodsList.get(i)
                         .getSkuId().toString());
                 if (goodsInfoEntity == null) {
-                     LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
-                     throw new BusinessException("数据库数据有误");
-//                    continue;
+                    LOGGER.error("数据库数据有误,externalId:{}", jdGoodsList.get(i).getSkuId().toString());
+                    throw new BusinessException("数据库数据有误");
+                    // continue;
+                }
+                goodIdsStock.add(goodsInfoEntity.getId());
+                externalIdGoods.add(goodsInfoEntity.getExternalId());
+
+                if (i%100 == 0) {
+                    if (!CollectionUtils.isEmpty(goodIdsStock)) {
+                        goodsStockInfoService.deleteJDGoodsStockBatch(goodIdsStock);
+                    }
+                    if (!CollectionUtils.isEmpty(externalIdGoods)) {
+                        goodsService.deleteJDGoodsBatch(externalIdGoods);
+                    }
+
+                    goodIdsStock.clear();
+                    externalIdGoods.clear();
                 }
 
-                idsStock.add(Long.valueOf(goodsInfoEntity.getId()));
-                idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
             }
-            if (!CollectionUtils.isEmpty(idsStock)) {
-                goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
-            }
-            if (!CollectionUtils.isEmpty(idsGoods)) {
-                goodsService.deleteJDGoodsBatch(idsGoods);
-            }
+            //如果数量>100且没有被100整除，例:586,则循环结束后idsStock，externalIdGoods中还有86个商品没查
+            if(goodIdsStock.size()>0 ||  externalIdGoods.size()>0){
+                if (!CollectionUtils.isEmpty(goodIdsStock)) {
+                    goodsStockInfoService.deleteJDGoodsStockBatch(goodIdsStock);
+                }
+                if (!CollectionUtils.isEmpty(externalIdGoods)) {
+                    goodsService.deleteJDGoodsBatch(externalIdGoods);
+                }
 
+                goodIdsStock.clear();
+                externalIdGoods.clear();
+            }
+        } else {
+            for(JdGoods jdGoods : jdGoodsList){
+                GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(jdGoods.getSkuId().toString());
+                if (goodsInfoEntity == null) {
+                    LOGGER.error("数据库数据有误,externalId:{}", jdGoods.getSkuId().toString());
+                    throw new BusinessException("数据库数据有误");
+                    // continue;
+                }
+                goodIdsStock.add(Long.valueOf(goodsInfoEntity.getId()));
+                externalIdGoods.add(jdGoods.getSkuId().toString());
+            }
+            if (!CollectionUtils.isEmpty(goodIdsStock)) {
+                goodsStockInfoService.deleteJDGoodsStockBatch(goodIdsStock);
+            }
+            if (!CollectionUtils.isEmpty(externalIdGoods)) {
+                goodsService.deleteJDGoodsBatch(externalIdGoods);
+            }
         }
 
         // 修改t_esp_jd_category表中的状态
