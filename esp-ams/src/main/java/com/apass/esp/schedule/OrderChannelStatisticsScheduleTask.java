@@ -81,7 +81,7 @@ public class OrderChannelStatisticsScheduleTask {
 	public List<ChanelStatisticsVo> chanelStatistisList(){
 		Calendar cal = Calendar.getInstance();
 		cal.add(cal.DATE, -1);
-		List<OrderInfoEntity> orderList = orderService.getchannelStatisticsOrders(DateFormatUtil.dateToString(cal.getTime()), DateFormatUtil.dateToString(new Date()));
+		List<OrderInfoEntity> orderList = orderService.getSectionOrderList(DateFormatUtil.dateToString(cal.getTime()), DateFormatUtil.dateToString(new Date()));
 		
 		List<ChanelStatisticsVo> chanelList = new ArrayList<ChanelStatisticsVo>();
 		
