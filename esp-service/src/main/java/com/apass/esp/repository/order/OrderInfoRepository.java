@@ -338,11 +338,11 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         return getSqlSession().selectOne("getSumOrderamtForPaySuccess",param);
     }
     
-    public List<OrderInfoEntity> getchannelStatisticsOrders(String beginDate, String endDate) {
+    public List<OrderInfoEntity> getSectionOrderList(String beginDate, String endDate) {
         HashMap<Object, Object> param = new HashMap<>();
         param.put("beginDate", beginDate);
         param.put("endDate", endDate);
-        return getSqlSession().selectList("channelStatistics",param);
+        return getSqlSession().selectList("getSectionOrderList",param);
     }
     public List<SalesOrderPassOrRefund> selectSalesOrderStatusList(List<String> statusArray, String dateBegin, String dateEnd) {
         Map<String,Object> paramMap = Maps.newHashMap();
