@@ -110,13 +110,11 @@ public class MD5Utils {
 		} finally {
 
 			try {
-
-				fis.close();
-
+				if(fis!=null){
+					fis.close();
+				}
 			} catch (IOException e) {
-
 				e.printStackTrace();
-
 			}
 
 		}
