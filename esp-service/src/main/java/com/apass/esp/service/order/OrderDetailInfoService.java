@@ -15,7 +15,7 @@ public class OrderDetailInfoService {
 	 * @return
 	 * @throws BusinessException
 	 */
-    public List<OrderDetailInfoEntity> queryOrderDetailInfo(Long orderId) {
-    	return orderDetailInfoRepository.queryOrderDetailInfo(orderId.toString());
+    public List<OrderDetailInfoEntity> queryOrderDetailInfo(String orderId) {
+    	return orderDetailInfoRepository.queryOrderDetailInfo(orderId);
     }
 }

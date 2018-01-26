@@ -26,7 +26,7 @@ public class OrderAnalysisScheduleTask {
      * 每日10点执行，刷新昨日订单统计
      * 针对 t_data_esporder_analysis 和  t_data_esporderdetail
      */
-    @Scheduled(cron = "0 0 10 * * ?")
+    @Scheduled(cron = "0 0 2 * * ?")
     public void flushEsporderAnalysis(){
         try {
         	dataEsporderAnalysisService.flushEsporderAnalysis();
