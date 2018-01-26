@@ -1748,7 +1748,7 @@ public class GoodsService {
         //如果数量>500且没有被500整除，例:586,则循环结束后skuIds中还有86个商品没查
         if(!b && skuIds.size()>0){
             List<GoodsInfoEntity> goodsInfoEntities = goodsDao.selectGoodsByExternalIds(skuIds);
-            if(CollectionUtils.isEmpty(goodsInfoEntities)){
+            if(!CollectionUtils.isEmpty(goodsInfoEntities)){
                 LOGGER.info("上架或待审核商品：{}", GsonUtils.toJson(goodsInfoEntities));
                 b = true;
             }
@@ -1758,7 +1758,7 @@ public class GoodsService {
             skuIds.add(jdGoods.getSkuId());
         }
         List<GoodsInfoEntity> goodsInfoEntities = goodsDao.selectGoodsByExternalIds(skuIds);
-        if(CollectionUtils.isEmpty(goodsInfoEntities)){
+        if(!CollectionUtils.isEmpty(goodsInfoEntities)){
             LOGGER.info("上架或待审核商品：{}", GsonUtils.toJson(goodsInfoEntities));
             b = true;
         }

@@ -2802,12 +2802,8 @@ public class OrderService {
     public void updateJdGoodsSaleVolume(List<String> orderIdList) {
         // 更新销量
         List<OrderDetailInfoEntity> orderDetailInfoEntityList = new ArrayList<>();
-        try {
             orderDetailInfoEntityList = orderDetailInfoRepository
                     .queryOrderDetailListByOrderList(orderIdList);
-        } catch (BusinessException e) {
-            LOGGER.error("orderDetailInfoRepository.queryOrderDetailListByOrderList error...");
-        }
         if (!CollectionUtils.isEmpty(orderDetailInfoEntityList)) {
             for (OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList) {
                 JdGoodSalesVolume jdGoodSalesVolume = new JdGoodSalesVolume();
@@ -3797,8 +3793,8 @@ public class OrderService {
      * @param endDate
      * @return
      */
-    public List<OrderInfoEntity> getchannelStatisticsOrders(String beginDate, String endDate){
-    	return orderInfoRepository.getchannelStatisticsOrders(beginDate, endDate);
+    public List<OrderInfoEntity> getSectionOrderList(String beginDate, String endDate){
+    	return orderInfoRepository.getSectionOrderList(beginDate, endDate);
     }
 
     public List<OrderInfoEntity> selectByStatusList(List<String> statusArray,String dateBegin,String dateEnd){

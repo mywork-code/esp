@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.DataAppuserRetentionMapper" >
+	<sql id="QueryConditionSql">
+        <where>
+            <if test="isDelete!=null and isDelete!=''"> AND is_delete = #{isDelete} </if>
+            <if test="txnId!=null and txnId!=''"> AND txn_id = #{txn_id} </if>
+            <if test="dateStart!=null and dateStart!=''"> <![CDATA[AND txn_id >= #{dateStart}]]> </if>
+            <if test="dateEnd!=null and dateEnd!=''"> <![CDATA[AND txn_id <= #{dateEnd}]]> </if>
+            <if test="platformids!=null and platformids!=''"> AND platformids = #{platformids} </if>
+        </where>
+    </sql>
+    <select id="getOperationAnalysisList" resultMap="BaseResultMap">
+        SELECT
+        	<include refid="Base_Column_List" />
+	    FROM
+	    	t_data_esporder_analysis	
+	    	<include refid="QueryConditionSql" />
+        ORDER BY TXN_ID DESC
+    </select>
+</mapper>
