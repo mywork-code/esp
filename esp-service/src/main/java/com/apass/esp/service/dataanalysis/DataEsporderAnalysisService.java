@@ -97,7 +97,7 @@ public class DataEsporderAnalysisService {
 	}
 	/**
 	 * 商城订单统计
-     * 每日10点执行，刷新昨日订单统计
+     * 每日2点执行，刷新昨日订单统计
      * 针对 t_data_esporder_analysis 和  t_data_esporderdetail
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
@@ -126,6 +126,7 @@ public class DataEsporderAnalysisService {
 	 * @param orderlist
 	 * @return
 	 */
+	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	private DataEsporderAnalysis createdOrderEntity(DataEsporderAnalysis entity , List<OrderInfoEntity> orderlist){
 		String userIdStr = "";
 		String userIdStrByPayfalg = "";
@@ -178,6 +179,7 @@ public class DataEsporderAnalysisService {
 	 * @param orderAnalysisId
 	 * @param orderlist
 	 */
+	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	private void createdOrderDetailEntity(Long orderAnalysisId, List<OrderInfoEntity> orderlist) {
 		Map<Long,List<OrderDetailInfoEntity>> map = new HashMap<Long,List<OrderDetailInfoEntity>>();
 		for(OrderInfoEntity order : orderlist){//所有订单详情  根据商品分组。
@@ -207,7 +209,7 @@ public class DataEsporderAnalysisService {
 			entity.setUpdatedTime(new Date());
 			entity.setIsDelete("00");
 			entity.setOrderAnalysisId(orderAnalysisId);
-			entity.setOrderDetailId(goodsId);
+			entity.setGoodsId(goodsId);
 			List<OrderDetailInfoEntity> value = entry.getValue();
 			for(OrderDetailInfoEntity orderDetail : value){
 				BigDecimal actualPay = orderDetail.getGoodsPrice().subtract(orderDetail.getDiscountAmount()).subtract(orderDetail.getCouponMoney());
@@ -222,9 +224,9 @@ public class DataEsporderAnalysisService {
 			}
 			percentConv = new BigDecimal(payGoodsNum).divide(new BigDecimal(confirmGoodsNum),4);
 			entity.setConfirmGoodsNum(confirmGoodsNum);
-			//entity.setConfirmAmt(confirmAmt);
+			entity.setConfirmAmt(confirmAmt);
 			entity.setPayGoodsNum(payGoodsNum);
-			//entity.setPayAmt(payAmt);
+			entity.setPayAmt(payAmt);
 			entity.setPercentConv(percentConv);
 			dataEsporderdetailService.createdEntity(entity);
 		}
