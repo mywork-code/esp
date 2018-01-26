@@ -78,11 +78,11 @@ CREATE TABLE `t_data_esporderdetail` (
 `updated_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '修改时间' ,
 `is_delete` varchar(2) NOT NULL DEFAULT '00' COMMENT '是否删除(00 默认值,  01 删除)',
 order_analysis_id bigint not null  COMMENT '商城订单统计主键id',
-order_detail_id bigint NOT NULL COMMENT '订单详情表外键',
+goods_id bigint NOT NULL COMMENT '商品主键',
 confirm_goods_num int(11) NOT NULL DEFAULT '0' COMMENT '下单商品件数',
-confirm_amt int(11) NOT NULL DEFAULT '0' COMMENT '下单商品金额',
+confirm_amt  decimal(15,4) NOT NULL DEFAULT '0' COMMENT '下单商品金额',
 pay_goods_num int(11) NOT NULL DEFAULT '0' COMMENT '支付商品件数',
-pay_amt int(11) NOT NULL DEFAULT '0' COMMENT '支付商品金额',
+pay_amt  decimal(15,4) NOT NULL DEFAULT '0' COMMENT '支付商品金额',
 percent_conv decimal(15,8) NOT NULL DEFAULT '0' COMMENT '下单支付转化率',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='商城订单明细统计';
