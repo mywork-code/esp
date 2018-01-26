@@ -60,25 +60,27 @@ public class DataAppuserAnalysisService {
 	 * @param platformids
 	 */
 	@Transactional(rollbackFor = { Exception.class,RuntimeException.class })
-	public void insertAnalysisData(DataAppuserAnalysisDto vo,String type,String platformids){
-		DataAppuserAnalysis analysis = new DataAppuserAnalysis();
-		Date date = new Date();
-		analysis.setActiveuser(vo.getActiveusers());
-		analysis.setAvgsessionlength(vo.getAvgsessionlengths());
-		analysis.setBounceuser(vo.getBounceusers());
-		analysis.setCreatedTime(date);
-		analysis.setMau(vo.getMaus());
-		analysis.setNewuser(vo.getNewuser());
-		analysis.setPlatformids(Byte.valueOf(platformids));
-		analysis.setSession(vo.getSession());
-		analysis.setSessionlength(vo.getSessionlengths());
-		analysis.setTotaluser(vo.getTotalusers());
-		analysis.setTxnId(vo.getDaily().replace("-", ""));
-		analysis.setType(Byte.valueOf(type));
-		analysis.setUpdatedTime(date);
-		analysis.setVersionupuser(vo.getVersionupusers());
-		analysis.setWau(vo.getWaus());
-		analysisMapper.insertSelective(analysis);
+	public void insertAnalysisData(DataAppuserAnalysisDto retention){
+		if(null != retention){
+			DataAppuserAnalysis analysis = new DataAppuserAnalysis();
+			Date date = new Date();
+			analysis.setActiveuser(retention.getActiveuser());
+			analysis.setAvgsessionlength(retention.getAvgsessionlength());
+			analysis.setBounceuser(retention.getBounceuser());
+			analysis.setCreatedTime(date);
+			analysis.setMau(retention.getMau());
+			analysis.setNewuser(retention.getNewuser());
+			analysis.setPlatformids(retention.getPlatformids());
+			analysis.setSession(retention.getSession());
+			analysis.setSessionlength(retention.getSessionlength());
+			analysis.setTotaluser(retention.getTotaluser());
+			analysis.setTxnId(retention.getDaily().replace("-", ""));
+			analysis.setType(retention.getType());
+			analysis.setUpdatedTime(date);
+			analysis.setVersionupuser(retention.getVersionupuser());
+			analysis.setWau(retention.getWau());
+			analysisMapper.insertSelective(analysis);
+		}
 	}
 	
 	/**
@@ -90,7 +92,7 @@ public class DataAppuserAnalysisService {
 	 * @param platformids
 	 */
 	@Transactional(rollbackFor = { Exception.class,RuntimeException.class })
-	public void insertAnalysis(DataAppuserAnalysisDto vo,String type,String platformids){
+	public void insertAnalysis(DataAppuserAnalysisDto vo){
 		DataAppuserAnalysis analysis = new DataAppuserAnalysis();
 		Date date = new Date();
 		String dataStr = DateFormatUtil.dateToString(new Date(), "yyyyMMdd");
@@ -98,15 +100,15 @@ public class DataAppuserAnalysisService {
 		
 		if(null == vo.getId()){
 			analysis.setCreatedTime(date);
-			analysis.setType(Byte.valueOf(type));
-			analysis.setPlatformids(Byte.valueOf(platformids));
+			analysis.setType(vo.getType());
+			analysis.setPlatformids(vo.getPlatformids());
 			analysis.setTxnId(txnId);
 			analysis.setNewuser(vo.getNewuser());
 			analysis.setSession(vo.getSession());
 			analysis.setUpdatedTime(date);
 			analysisMapper.insertSelective(analysis);
 		}else{
-			analysis = analysisMapper.getDataAnalysisByTxnId(new DataAppuserAnalysisVo(txnId, platformids, type));
+			analysis = analysisMapper.getDataAnalysisByTxnId(new DataAppuserAnalysisVo(txnId, vo.getPlatformids().toString(), vo.getType().toString()));
 			analysis.setNewuser(vo.getNewuser());
 			analysis.setSession(vo.getSession());
 			analysis.setUpdatedTime(date);

@@ -1,5 +1,6 @@
 package com.apass.esp.service.dataanalysis;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataAppuserRetention;
+import com.apass.esp.domain.vo.DataAppuserRetentionDto;
 import com.apass.esp.domain.vo.DataAppuserRetentionVo;
 import com.apass.esp.mapper.DataAppuserRetentionMapper;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -112,5 +114,61 @@ public class DataAppuserRetentionService {
 		map.put("newEntity", newEntity);
 		map.put("activityEntity", activityEntity);
 		return map;
+	}
+
+	public Response getOperationAnalysisList(Map<String, Object> map) {
+		List<DataAppuserAnalysis> list = dataAppuserAnalysisService.getAppuserAnalysisList(map);
+		return null;
+	}
+	
+	/**
+	 * 每天跑一次
+	 * @param dto
+	 */
+	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
+	public void insertRetention(DataAppuserRetentionDto dto){
+		if(null != dto){
+			DataAppuserRetention retention = new DataAppuserRetention();
+			Date date = new Date();
+			
+			retention.setCreatedTime(date);
+			retention.setUpdatedTime(date);
+			retention.setPlatformids(dto.getPlatformids());
+			retention.setTxnId(dto.getDaily().replace("-", ""));
+			
+			retention.setDauday1retention(dto.getDauday1retention());
+			retention.setDauday3retention(dto.getDauday3retention());
+			retention.setDauday7retention(dto.getDauday7retention());
+			retention.setDauday14retention(dto.getDauday14retention());
+			retention.setDauday30retention(dto.getDauday30retention());
+			
+			retention.setDay1retention(dto.getDay1retention());
+			retention.setDay3retention(dto.getDay3retention());
+			retention.setDay7retention(dto.getDay7retention());
+			retention.setDay14retention(dto.getDay14retention());
+			retention.setDay30retention(dto.getDay30retention());
+			
+			retention.setDay7churnuser(dto.getDay7churnuser());
+			retention.setDay14churnuser(dto.getDay14churnuser());
+			
+			retention.setDay7backuser(dto.getDay7backuser());
+			retention.setDay14backuser(dto.getDay14backuser());
+			
+			dataAppuserRetentionMapper.insertSelective(retention);
+		}
+	}
+	
+	/**
+	 * 根据参数类型，来确认需要统计的数据
+	 *   新增  启动  平均使用时长
+	 * @return
+	 */
+	public Map<String,Object> getDateByType(Map<String,Object> params){
+		
+		List<DataAppuserRetention> list = dataAppuserRetentionMapper.getAppuserRetentionList(params);
+		
+		
+		
+		return null;
 	}
 }

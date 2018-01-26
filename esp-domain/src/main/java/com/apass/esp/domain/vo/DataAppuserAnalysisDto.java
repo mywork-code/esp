@@ -6,29 +6,48 @@ public class DataAppuserAnalysisDto {
 	
 	private String hourly;
 	
+	private Byte platformids;
+	
+	private Byte type;
+	
 	private String daily;
 	
 	private String newuser;
 	
 	private String session;
 	
-	private String activeusers;
+	private String activeuser;
 	
-	private String versionupusers;
+	private String versionupuser;
 	
-	private String waus;
+	private String wau;
 	
-	private String maus;
+	private String mau;
 	
-	private String totalusers;
+	private String totaluser;
 	
-	private String bounceusers;
+	private String bounceuser;
 	
-	private String sessionlengths;
+	private String sessionlength;
 	
-	private String avgsessionlengths;
+	private String avgsessionlength;
 	
-	
+	public Byte getType() {
+		return type;
+	}
+
+	public void setType(Byte type) {
+		this.type = type;
+	}
+
+	public Byte getPlatformids() {
+		return platformids;
+	}
+
+	public void setPlatformids(Byte platformids) {
+		this.platformids = platformids;
+	}
+
 	public Long getId() {
 		return Id;
 	}
@@ -61,68 +80,68 @@ public class DataAppuserAnalysisDto {
 		this.session = session;
 	}
 
-	public String getActiveusers() {
-		return activeusers;
+	public String getActiveuser() {
+		return activeuser;
 	}
 
-	public void setActiveusers(String activeusers) {
-		this.activeusers = activeusers;
+	public void setActiveuser(String activeuser) {
+		this.activeuser = activeuser;
 	}
 
-	public String getVersionupusers() {
-		return versionupusers;
+	public String getVersionupuser() {
+		return versionupuser;
 	}
 
-	public void setVersionupusers(String versionupusers) {
-		this.versionupusers = versionupusers;
+	public void setVersionupuser(String versionupuser) {
+		this.versionupuser = versionupuser;
 	}
 
-	public String getWaus() {
-		return waus;
+	public String getWau() {
+		return wau;
 	}
 
-	public void setWaus(String waus) {
-		this.waus = waus;
+	public void setWau(String wau) {
+		this.wau = wau;
 	}
 
-	public String getMaus() {
-		return maus;
+	public String getMau() {
+		return mau;
 	}
 
-	public void setMaus(String maus) {
-		this.maus = maus;
+	public void setMau(String mau) {
+		this.mau = mau;
 	}
 
-	public String getTotalusers() {
-		return totalusers;
+	public String getTotaluser() {
+		return totaluser;
 	}
 
-	public void setTotalusers(String totalusers) {
-		this.totalusers = totalusers;
+	public void setTotaluser(String totaluser) {
+		this.totaluser = totaluser;
 	}
 
-	public String getBounceusers() {
-		return bounceusers;
+	public String getBounceuser() {
+		return bounceuser;
 	}
 
-	public void setBounceusers(String bounceusers) {
-		this.bounceusers = bounceusers;
+	public void setBounceuser(String bounceuser) {
+		this.bounceuser = bounceuser;
 	}
 
-	public String getSessionlengths() {
-		return sessionlengths;
+	public String getSessionlength() {
+		return sessionlength;
 	}
 
-	public void setSessionlengths(String sessionlengths) {
-		this.sessionlengths = sessionlengths;
+	public void setSessionlength(String sessionlength) {
+		this.sessionlength = sessionlength;
 	}
 
-	public String getAvgsessionlengths() {
-		return avgsessionlengths;
+	public String getAvgsessionlength() {
+		return avgsessionlength;
 	}
 
-	public void setAvgsessionlengths(String avgsessionlengths) {
-		this.avgsessionlengths = avgsessionlengths;
+	public void setAvgsessionlength(String avgsessionlength) {
+		this.avgsessionlength = avgsessionlength;
 	}
 
 	public String getDaily() {
