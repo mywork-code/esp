@@ -13,12 +13,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.enums.TermainalTyps;
 import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
@@ -31,9 +28,9 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 @Configurable
 @EnableScheduling
 @Profile("Schedule")
-public class DataAppUserAnalysisSchedule {
+public class DataAppuserAnalysisSchedule {
 
-	private static final Logger logger = LoggerFactory.getLogger(DataAppUserAnalysisSchedule.class);
+	private static final Logger logger = LoggerFactory.getLogger(DataAppuserAnalysisSchedule.class);
 	
     /*** 数据维度，即数据分组方式*/
     public static String hourly = "hourly";
