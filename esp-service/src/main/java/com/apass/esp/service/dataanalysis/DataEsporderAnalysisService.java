@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,7 +97,7 @@ public class DataEsporderAnalysisService {
 	}
 	/**
 	 * 商城订单统计
-     * 每日10点执行，刷新昨日订单统计
+     * 每日2点执行，刷新昨日订单统计
      * 针对 t_data_esporder_analysis 和  t_data_esporderdetail
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
@@ -118,11 +121,12 @@ public class DataEsporderAnalysisService {
 		}
 	}
 	/**
-	 * 统计订单 t_data_esporder_analysis
+	 * 统计订单总量 t_data_esporder_analysis
 	 * @param entity
 	 * @param orderlist
 	 * @return
 	 */
+	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	private DataEsporderAnalysis createdOrderEntity(DataEsporderAnalysis entity , List<OrderInfoEntity> orderlist){
 		String userIdStr = "";
 		String userIdStrByPayfalg = "";
@@ -150,7 +154,7 @@ public class DataEsporderAnalysisService {
 				}
 				payAmt = payAmt.add(order.getOrderAmt());
 			}
-			List<OrderDetailInfoEntity> orderDetaillist = orderDetailInfoService.queryOrderDetailInfo(order.getId());
+			List<OrderDetailInfoEntity> orderDetaillist = orderDetailInfoService.queryOrderDetailInfo(order.getOrderId());
 			for(OrderDetailInfoEntity orderDetail : orderDetaillist){
 				confirmGoodsNum = confirmGoodsNum + Integer.parseInt(orderDetail.getGoodsNum().toString());
 				if(payfalg){
@@ -171,14 +175,15 @@ public class DataEsporderAnalysisService {
 		return entity;
 	}
 	/**
-	 * 统计订单详情 t_data_esporderdetail
+	 * 统计订单详情商品总量 t_data_esporderdetail
 	 * @param orderAnalysisId
 	 * @param orderlist
 	 */
+	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	private void createdOrderDetailEntity(Long orderAnalysisId, List<OrderInfoEntity> orderlist) {
 		Map<Long,List<OrderDetailInfoEntity>> map = new HashMap<Long,List<OrderDetailInfoEntity>>();
 		for(OrderInfoEntity order : orderlist){//所有订单详情  根据商品分组。
-			List<OrderDetailInfoEntity> orderDetaillist = orderDetailInfoService.queryOrderDetailInfo(order.getId());
+			List<OrderDetailInfoEntity> orderDetaillist = orderDetailInfoService.queryOrderDetailInfo(order.getOrderId());
 			for(OrderDetailInfoEntity orderDetail : orderDetaillist){
 				Long goodsId = orderDetail.getGoodsId();
 				if(map.get(goodsId)!=null){//所有订单详情  根据商品ID分组。
@@ -191,20 +196,39 @@ public class DataEsporderAnalysisService {
 				}
 			}
 		}
-		String orderDetailIdStr = "";
-		String orderDetailIdStrByPayfalg = "";
 		Integer confirmGoodsNum = 0;//下单商品件数
 		BigDecimal confirmAmt = new BigDecimal(0);//下单总金额
 		Integer payGoodsNum = 0;//支付商品件数
 		BigDecimal payAmt = new BigDecimal(0);//支付总金额
 		BigDecimal percentConv = new BigDecimal(0);//支付下单环比
-		for(List<OrderDetailInfoEntity> value : map.values()){
-			
+		Set<Entry<Long, List<OrderDetailInfoEntity>>> set = map.entrySet();
+		for(Entry<Long, List<OrderDetailInfoEntity>> entry : set){
+			Long goodsId = entry.getKey();
+			DataEsporderdetail entity = new DataEsporderdetail();
+			entity.setCreatedTime(new Date());
+			entity.setUpdatedTime(new Date());
+			entity.setIsDelete("00");
+			entity.setOrderAnalysisId(orderAnalysisId);
+			entity.setGoodsId(goodsId);
+			List<OrderDetailInfoEntity> value = entry.getValue();
+			for(OrderDetailInfoEntity orderDetail : value){
+				BigDecimal actualPay = orderDetail.getGoodsPrice().subtract(orderDetail.getDiscountAmount()).subtract(orderDetail.getCouponMoney());
+				String orderId = orderDetail.getOrderId();
+				OrderInfoEntity order = orderService.getOrderInfoEntityByOrderId(orderId);
+				confirmGoodsNum = confirmGoodsNum + Integer.parseInt(orderDetail.getGoodsNum().toString());
+				confirmAmt = confirmAmt.add(actualPay);
+				if(order.getPayTime()!=null){
+					payGoodsNum = payGoodsNum + Integer.parseInt(orderDetail.getGoodsNum().toString());
+					payAmt = payAmt.add(actualPay);
+				}
+			}
+			percentConv = new BigDecimal(payGoodsNum).divide(new BigDecimal(confirmGoodsNum),4);
+			entity.setConfirmGoodsNum(confirmGoodsNum);
+			entity.setConfirmAmt(confirmAmt);
+			entity.setPayGoodsNum(payGoodsNum);
+			entity.setPayAmt(payAmt);
+			entity.setPercentConv(percentConv);
+			dataEsporderdetailService.createdEntity(entity);
 		}
-		DataEsporderdetail entity = new DataEsporderdetail();
-		entity.setCreatedTime(new Date());
-		entity.setUpdatedTime(new Date());
-		entity.setIsDelete("00");
-		entity.setOrderAnalysisId(orderAnalysisId);
 	}
 }

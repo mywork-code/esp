@@ -222,6 +222,7 @@
 			order_id orderId,
 			user_id userId,
 			payType payType,
+			pay_time payTime,
 			order_amt orderAmt,
 			paystatus payStatus,
 			remark remark,
@@ -957,7 +958,7 @@
 	<!-- 根据时间区间查询订单 -->
 	<select id="getSectionOrderList" parameterType="java.util.HashMap" resultType="OrderInfoEntity">
 		SELECT
-			order_id id,
+			order_id orderId,
 			user_id userId,
 			order_amt orderAmt,
 			orderstatus status,
