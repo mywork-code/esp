@@ -2,6 +2,7 @@ package com.apass.esp.web.dataanalysis;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.dataanalysis.DataAppuserRetentionService;
+import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
  * 
@@ -30,31 +33,36 @@ public class DataTrendController {
 	@Autowired
     private DataAppuserRetentionService dataAppuserRetentionService;
 	
+	
+	/**
+	 * 获取数据趋势的数据
+	 * @param paramMap
+	 * @return
+	 */
 	@ResponseBody
     @RequestMapping("/data")
-    public Response getAppuserRetentionList(@RequestBody Map<String, Object> map) {
-		
-		/**
-		 * 显示自定义时间段内的
-		 *        平均新增用户；平均启动次数；平均单次使用时长；日活跃、周活跃、月活跃；次日留存率、7日留存率、30日留存率
-		 */
-		/***
-		 * avgnewuser
-		 * avgsession
-		 * avgsessionlength
-		 */
+    public Response getDataList(@RequestBody Map<String, Object> paramMap) {
     	try{
-    		/**
-    		 * 默认近7天的数据
-    		 */
+    		logger.info("params:--------->{}",GsonUtils.toJson(paramMap));
+    		String startDate = CommonUtils.getValue(paramMap, "startDate");
+    		String endDate = CommonUtils.getValue(paramMap, "endDate");
+    		String days = CommonUtils.getValue(paramMap, "days");
+    		String platformId = CommonUtils.getValue(paramMap, "platformId");
+    		if(StringUtils.isBlank(platformId)){
+    			platformId = "1";
+    		}
     		
-    		
-    		
-    		
-            return dataAppuserRetentionService.getAppuserRetentionList(map);
+    		if(StringUtils.isBlank(startDate) && 
+    				StringUtils.isBlank(endDate) && 
+    				StringUtils.isBlank(days)){
+    			days = "-7";
+    		}
+    	   Map<String,Object> data = dataAppuserRetentionService.getDateByTimeAndTypeAndPlatFormId(startDate, endDate, days, platformId);
+           logger.info("getDataList:--------->{}",data);
+    	   return Response.successResponse(data);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Response.fail("用户留存数据载入失败");
+            return Response.fail("数据趋势数据载入失败!");
         }
     }
 }
