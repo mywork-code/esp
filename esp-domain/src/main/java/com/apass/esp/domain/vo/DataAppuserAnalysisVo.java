@@ -2,7 +2,7 @@ package com.apass.esp.domain.vo;
 
 public class DataAppuserAnalysisVo {
 
-	
+
 	private String daily;//日期
 	
 	private String newuser;//新增用户

@@ -3,6 +3,7 @@ package com.apass.esp.web.dataanalysis;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.vo.DataAppuserAnalysisVo;
+import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.service.dataanalysis.DataAppuserAnalysisService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -37,8 +38,8 @@ public class DataAppuserGeneralColler {
      */
     @RequestMapping("/getData")
     @ResponseBody
-   /* public Response getGenerate(@RequestBody DataAppuserAnalysisVo analysis){
-        *//**
+    public Response getGenerate(@RequestBody DataAnalysisVo analysis){
+        /**
          *  思路：
          *  1,平台类型platformids。封装当天时间00:00为dateStart，当前时间为dateEnd，
          *  2,type是1（hour）查询t_data_appuser_analysis列表，存储在list中
@@ -46,17 +47,17 @@ public class DataAppuserGeneralColler {
          *  4,当前时间-1天，type是2（daily）获取昨日新增，昨日活跃，昨日启动数。并计算环比，（环比=（今日新增-昨日新增）/昨日新增*100%）
          *  结果为正：增，结果为负：减
          *
-         *//*
+         */
         DataAppuserAnalysisVo analyVo = new DataAppuserAnalysisVo();
         try{
-            if(StringUtils.isEmpty(analysis.getPlatformId())){
+            if(StringUtils.isEmpty(analysis.getPlatformids())){
                 LOGGER.error("参数有误,参数：{}",GsonUtils.toJson(analysis));
                 throw new RuntimeException("参数有误,platformId不能为空");
             }
 
             //2,封装参数：type:1
             byte type = 1;
-            Map<String, Object> paramMap = packaParam(analysis.getPlatformId(),type,getDateBegin(),DateFormatUtil.dateToString(new Date(),"yyyyMMddHH"));
+            Map<String, Object> paramMap = packaParam(analysis.getPlatformids(),type,getDateBegin(),DateFormatUtil.dateToString(new Date(),"yyyyMMddHH"));
             LOGGER.info("应用概况查询拆线图相关数据参数:{}", GsonUtils.toJson(paramMap));
             List<DataAppuserAnalysis> dataAppuserAnalysises = dataAppuserAnalysisService.getAppuserAnalysisList(paramMap);
             analyVo.setDataAppuserAnalysises(dataAppuserAnalysises);
@@ -64,7 +65,12 @@ public class DataAppuserGeneralColler {
             //3,type:2（daily）,今天数据
             analysis.setTxnId(DateFormatUtil.dateToString(new Date(),"yyyyMMdd"));
             analysis.setType("2");
+            analysis.setIsDelete("00");
             DataAppuserAnalysis entity = dataAppuserAnalysisService.getDataAnalysisByTxnId(analysis);
+            if(entity == null){
+                LOGGER.error("数据有误,参数：{}对应数据为空",GsonUtils.toJson(analysis));
+                throw new RuntimeException("数据有误");
+            }
             analyVo.setTodayIncrease(entity.getNewuser());
             analyVo.setTodayActivity(entity.getActiveuser());
             analyVo.setTodayLaunch(entity.getSession());
@@ -76,6 +82,10 @@ public class DataAppuserGeneralColler {
             Date yestodayDate = DateFormatUtil.addDays(new Date(),-1);
             analysis.setTxnId(DateFormatUtil.dateToString(yestodayDate,"yyyyMMdd"));
             DataAppuserAnalysis entityOld = dataAppuserAnalysisService.getDataAnalysisByTxnId(analysis);
+            if(entityOld == null){
+                LOGGER.error("数据有误,参数：{}对应数据为空",GsonUtils.toJson(analysis));
+                throw new RuntimeException("数据有误");
+            }
             analyVo.setYestodayIncrease(entityOld.getNewuser());
             analyVo.setYestodayActivity(entityOld.getActiveuser());
             analyVo.setYestodayLaunch(entityOld.getSession());
@@ -93,7 +103,7 @@ public class DataAppuserGeneralColler {
             return Response.fail("应用概况相关数据获取失败");
         }
         return Response.success("应用概况相关数据获取成功！",analyVo);
-    }*/
+    }
 
 
 
@@ -114,17 +124,8 @@ public class DataAppuserGeneralColler {
     }
 
     public String getDateBegin() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        int year = calendar.get(Calendar.YEAR) - 1900;
-        int month = calendar.get(Calendar.MONTH)+1;
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        String str = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
 
-        StringBuffer sb = new StringBuffer();
-        sb.append(year);
-        sb.append(month);
-        sb.append(day);
-        sb.append("00");
-        return sb.toString();
+        return str+"00";
     }
 }
