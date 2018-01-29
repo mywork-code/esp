@@ -7,7 +7,6 @@ import com.apass.esp.service.dataanalysis.DataAppuserAnalysisService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +37,8 @@ public class DataAppuserGeneralColler {
      */
     @RequestMapping("/getData")
     @ResponseBody
-    public Response getGenerate(@RequestBody com.apass.esp.domain.vo.DataAppuserAnalysisVo analysis){
-        /**
+   /* public Response getGenerate(@RequestBody DataAppuserAnalysisVo analysis){
+        *//**
          *  思路：
          *  1,平台类型platformids。封装当天时间00:00为dateStart，当前时间为dateEnd，
          *  2,type是1（hour）查询t_data_appuser_analysis列表，存储在list中
@@ -47,7 +46,7 @@ public class DataAppuserGeneralColler {
          *  4,当前时间-1天，type是2（daily）获取昨日新增，昨日活跃，昨日启动数。并计算环比，（环比=（今日新增-昨日新增）/昨日新增*100%）
          *  结果为正：增，结果为负：减
          *
-         */
+         *//*
         DataAppuserAnalysisVo analyVo = new DataAppuserAnalysisVo();
         try{
             if(StringUtils.isEmpty(analysis.getPlatformId())){
@@ -94,7 +93,7 @@ public class DataAppuserGeneralColler {
             return Response.fail("应用概况相关数据获取失败");
         }
         return Response.success("应用概况相关数据获取成功！",analyVo);
-    }
+    }*/
 
 
 
