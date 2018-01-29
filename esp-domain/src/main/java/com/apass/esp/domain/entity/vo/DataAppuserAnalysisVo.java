@@ -8,7 +8,7 @@ import java.util.List;
  * 返回给app的数据封装在此类中
  * Created by xiaohai on 2018/1/29.
  */
-public class DataAppuserAnalysisVo extends DataAppuserAnalysis {
+public class DataAppuserAnalysisVo {
     /**
      * 拆线图显示
      */
@@ -146,32 +146,26 @@ public class DataAppuserAnalysisVo extends DataAppuserAnalysis {
         this.launchLinkRatio = launchLinkRatio;
     }
 
-    @Override
     public String getBounceuser() {
         return bounceuser;
     }
 
-    @Override
     public void setBounceuser(String bounceuser) {
         this.bounceuser = bounceuser;
     }
 
-    @Override
     public String getTotaluser() {
         return totaluser;
     }
 
-    @Override
     public void setTotaluser(String totaluser) {
         this.totaluser = totaluser;
     }
 
-    @Override
     public String getAvgsessionlength() {
         return avgsessionlength;
     }
 
-    @Override
     public void setAvgsessionlength(String avgsessionlength) {
         this.avgsessionlength = avgsessionlength;
     }
