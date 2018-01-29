@@ -8,11 +8,14 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 编码工具类 实现aes加密、解密
  */
 public class AESUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AESUtils.class);
 
 	/**
 	 * 算法
@@ -120,6 +123,7 @@ public class AESUtils {
 	 * @throws Exception
 	 */
 	public static String aesDecrypt(String encryptStr, String decryptKey) throws Exception {
+		LOGGER.info("encryptStr:{},decryptKey:{}",encryptStr,decryptKey);
 		return StringUtils.isEmpty(encryptStr) ? null : aesDecryptByBytes(base64Decode(encryptStr), decryptKey);
 	}
 
