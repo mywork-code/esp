@@ -18,9 +18,11 @@ import com.apass.esp.domain.entity.DataEsporderAnalysis;
 import com.apass.esp.domain.entity.DataEsporderdetail;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
+import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataEsporderAnalysisVo;
+import com.apass.esp.domain.vo.DataEsporderdetailVo;
 import com.apass.esp.mapper.DataEsporderAnalysisMapper;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderDetailInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -36,6 +38,8 @@ public class DataEsporderAnalysisService {
 	private OrderService orderService;
 	@Autowired
 	private OrderDetailInfoService orderDetailInfoService;
+	@Autowired
+	private GoodsService goodsService;
 	/**
 	 * CREATE
 	 * @param entity
@@ -88,10 +92,17 @@ public class DataEsporderAnalysisService {
 			List<DataEsporderdetail> orderlist = dataEsporderdetailService.getDataEsporderdetailList(map);
 			String dayData = DateFormatUtil.string2string(entity.getTxnId(), "yyyyMMdd", "MM月dd日");
 			entity.setDayData(dayData);
-			DataAppuserAnalysis dataAppuserAnalysis = dataAppuserAnalysisService.getDataAnalysisByTxnId(new DataAppuserAnalysisVo(entity.getTxnId(), map.get("platformids").toString(), "2"));
+			DataAppuserAnalysis dataAppuserAnalysis = dataAppuserAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(entity.getTxnId(), map.get("platformids").toString(), "2","00"));
 			BeanUtils.copyProperties(dataAppuserAnalysis, entity);
 			entity.setId(orderAnalysisId);
-			entity.setList(orderlist);
+			List<DataEsporderdetailVo> orderVolist = new ArrayList<DataEsporderdetailVo>();
+			for(DataEsporderdetail order : orderlist){
+				DataEsporderdetailVo vo = new DataEsporderdetailVo();
+				BeanUtils.copyProperties(order, vo);
+				String goodsName = goodsService.serchGoodsByGoodsId(order.getGoodsId().toString()).getGoodsName();
+				vo.setGoodsName(goodsName);
+			}
+			entity.setList(orderVolist);
 		}
 		return Response.success("运营分析数据载入成功！", list);
 	}

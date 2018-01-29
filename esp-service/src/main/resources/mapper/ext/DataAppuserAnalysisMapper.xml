@@ -15,17 +15,12 @@
 	    SELECT
 	    <include refid="Base_Column_List"/>
 	    FROM t_data_appuser_analysis
-	    <where>  
-	       	   <if test="txnId!=null and txnId!=''">
-	               and txn_id = #{txnId}
-	           </if>
-	       	   <if test="platformId!=null and platformId!=''">
-	       	       and platformids = #{platformId}
-	       	   </if>
-	       	   <if test="type!=null and type!=''">
-	       	       and type = #{type}
-	       	   </if>
-		</where>
+	    where
+           txn_id = #{txnId}
+ 	       and platformids = #{platformids}
+ 	       and type = #{type}
+ 	       and is_delete = #{isDelete}
+		ORDER BY TXN_ID DESC
 	</select>
 	<select id="getAppuserAnalysisList" resultMap="BaseResultMap">
         SELECT

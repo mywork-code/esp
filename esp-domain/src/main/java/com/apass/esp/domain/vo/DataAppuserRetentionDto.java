@@ -2,6 +2,8 @@ package com.apass.esp.domain.vo;
 
 public class DataAppuserRetentionDto {
 
+	private Long id;
+	
 	private String daily;
 
     private Byte platformids;
@@ -33,6 +35,14 @@ public class DataAppuserRetentionDto {
     private String day7backuser;
 
     private String day14backuser;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getDaily() {
 		return daily;

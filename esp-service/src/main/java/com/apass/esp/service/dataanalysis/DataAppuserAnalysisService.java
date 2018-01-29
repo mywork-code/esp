@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
-import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
+import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.mapper.DataAppuserAnalysisMapper;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -64,22 +64,30 @@ public class DataAppuserAnalysisService {
 		if(null != retention){
 			DataAppuserAnalysis analysis = new DataAppuserAnalysis();
 			Date date = new Date();
+			analysis.setTxnId(retention.getDaily().replace("-", ""));
+			if(null != retention.getId()){
+			   analysis = analysisMapper.getDataAnalysisByTxnId(new DataAnalysisVo(analysis.getTxnId(), retention.getPlatformids().toString(), retention.getType().toString(),"00"));
+			}
 			analysis.setActiveuser(retention.getActiveuser());
 			analysis.setAvgsessionlength(retention.getAvgsessionlength());
 			analysis.setBounceuser(retention.getBounceuser());
-			analysis.setCreatedTime(date);
 			analysis.setMau(retention.getMau());
 			analysis.setNewuser(retention.getNewuser());
 			analysis.setPlatformids(retention.getPlatformids());
 			analysis.setSession(retention.getSession());
 			analysis.setSessionlength(retention.getSessionlength());
 			analysis.setTotaluser(retention.getTotaluser());
-			analysis.setTxnId(retention.getDaily().replace("-", ""));
 			analysis.setType(retention.getType());
 			analysis.setUpdatedTime(date);
 			analysis.setVersionupuser(retention.getVersionupuser());
 			analysis.setWau(retention.getWau());
-			analysisMapper.insertSelective(analysis);
+			
+			if(null == retention.getId()){
+				analysis.setCreatedTime(date);
+				analysisMapper.insertSelective(analysis);
+			}else{
+				analysisMapper.updateByPrimaryKeySelective(analysis);
+			}
 		}
 	}
 	
@@ -108,7 +116,7 @@ public class DataAppuserAnalysisService {
 			analysis.setUpdatedTime(date);
 			analysisMapper.insertSelective(analysis);
 		}else{
-			analysis = analysisMapper.getDataAnalysisByTxnId(new DataAppuserAnalysisVo(txnId, vo.getPlatformids().toString(), vo.getType().toString()));
+			analysis = analysisMapper.getDataAnalysisByTxnId(new DataAnalysisVo(txnId, vo.getPlatformids().toString(), vo.getType().toString(),"00"));
 			analysis.setNewuser(vo.getNewuser());
 			analysis.setSession(vo.getSession());
 			analysis.setUpdatedTime(date);
@@ -120,7 +128,7 @@ public class DataAppuserAnalysisService {
 	 * @param analysis
 	 * @return
 	 */
-	public DataAppuserAnalysis getDataAnalysisByTxnId(DataAppuserAnalysisVo analysis){
+	public DataAppuserAnalysis getDataAnalysisByTxnId(DataAnalysisVo analysis){
 		return analysisMapper.getDataAnalysisByTxnId(analysis);
 	}
 	/**

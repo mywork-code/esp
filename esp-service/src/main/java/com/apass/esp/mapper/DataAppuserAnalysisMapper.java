@@ -2,7 +2,7 @@ package com.apass.esp.mapper;
 import java.util.List;
 import java.util.Map;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
-import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
+import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 public interface DataAppuserAnalysisMapper extends GenericMapper<DataAppuserAnalysis,Long>{
 	/**
@@ -10,7 +10,8 @@ public interface DataAppuserAnalysisMapper extends GenericMapper<DataAppuserAnal
 	 * @param analysis
 	 * @return
 	 */
-	public DataAppuserAnalysis getDataAnalysisByTxnId(DataAppuserAnalysisVo analysis);
+	public DataAppuserAnalysis getDataAnalysisByTxnId(DataAnalysisVo analysis);
+	
 	/**
 	 * 运营分析数据载入  查询时间区间
 	 * 参数含有
