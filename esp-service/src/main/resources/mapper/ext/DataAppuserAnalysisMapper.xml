@@ -17,7 +17,7 @@
 	    FROM t_data_appuser_analysis
 	    where
            txn_id = #{txnId}
- 	       and platformids = #{platformId}
+ 	       and platformids = #{platformids}
  	       and type = #{type}
  	       and is_delete = #{isDelete}
 		ORDER BY TXN_ID DESC

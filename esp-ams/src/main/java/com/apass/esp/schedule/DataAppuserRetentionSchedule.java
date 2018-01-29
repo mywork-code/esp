@@ -42,7 +42,7 @@ public class DataAppuserRetentionSchedule {
 	 * @return
 	 */
     @Scheduled(cron = "0 0 22 * * ?")
-    public void talkDataScheduleData(){
+    public void retentionEveryDayScheduleData(){
 		ArrayList<String> metrics = getMetrics();
 		for (TermainalTyps termainal : TermainalTyps.values()) {
 			String day1retentions = talkData.getTalkingDataByDataAnalysis(metrics, daily,termainal.getMessage());
