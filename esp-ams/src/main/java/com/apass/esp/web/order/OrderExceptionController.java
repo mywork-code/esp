@@ -24,6 +24,8 @@ import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.merchant.MerchantInforRepository;
+import com.apass.esp.schedule.DataAppuserAnalysisSchedule;
+import com.apass.esp.schedule.DataAppuserRetentionSchedule;
 import com.apass.esp.schedule.MailStatis2ScheduleTask;
 import com.apass.esp.schedule.OrderChannelStatisticsScheduleTask;
 import com.apass.esp.schedule.OrderInforMailSendScheduleTask;
@@ -81,7 +83,10 @@ public class OrderExceptionController {
     private MailStatis2ScheduleTask task2;
     
     @Autowired
-    private TalkDataService talkData;
+    private DataAppuserAnalysisSchedule analysisSchedule;
+    
+    @Autowired
+    private DataAppuserRetentionSchedule retentionSchedule;
     /**
      * 订单信息页面
      */
@@ -277,5 +282,26 @@ public class OrderExceptionController {
     public Response mailStatisSchedule(){
     	task2.mailStatisSchedule();
     	return Response.success("安家趣花电商订单统计(成交金额，统计成本)!");
+    }
+    
+    @ResponseBody
+    @RequestMapping("/every/hour")
+    public Response everyHoursSchedule(){
+    	analysisSchedule.everyHoursSchedule();
+    	return Response.success("每小时插入更新数据成功(t_data_appuser_analysis)!");
+    }
+    
+    @ResponseBody
+    @RequestMapping("/analysis")
+    public Response everyDayScheduleData(){
+    	analysisSchedule.everyDayScheduleData();
+    	return Response.success("每天插入更新数据成功(t_data_appuser_analysis)!");
+    }
+    
+    @ResponseBody
+    @RequestMapping("/retention")
+    public Response retentionEveryDayScheduleData(){
+    	retentionSchedule.retentionEveryDayScheduleData();
+    	return Response.success("每天插入更新数据成功(t_data_appuser_retention)!");
     }
 }
