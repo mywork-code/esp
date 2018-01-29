@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataAppuserRetention;
+import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserRetentionDto;
 import com.apass.esp.domain.vo.DataAppuserRetentionVo;
@@ -132,6 +133,10 @@ public class DataAppuserRetentionService {
 		return null;
 	}
 	
+	public DataAppuserRetention getDataAnalysisByTxnId(DataAnalysisVo analysis){
+		return dataAppuserRetentionMapper.getDataAnalysisByTxnId(analysis);
+	}
+	
 	/**
 	 * 每天跑一次
 	 * @param dto
@@ -139,13 +144,16 @@ public class DataAppuserRetentionService {
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	public void insertRetention(DataAppuserRetentionDto dto){
 		if(null != dto){
+			
 			DataAppuserRetention retention = new DataAppuserRetention();
 			Date date = new Date();
+			retention.setTxnId(dto.getDaily().replace("-", ""));
+			if(null != dto.getId()){
+				retention = dataAppuserRetentionMapper.getDataAnalysisByTxnId(new DataAnalysisVo(retention.getTxnId(),dto.getPlatformids().toString(),"2","00"));
+			}
 			
-			retention.setCreatedTime(date);
 			retention.setUpdatedTime(date);
 			retention.setPlatformids(dto.getPlatformids());
-			retention.setTxnId(dto.getDaily().replace("-", ""));
 			
 			retention.setDauday1retention(dto.getDauday1retention());
 			retention.setDauday3retention(dto.getDauday3retention());
@@ -165,7 +173,12 @@ public class DataAppuserRetentionService {
 			retention.setDay7backuser(dto.getDay7backuser());
 			retention.setDay14backuser(dto.getDay14backuser());
 			
-			dataAppuserRetentionMapper.insertSelective(retention);
+			if(null == retention.getId()){
+				retention.setCreatedTime(date);
+				dataAppuserRetentionMapper.insertSelective(retention);
+			}else{
+				dataAppuserRetentionMapper.updateByPrimaryKeySelective(retention);
+			}
 		}
 	}
 	

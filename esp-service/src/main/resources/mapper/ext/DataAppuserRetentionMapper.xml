@@ -18,4 +18,16 @@
 	    	<include refid="QueryConditionSql" />
         ORDER BY TXN_ID DESC
     </select>
+    
+    <select id="getDataAnalysisByTxnId" resultMap="BaseResultMap">
+        SELECT
+        	<include refid="Base_Column_List" />
+	    FROM
+	    	t_data_appuser_retention	
+	    WHERE
+	        txn_id = #{txnId}
+	        AND platformids = #{platformids}
+	        AND is_delete = #{isDelete}
+        ORDER BY TXN_ID DESC
+    </select>
 </mapper>

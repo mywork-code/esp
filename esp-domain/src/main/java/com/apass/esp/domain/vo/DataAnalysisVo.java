@@ -3,7 +3,7 @@ package com.apass.esp.domain.vo;
 public class DataAnalysisVo {
 	
 	/**
-	 * 某个时间格式yyyyMMddHH
+	 * 某个时间格式yyyyMMddHH或者yyyyMMdd
 	 */
 	private String txnId;
 	/**
