@@ -18,7 +18,7 @@ import com.apass.esp.domain.entity.DataEsporderAnalysis;
 import com.apass.esp.domain.entity.DataEsporderdetail;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
+import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataEsporderAnalysisVo;
 import com.apass.esp.domain.vo.DataEsporderdetailVo;
 import com.apass.esp.mapper.DataEsporderAnalysisMapper;
@@ -92,7 +92,7 @@ public class DataEsporderAnalysisService {
 			List<DataEsporderdetail> orderlist = dataEsporderdetailService.getDataEsporderdetailList(map);
 			String dayData = DateFormatUtil.string2string(entity.getTxnId(), "yyyyMMdd", "MM月dd日");
 			entity.setDayData(dayData);
-			DataAppuserAnalysis dataAppuserAnalysis = dataAppuserAnalysisService.getDataAnalysisByTxnId(new DataAppuserAnalysisVo(entity.getTxnId(), map.get("platformids").toString(), "2"));
+			DataAppuserAnalysis dataAppuserAnalysis = dataAppuserAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(entity.getTxnId(), map.get("platformids").toString(), "2","00"));
 			BeanUtils.copyProperties(dataAppuserAnalysis, entity);
 			entity.setId(orderAnalysisId);
 			List<DataEsporderdetailVo> orderVolist = new ArrayList<DataEsporderdetailVo>();
