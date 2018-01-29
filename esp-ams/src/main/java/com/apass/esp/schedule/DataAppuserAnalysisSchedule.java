@@ -19,7 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.enums.TermainalTyps;
 import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
-import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
+import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.service.dataanalysis.DataAppuserAnalysisService;
 import com.apass.esp.service.talkingdata.TalkDataService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -55,7 +55,7 @@ public class DataAppuserAnalysisSchedule {
 			/*** 如果第一次进入就所有的数据写入数据库，否则更新当前hour的数据*/
 	    	String nowDate = DateFormatUtil.dateToString(new Date(), "yyyyMMddHH");
 	    	/*** 插入数据之前，1、是否应该判断，当天的数据是否存在，2、如果不存在，全部插入，如果存在，值更新当天时间节点的数据*/
-			DataAppuserAnalysis analysis = dataAnalysisService.getDataAnalysisByTxnId(new DataAppuserAnalysisVo(nowDate, termainal.getCode(),"1"));
+			DataAppuserAnalysis analysis = dataAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(nowDate, termainal.getCode(),"1","00"));
 	    	for (DataAppuserAnalysisDto user : userIos) {
 	    		if(null != analysis){
 					user.setId(analysis.getId());//此处的Id无实际意义，只做新增和修改的区分

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
-import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
+import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.mapper.DataAppuserAnalysisMapper;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -108,7 +108,7 @@ public class DataAppuserAnalysisService {
 			analysis.setUpdatedTime(date);
 			analysisMapper.insertSelective(analysis);
 		}else{
-			analysis = analysisMapper.getDataAnalysisByTxnId(new DataAppuserAnalysisVo(txnId, vo.getPlatformids().toString(), vo.getType().toString()));
+			analysis = analysisMapper.getDataAnalysisByTxnId(new DataAnalysisVo(txnId, vo.getPlatformids().toString(), vo.getType().toString(),"00"));
 			analysis.setNewuser(vo.getNewuser());
 			analysis.setSession(vo.getSession());
 			analysis.setUpdatedTime(date);
@@ -120,7 +120,7 @@ public class DataAppuserAnalysisService {
 	 * @param analysis
 	 * @return
 	 */
-	public DataAppuserAnalysis getDataAnalysisByTxnId(DataAppuserAnalysisVo analysis){
+	public DataAppuserAnalysis getDataAnalysisByTxnId(DataAnalysisVo analysis){
 		return analysisMapper.getDataAnalysisByTxnId(analysis);
 	}
 	/**

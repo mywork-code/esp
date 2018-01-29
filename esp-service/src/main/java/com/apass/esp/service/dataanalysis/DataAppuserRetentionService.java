@@ -4,20 +4,30 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataAppuserRetention;
+import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserRetentionDto;
 import com.apass.esp.domain.vo.DataAppuserRetentionVo;
+import com.apass.esp.mapper.DataAppuserAnalysisMapper;
 import com.apass.esp.mapper.DataAppuserRetentionMapper;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 @Service
 public class DataAppuserRetentionService {
 	@Autowired
 	private DataAppuserRetentionMapper dataAppuserRetentionMapper;
+	@Autowired
+	private DataAppuserAnalysisMapper dataAppuserAnalysisMapper;
 	@Autowired
 	private DataAppuserAnalysisService dataAppuserAnalysisService;
 	/**
@@ -159,16 +169,130 @@ public class DataAppuserRetentionService {
 	}
 	
 	/**
-	 * 根据参数类型，来确认需要统计的数据
-	 *   新增  启动  平均使用时长
+	 * 
+	 * @param startDate 开始时间
+	 * @param endDate 结束时间
+	 * @param days 近几天（如果有值，应该是数字）
+	 * @param platformId(平台（1.安卓 2.苹果 3.全平台）)
 	 * @return
 	 */
-	public Map<String,Object> getDateByType(Map<String,Object> params){
+	public Map<String,Object> getDateByType(String startDate,String endDate,String days,String platformId){
+		/*** 返回参数的map*/
+		Map<String,Object> values = Maps.newHashMap();
 		
+		/*** 如果传过来的days不为空，优先使用days*/
+		Map<String,Object> params = getTimeInterval(startDate, endDate, days);
+		if(params.isEmpty()){
+			return null;
+		}
+		params.put("platformids", platformId);
+		params.put("isDelete","00");
+		params.put("type","2");
+		
+		
+		Long newuserSum = 0l;//新增用户总数
+		Long newuserAvg = 0l;//平均新增用户数
+		
+		Long sessionSum = 0l;//启动时长总计
+		Long sessionAvg = 0l;//平均启动时长
+		
+		Long avgsessionSum = 0l;//平均使用时长总计
+		Long avgsessionLength = 0l;//平均使用时长
+		/*** 新增用户  区间内每天对应的  新增人数 启动  平均使用时长*/
+		List<DataAppuserAnalysisVo> dataNewUserVo = Lists.newArrayList();
+		List<DataAppuserAnalysis> analysis = dataAppuserAnalysisMapper.getAppuserAnalysisList(params);
+		for (DataAppuserAnalysis data : analysis) {
+			DataAppuserAnalysisVo vo =  new DataAppuserAnalysisVo();
+			newuserSum += Integer.parseInt(data.getNewuser());
+			sessionSum += Integer.parseInt(data.getSession());
+			avgsessionSum += Integer.parseInt(data.getAvgsessionlength());
+			vo.setDaily(data.getTxnId());
+			vo.setNewuser(data.getNewuser());
+			vo.setSession(data.getSession());
+			vo.setSessionAvg(data.getAvgsessionlength());
+			dataNewUserVo.add(vo);
+		}
+		/*** 平均新增用户 ，平均启动时长 ，平均使用时长*/
+		if(CollectionUtils.isNotEmpty(analysis)){
+			long size = analysis.size();
+			newuserAvg = newuserSum / size;
+			sessionAvg = sessionSum / size;
+			avgsessionLength = avgsessionSum / size;
+		}
+		
+		/*** 活跃分析*/
+		List<DataAppuserAnalysisVo> dataActivityUserVo = Lists.newArrayList();
+		for (DataAppuserAnalysis data : analysis) {
+			DataAppuserAnalysisVo vo =  new DataAppuserAnalysisVo();
+			newuserSum += Integer.parseInt(data.getNewuser());
+			sessionSum += Integer.parseInt(data.getSession());
+			avgsessionSum += Integer.parseInt(data.getAvgsessionlength());
+			vo.setDaily(data.getTxnId());
+			vo.setActiveuser(data.getActiveuser());//日活跃
+			vo.setWau(data.getWau());//周活跃
+			vo.setMau(data.getMau());//月活跃
+			dataActivityUserVo.add(vo);
+		}
+		
+		
+		/*** 留存分析*/
+		Long day1Sum = 0l;
+		Long day1Avg = 0l;
+		
+		Long day7Sum = 0l;
+		Long day7Avg = 0l;
+		
+		Long day30Sum = 0l;
+		Long day30Avg = 0l;
 		List<DataAppuserRetention> list = dataAppuserRetentionMapper.getAppuserRetentionList(params);
+		List<DataAppuserRetentionVo> retentionVo = Lists.newArrayList(); 
+		for (DataAppuserRetention data : list) {
+			DataAppuserRetentionVo vo = new DataAppuserRetentionVo();
+			day1Sum += Long.parseLong(vo.getDay1retention());
+			day7Sum += Long.parseLong(vo.getDay7retention());
+			day30Sum += Long.parseLong(vo.getDay30retention());
+			vo.setDayData(data.getTxnId());
+			vo.setDay1(data.getDay1retention());
+			vo.setDay7(data.getDay7retention());
+			vo.setDay30(data.getDay30retention());
+			retentionVo.add(vo);
+		}
+		
+		/*** 次日留存均值    7日留存均值    30日留存均值*/
+		if(CollectionUtils.isNotEmpty(list)){
+			long size = list.size();
+			day1Avg = day1Sum / size;
+			day7Avg = day7Sum / size;
+			day30Avg = day30Sum / size;
+		}
+		
+		
+		
+		
+		
 		
 		
 		
 		return null;
 	}
+	
+	public Map<String,Object> getTimeInterval(String startDate,String endDate,String days){
+		
+		Map<String,Object> params = Maps.newHashMap();
+		if(StringUtils.isBlank(days)){
+			Date now = new Date();
+			startDate = DateFormatUtil.getAddDaysString(now, Integer.parseInt(days));
+			endDate = DateFormatUtil.dateToString(now);
+		}else{
+			if(StringUtils.isBlank(startDate) || StringUtils.isBlank(endDate)){
+				return params;
+			}
+		}
+		startDate = startDate.replace("-", "");
+		endDate = endDate.replace("-", "");
+		params.put("dateStart", startDate);
+		params.put("dateEnd",endDate);
+		return params;
+	}
+	
 }

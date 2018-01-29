@@ -1,54 +1,77 @@
 package com.apass.esp.domain.vo;
 
 public class DataAppuserAnalysisVo {
+
 	
-	/**
-	 * 某个时间格式yyyyMMddHH
-	 */
-	private String txnId;
-	/**
-	 * 平台（'0代表查询全平台,1代表Android，2代表iOS'）
-	 */
-	private String platformId;
+	private String daily;//日期
 	
-	/**
-	 * 统计单位：1-hour;2-daily
-	 */
-	private String type;
+	private String newuser;//新增用户
 	
-	public String getTxnId() {
-		return txnId;
-	}
+	private String session;//启动时长
 	
-	public void setTxnId(String txnId) {
-		this.txnId = txnId;
-	}
+	private String sessionAvg;//平均使用时长
 	
-	public String getPlatformId() {
-		return platformId;
-	}
 	
-	public void setPlatformId(String platformId) {
-		this.platformId = platformId;
-	}
+	private String activeuser;//日活跃用户
 	
-	public String getType() {
-		return type;
+	private String wau;//周活跃用户
+	
+	private String mau;//月活跃用户
+
+	public String getDaily() {
+		return daily;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setDaily(String daily) {
+		this.daily = daily;
 	}
 
-	public DataAppuserAnalysisVo(String txnId, String platformId, String type) {
-		super();
-		this.txnId = txnId;
-		this.platformId = platformId;
-		this.type = type;
+	public String getNewuser() {
+		return newuser;
 	}
 
-	public DataAppuserAnalysisVo() {
-		super();
+	public void setNewuser(String newuser) {
+		this.newuser = newuser;
+	}
+
+	public String getSession() {
+		return session;
+	}
+
+	public void setSession(String session) {
+		this.session = session;
+	}
+
+	public String getSessionAvg() {
+		return sessionAvg;
+	}
+
+	public void setSessionAvg(String sessionAvg) {
+		this.sessionAvg = sessionAvg;
+	}
+
+	public String getActiveuser() {
+		return activeuser;
+	}
+
+	public void setActiveuser(String activeuser) {
+		this.activeuser = activeuser;
+	}
+
+	public String getWau() {
+		return wau;
+	}
+
+	public void setWau(String wau) {
+		this.wau = wau;
+	}
+
+	public String getMau() {
+		return mau;
+	}
+
+	public void setMau(String mau) {
+		this.mau = mau;
 	}
 	
 }
