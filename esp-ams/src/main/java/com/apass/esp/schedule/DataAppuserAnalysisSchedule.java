@@ -89,7 +89,16 @@ public class DataAppuserAnalysisSchedule {
 				retention.setPlatformids(Byte.valueOf(termainal.getCode()));
 				retention.setType(Byte.valueOf("2"));
 			}
-    		dataAnalysisService.insertAnalysisData(retention);
+    		
+    		/*** 根据txn_id type platformids is_delete*/
+    		/*** 如果第一次进入就所有的数据写入数据库，否则更新当前hour的数据*/
+	    	String nowDate = DateFormatUtil.dateToString(new Date(), "yyyyMMdd");
+    		/*** 插入数据之前，1、是否应该判断，当天的数据是否存在，2、如果不存在，全部插入，如果存在，值更新当天时间节点的数据*/
+			DataAppuserAnalysis analysis = dataAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(nowDate, termainal.getCode(),"2","00"));
+    		if(null != analysis){
+    			retention.setId(analysis.getId());
+    		}
+			dataAnalysisService.insertAnalysisData(retention);
     		try {
 	            TimeUnit.SECONDS.sleep(15);
 	        } catch (InterruptedException e) {
