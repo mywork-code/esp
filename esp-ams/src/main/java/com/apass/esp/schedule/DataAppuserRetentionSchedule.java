@@ -45,11 +45,12 @@ public class DataAppuserRetentionSchedule {
 	 * 此方法往t_data_appuser_retention表中插入数据
 	 * @return
 	 */
-    @Scheduled(cron = "0 0 22 * * ?")
+    @Scheduled(cron = "0 0 2 * * ?")
     public void retentionEveryDayScheduleData(){
 		ArrayList<String> metrics = getMetrics();
+		Date time = DateFormatUtil.addDays(new Date(), -1);//今天获取的数据，应该是昨天的 ，此处待确认TODO
 		for (TermainalTyps termainal : TermainalTyps.values()) {
-			String day1retentions = talkData.getTalkingDataByDataAnalysis(metrics, daily,termainal.getMessage());
+			String day1retentions = talkData.getTalkingDataByDataAnalysis(time,time,metrics, daily,termainal.getMessage());
 			logger.info("result--->"+day1retentions);
 			JSONObject newuserObj = (JSONObject) JSONArray.parseArray(JSONObject.parseObject(day1retentions).getString("result")).get(0);
 			DataAppuserRetentionDto retention = JSONObject.toJavaObject(newuserObj, DataAppuserRetentionDto.class);
@@ -58,7 +59,7 @@ public class DataAppuserRetentionSchedule {
 			}
 			
 			/*** 如果第一次进入就所有的数据写入数据库，否则更新当前hour的数据*/
-	    	String nowDate = DateFormatUtil.dateToString(new Date(), "yyyyMMdd");
+	    	String nowDate = DateFormatUtil.dateToString(time, "yyyyMMdd");
     		/*** 插入数据之前，1、是否应该判断，当天的数据是否存在，2、如果不存在，全部插入，如果存在，值更新当天时间节点的数据*/
 			DataAppuserRetention analysis = retentionService.getDataAnalysisByTxnId(new DataAnalysisVo(nowDate, termainal.getCode(),"2","00"));
 			if(null != analysis){
