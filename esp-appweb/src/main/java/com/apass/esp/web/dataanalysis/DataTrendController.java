@@ -44,10 +44,10 @@ public class DataTrendController {
     public Response getDataList(@RequestBody Map<String, Object> paramMap) {
     	try{
     		logger.info("params:--------->{}",GsonUtils.toJson(paramMap));
-    		String startDate = CommonUtils.getValue(paramMap, "startDate");
-    		String endDate = CommonUtils.getValue(paramMap, "endDate");
+    		String startDate = CommonUtils.getValue(paramMap, "dateStart");
+    		String endDate = CommonUtils.getValue(paramMap, "dateEnd");
     		String days = CommonUtils.getValue(paramMap, "days");
-    		String platformId = CommonUtils.getValue(paramMap, "platformId");
+    		String platformId = CommonUtils.getValue(paramMap, "platformids");
     		if(StringUtils.isBlank(platformId)){
     			platformId = "1";
     		}
