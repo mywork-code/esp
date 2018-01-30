@@ -18,8 +18,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.enums.TermainalTyps;
-import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.domain.vo.DataAnalysisVo;
+import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.service.dataanalysis.DataAppuserAnalysisService;
 import com.apass.esp.service.talkingdata.TalkDataService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -48,12 +48,13 @@ public class DataAppuserAnalysisSchedule {
     @Scheduled(cron = "0 0 0/1 * * ?")
     public void everyHoursSchedule(){
 		ArrayList<String> metrics = getHourlyMetrics();
+		Date date = new Date();
 		for (TermainalTyps termainal : TermainalTyps.values()) {
-			String newusers = talkData.getTalkingDataByDataAnalysis(metrics, hourly,termainal.getMessage());
+			String newusers = talkData.getTalkingDataByDataAnalysis(date,date,metrics, hourly,termainal.getMessage());
 			logger.info("message--->{}",newusers);
 			List<DataAppuserAnalysisDto> userIos = JSONObject.parseArray(JSONObject.parseObject(newusers).getString("result"), DataAppuserAnalysisDto.class);
 			/*** 如果第一次进入就所有的数据写入数据库，否则更新当前hour的数据*/
-	    	String nowDate = DateFormatUtil.dateToString(new Date(), "yyyyMMddHH");
+	    	String nowDate = DateFormatUtil.dateToString(date, "yyyyMMddHH");
 	    	/*** 插入数据之前，1、是否应该判断，当天的数据是否存在，2、如果不存在，全部插入，如果存在，值更新当天时间节点的数据*/
 			DataAppuserAnalysis analysis = dataAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(nowDate, termainal.getCode(),"1","00"));
 	    	for (DataAppuserAnalysisDto user : userIos) {
@@ -62,6 +63,7 @@ public class DataAppuserAnalysisSchedule {
 				}
 	    		user.setType(Byte.valueOf("1"));
 	    		user.setPlatformids(Byte.valueOf(termainal.getCode()));
+	    		user.setDaily(nowDate);
 				/*** 此处的数字，标志着分组策略为hourly*/
 				dataAnalysisService.insertAnalysis(user);
 			}
@@ -93,7 +95,7 @@ public class DataAppuserAnalysisSchedule {
     		
     		/*** 根据txn_id type platformids is_delete*/
     		/*** 如果第一次进入就所有的数据写入数据库，否则更新当前hour的数据*/
-	    	String nowDate = DateFormatUtil.dateToString(time, "yyyyMMdd");
+    		String nowDate = retention.getDaily().replace("-", "");
     		/*** 插入数据之前，1、是否应该判断，当天的数据是否存在，2、如果不存在，全部插入，如果存在，值更新当天时间节点的数据*/
 			DataAppuserAnalysis analysis = dataAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(nowDate, termainal.getCode(),"2","00"));
     		if(null != analysis){
