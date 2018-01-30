@@ -370,13 +370,16 @@ public class DataAppuserRetentionService {
 	public Map<String,Object> getTimeInterval(String startDate,String endDate,String days){
 		
 		Map<String,Object> params = Maps.newHashMap();
+		Date now = new Date();
 		if(StringUtils.isNotBlank(days)){
-			Date now = new Date();
 			startDate = DateFormatUtil.getAddDaysString(now, Integer.parseInt(days));
 			endDate = DateFormatUtil.dateToString(now);
 		}else{
-			if(StringUtils.isBlank(startDate) || StringUtils.isBlank(endDate)){
-				return params;
+			if(StringUtils.isBlank(endDate)){
+				endDate = DateFormatUtil.dateToString(now);
+			}
+			if(StringUtils.isBlank(startDate)){
+				startDate = DateFormatUtil.getAddDaysString(now, -7);
 			}
 		}
 		startDate = startDate.replace("-", "");
