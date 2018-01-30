@@ -193,14 +193,12 @@ public class DataAppuserRetentionService {
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	public void insertRetention(DataAppuserRetentionDto dto){
 		if(null != dto){
-			
-			DataAppuserRetention retention = new DataAppuserRetention();
-			Date date = new Date();
-			retention.setTxnId(dto.getDaily().replace("-", ""));
-			if(null != dto.getId()){
-				retention = dataAppuserRetentionMapper.getDataAnalysisByTxnId(new DataAnalysisVo(retention.getTxnId(),dto.getPlatformids().toString(),"2","00"));
+			dto.setDaily(dto.getDaily().replace("-", ""));
+			DataAppuserRetention retention = dataAppuserRetentionMapper.getDataAnalysisByTxnId(new DataAnalysisVo(dto.getDaily(),dto.getPlatformids().toString(),"2","00"));
+			if(null == retention){
+				retention = new DataAppuserRetention();
 			}
-			
+			Date date = new Date();
 			retention.setUpdatedTime(date);
 			retention.setPlatformids(dto.getPlatformids());
 			
