@@ -103,9 +103,7 @@ public class DataAppuserAnalysisService {
 	public void insertAnalysis(DataAppuserAnalysisDto vo){
 		DataAppuserAnalysis analysis = new DataAppuserAnalysis();
 		Date date = new Date();
-		String dataStr = DateFormatUtil.dateToString(new Date(), "yyyyMMdd");
-		String txnId = dataStr + vo.getHourly().split(":")[0];
-		
+		String txnId = vo.getDaily() + vo.getHourly().split(":")[0];
 		if(null == vo.getId()){
 			analysis.setCreatedTime(date);
 			analysis.setType(vo.getType());
