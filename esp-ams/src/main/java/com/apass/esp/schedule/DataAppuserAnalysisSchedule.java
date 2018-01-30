@@ -55,6 +55,7 @@ public class DataAppuserAnalysisSchedule {
 			List<DataAppuserAnalysisDto> userIos = JSONObject.parseArray(JSONObject.parseObject(newusers).getString("result"), DataAppuserAnalysisDto.class);
 			/*** 如果第一次进入就所有的数据写入数据库，否则更新当前hour的数据*/
 	    	String nowDate = DateFormatUtil.dateToString(date, "yyyyMMddHH");
+	    	String daily =  DateFormatUtil.dateToString(date, "yyyyMMdd");
 	    	/*** 插入数据之前，1、是否应该判断，当天的数据是否存在，2、如果不存在，全部插入，如果存在，值更新当天时间节点的数据*/
 			DataAppuserAnalysis analysis = dataAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(nowDate, termainal.getCode(),"1","00"));
 	    	for (DataAppuserAnalysisDto user : userIos) {
@@ -63,7 +64,7 @@ public class DataAppuserAnalysisSchedule {
 				}
 	    		user.setType(Byte.valueOf("1"));
 	    		user.setPlatformids(Byte.valueOf(termainal.getCode()));
-	    		user.setDaily(nowDate);
+	    		user.setDaily(daily);
 				/*** 此处的数字，标志着分组策略为hourly*/
 				dataAnalysisService.insertAnalysis(user);
 			}
