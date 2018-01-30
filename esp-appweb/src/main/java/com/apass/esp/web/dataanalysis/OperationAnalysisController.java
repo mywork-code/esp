@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.dataanalysis.DataAppuserRetentionService;
 import com.apass.esp.service.dataanalysis.DataEsporderAnalysisService;
+import com.apass.gfb.framework.exception.BusinessException;
 /**
  * 报表相关数据  
  * 
@@ -52,7 +53,10 @@ public class OperationAnalysisController {
     public Response getAppuserRetentionList(@RequestBody Map<String, Object> map) {
     	try{
             return dataAppuserRetentionService.getAppuserRetentionList(map);
-        } catch (Exception e) {
+        } catch (BusinessException e) {
+            logger.error(e.getMessage(), e);
+            return Response.fail("用户留存数据载入失败,"+e.getErrorDesc());
+        }catch (Exception e) {
             logger.error(e.getMessage(), e);
             return Response.fail("用户留存数据载入失败");
         }
@@ -78,7 +82,10 @@ public class OperationAnalysisController {
     public Response getOperationAnalysisList(@RequestBody Map<String, Object> map) {
         try{
             return dataEsporderAnalysisService.getOperationAnalysisList(map);
-        } catch (Exception e) {
+        } catch (BusinessException e) {
+            logger.error(e.getMessage(), e);
+            return Response.fail("运行分析数据载入失败,"+e.getErrorDesc());
+        }catch (Exception e) {
             logger.error(e.getMessage(), e);
             return Response.fail("运行分析数据载入失败");
         }
