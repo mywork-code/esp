@@ -79,43 +79,8 @@ public class TalkDataService {
         return str;
     }
     
-    public String getTalkingDataByDataAnalysis(String metrics, String groupby,String type){
-    	Date date = new Date();
-    	return getTalkingDataByDataAnalysis(date, date, metrics, groupby, type);
-    }
-    
-    public String getTalkingDataByDataAnalysis(Date beginDate, Date date, String metrics, String groupby,String type) {
-        try {
-            TimeUnit.SECONDS.sleep(11);
-        } catch (InterruptedException e) {
-            LOGGER.error("-----getTalkingData1 Exception---->",e);
-        }
-        TalkingDataDto talkingDataDto = new TalkingDataDto();
-        talkingDataDto.setGroupby(groupby);
-
-        ArrayList<String> arrayList = new ArrayList<String>();
-        arrayList.add(metrics);
-        talkingDataDto.setMetrics(arrayList);
-
-        Filter filter = new Filter();
-        if(StringUtils.isNotBlank(type)){//首先确定type不能为空，其次如果type传入的值为0，则不作为条件查询
-        	Integer typeId = Integer.parseInt(TermainalTyps.getCode(type));
-            if(null != typeId && typeId != 0){
-            	ArrayList<Integer> integerArrayList = new ArrayList<>();
-                integerArrayList.add(typeId);
-                filter.setPlatformids(integerArrayList);
-            }
-        }
-        filter.setStart(DateFormatUtil.dateToString(beginDate, DateFormatUtil.YYYY_MM_DD));
-        filter.setEnd(DateFormatUtil.dateToString(date, DateFormatUtil.YYYY_MM_DD));
-        talkingDataDto.setFilter(filter);
-
-        String str = commonHttpClient.talkingData(talkingDataDto);
-        return str;
-    }
-    
-    public String getTalkingDataByDataAnalysis(ArrayList<String> metrics, String groupby,String type) {
-    	Date date = new Date();
+    public String getTalkingDataByDataAnalysis(Date start,Date end,ArrayList<String> metrics, String groupby,String type){
+    	
         TalkingDataDto talkingDataDto = new TalkingDataDto();
         talkingDataDto.setGroupby(groupby);
 
@@ -130,12 +95,18 @@ public class TalkDataService {
                 filter.setPlatformids(integerArrayList);
             }
         }
-        filter.setStart(DateFormatUtil.dateToString(date, DateFormatUtil.YYYY_MM_DD));
-        filter.setEnd(DateFormatUtil.dateToString(date, DateFormatUtil.YYYY_MM_DD));
+        filter.setStart(DateFormatUtil.dateToString(start, DateFormatUtil.YYYY_MM_DD));
+        filter.setEnd(DateFormatUtil.dateToString(end, DateFormatUtil.YYYY_MM_DD));
         talkingDataDto.setFilter(filter);
 
         String str = commonHttpClient.talkingData(talkingDataDto);
-        return str;
+    	
+    	return str;
+    }
+    
+    public String getTalkingDataByDataAnalysis(ArrayList<String> metrics, String groupby,String type) {
+    	Date date = new Date();
+        return getTalkingDataByDataAnalysis(date, date, metrics, groupby, type);
     }
     
 }
