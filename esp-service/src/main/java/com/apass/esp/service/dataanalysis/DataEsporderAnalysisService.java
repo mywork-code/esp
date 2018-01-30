@@ -26,6 +26,7 @@ import com.apass.esp.mapper.DataEsporderAnalysisMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderDetailInfoService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
@@ -85,8 +86,9 @@ public class DataEsporderAnalysisService {
 	 * @param dateEnd
 	 * @param platformids
 	 * @return
+	 * @throws BusinessException 
 	 */
-	public Response getOperationAnalysisList(Map<String, Object> map) {
+	public Response getOperationAnalysisList(Map<String, Object> map) throws BusinessException {
 		map = conversionParam(map);
 		List<DataEsporderAnalysisVo> list = dataEsporderAnalysisMapper.getOperationAnalysisList(map);
 		for(DataEsporderAnalysisVo entity : list){
@@ -113,8 +115,9 @@ public class DataEsporderAnalysisService {
 	 * 转化参数
 	 * @param map
 	 * @return
+	 * @throws BusinessException 
 	 */
-	private Map<String, Object> conversionParam(Map<String, Object> map) {
+	private Map<String, Object> conversionParam(Map<String, Object> map) throws BusinessException {
 		String dateType = CommonUtils.getValue(map, "dateType");
 		if(StringUtils.equals(dateType, "orther")){
 			return map;
@@ -125,34 +128,36 @@ public class DataEsporderAnalysisService {
 		String beginDate = null;
 		String endDate = day + " 23:59:59";
 		switch (dateType) {
-		case "orther":
-			return map;
-		case "today":
-			beginDate = day + " 00:00:00";
-			map.put("beginDate", beginDate);
-			map.put("endDate", endDate);
-			break;
-		case "yesterday":
-			date = DateFormatUtil.addDays(now, -1);
-			day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-			beginDate = day + " 00:00:00";
-			map.put("beginDate", beginDate);
-			map.put("endDate", endDate);
-			break;
-		case "lastseven":
-			date = DateFormatUtil.addDays(now, -7);
-			day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-			beginDate = day + " 00:00:00";
-			map.put("beginDate", beginDate);
-			map.put("endDate", endDate);
-			break;
-		case "lastthirty":
-			date = DateFormatUtil.addDays(now, -30);
-			day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-			beginDate = day + " 00:00:00";
-			map.put("beginDate", beginDate);
-			map.put("endDate", endDate);
-			break;
+			case "orther":
+				return map;
+			case "today":
+				beginDate = day + " 00:00:00";
+				map.put("beginDate", beginDate);
+				map.put("endDate", endDate);
+				break;
+			case "yesterday":
+				date = DateFormatUtil.addDays(now, -1);
+				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
+				beginDate = day + " 00:00:00";
+				map.put("beginDate", beginDate);
+				map.put("endDate", endDate);
+				break;
+			case "lastseven":
+				date = DateFormatUtil.addDays(now, -7);
+				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
+				beginDate = day + " 00:00:00";
+				map.put("beginDate", beginDate);
+				map.put("endDate", endDate);
+				break;
+			case "lastthirty":
+				date = DateFormatUtil.addDays(now, -30);
+				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
+				beginDate = day + " 00:00:00";
+				map.put("beginDate", beginDate);
+				map.put("endDate", endDate);
+				break;
+			default:
+				throw new BusinessException("形参不完整，转换异常！");
 		}
 		return map;
 	}
