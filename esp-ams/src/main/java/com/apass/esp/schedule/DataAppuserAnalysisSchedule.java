@@ -45,7 +45,7 @@ public class DataAppuserAnalysisSchedule {
      * 每小时跑一次
      * @return
      */
-    @Scheduled(cron = "0 0 0/1 * * ?")
+    @Scheduled(cron = "0 10 0/1 * * ?")
     public void everyHoursSchedule(){
 		ArrayList<String> metrics = getHourlyMetrics();
 		Date date = new Date();
