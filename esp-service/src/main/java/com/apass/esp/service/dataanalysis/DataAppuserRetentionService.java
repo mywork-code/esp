@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataAppuserRetention;
+import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserRetentionDto;
 import com.apass.esp.domain.vo.DataAppuserRetentionVo;
@@ -181,6 +182,10 @@ public class DataAppuserRetentionService {
 		return null;
 	}
 	
+	public DataAppuserRetention getDataAnalysisByTxnId(DataAnalysisVo analysis){
+		return dataAppuserRetentionMapper.getDataAnalysisByTxnId(analysis);
+	}
+	
 	/**
 	 * 每天跑一次
 	 * @param dto
@@ -188,13 +193,16 @@ public class DataAppuserRetentionService {
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	public void insertRetention(DataAppuserRetentionDto dto){
 		if(null != dto){
+			
 			DataAppuserRetention retention = new DataAppuserRetention();
 			Date date = new Date();
+			retention.setTxnId(dto.getDaily().replace("-", ""));
+			if(null != dto.getId()){
+				retention = dataAppuserRetentionMapper.getDataAnalysisByTxnId(new DataAnalysisVo(retention.getTxnId(),dto.getPlatformids().toString(),"2","00"));
+			}
 			
-			retention.setCreatedTime(date);
 			retention.setUpdatedTime(date);
 			retention.setPlatformids(dto.getPlatformids());
-			retention.setTxnId(dto.getDaily().replace("-", ""));
 			
 			retention.setDauday1retention(dto.getDauday1retention());
 			retention.setDauday3retention(dto.getDauday3retention());
@@ -214,7 +222,12 @@ public class DataAppuserRetentionService {
 			retention.setDay7backuser(dto.getDay7backuser());
 			retention.setDay14backuser(dto.getDay14backuser());
 			
-			dataAppuserRetentionMapper.insertSelective(retention);
+			if(null == retention.getId()){
+				retention.setCreatedTime(date);
+				dataAppuserRetentionMapper.insertSelective(retention);
+			}else{
+				dataAppuserRetentionMapper.updateByPrimaryKeySelective(retention);
+			}
 		}
 	}
 	
@@ -256,21 +269,21 @@ public class DataAppuserRetentionService {
 		
 		
 		/*** 留存分析*/
-		Long day1Sum = 0l;
-		Long day1Avg = 0l;
+		Double day1Sum = 0.0;
+		Double day1Avg = 0.0;
 		
-		Long day7Sum = 0l;
-		Long day7Avg = 0l;
+		Double day7Sum = 0.0;
+		Double day7Avg = 0.0;
 		
-		Long day30Sum = 0l;
-		Long day30Avg = 0l;
+		Double day30Sum = 0.0;
+		Double day30Avg = 0.0;
 		List<DataAppuserRetention> list = dataAppuserRetentionMapper.getAppuserRetentionList(params);
 		List<DataRetentionVo> retentionVo = Lists.newArrayList(); 
 		for (DataAppuserRetention data : list) {
 			DataRetentionVo vo = new DataRetentionVo();
-			day1Sum += Long.parseLong(data.getDay1retention());
-			day7Sum += Long.parseLong(data.getDay7retention());
-			day30Sum += Long.parseLong(data.getDay30retention());
+			day1Sum += Double.parseDouble(data.getDay1retention());
+			day7Sum += Double.parseDouble(data.getDay7retention());
+			day30Sum += Double.parseDouble(data.getDay30retention());
 			vo.setDaily(data.getTxnId());
 			vo.setDay1retention(data.getDay1retention());
 			vo.setDay7retention(data.getDay7retention());
@@ -354,7 +367,7 @@ public class DataAppuserRetentionService {
 	public Map<String,Object> getTimeInterval(String startDate,String endDate,String days){
 		
 		Map<String,Object> params = Maps.newHashMap();
-		if(StringUtils.isBlank(days) && StringUtils.isBlank(startDate) && StringUtils.isBlank(endDate)){
+		if(StringUtils.isNotBlank(days) && StringUtils.isBlank(startDate) && StringUtils.isBlank(endDate)){
 			Date now = new Date();
 			startDate = DateFormatUtil.getAddDaysString(now, Integer.parseInt(days));
 			endDate = DateFormatUtil.dateToString(now);

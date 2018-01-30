@@ -81,6 +81,10 @@ public class ExportFileController {
      * 日志
      */
     private static final Logger LOG = LoggerFactory.getLogger(ExportFileController.class);
+    /**
+     * csv文件每个sheet最大存放量
+     */
+    private static final Integer SHEETSIZE = 100;
 
     /**
      * 文件根路径
@@ -496,62 +500,71 @@ public class ExportFileController {
     public void generateFile(String filePath, List dataList, String attrs) throws IOException {
         // 第一步：声明一个工作薄
         HSSFWorkbook wb = new HSSFWorkbook();
-        // 第二步：声明一个单子并命名
-        HSSFSheet sheet = wb.createSheet("sheet");
 
-        // 获取标题样式，内容样式
-        List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
+        /**
+         * 判断dataList的size,如果一个sheet满65535条时，就重新建一个sheet
+         */
+        int num = (dataList.size() % SHEETSIZE == 0) ? dataList.size() / SHEETSIZE : dataList.size() / SHEETSIZE + 1;
 
-        // attrs 格式： {orderId:'订单ID',orderAmt:'订单金额'} ，把key和value拆分生产两个数组
-        // 字符格式化
-        String[] attrArrays = attrs.replace("{", "").replace("}", "").replace("\"", "").split(",");
+        for(int x=0; x<num; x++){
+            // 第二步：声明一个单子并命名
+            HSSFSheet sheet = wb.createSheet("sheet"+x);
 
-        // 字段数组:orderId
-        String[] keyArrays = new String[attrArrays.length];
+            // 获取标题样式，内容样式
+            List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
 
-        // 标题数组:订单ID
-        String[] valueArrays = new String[attrArrays.length];
+            // attrs 格式： {orderId:'订单ID',orderAmt:'订单金额'} ，把key和value拆分生产两个数组
+            // 字符格式化
+            String[] attrArrays = attrs.replace("{", "").replace("}", "").replace("\"", "").split(",");
 
-        // 获取标题行内容
-        HSSFRow row = sheet.createRow(0);
-        for (int i = 0; i < attrArrays.length; i++) {
-            String[] attrsArray = attrArrays[i].split(":");
-            keyArrays[i] = attrsArray[0];
-            valueArrays[i] = attrsArray[1];
-        }
+            // 字段数组:orderId
+            String[] keyArrays = new String[attrArrays.length];
 
-        // 第三步：创建第一行（也可以称为表头）
-        for (int i = 0; i < valueArrays.length; i++) {
-            HSSFCell cell = row.createCell(i);
-            cell.setCellStyle(hssfCellStyle.get(0));
-            String cellValue = valueArrays[i];
-            sheet.autoSizeColumn(i, true);
-            cell.setCellValue(cellValue);
-        }
-        // 向单元格里填充数据
-        for (int i = 0; i < dataList.size(); i++) {
-            row = sheet.createRow(i + 1);
-            Object object = dataList.get(i);
+            // 标题数组:订单ID
+            String[] valueArrays = new String[attrArrays.length];
 
-            // json日期转换配置类
-            JsonConfig jsonConfig = new JsonConfig();
-            jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor());
-            JSONObject jsonObject = JSONObject.fromObject(object, jsonConfig);
-
-            for (int j = 0; j < keyArrays.length; j++) {
-                HSSFCell cellContent = row.createCell(j);
-                cellContent.setCellStyle(hssfCellStyle.get(1));
-                if (i == 1) {
-                    sheet.autoSizeColumn(j, true);
-                }
-                if (keyArrays[j].equals("awardDetailId")) {
-                    sheet.setColumnWidth(0, 0);// 设置这一列的宽度为0
-                }
-                cellContent.setCellValue(jsonObject.get(keyArrays[j]) + "");
+            // 获取标题行内容
+            HSSFRow row = sheet.createRow(0);
+            for (int i = 0; i < attrArrays.length; i++) {
+                String[] attrsArray = attrArrays[i].split(":");
+                keyArrays[i] = attrsArray[0];
+                valueArrays[i] = attrsArray[1];
             }
 
-        }
+            // 第三步：创建第一行（也可以称为表头）
+            for (int i = 0; i < valueArrays.length; i++) {
+                HSSFCell cell = row.createCell(i);
+                cell.setCellStyle(hssfCellStyle.get(0));
+                String cellValue = valueArrays[i];
+                sheet.autoSizeColumn(i, true);
+                cell.setCellValue(cellValue);
+            }
+            int rowNum = 1;
+            for (int y = SHEETSIZE * x; y < SHEETSIZE * (x+1) && y < dataList.size(); y++) {
 
+                row = sheet.createRow(rowNum);
+                rowNum++;
+                Object object = dataList.get(y);
+
+                // json日期转换配置类
+                JsonConfig jsonConfig = new JsonConfig();
+                jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor());
+                JSONObject jsonObject = JSONObject.fromObject(object, jsonConfig);
+
+                for (int j = 0; j < keyArrays.length; j++) {
+                    HSSFCell cellContent = row.createCell(j);
+                    cellContent.setCellStyle(hssfCellStyle.get(1));
+                    if (y == 1) {
+                        sheet.autoSizeColumn(j, true);
+                    }
+                    if (keyArrays[j].equals("awardDetailId")) {
+                        sheet.setColumnWidth(0, 0);// 设置这一列的宽度为0
+                    }
+                    cellContent.setCellValue(jsonObject.get(keyArrays[j]) + "");
+                }
+
+            }
+        }
         // 判断文件是否存在 ,没有创建文件
         String filePath2 = new File(filePath).getParent();
         if (!new File(filePath2).isDirectory()) {
@@ -560,6 +573,9 @@ public class ExportFileController {
         FileOutputStream out = new FileOutputStream(filePath);
         wb.write(out);
         out.close();
+
+
+
     }
 
     /**

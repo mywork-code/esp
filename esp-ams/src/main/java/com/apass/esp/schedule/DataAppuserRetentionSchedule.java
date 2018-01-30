@@ -1,6 +1,7 @@
 package com.apass.esp.schedule;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -14,10 +15,13 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.domain.entity.DataAppuserRetention;
 import com.apass.esp.domain.enums.TermainalTyps;
+import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserRetentionDto;
 import com.apass.esp.service.dataanalysis.DataAppuserRetentionService;
 import com.apass.esp.service.talkingdata.TalkDataService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Component
 @Configurable
@@ -51,6 +55,14 @@ public class DataAppuserRetentionSchedule {
 			DataAppuserRetentionDto retention = JSONObject.toJavaObject(newuserObj, DataAppuserRetentionDto.class);
 			if(null != retention){
 				retention.setPlatformids(Byte.valueOf(termainal.getCode()));
+			}
+			
+			/*** 如果第一次进入就所有的数据写入数据库，否则更新当前hour的数据*/
+	    	String nowDate = DateFormatUtil.dateToString(new Date(), "yyyyMMdd");
+    		/*** 插入数据之前，1、是否应该判断，当天的数据是否存在，2、如果不存在，全部插入，如果存在，值更新当天时间节点的数据*/
+			DataAppuserRetention analysis = retentionService.getDataAnalysisByTxnId(new DataAnalysisVo(nowDate, termainal.getCode(),"2","00"));
+			if(null != analysis){
+				retention.setId(analysis.getId());
 			}
 			retentionService.insertRetention(retention);
 			try {
