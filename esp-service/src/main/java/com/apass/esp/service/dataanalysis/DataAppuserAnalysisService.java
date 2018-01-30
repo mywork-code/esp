@@ -66,7 +66,7 @@ public class DataAppuserAnalysisService {
 			Date date = new Date();
 			analysis.setTxnId(retention.getDaily().replace("-", ""));
 			if(null != retention.getId()){
-			   analysis = analysisMapper.getDataAnalysisByTxnId(new DataAnalysisVo(analysis.getTxnId(), retention.getPlatformids().toString(), retention.getType().toString(),"00"));
+			   analysis = analysisMapper.selectByPrimaryKey(retention.getId());
 			}
 			analysis.setActiveuser(retention.getActiveuser());
 			analysis.setAvgsessionlength(retention.getAvgsessionlength());
