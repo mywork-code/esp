@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import com.apass.esp.mapper.DataEsporderAnalysisMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderDetailInfoService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
 public class DataEsporderAnalysisService {
@@ -85,6 +87,7 @@ public class DataEsporderAnalysisService {
 	 * @return
 	 */
 	public Response getOperationAnalysisList(Map<String, Object> map) {
+		map = conversionParam(map);
 		List<DataEsporderAnalysisVo> list = dataEsporderAnalysisMapper.getOperationAnalysisList(map);
 		for(DataEsporderAnalysisVo entity : list){
 			Long orderAnalysisId = entity.getId();
@@ -105,6 +108,53 @@ public class DataEsporderAnalysisService {
 			entity.setList(orderVolist);
 		}
 		return Response.success("运营分析数据载入成功！", list);
+	}
+	/**
+	 * 转化参数
+	 * @param map
+	 * @return
+	 */
+	private Map<String, Object> conversionParam(Map<String, Object> map) {
+		String dateType = CommonUtils.getValue(map, "dateType");
+		if(StringUtils.equals(dateType, "orther")){
+			return map;
+		}
+		Date now = new Date();
+		Date date = null;
+		String day = DateFormatUtil.dateToString(now, "yyyy-MM-dd");
+		String beginDate = null;
+		String endDate = day + " 23:59:59";
+		switch (dateType) {
+		case "orther":
+			return map;
+		case "today":
+			beginDate = day + " 00:00:00";
+			map.put("beginDate", beginDate);
+			map.put("endDate", endDate);
+			break;
+		case "yesterday":
+			date = DateFormatUtil.addDays(now, -1);
+			day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
+			beginDate = day + " 00:00:00";
+			map.put("beginDate", beginDate);
+			map.put("endDate", endDate);
+			break;
+		case "lastseven":
+			date = DateFormatUtil.addDays(now, -7);
+			day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
+			beginDate = day + " 00:00:00";
+			map.put("beginDate", beginDate);
+			map.put("endDate", endDate);
+			break;
+		case "lastthirty":
+			date = DateFormatUtil.addDays(now, -30);
+			day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
+			beginDate = day + " 00:00:00";
+			map.put("beginDate", beginDate);
+			map.put("endDate", endDate);
+			break;
+		}
+		return map;
 	}
 	/**
 	 * 商城订单统计
