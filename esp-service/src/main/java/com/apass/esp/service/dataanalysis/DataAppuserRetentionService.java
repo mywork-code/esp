@@ -21,6 +21,7 @@ import com.apass.esp.domain.vo.DataAppuserRetentionVo;
 import com.apass.esp.domain.vo.DataRetentionVo;
 import com.apass.esp.mapper.DataAppuserAnalysisMapper;
 import com.apass.esp.mapper.DataAppuserRetentionMapper;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Lists;
@@ -76,8 +77,9 @@ public class DataAppuserRetentionService {
 	 * @param dateEnd
 	 * @param platformids
 	 * @return
+	 * @throws BusinessException 
 	 */
-	public Response getAppuserRetentionList(Map<String, Object> map) {
+	public Response getAppuserRetentionList(Map<String, Object> map) throws BusinessException {
 		map = conversionParam(map);
 		List<DataAppuserRetention> list = dataAppuserRetentionMapper.getAppuserRetentionList(map);
 		List<DataAppuserRetentionVo> newList = new ArrayList<DataAppuserRetentionVo>();
@@ -97,8 +99,9 @@ public class DataAppuserRetentionService {
 	 * 转化参数
 	 * @param map
 	 * @return
+	 * @throws BusinessException 
 	 */
-	private Map<String, Object> conversionParam(Map<String, Object> map) {
+	private Map<String, Object> conversionParam(Map<String, Object> map) throws BusinessException {
 		String dateType = CommonUtils.getValue(map, "dateType");
 		if(StringUtils.equals(dateType, "orther")){
 			return map;
@@ -109,34 +112,36 @@ public class DataAppuserRetentionService {
 		String beginDate = null;
 		String endDate = day + " 23:59:59";
 		switch (dateType) {
-		case "orther":
-			return map;
-		case "today":
-			beginDate = day + " 00:00:00";
-			map.put("beginDate", beginDate);
-			map.put("endDate", endDate);
-			break;
-		case "yesterday":
-			date = DateFormatUtil.addDays(now, -1);
-			day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-			beginDate = day + " 00:00:00";
-			map.put("beginDate", beginDate);
-			map.put("endDate", endDate);
-			break;
-		case "lastseven":
-			date = DateFormatUtil.addDays(now, -7);
-			day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-			beginDate = day + " 00:00:00";
-			map.put("beginDate", beginDate);
-			map.put("endDate", endDate);
-			break;
-		case "lastthirty":
-			date = DateFormatUtil.addDays(now, -30);
-			day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-			beginDate = day + " 00:00:00";
-			map.put("beginDate", beginDate);
-			map.put("endDate", endDate);
-			break;
+			case "orther":
+				return map;
+			case "today":
+				beginDate = day + " 00:00:00";
+				map.put("beginDate", beginDate);
+				map.put("endDate", endDate);
+				break;
+			case "yesterday":
+				date = DateFormatUtil.addDays(now, -1);
+				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
+				beginDate = day + " 00:00:00";
+				map.put("beginDate", beginDate);
+				map.put("endDate", endDate);
+				break;
+			case "lastseven":
+				date = DateFormatUtil.addDays(now, -7);
+				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
+				beginDate = day + " 00:00:00";
+				map.put("beginDate", beginDate);
+				map.put("endDate", endDate);
+				break;
+			case "lastthirty":
+				date = DateFormatUtil.addDays(now, -30);
+				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
+				beginDate = day + " 00:00:00";
+				map.put("beginDate", beginDate);
+				map.put("endDate", endDate);
+				break;
+			default:
+				throw new BusinessException("形参不完整，转换异常！");
 		}
 		return map;
 	}
@@ -193,14 +198,12 @@ public class DataAppuserRetentionService {
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	public void insertRetention(DataAppuserRetentionDto dto){
 		if(null != dto){
-			
-			DataAppuserRetention retention = new DataAppuserRetention();
-			Date date = new Date();
-			retention.setTxnId(dto.getDaily().replace("-", ""));
-			if(null != dto.getId()){
-				retention = dataAppuserRetentionMapper.getDataAnalysisByTxnId(new DataAnalysisVo(retention.getTxnId(),dto.getPlatformids().toString(),"2","00"));
+			dto.setDaily(dto.getDaily().replace("-", ""));
+			DataAppuserRetention retention = dataAppuserRetentionMapper.getDataAnalysisByTxnId(new DataAnalysisVo(dto.getDaily(),dto.getPlatformids().toString(),"2","00"));
+			if(null == retention){
+				retention = new DataAppuserRetention();
 			}
-			
+			Date date = new Date();
 			retention.setUpdatedTime(date);
 			retention.setPlatformids(dto.getPlatformids());
 			
@@ -367,13 +370,16 @@ public class DataAppuserRetentionService {
 	public Map<String,Object> getTimeInterval(String startDate,String endDate,String days){
 		
 		Map<String,Object> params = Maps.newHashMap();
-		if(StringUtils.isNotBlank(days) && StringUtils.isBlank(startDate) && StringUtils.isBlank(endDate)){
-			Date now = new Date();
+		Date now = new Date();
+		if(StringUtils.isNotBlank(days)){
 			startDate = DateFormatUtil.getAddDaysString(now, Integer.parseInt(days));
 			endDate = DateFormatUtil.dateToString(now);
 		}else{
-			if(StringUtils.isBlank(startDate) || StringUtils.isBlank(endDate)){
-				return params;
+			if(StringUtils.isBlank(endDate)){
+				endDate = DateFormatUtil.dateToString(now);
+			}
+			if(StringUtils.isBlank(startDate)){
+				startDate = DateFormatUtil.getAddDaysString(now, -7);
 			}
 		}
 		startDate = startDate.replace("-", "");
