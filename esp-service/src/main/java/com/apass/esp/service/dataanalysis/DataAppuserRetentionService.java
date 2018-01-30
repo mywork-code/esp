@@ -370,7 +370,7 @@ public class DataAppuserRetentionService {
 	public Map<String,Object> getTimeInterval(String startDate,String endDate,String days){
 		
 		Map<String,Object> params = Maps.newHashMap();
-		if(StringUtils.isNotBlank(days) && StringUtils.isBlank(startDate) && StringUtils.isBlank(endDate)){
+		if(StringUtils.isNotBlank(days)){
 			Date now = new Date();
 			startDate = DateFormatUtil.getAddDaysString(now, Integer.parseInt(days));
 			endDate = DateFormatUtil.dateToString(now);
