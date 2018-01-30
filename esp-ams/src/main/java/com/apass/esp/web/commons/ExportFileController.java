@@ -84,7 +84,7 @@ public class ExportFileController {
     /**
      * csv文件每个sheet最大存放量
      */
-    private static final Integer SHEETSIZE = 100;
+    private static final Integer SHEETSIZE = 65530;
 
     /**
      * 文件根路径
