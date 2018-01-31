@@ -172,6 +172,8 @@ public class DataEsporderAnalysisService {
 		String txnId = DateFormatUtil.dateToString(date, "yyyyMMdd");
 		String day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
 		DataEsporderAnalysis entity = new DataEsporderAnalysis();
+		txnId = "20180112";
+		day = "2018-01-12";
 		entity.setTxnId(txnId);
 		entity.setIsDelete("00");
 		String beginDate = day + " 00:00:00";
@@ -182,11 +184,8 @@ public class DataEsporderAnalysisService {
 			createdEntity(entity);
 		}else{
 			//统计总表字段数据  t_data_esporder_analysis
-			entity = createdOrderEntity(entity, orderlist);
-			//插入总表 t_data_esporder_analysis
-			createdEntity(entity);
-			Long orderAnalysisId = entity.getId();
-			//插入详情表 t_data_esporderdetail
+			Long orderAnalysisId = createdOrderEntity(entity, orderlist);
+			//统计详情表字段数据 t_data_esporderdetail
 			createdOrderDetailEntity(orderAnalysisId,orderlist);
 		}
 	}
@@ -197,7 +196,7 @@ public class DataEsporderAnalysisService {
 	 * @return
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
-	private DataEsporderAnalysis createdOrderEntity(DataEsporderAnalysis entity , List<OrderInfoEntity> orderlist){
+	private Long createdOrderEntity(DataEsporderAnalysis entity , List<OrderInfoEntity> orderlist){
 		String userIdStr = "";
 		String userIdStrByPayfalg = "";
 		Boolean payfalg = true;
@@ -211,14 +210,14 @@ public class DataEsporderAnalysisService {
 		for(OrderInfoEntity order : orderlist){
 			payfalg = true;
 			Long userId = order.getUserId();
-			if(!userIdStr.contains(userId.toString()+",")){
+			if(!userIdStr.contains(userId.toString()+",")){//根据userId或者用户手机号去重
 				userIdStr=userIdStr+userId.toString()+",";
 				confirmNum ++;
 			}
 			confirmAmt = confirmAmt.add(order.getOrderAmt());
 			if(order.getPayTime()!=null){//支付时间非空
 				payfalg = false;
-				if(!userIdStrByPayfalg.contains(userId.toString()+",")){
+				if(!userIdStrByPayfalg.contains(userId.toString()+",")){//根据userId或者用户手机号去重
 					userIdStrByPayfalg=userIdStrByPayfalg+userId.toString()+",";
 					payNum ++;
 				}
@@ -227,7 +226,7 @@ public class DataEsporderAnalysisService {
 			List<OrderDetailInfoEntity> orderDetaillist = orderDetailInfoService.queryOrderDetailInfo(order.getOrderId());
 			for(OrderDetailInfoEntity orderDetail : orderDetaillist){
 				confirmGoodsNum = confirmGoodsNum + Integer.parseInt(orderDetail.getGoodsNum().toString());
-				if(payfalg){
+				if(!payfalg){
 					payGoodsNum = payGoodsNum + Integer.parseInt(orderDetail.getGoodsNum().toString());
 				}
 			}
@@ -242,7 +241,8 @@ public class DataEsporderAnalysisService {
 		entity.setPayGoodsNum(payGoodsNum);
 		entity.setPayAmt(payAmt);
 		entity.setPercentConv(percentConv);
-		return entity;
+		createdEntity(entity);
+		return entity.getId();
 	}
 	/**
 	 * 统计订单详情商品总量 t_data_esporderdetail
@@ -250,7 +250,7 @@ public class DataEsporderAnalysisService {
 	 * @param orderlist
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
-	private void createdOrderDetailEntity(Long orderAnalysisId, List<OrderInfoEntity> orderlist) {
+	private List<DataEsporderdetail> createdOrderDetailEntity(Long orderAnalysisId, List<OrderInfoEntity> orderlist) {
 		Map<Long,List<OrderDetailInfoEntity>> map = new HashMap<Long,List<OrderDetailInfoEntity>>();
 		for(OrderInfoEntity order : orderlist){//所有订单详情  根据商品分组。
 			List<OrderDetailInfoEntity> orderDetaillist = orderDetailInfoService.queryOrderDetailInfo(order.getOrderId());
@@ -266,13 +266,14 @@ public class DataEsporderAnalysisService {
 				}
 			}
 		}
-		Integer confirmGoodsNum = 0;//下单商品件数
-		BigDecimal confirmAmt = new BigDecimal(0);//下单总金额
-		Integer payGoodsNum = 0;//支付商品件数
-		BigDecimal payAmt = new BigDecimal(0);//支付总金额
-		BigDecimal percentConv = new BigDecimal(0);//支付下单环比
+		List<DataEsporderdetail> dlist = new ArrayList<DataEsporderdetail>();
 		Set<Entry<Long, List<OrderDetailInfoEntity>>> set = map.entrySet();
 		for(Entry<Long, List<OrderDetailInfoEntity>> entry : set){
+			Integer confirmGoodsNum = 0;//下单商品件数
+			BigDecimal confirmAmt = new BigDecimal(0);//下单总金额
+			Integer payGoodsNum = 0;//支付商品件数
+			BigDecimal payAmt = new BigDecimal(0);//支付总金额
+			BigDecimal percentConv = new BigDecimal(0);//支付下单环比
 			Long goodsId = entry.getKey();
 			DataEsporderdetail entity = new DataEsporderdetail();
 			entity.setCreatedTime(new Date());
@@ -299,6 +300,8 @@ public class DataEsporderAnalysisService {
 			entity.setPayAmt(payAmt);
 			entity.setPercentConv(percentConv);
 			dataEsporderdetailService.createdEntity(entity);
+			dlist.add(entity);
 		}
+		return dlist;
 	}
 }
