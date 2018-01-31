@@ -16,9 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.domain.entity.DataAppuserRetention;
 import com.apass.esp.domain.enums.TermainalTyps;
-import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserRetentionDto;
 import com.apass.esp.service.dataanalysis.DataAppuserRetentionService;
 import com.apass.esp.service.talkingdata.TalkDataService;
