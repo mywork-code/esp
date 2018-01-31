@@ -5,6 +5,7 @@ import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.vo.DataAppuserAnalysisVo;
 import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.service.dataanalysis.DataAppuserAnalysisService;
+import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
@@ -38,7 +39,7 @@ public class DataAppuserGeneralColler {
      */
     @RequestMapping("/getData")
     @ResponseBody
-    public Response getGenerate(@RequestBody DataAnalysisVo analysis){
+    public Response getGenerate(@RequestBody Map<String, Object> map){
         /**
          *  思路：
          *  1,平台类型platformids。封装当天时间00:00为dateStart，当前时间为dateEnd，
@@ -48,6 +49,11 @@ public class DataAppuserGeneralColler {
          *  结果为正：增，结果为负：减
          *
          */
+        String platformids = CommonUtils.getValue(map, "platformids");
+
+
+        DataAnalysisVo analysis = new DataAnalysisVo();
+        analysis.setPlatformids(platformids);
         DataAppuserAnalysisVo analyVo = new DataAppuserAnalysisVo();
         try{
             if(StringUtils.isEmpty(analysis.getPlatformids())){
