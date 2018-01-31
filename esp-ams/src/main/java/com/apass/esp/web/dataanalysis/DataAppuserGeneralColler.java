@@ -26,7 +26,7 @@ import java.util.Map;
  * Created by xiaohai on 2018/1/26.
  */
 @Controller
-@RequestMapping("/dataanalysis/generate")
+@RequestMapping("/noauth/dataanalysis/generate")
 public class DataAppuserGeneralColler {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataAppuserGeneralColler.class);
 

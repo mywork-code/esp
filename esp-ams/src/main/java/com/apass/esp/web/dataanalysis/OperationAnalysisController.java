@@ -20,7 +20,7 @@ import com.apass.gfb.framework.exception.BusinessException;
  *
  */
 @Controller
-@RequestMapping("/dataanalysis/operationAnalysisController")
+@RequestMapping("/noauth/dataanalysis/operationAnalysisController")
 public class OperationAnalysisController {
     private static final Logger logger = LoggerFactory.getLogger(OperationAnalysisController.class);
     @Autowired
