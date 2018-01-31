@@ -16,9 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.domain.entity.DataAppuserRetention;
 import com.apass.esp.domain.enums.TermainalTyps;
-import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserRetentionDto;
 import com.apass.esp.service.dataanalysis.DataAppuserRetentionService;
 import com.apass.esp.service.talkingdata.TalkDataService;
@@ -46,7 +44,7 @@ public class DataAppuserRetentionSchedule {
 	 * 此方法往t_data_appuser_retention表中插入数据
 	 * @return
 	 */
-    @Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(cron = "0 0 4 * * ?")
     public void retentionEveryDayScheduleData(){
 		ArrayList<String> metrics = getMetrics();
 		Date time1 = DateFormatUtil.addDays(new Date(), -1);
