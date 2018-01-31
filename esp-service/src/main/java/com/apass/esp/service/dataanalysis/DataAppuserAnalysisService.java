@@ -62,12 +62,12 @@ public class DataAppuserAnalysisService {
 	@Transactional(rollbackFor = { Exception.class,RuntimeException.class })
 	public void insertAnalysisData(DataAppuserAnalysisDto retention){
 		if(null != retention){
-			DataAppuserAnalysis analysis = new DataAppuserAnalysis();
-			Date date = new Date();
-			analysis.setTxnId(retention.getDaily().replace("-", ""));
-			if(null != retention.getId()){
-			   analysis = analysisMapper.selectByPrimaryKey(retention.getId());
+			DataAppuserAnalysis analysis = analysisMapper.getDataAnalysisByTxnId(new DataAnalysisVo(retention.getDaily(), retention.getPlatformids().toString(),"2","00"));;
+			if(null == analysis){
+			   analysis = new DataAppuserAnalysis();
 			}
+			Date date = new Date();
+			analysis.setTxnId(retention.getDaily());
 			analysis.setActiveuser(retention.getActiveuser());
 			analysis.setAvgsessionlength(retention.getAvgsessionlength());
 			analysis.setBounceuser(retention.getBounceuser());
@@ -82,7 +82,7 @@ public class DataAppuserAnalysisService {
 			analysis.setVersionupuser(retention.getVersionupuser());
 			analysis.setWau(retention.getWau());
 			
-			if(null == retention.getId()){
+			if(null == analysis.getId()){
 				analysis.setCreatedTime(date);
 				analysisMapper.insertSelective(analysis);
 			}else{
@@ -101,23 +101,22 @@ public class DataAppuserAnalysisService {
 	 */
 	@Transactional(rollbackFor = { Exception.class,RuntimeException.class })
 	public void insertAnalysis(DataAppuserAnalysisDto vo){
-		DataAppuserAnalysis analysis = new DataAppuserAnalysis();
-		Date date = new Date();
 		String txnId = vo.getDaily() + vo.getHourly().split(":")[0];
-		if(null == vo.getId()){
+		DataAppuserAnalysis analysis = analysisMapper.getDataAnalysisByTxnId(new DataAnalysisVo(txnId, vo.getPlatformids().toString(), vo.getType().toString(),"00"));
+		if(null == analysis){
+			analysis = new DataAppuserAnalysis();
+		}
+		Date date = new Date();
+		analysis.setType(vo.getType());
+		analysis.setPlatformids(vo.getPlatformids());
+		analysis.setTxnId(txnId);
+		analysis.setNewuser(vo.getNewuser());
+		analysis.setSession(vo.getSession());
+		analysis.setUpdatedTime(date);
+		if(null == analysis.getId()){
 			analysis.setCreatedTime(date);
-			analysis.setType(vo.getType());
-			analysis.setPlatformids(vo.getPlatformids());
-			analysis.setTxnId(txnId);
-			analysis.setNewuser(vo.getNewuser());
-			analysis.setSession(vo.getSession());
-			analysis.setUpdatedTime(date);
 			analysisMapper.insertSelective(analysis);
 		}else{
-			analysis = analysisMapper.getDataAnalysisByTxnId(new DataAnalysisVo(txnId, vo.getPlatformids().toString(), vo.getType().toString(),"00"));
-			analysis.setNewuser(vo.getNewuser());
-			analysis.setSession(vo.getSession());
-			analysis.setUpdatedTime(date);
 			analysisMapper.updateByPrimaryKeySelective(analysis);
 		}
 	}
