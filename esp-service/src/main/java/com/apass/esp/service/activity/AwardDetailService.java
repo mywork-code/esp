@@ -264,6 +264,7 @@ public class AwardDetailService {
 		if(awardDetails != null){
 			for (AwardDetail awardDetail : awardDetails) {
 				AwardBindRelIntroVo awardBindRelIntroVo = new AwardBindRelIntroVo();
+				awardBindRelIntroVo.setDrawId(awardDetail.getDrawId());
 				//奖励明细表id
 				awardBindRelIntroVo.setAwardDetailId(awardDetail.getId());
 				//推荐人用户名
