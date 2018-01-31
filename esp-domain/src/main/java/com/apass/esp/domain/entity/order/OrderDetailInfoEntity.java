@@ -1,6 +1,7 @@
 package com.apass.esp.domain.entity.order;
 
 import com.apass.gfb.framework.annotation.MyBatisEntity;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.StringUtils;
 
@@ -319,6 +320,9 @@ public class OrderDetailInfoEntity {
     }
 
     public Date getDelistTime() {
+        if(delistTime!=null && DateFormatUtil.dateToString(delistTime).contains("1900")){
+            return null;
+        }
         return delistTime;
     }
 
