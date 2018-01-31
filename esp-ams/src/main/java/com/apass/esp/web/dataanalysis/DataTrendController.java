@@ -25,7 +25,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
  * @description 数据趋势
  */
 @Controller
-@RequestMapping("/dataanalysis/datatrend")
+@RequestMapping("/noauth/dataanalysis/datatrend")
 public class DataTrendController {
 
 	private static final Logger logger = LoggerFactory.getLogger(DataTrendController.class);
