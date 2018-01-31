@@ -52,7 +52,7 @@ public class DataAppuserGeneralColler {
         try{
             if(StringUtils.isEmpty(analysis.getPlatformids())){
                 LOGGER.error("参数有误,参数：{}",GsonUtils.toJson(analysis));
-                throw new RuntimeException("参数有误,platformId不能为空");
+                throw new RuntimeException("参数有误,platformids不能为空");
             }
 
             //2,封装参数：type:1
