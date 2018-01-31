@@ -172,8 +172,8 @@ public class DataEsporderAnalysisService {
 		String txnId = DateFormatUtil.dateToString(date, "yyyyMMdd");
 		String day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
 		DataEsporderAnalysis entity = new DataEsporderAnalysis();
-		txnId = "20180112";
-		day = "2018-01-12";
+//		txnId = "20180112";
+//		day = "2018-01-12";
 		entity.setTxnId(txnId);
 		entity.setIsDelete("00");
 		String beginDate = day + " 00:00:00";
