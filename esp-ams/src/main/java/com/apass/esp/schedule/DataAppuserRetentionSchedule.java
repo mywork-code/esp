@@ -46,7 +46,7 @@ public class DataAppuserRetentionSchedule {
 	 * 此方法往t_data_appuser_retention表中插入数据
 	 * @return
 	 */
-    @Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(cron = "0 0 4 * * ?")
     public void retentionEveryDayScheduleData(){
 		ArrayList<String> metrics = getMetrics();
 		Date time1 = DateFormatUtil.addDays(new Date(), -1);
