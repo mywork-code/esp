@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,8 +167,10 @@ public class DataEsporderAnalysisService {
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	public void flushEsporderAnalysis() {
-		String txnId = DateFormatUtil.dateToString(new Date(), "yyyyMMdd");
-		String day = DateFormatUtil.dateToString(new Date(), "yyyy-MM-dd");
+		Date now = new Date();
+		Date date = DateFormatUtil.addDays(now, -1);
+		String txnId = DateFormatUtil.dateToString(date, "yyyyMMdd");
+		String day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
 		DataEsporderAnalysis entity = new DataEsporderAnalysis();
 		entity.setTxnId(txnId);
 		entity.setIsDelete("00");
@@ -180,9 +181,12 @@ public class DataEsporderAnalysisService {
 			entity.setIsDelete("00");
 			createdEntity(entity);
 		}else{
+			//统计总表字段数据  t_data_esporder_analysis
 			entity = createdOrderEntity(entity, orderlist);
+			//插入总表 t_data_esporder_analysis
 			createdEntity(entity);
 			Long orderAnalysisId = entity.getId();
+			//插入详情表 t_data_esporderdetail
 			createdOrderDetailEntity(orderAnalysisId,orderlist);
 		}
 	}
