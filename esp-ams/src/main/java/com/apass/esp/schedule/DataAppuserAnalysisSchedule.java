@@ -3,7 +3,6 @@ package com.apass.esp.schedule;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.enums.TermainalTyps;
-import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.service.dataanalysis.DataAppuserAnalysisService;
 import com.apass.esp.service.talkingdata.TalkDataService;
