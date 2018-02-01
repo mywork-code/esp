@@ -7,7 +7,7 @@
             <if test="orderAnalysisId!=null and orderAnalysisId!=''"> AND order_analysis_id = #{orderAnalysisId} </if>
         </where>
     </sql>
-    <select id="getOperationAnalysisList" resultMap="BaseResultMap">
+    <select id="getDataEsporderdetailList" resultMap="BaseResultMap">
         SELECT
         	<include refid="Base_Column_List" />
 	    FROM

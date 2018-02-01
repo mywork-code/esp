@@ -108,40 +108,40 @@ public class DataAppuserRetentionService {
 		}
 		Date now = new Date();
 		Date date = null;
-		String day = DateFormatUtil.dateToString(now, "yyyy-MM-dd");
-		String beginDate = null;
-		String endDate = day + " 23:59:59";
+		String dateStart = null;
+		String dateEnd = DateFormatUtil.dateToString(now, "yyyyMMdd");
 		switch (dateType) {
 			case "orther":
 				return map;
 			case "today":
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = dateEnd;
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
 			case "yesterday":
 				date = DateFormatUtil.addDays(now, -1);
-				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
 			case "lastseven":
 				date = DateFormatUtil.addDays(now, -7);
-				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
 			case "lastthirty":
 				date = DateFormatUtil.addDays(now, -30);
-				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
-			default:
-				throw new BusinessException("形参不完整，转换异常！");
+			default://默认7天
+				date = DateFormatUtil.addDays(now, -7);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
+				break;
 		}
 		return map;
 	}
