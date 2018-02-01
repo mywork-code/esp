@@ -3,19 +3,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
+import com.apass.esp.domain.entity.customer.RegisterUser;
+import com.apass.esp.domain.enums.TermainalTyps;
 import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.mapper.DataAppuserAnalysisMapper;
+import com.apass.esp.service.bill.CustomerServiceClient;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
 public class DataAppuserAnalysisService {
 	@Autowired
 	private DataAppuserAnalysisMapper analysisMapper;
+	@Autowired
+	private CustomerServiceClient client;
 	/**
 	 * CREATE
 	 * @param entity
@@ -65,6 +71,22 @@ public class DataAppuserAnalysisService {
 			DataAppuserAnalysis analysis = analysisMapper.getDataAnalysisByTxnId(new DataAnalysisVo(retention.getDaily(), retention.getPlatformids().toString(),"2","00"));;
 			if(null == analysis){
 			   analysis = new DataAppuserAnalysis();
+			   /*** 此处是获取昨天的 APP端新增的注册用户数 安卓、苹果、全平台*/
+			   String yesterday = DateFormatUtil.getAddDaysString(new Date(), -1).replace("-", "");
+			   if(StringUtils.equals(retention.getDaily(), yesterday)){
+				   RegisterUser user = client.getRegisteruser();
+				   String register = null;
+				   if(null != user){
+					   if(StringUtils.equals(retention.getPlatformids().toString(),TermainalTyps.TYPE_ANDROID.getCode())){
+						   register = user.getAndroidNum();
+					   }else if(StringUtils.equals(retention.getPlatformids().toString(),TermainalTyps.TYPE_IOS.getCode())){
+						   register = user.getIosNum();
+					   }else if(StringUtils.equals(retention.getPlatformids().toString(),TermainalTyps.TYPE_FULL.getCode())){
+						   register = user.getTotalNum();
+					   }
+					   analysis.setRegisteruser(register);
+				   }
+			   }
 			}
 			Date date = new Date();
 			analysis.setTxnId(retention.getDaily());
