@@ -1,4 +1,5 @@
 package com.apass.esp.service.dataanalysis;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -100,15 +101,12 @@ public class DataAppuserRetentionService {
 	 */
 	private Map<String, Object> conversionParam(Map<String, Object> map) throws BusinessException {
 		String dateType = CommonUtils.getValue(map, "dateType");
-		if(StringUtils.equals(dateType, "orther")){
-			return map;
-		}
 		Date now = new Date();
 		Date date = null;
 		String dateStart = null;
 		String dateEnd = DateFormatUtil.dateToString(now, "yyyyMMdd");
 		switch (dateType) {
-			case "orther":
+			case "other":
 				return map;
 			case "today":
 				dateStart = dateEnd;
@@ -133,11 +131,12 @@ public class DataAppuserRetentionService {
 				map.put("dateStart", dateStart);
 				map.put("dateEnd", dateEnd);
 				break;
-			default://默认7天
+			default://默认查询 7天 全平台 留存数据
 				date = DateFormatUtil.addDays(now, -7);
 				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
 				map.put("dateStart", dateStart);
 				map.put("dateEnd", dateEnd);
+				map.put("platformids", "0");
 				break;
 		}
 		return map;
@@ -169,12 +168,13 @@ public class DataAppuserRetentionService {
 	 */
 	private String formartString(String str){
 		if(str.indexOf(".")!=-1){
-			if(str.length()>str.indexOf(".")+4){
-				str = str.substring(0, str.indexOf(".")+4);
+			if(str.length()>str.indexOf(".")+5){
+				str = str.substring(0, str.indexOf(".")+5);
 			}
-			str = str + "%";
 		}
-		return str;
+		BigDecimal data = new BigDecimal(str);
+		data = data.multiply(new BigDecimal(100));
+		return data.toString() + "%";
 	}
 	/**
 	 * 转化实体类

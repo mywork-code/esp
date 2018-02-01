@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,15 +125,12 @@ public class DataEsporderAnalysisService {
 	 */
 	private Map<String, Object> conversionParam(Map<String, Object> map) throws BusinessException {
 		String dateType = CommonUtils.getValue(map, "dateType");
-		if(StringUtils.equals(dateType, "orther")){
-			return map;
-		}
 		Date now = new Date();
 		Date date = null;
 		String dateStart = null;
 		String dateEnd = DateFormatUtil.dateToString(now, "yyyyMMdd");
 		switch (dateType) {
-			case "orther":
+			case "other":
 				return map;
 			case "today":
 				dateStart = dateEnd;
@@ -159,11 +155,12 @@ public class DataEsporderAnalysisService {
 				map.put("dateStart", dateStart);
 				map.put("dateEnd", dateEnd);
 				break;
-			default://默认7天
+			default://默认查询 7天 全平台 运营数据
 				date = DateFormatUtil.addDays(now, -7);
 				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
 				map.put("dateStart", dateStart);
 				map.put("dateEnd", dateEnd);
+				map.put("platformids", "0");
 				break;
 		}
 		return map;
