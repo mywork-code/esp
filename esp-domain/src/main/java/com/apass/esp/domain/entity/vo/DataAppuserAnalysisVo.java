@@ -12,7 +12,7 @@ public class DataAppuserAnalysisVo {
     /**
      * 拆线图显示
      */
-    private List<DataAppuserAnalysis> dataAppuserAnalysises;
+    private List<DataAppAnalysisVo> dataAppAnalysisVos;
 
     /**
      * 昨日新增
@@ -26,31 +26,19 @@ public class DataAppuserAnalysisVo {
      * 新增环比
      */
     private Double increaseLinkRatio;
-    /**
-     * 昨日活跃
-     */
-    private String yestodayActivity;
-    /**
-     * 今日活跃
-     */
-    private String todayActivity;
-    /**
-     * 活跃环比
-     */
-    private Double activityLinkRatio;
 
     /**
      * 昨日启动
      */
-    private String yestodayLaunch;
+    private String yestodaySession;
     /**
      * 今日启动
      */
-    private String todayLaunch;
+    private String todaySession;
     /**
      * 启动环比
      */
-    private Double launchLinkRatio;
+    private Double sessionLinkRatio;
 
     /**
      * 一次性用户数
@@ -61,17 +49,13 @@ public class DataAppuserAnalysisVo {
      */
     private String totaluser;
 
-    /**
-     * 平均单次使用时长
-     */
-    private String avgsessionlength;
 
-    public List<DataAppuserAnalysis> getDataAppuserAnalysises() {
-        return dataAppuserAnalysises;
+    public List<DataAppAnalysisVo> getDataAppAnalysisVos() {
+        return dataAppAnalysisVos;
     }
 
-    public void setDataAppuserAnalysises(List<DataAppuserAnalysis> dataAppuserAnalysises) {
-        this.dataAppuserAnalysises = dataAppuserAnalysises;
+    public void setDataAppAnalysisVos(List<DataAppAnalysisVo> dataAppAnalysisVos) {
+        this.dataAppAnalysisVos = dataAppAnalysisVos;
     }
 
     public String getYestodayIncrease() {
@@ -98,52 +82,29 @@ public class DataAppuserAnalysisVo {
         this.increaseLinkRatio = increaseLinkRatio;
     }
 
-    public String getYestodayActivity() {
-        return yestodayActivity;
+
+    public String getYestodaySession() {
+        return yestodaySession;
     }
 
-    public void setYestodayActivity(String yestodayActivity) {
-        this.yestodayActivity = yestodayActivity;
+    public void setYestodaySession(String yestodaySession) {
+        this.yestodaySession = yestodaySession;
     }
 
-    public String getTodayActivity() {
-        return todayActivity;
+    public String getTodaySession() {
+        return todaySession;
     }
 
-    public void setTodayActivity(String todayActivity) {
-        this.todayActivity = todayActivity;
+    public void setTodaySession(String todaySession) {
+        this.todaySession = todaySession;
     }
 
-    public Double getActivityLinkRatio() {
-        return activityLinkRatio;
+    public Double getSessionLinkRatio() {
+        return sessionLinkRatio;
     }
 
-    public void setActivityLinkRatio(Double activityLinkRatio) {
-        this.activityLinkRatio = activityLinkRatio;
-    }
-
-    public String getYestodayLaunch() {
-        return yestodayLaunch;
-    }
-
-    public void setYestodayLaunch(String yestodayLaunch) {
-        this.yestodayLaunch = yestodayLaunch;
-    }
-
-    public String getTodayLaunch() {
-        return todayLaunch;
-    }
-
-    public void setTodayLaunch(String todayLaunch) {
-        this.todayLaunch = todayLaunch;
-    }
-
-    public Double getLaunchLinkRatio() {
-        return launchLinkRatio;
-    }
-
-    public void setLaunchLinkRatio(Double launchLinkRatio) {
-        this.launchLinkRatio = launchLinkRatio;
+    public void setSessionLinkRatio(Double sessionLinkRatio) {
+        this.sessionLinkRatio = sessionLinkRatio;
     }
 
     public String getBounceuser() {
@@ -162,11 +123,4 @@ public class DataAppuserAnalysisVo {
         this.totaluser = totaluser;
     }
 
-    public String getAvgsessionlength() {
-        return avgsessionlength;
-    }
-
-    public void setAvgsessionlength(String avgsessionlength) {
-        this.avgsessionlength = avgsessionlength;
-    }
 }
