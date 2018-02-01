@@ -2,13 +2,16 @@ package com.apass.esp.web.dataanalysis;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
+import com.apass.esp.domain.entity.vo.DataAppAnalysisVo;
 import com.apass.esp.domain.entity.vo.DataAppuserAnalysisVo;
 import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.service.dataanalysis.DataAppuserAnalysisService;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.xhtmlrenderer.css.style.derived.StringValue;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -51,10 +55,10 @@ public class DataAppuserGeneralColler {
          */
         String platformids = CommonUtils.getValue(map, "platformids");
 
-
         DataAnalysisVo analysis = new DataAnalysisVo();
         analysis.setPlatformids(platformids);
         DataAppuserAnalysisVo analyVo = new DataAppuserAnalysisVo();
+        List<DataAppAnalysisVo> voLsit = Lists.newArrayList();
         try{
             if(StringUtils.isEmpty(analysis.getPlatformids())){
                 LOGGER.error("参数有误,参数：{}",GsonUtils.toJson(analysis));
@@ -63,10 +67,24 @@ public class DataAppuserGeneralColler {
 
             //2,封装参数：type:1
             byte type = 1;
-            Map<String, Object> paramMap = packaParam(analysis.getPlatformids(),type,getDateBegin(),DateFormatUtil.dateToString(new Date(),"yyyyMMddHH"));
-            LOGGER.info("应用概况查询拆线图相关数据参数:{}", GsonUtils.toJson(paramMap));
+            Map<String, Object> paramMap = packaParam(analysis.getPlatformids(),type,getDateBegin(true),DateFormatUtil.dateToString(new Date(),"yyyyMMddHH"));
+            Map<String, Object> paramMap2 = packaParam(analysis.getPlatformids(),type,getDateBegin(false),getDateEnd(false));
+            LOGGER.info("应用概况查询拆线图相关数据参数，今日:{},昨日:{}", GsonUtils.toJson(paramMap),GsonUtils.toJson(paramMap2));
             List<DataAppuserAnalysis> dataAppuserAnalysises = dataAppuserAnalysisService.getAppuserAnalysisList(paramMap);
-            analyVo.setDataAppuserAnalysises(dataAppuserAnalysises);
+            List<DataAppuserAnalysis> dataAppuserAnalysises2 = dataAppuserAnalysisService.getAppuserAnalysisList(paramMap2);
+            if(CollectionUtils.isEmpty(dataAppuserAnalysises)){
+                return Response.success("应用概况相关数据获取成功！",analyVo);
+            }
+            for(int i=0; i<dataAppuserAnalysises.size(); i++){
+                DataAppAnalysisVo vo = new DataAppAnalysisVo();
+                vo.setTodayNewuser(dataAppuserAnalysises.get(i).getNewuser());
+                vo.setYesetodayNewuser(dataAppuserAnalysises2.get(i).getNewuser());
+                vo.setTodaySession(dataAppuserAnalysises.get(i).getSession());
+                vo.setYesetodaySession(dataAppuserAnalysises2.get(i).getSession());
+
+                voLsit.add(vo);
+            }
+            analyVo.setDataAppAnalysisVos(voLsit);
 
             //3,type:2（daily）,今天数据
             analysis.setTxnId(DateFormatUtil.dateToString(new Date(),"yyyyMMdd"));
@@ -78,9 +96,7 @@ public class DataAppuserGeneralColler {
                 throw new RuntimeException("数据有误");
             }
             analyVo.setTodayIncrease(entity.getNewuser());
-            analyVo.setTodayActivity(entity.getActiveuser());
-            analyVo.setTodayLaunch(entity.getSession());
-            analyVo.setAvgsessionlength(entity.getAvgsessionlength());
+            analyVo.setTodaySession(entity.getSession());
             analyVo.setBounceuser(entity.getBounceuser());
             analyVo.setTotaluser(entity.getTotaluser());
 
@@ -93,17 +109,19 @@ public class DataAppuserGeneralColler {
                 throw new RuntimeException("数据有误");
             }
             analyVo.setYestodayIncrease(entityOld.getNewuser());
-            analyVo.setYestodayActivity(entityOld.getActiveuser());
-            analyVo.setYestodayLaunch(entityOld.getSession());
+            analyVo.setYestodaySession(entityOld.getSession());
             //计算环比（环比=（今日新增-昨日新增）/昨日新增*100%）
-            double increaseLink = (Integer.valueOf(analyVo.getTodayIncrease())-Integer.valueOf(analyVo.getYestodayIncrease()))/Integer.valueOf(analyVo.getYestodayIncrease());
-            double activityLink = (Integer.valueOf(analyVo.getTodayActivity())-Integer.valueOf(analyVo.getYestodayActivity()))/Integer.valueOf(analyVo.getYestodayActivity());
-            double launchyLink = (Integer.valueOf(analyVo.getTodayLaunch())-Integer.valueOf(analyVo.getYestodayLaunch()))/Integer.valueOf(analyVo.getYestodayLaunch());
-            analyVo.setIncreaseLinkRatio(increaseLink);
-            analyVo.setActivityLinkRatio(activityLink);
-            analyVo.setLaunchLinkRatio(launchyLink);
+            double toincre = Double.valueOf(analyVo.getTodayIncrease());
+            double yetincre = Double.valueOf(analyVo.getYestodayIncrease());
+            double increaseLink = (toincre-yetincre)/yetincre;
 
-            LOGGER.error("应用概况相关数据:{}",GsonUtils.toJson(analyVo));
+            double toSession = Double.valueOf(analyVo.getTodayIncrease());
+            double yetSession = Double.valueOf(analyVo.getYestodayIncrease());
+            double sessionLink = (toSession-yetSession)/yetSession;
+            analyVo.setIncreaseLinkRatio(increaseLink);
+            analyVo.setSessionLinkRatio(sessionLink);
+
+            LOGGER.info("应用概况相关数据:{}",GsonUtils.toJson(analyVo));
         }catch (Exception e){
             LOGGER.error("应用概况相关数据获取成功",e);
             return Response.fail("应用概况相关数据获取失败");
@@ -129,9 +147,41 @@ public class DataAppuserGeneralColler {
         return returnMap;
     }
 
-    public String getDateBegin() {
-        String str = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
+    /**
+     * 获取一天中的开始时间
+     * @param flag true:今日，false:昨日
+     * @return
+     */
+    public String getDateBegin(boolean flag) {
+        String str = null;
+        if(flag){
+            str = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
+            str = str+"00";
+        }else{
+            Date yestodayDate = DateFormatUtil.addDays(new Date(),-1);
+            str = DateFormatUtil.dateToString(yestodayDate,"yyyyMMdd");
+            str = str+"00";
+        }
 
-        return str+"00";
+        return str;
+    }
+
+    /**
+     * 获取一天中的结束时间
+     * @param flag true:今日，false:昨日
+     * @return
+     */
+    public String getDateEnd(boolean flag) {
+        String str = null;
+        if(flag){
+            str = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
+            str = str+"24";
+        }else{
+            Date yestodayDate = DateFormatUtil.addDays(new Date(),-1);
+            str = DateFormatUtil.dateToString(yestodayDate,"yyyyMMdd");
+            str = str+"24";
+        }
+
+        return str;
     }
 }
