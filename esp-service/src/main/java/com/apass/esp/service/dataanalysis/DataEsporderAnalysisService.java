@@ -16,6 +16,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataEsporderAnalysis;
 import com.apass.esp.domain.entity.DataEsporderdetail;
+import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.vo.DataAnalysisVo;
@@ -102,8 +103,10 @@ public class DataEsporderAnalysisService {
 			for(DataEsporderdetail order : orderlist){
 				DataEsporderdetailVo vo = new DataEsporderdetailVo();
 				BeanUtils.copyProperties(order, vo);
-				String goodsName = goodsService.serchGoodsByGoodsId(order.getGoodsId().toString()).getGoodsName();
-				vo.setGoodsName(goodsName);
+				GoodsBasicInfoEntity goods = goodsService.serchGoodsByGoodsId(order.getGoodsId().toString());
+				if(goods!=null){
+					vo.setGoodsName(goods.getGoodsName());
+				}
 				orderVolist.add(vo);
 			}
 			vof.setDayData(dayData);

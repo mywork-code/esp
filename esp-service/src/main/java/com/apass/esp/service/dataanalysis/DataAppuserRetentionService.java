@@ -82,6 +82,7 @@ public class DataAppuserRetentionService {
 	public Response getAppuserRetentionList(Map<String, Object> map) throws BusinessException {
 		map = conversionParam(map);
 		List<DataAppuserRetention> list = dataAppuserRetentionMapper.getAppuserRetentionList(map);
+		list = conversionList(list);
 		List<DataAppuserRetentionVo> newList = new ArrayList<DataAppuserRetentionVo>();
 		List<DataAppuserRetentionVo> activityList = new ArrayList<DataAppuserRetentionVo>();
 		for(DataAppuserRetention entity : list){
@@ -144,6 +145,40 @@ public class DataAppuserRetentionService {
 				break;
 		}
 		return map;
+	}
+	/**
+	 * 转化集合
+	 * @param list
+	 * @return
+	 */
+	private List<DataAppuserRetention> conversionList(List<DataAppuserRetention> list) {
+		for(DataAppuserRetention entity : list){
+			entity.setDay1retention(formartString(entity.getDay1retention()));
+			entity.setDay3retention(formartString(entity.getDay3retention()));
+			entity.setDay7retention(formartString(entity.getDay7retention()));
+			entity.setDay14retention(formartString(entity.getDay14retention()));
+			entity.setDay30retention(formartString(entity.getDay30retention()));
+			entity.setDauday1retention(formartString(entity.getDauday1retention()));
+			entity.setDauday3retention(formartString(entity.getDauday3retention()));
+			entity.setDauday7retention(formartString(entity.getDauday7retention()));
+			entity.setDauday14retention(formartString(entity.getDauday14retention()));
+			entity.setDauday30retention(formartString(entity.getDauday30retention()));
+		}
+		return list;
+	}
+	/**
+	 * 格式化字符串
+	 * @param str
+	 * @return
+	 */
+	private String formartString(String str){
+		if(str.indexOf(".")!=-1){
+			if(str.length()>str.indexOf(".")+4){
+				str = str.substring(0, str.indexOf(".")+4);
+			}
+			str = str + "%";
+		}
+		return str;
 	}
 	/**
 	 * 转化实体类
