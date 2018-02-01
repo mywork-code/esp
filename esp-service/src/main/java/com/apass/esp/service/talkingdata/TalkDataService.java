@@ -80,7 +80,11 @@ public class TalkDataService {
     }
     
     public String getTalkingDataByDataAnalysis(Date start,Date end,ArrayList<String> metrics, String groupby,String type){
-    	
+    	try {
+            TimeUnit.SECONDS.sleep(15);
+        } catch (InterruptedException e) {
+            LOGGER.error("-----getTalkingDataByDataAnalysis Exception---->",e);
+        }
         TalkingDataDto talkingDataDto = new TalkingDataDto();
         talkingDataDto.setGroupby(groupby);
 

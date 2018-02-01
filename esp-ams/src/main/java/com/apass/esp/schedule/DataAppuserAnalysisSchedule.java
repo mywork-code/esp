@@ -63,11 +63,6 @@ public class DataAppuserAnalysisSchedule {
 				/*** 此处的数字，标志着分组策略为hourly*/
 				dataAnalysisService.insertAnalysis(user);
 			}
-	    	try {
-	            TimeUnit.SECONDS.sleep(12);
-	        } catch (InterruptedException e) {
-	        	logger.error("-----everyHoursSchedule Exception---->",e);
-	        }
 		}
     }
 	
@@ -91,11 +86,6 @@ public class DataAppuserAnalysisSchedule {
 				retention.setDaily(nowDate);
 			}
 			dataAnalysisService.insertAnalysisData(retention);
-    		try {
-	            TimeUnit.SECONDS.sleep(15);
-	        } catch (InterruptedException e) {
-	        	logger.error("-----getTalkingDataByDataAnalysis Exception---->",e);
-	        }
     	}
 	}
     

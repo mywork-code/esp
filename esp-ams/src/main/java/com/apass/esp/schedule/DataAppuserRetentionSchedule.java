@@ -52,31 +52,11 @@ public class DataAppuserRetentionSchedule {
 		for (TermainalTyps termainal : TermainalTyps.values()) {
 			String day1retentions = talkData.getTalkingDataByDataAnalysis(time,time1,metrics, daily,termainal.getMessage());
 			logger.info("result--->"+day1retentions);
-//			JSONObject newuserObj = (JSONObject) JSONArray.parseArray(JSONObject.parseObject(day1retentions).getString("result")).get(0);
-//			DataAppuserRetentionDto retention = JSONObject.toJavaObject(newuserObj, DataAppuserRetentionDto.class);
-//			if(null != retention){
-//				retention.setPlatformids(Byte.valueOf(termainal.getCode()));
-//			}
-			
-			/*** 如果第一次进入就所有的数据写入数据库，否则更新当前hour的数据*/
-//	    	String nowDate = DateFormatUtil.dateToString(time, "yyyyMMdd");
-    		/*** 插入数据之前，1、是否应该判断，当天的数据是否存在，2、如果不存在，全部插入，如果存在，值更新当天时间节点的数据*/
-//			DataAppuserRetention analysis = retentionService.getDataAnalysisByTxnId(new DataAnalysisVo(nowDate, termainal.getCode(),"2","00"));
-//			if(null != analysis){
-//				retention.setId(analysis.getId());
-//			}
-			
 			List<DataAppuserRetentionDto> dtoList = JSONArray.parseArray(JSONObject.parseObject(day1retentions).getString("result"), DataAppuserRetentionDto.class);
 			for (DataAppuserRetentionDto retention : dtoList) {
 				retention.setPlatformids(Byte.valueOf(termainal.getCode()));
 				retentionService.insertRetention(retention);
 			}
-			
-			try {
-	            TimeUnit.SECONDS.sleep(15);
-	        } catch (InterruptedException e) {
-	        	logger.error("-----DataAppuserRetentionSchedule Exception---->",e);
-	        }
 		}
 	}
     
