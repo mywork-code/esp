@@ -104,6 +104,7 @@ public class DataEsporderAnalysisService {
 				BeanUtils.copyProperties(order, vo);
 				String goodsName = goodsService.serchGoodsByGoodsId(order.getGoodsId().toString()).getGoodsName();
 				vo.setGoodsName(goodsName);
+				orderVolist.add(vo);
 			}
 			vof.setDayData(dayData);
 			BeanUtils.copyProperties(dataAppuserAnalysis, vof);
