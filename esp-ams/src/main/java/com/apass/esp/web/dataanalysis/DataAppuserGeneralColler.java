@@ -81,6 +81,7 @@ public class DataAppuserGeneralColler {
                 vo.setYesetodayNewuser(dataAppuserAnalysises2.get(i).getNewuser());
                 vo.setTodaySession(dataAppuserAnalysises.get(i).getSession());
                 vo.setYesetodaySession(dataAppuserAnalysises2.get(i).getSession());
+                vo.setTxnId(dataAppuserAnalysises.get(i).getTxnId());
 
                 voLsit.add(vo);
             }

@@ -8,6 +8,15 @@ public class DataAppAnalysisVo {
     private String todayNewuser;
     private String yesetodaySession;
     private String todaySession;
+    private String txnId;
+
+    public String getTxnId() {
+        return txnId;
+    }
+
+    public void setTxnId(String txnId) {
+        this.txnId = txnId;
+    }
 
     public String getYesetodayNewuser() {
         return yesetodayNewuser;
