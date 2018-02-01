@@ -206,7 +206,7 @@ public class DataAppuserRetentionService {
 			Date date = new Date();
 			retention.setUpdatedTime(date);
 			retention.setPlatformids(dto.getPlatformids());
-			
+			retention.setTxnId(dto.getDaily());
 			retention.setDauday1retention(dto.getDauday1retention());
 			retention.setDauday3retention(dto.getDauday3retention());
 			retention.setDauday7retention(dto.getDauday7retention());
