@@ -110,14 +110,16 @@ public class OperationAnalysisController {
             String username = CommonUtils.getValue(map, "username");
             String password = CommonUtils.getValue(map, "password");
             if (StringUtils.isAnyBlank(username, password)) {
-            	map.put("errMsg", "用户名或密码不能为空");
-                return Response.fail("用户名或密码不能为空！");
+            	map.put("msg", "用户名或密码不能为空！");
+                return Response.fail("用户名或密码不能为空！",map);
             }
             listeningAuthenticationManager.authentication(username, password);
-            return Response.success("登录成功！",map);
+            map.put("msg", "用户登录成功！");
+            return Response.success("用户登录成功！",map);
         }catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Response.fail("账号或密码不正确");
+            map.put("msg", "用户名或密码不正确！");
+            return Response.fail("用户名或密码不正确！",map);
         }
     }
     /**
@@ -134,19 +136,24 @@ public class OperationAnalysisController {
 			String newpassword = CommonUtils.getValue(map, "password");
 			String conformnewpassword = CommonUtils.getValue(map, "conformpassword");
 			if (StringUtils.isAnyBlank(oldpassword, newpassword, conformnewpassword)) {
-				return Response.fail("旧密码、新密码、确认密码不能为空！");
+				map.put("msg", "旧密码、新密码、确认密码不能为空！");
+				return Response.fail("旧密码、新密码、确认密码不能为空！",map);
 			}
 			if (!StringUtils.equals(newpassword, conformnewpassword)) {
-				return Response.fail("新密码和确认新密码不一致！");
+				map.put("msg", "新密码和确认新密码不一致！");
+				return Response.fail("新密码和确认新密码不一致！",map);
 			}
 			usersService.resetpassword(username, oldpassword, newpassword);
+			map.put("msg", "确认新密码修改成功！");
 			return Response.success("确认新密码修改成功！",map);
 		} catch (BusinessException e) {
 			logger.error(e.getErrorDesc(), e);
-			return Response.fail(e.getErrorDesc());
+			map.put("msg", e.getErrorDesc());
+			return Response.fail(e.getErrorDesc(),map);
 		} catch (Exception e) {
-			logger.error("重置密码失败", e);
-			return Response.fail("重置密码失败");
+			logger.error("修改密码失败！", e);
+			map.put("msg", "修改密码失败！");
+			return Response.fail("修改密码失败！",map);
 		}
 	}
 }
