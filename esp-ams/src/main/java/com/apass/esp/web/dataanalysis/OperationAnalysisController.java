@@ -134,8 +134,8 @@ public class OperationAnalysisController {
 		try {
 			String username = CommonUtils.getValue(map, "username");
 			String oldpassword = CommonUtils.getValue(map, "oldpassword");
-			String newpassword = CommonUtils.getValue(map, "password");
-			String conformnewpassword = CommonUtils.getValue(map, "conformpassword");
+			String newpassword = CommonUtils.getValue(map, "newpassword");
+			String conformnewpassword = CommonUtils.getValue(map, "conformnewpassword");
 			if (StringUtils.isAnyBlank(oldpassword, newpassword, conformnewpassword)) {
 				map.put("msg", "旧密码、新密码、确认密码不能为空！");
 				return Response.fail("旧密码、新密码、确认密码不能为空！",map);
