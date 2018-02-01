@@ -1,5 +1,15 @@
 package com.apass.esp.web.dataanalysis;
+import java.util.List;
 import java.util.Map;
+
+import com.apass.esp.web.rbac.SecurityInfoController;
+import com.apass.gfb.framework.security.domains.SecurityAccordion;
+import com.apass.gfb.framework.security.domains.SecurityAccordionTree;
+import com.apass.gfb.framework.security.domains.SecurityMenus;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +46,8 @@ public class OperationAnalysisController {
     private ListeningAuthenticationManager listeningAuthenticationManager;
     @Autowired
 	private UsersService usersService;
+    @Autowired
+    private SecurityInfoController securityInfo;
     /**
      * 用户留存数据载入
      * @param map
@@ -115,6 +127,33 @@ public class OperationAnalysisController {
                 return Response.fail("用户名或密码不能为空！",map);
             }
             listeningAuthenticationManager.authentication(username, password);
+            //获取菜单
+            List<SecurityAccordionTree> resultList = Lists.newArrayList();
+            Object principal = SpringSecurityUtils.getAuthentication().getPrincipal();
+            if (principal == null || !(principal instanceof ListeningCustomSecurityUserDetails)) {
+                return Response.fail("加载登陆菜单失败,请联系管理员");
+            }
+            ListeningCustomSecurityUserDetails details = (ListeningCustomSecurityUserDetails) principal;
+            SecurityMenus securityMenus = details.getSecurityMenus();
+            securityInfo.treatSecurityMenus(securityMenus, resultList);
+
+            String ifShowGenral = "0";
+            String ifShowRunAnalysis = "0";
+            for(SecurityAccordionTree securityTree:resultList){
+                if(StringUtils.equals(securityTree.getText(),"数据报表")){
+                    for(SecurityAccordionTree chirld: securityTree.getChildren()){
+                        if(StringUtils.equals(chirld.getText(),"应用概况")){
+                            ifShowGenral = "1";
+                        }
+                        if(StringUtils.equals(chirld.getText(),"运营分析")){
+                            ifShowRunAnalysis = "1";
+                        }
+                    }
+                }
+            }
+            map.put("ifShowGenral",ifShowGenral);
+            map.put("ifShowRunAnalysis",ifShowRunAnalysis);
+
             map.put("msg", "用户登录成功！");
             return Response.success("用户登录成功！",map);
         }catch (Exception e) {
