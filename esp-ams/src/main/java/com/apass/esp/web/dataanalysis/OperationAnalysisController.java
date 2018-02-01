@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -143,13 +144,12 @@ public class OperationAnalysisController {
 				map.put("msg", "新密码和确认新密码不一致！");
 				return Response.fail("新密码和确认新密码不一致！",map);
 			}
-			usersService.resetpassword(username, oldpassword, newpassword);
-			map.put("msg", "确认新密码修改成功！");
-			return Response.success("确认新密码修改成功！",map);
-		} catch (BusinessException e) {
-			logger.error(e.getErrorDesc(), e);
-			map.put("msg", e.getErrorDesc());
-			return Response.fail(e.getErrorDesc(),map);
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			if (!encoder.matches(oldpassword, usersService.selectByUsername(username).getPassword())) {
+				map.put("msg", "旧密码不正确！");
+				return Response.fail("旧密码不正确！",map);
+			}
+			return usersService.resetpassword(username, newpassword,map);
 		} catch (Exception e) {
 			logger.error("修改密码失败！", e);
 			map.put("msg", "修改密码失败！");

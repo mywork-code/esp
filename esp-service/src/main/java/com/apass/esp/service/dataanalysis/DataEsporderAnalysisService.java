@@ -16,6 +16,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataEsporderAnalysis;
 import com.apass.esp.domain.entity.DataEsporderdetail;
+import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.vo.DataAnalysisVo;
@@ -89,26 +90,33 @@ public class DataEsporderAnalysisService {
 	 */
 	public Response getOperationAnalysisList(Map<String, Object> map) throws BusinessException {
 		map = conversionParam(map);
-		List<DataEsporderAnalysisVo> list = dataEsporderAnalysisMapper.getOperationAnalysisList(map);
-		for(DataEsporderAnalysisVo entity : list){
+		List<DataEsporderAnalysis> list = dataEsporderAnalysisMapper.getOperationAnalysisList(map);
+		List<DataEsporderAnalysisVo> voflist = new ArrayList<DataEsporderAnalysisVo>();
+		for(DataEsporderAnalysis entity : list){
+			DataEsporderAnalysisVo vof = new DataEsporderAnalysisVo();
 			Long orderAnalysisId = entity.getId();
 			map.put("orderAnalysisId", orderAnalysisId);
 			List<DataEsporderdetail> orderlist = dataEsporderdetailService.getDataEsporderdetailList(map);
 			String dayData = DateFormatUtil.string2string(entity.getTxnId(), "yyyyMMdd", "MM月dd日");
-			entity.setDayData(dayData);
 			DataAppuserAnalysis dataAppuserAnalysis = dataAppuserAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(entity.getTxnId(), map.get("platformids").toString(), "2","00"));
-			BeanUtils.copyProperties(dataAppuserAnalysis, entity);
-			entity.setId(orderAnalysisId);
 			List<DataEsporderdetailVo> orderVolist = new ArrayList<DataEsporderdetailVo>();
 			for(DataEsporderdetail order : orderlist){
 				DataEsporderdetailVo vo = new DataEsporderdetailVo();
 				BeanUtils.copyProperties(order, vo);
-				String goodsName = goodsService.serchGoodsByGoodsId(order.getGoodsId().toString()).getGoodsName();
-				vo.setGoodsName(goodsName);
+				GoodsBasicInfoEntity goods = goodsService.serchGoodsByGoodsId(order.getGoodsId().toString());
+				if(goods!=null){
+					vo.setGoodsName(goods.getGoodsName());
+				}
+				orderVolist.add(vo);
 			}
-			entity.setList(orderVolist);
+			vof.setDayData(dayData);
+			BeanUtils.copyProperties(dataAppuserAnalysis, vof);
+			BeanUtils.copyProperties(entity, vof);
+			vof.setId(orderAnalysisId);
+			vof.setList(orderVolist);
+			voflist.add(vof);
 		}
-		return Response.success("运营分析数据载入成功！", list);
+		return Response.success("运营分析数据载入成功！", voflist);
 	}
 	/**
 	 * 转化参数
@@ -123,40 +131,40 @@ public class DataEsporderAnalysisService {
 		}
 		Date now = new Date();
 		Date date = null;
-		String day = DateFormatUtil.dateToString(now, "yyyy-MM-dd");
-		String beginDate = null;
-		String endDate = day + " 23:59:59";
+		String dateStart = null;
+		String dateEnd = DateFormatUtil.dateToString(now, "yyyyMMdd");
 		switch (dateType) {
 			case "orther":
 				return map;
 			case "today":
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = dateEnd;
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
 			case "yesterday":
 				date = DateFormatUtil.addDays(now, -1);
-				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
 			case "lastseven":
 				date = DateFormatUtil.addDays(now, -7);
-				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
 			case "lastthirty":
 				date = DateFormatUtil.addDays(now, -30);
-				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
-			default:
-				throw new BusinessException("形参不完整，转换异常！");
+			default://默认7天
+				date = DateFormatUtil.addDays(now, -7);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
+				break;
 		}
 		return map;
 	}

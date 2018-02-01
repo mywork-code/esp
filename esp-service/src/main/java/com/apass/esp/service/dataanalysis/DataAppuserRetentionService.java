@@ -4,13 +4,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataAppuserRetention;
@@ -32,8 +30,6 @@ public class DataAppuserRetentionService {
 	private DataAppuserRetentionMapper dataAppuserRetentionMapper;
 	@Autowired
 	private DataAppuserAnalysisMapper dataAppuserAnalysisMapper;
-	@Autowired
-	private DataAppuserAnalysisService dataAppuserAnalysisService;
 	/**
 	 * CREATE
 	 * @param entity
@@ -82,6 +78,7 @@ public class DataAppuserRetentionService {
 	public Response getAppuserRetentionList(Map<String, Object> map) throws BusinessException {
 		map = conversionParam(map);
 		List<DataAppuserRetention> list = dataAppuserRetentionMapper.getAppuserRetentionList(map);
+		list = conversionList(list);
 		List<DataAppuserRetentionVo> newList = new ArrayList<DataAppuserRetentionVo>();
 		List<DataAppuserRetentionVo> activityList = new ArrayList<DataAppuserRetentionVo>();
 		for(DataAppuserRetention entity : list){
@@ -108,42 +105,76 @@ public class DataAppuserRetentionService {
 		}
 		Date now = new Date();
 		Date date = null;
-		String day = DateFormatUtil.dateToString(now, "yyyy-MM-dd");
-		String beginDate = null;
-		String endDate = day + " 23:59:59";
+		String dateStart = null;
+		String dateEnd = DateFormatUtil.dateToString(now, "yyyyMMdd");
 		switch (dateType) {
 			case "orther":
 				return map;
 			case "today":
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = dateEnd;
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
 			case "yesterday":
 				date = DateFormatUtil.addDays(now, -1);
-				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
 			case "lastseven":
 				date = DateFormatUtil.addDays(now, -7);
-				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
 			case "lastthirty":
 				date = DateFormatUtil.addDays(now, -30);
-				day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
-				beginDate = day + " 00:00:00";
-				map.put("beginDate", beginDate);
-				map.put("endDate", endDate);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
 				break;
-			default:
-				throw new BusinessException("形参不完整，转换异常！");
+			default://默认7天
+				date = DateFormatUtil.addDays(now, -7);
+				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+				map.put("dateStart", dateStart);
+				map.put("dateEnd", dateEnd);
+				break;
 		}
 		return map;
+	}
+	/**
+	 * 转化集合
+	 * @param list
+	 * @return
+	 */
+	private List<DataAppuserRetention> conversionList(List<DataAppuserRetention> list) {
+		for(DataAppuserRetention entity : list){
+			entity.setDay1retention(formartString(entity.getDay1retention()));
+			entity.setDay3retention(formartString(entity.getDay3retention()));
+			entity.setDay7retention(formartString(entity.getDay7retention()));
+			entity.setDay14retention(formartString(entity.getDay14retention()));
+			entity.setDay30retention(formartString(entity.getDay30retention()));
+			entity.setDauday1retention(formartString(entity.getDauday1retention()));
+			entity.setDauday3retention(formartString(entity.getDauday3retention()));
+			entity.setDauday7retention(formartString(entity.getDauday7retention()));
+			entity.setDauday14retention(formartString(entity.getDauday14retention()));
+			entity.setDauday30retention(formartString(entity.getDauday30retention()));
+		}
+		return list;
+	}
+	/**
+	 * 格式化字符串
+	 * @param str
+	 * @return
+	 */
+	private String formartString(String str){
+		if(str.indexOf(".")!=-1){
+			if(str.length()>str.indexOf(".")+4){
+				str = str.substring(0, str.indexOf(".")+4);
+			}
+			str = str + "%";
+		}
+		return str;
 	}
 	/**
 	 * 转化实体类
@@ -181,16 +212,14 @@ public class DataAppuserRetentionService {
 		map.put("activityEntity", activityEntity);
 		return map;
 	}
-
-	public Response getOperationAnalysisList(Map<String, Object> map) {
-		List<DataAppuserAnalysis> list = dataAppuserAnalysisService.getAppuserAnalysisList(map);
-		return null;
-	}
-	
+	/**
+	 * getDataAnalysisByTxnId
+	 * @param analysis
+	 * @return
+	 */
 	public DataAppuserRetention getDataAnalysisByTxnId(DataAnalysisVo analysis){
 		return dataAppuserRetentionMapper.getDataAnalysisByTxnId(analysis);
 	}
-	
 	/**
 	 * 每天跑一次
 	 * @param dto
