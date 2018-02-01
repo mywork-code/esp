@@ -3,7 +3,6 @@ package com.apass.esp.schedule;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.enums.TermainalTyps;
-import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.service.dataanalysis.DataAppuserAnalysisService;
 import com.apass.esp.service.talkingdata.TalkDataService;
@@ -63,11 +60,6 @@ public class DataAppuserAnalysisSchedule {
 				/*** 此处的数字，标志着分组策略为hourly*/
 				dataAnalysisService.insertAnalysis(user);
 			}
-	    	try {
-	            TimeUnit.SECONDS.sleep(12);
-	        } catch (InterruptedException e) {
-	        	logger.error("-----everyHoursSchedule Exception---->",e);
-	        }
 		}
     }
 	
@@ -91,11 +83,6 @@ public class DataAppuserAnalysisSchedule {
 				retention.setDaily(nowDate);
 			}
 			dataAnalysisService.insertAnalysisData(retention);
-    		try {
-	            TimeUnit.SECONDS.sleep(15);
-	        } catch (InterruptedException e) {
-	        	logger.error("-----getTalkingDataByDataAnalysis Exception---->",e);
-	        }
     	}
 	}
     
