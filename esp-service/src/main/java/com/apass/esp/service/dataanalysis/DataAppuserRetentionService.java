@@ -4,13 +4,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataAppuserRetention;
@@ -32,8 +30,6 @@ public class DataAppuserRetentionService {
 	private DataAppuserRetentionMapper dataAppuserRetentionMapper;
 	@Autowired
 	private DataAppuserAnalysisMapper dataAppuserAnalysisMapper;
-	@Autowired
-	private DataAppuserAnalysisService dataAppuserAnalysisService;
 	/**
 	 * CREATE
 	 * @param entity
@@ -216,16 +212,14 @@ public class DataAppuserRetentionService {
 		map.put("activityEntity", activityEntity);
 		return map;
 	}
-
-	public Response getOperationAnalysisList(Map<String, Object> map) {
-		List<DataAppuserAnalysis> list = dataAppuserAnalysisService.getAppuserAnalysisList(map);
-		return null;
-	}
-	
+	/**
+	 * getDataAnalysisByTxnId
+	 * @param analysis
+	 * @return
+	 */
 	public DataAppuserRetention getDataAnalysisByTxnId(DataAnalysisVo analysis){
 		return dataAppuserRetentionMapper.getDataAnalysisByTxnId(analysis);
 	}
-	
 	/**
 	 * 每天跑一次
 	 * @param dto
