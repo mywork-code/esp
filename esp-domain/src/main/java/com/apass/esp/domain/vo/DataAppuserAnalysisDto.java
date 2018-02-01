@@ -32,6 +32,8 @@ public class DataAppuserAnalysisDto {
 	
 	private String avgsessionlength;
 	
+	private String registeruser;
+	
 	public Byte getType() {
 		return type;
 	}
@@ -150,6 +152,14 @@ public class DataAppuserAnalysisDto {
 
 	public void setDaily(String daily) {
 		this.daily = daily;
+	}
+
+	public String getRegisteruser() {
+		return registeruser;
+	}
+
+	public void setRegisteruser(String registeruser) {
+		this.registeruser = registeruser;
 	}
 	
 }
