@@ -309,9 +309,12 @@ public class MyCouponManagerService {
 		vo.setSimilarGoodsCode(coupon.getSimilarGoodsCode());
 		if(StringUtils.isNotBlank(coupon.getGoodsCode())){
 			GoodsInfoEntity goods = goodsMapper.selectGoodsByGoodsCode(coupon.getGoodsCode());
-			vo.setGoodsId(goods.getId()+"");
-			vo.setSource(goods.getSource());
-			goodsName = goods.getGoodsName();
+			if(null != goods){
+				vo.setGoodsId(goods.getId()+"");
+				vo.setSource(goods.getSource());
+				goodsName = goods.getGoodsName();
+			}
+			
 		}
 		vo.setType(coupon.getType());
 		String type = coupon.getType();

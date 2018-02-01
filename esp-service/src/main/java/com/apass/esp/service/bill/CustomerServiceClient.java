@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
+import com.apass.esp.domain.entity.customer.RegisterUser;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -85,6 +86,26 @@ public class CustomerServiceClient {
         } catch (Exception e) {
             LOGGER.error("调用gfb客户信息查询服务异常:[{}]", e);
             throw new BusinessException("调用gfb客户信息查询服务异常", e);
+        }
+    }
+    
+    /**
+	 * 获取昨日的APP端新增的注册用户数
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws BusinessException
+	 */
+    public RegisterUser getRegisteruser() {
+        try {
+            String requestUrl = "http://10.254.60.13/rms/register/num";
+            String responseJson = HttpClientUtils.getMethodGetResponse(requestUrl);
+            LOGGER.info("获取APP端新增的注册用户数::Response::[{}]", responseJson);
+            Response response = GsonUtils.convertObj(responseJson, Response.class);
+            return resolveResult(response, RegisterUser.class);
+        } catch (Exception e) {
+            LOGGER.error("获取APP端新增的注册用户数查询服务异常:[{}]", e);
+            return null;
         }
     }
 
