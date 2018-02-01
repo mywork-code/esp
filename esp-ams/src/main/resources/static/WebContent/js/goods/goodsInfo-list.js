@@ -211,9 +211,9 @@ $(function() {
             align : 'center'
         },{
 			title : '商品编号',
-			field : 'goodsCode',
+			field : 'mainGoodsCode',
 			width : 90,
-			align : 'center'
+			align : 'center',
 		},{
 	 		title : '类目名称',  
 	 		field : 'categoryName3', 
