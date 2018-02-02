@@ -223,4 +223,19 @@
 		DELETE FROM LS_RBAC_USER_ROLE WHERE ROLE_ID = #{value}
 	]]>
 	</delete>
-</mapper> 
+
+	<!--根据角色id查询对应所有菜单-->
+	<select id="selectRoleMenuByRoleId" resultType="RoleMenuDO">
+		<![CDATA[
+		SELECT
+			ID ID,
+			ROLE_ID ROLEID,
+			MENU_ID MENUID,
+			CREATED_BY CREATEDBY,
+			CREATED_DATE CREATEDDATE,
+			UPDATED_BY UPDATEDBY,
+			UPDATED_DATE UPDATEDDATE
+		from LS_RBAC_ROLE_MENU where ROLE_ID = #{roleId}
+		]]>
+	</select>
+</mapper>
