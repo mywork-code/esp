@@ -3,6 +3,7 @@ package com.apass.esp.schedule;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.service.dataanalysis.DataAppuserAnalysisService;
 import com.apass.esp.service.talkingdata.TalkDataService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.google.common.collect.Maps;
 
 @Component
 @Configurable
@@ -86,6 +88,21 @@ public class DataAppuserAnalysisSchedule {
     	}
 	}
     
+    /**
+     * 当天更新昨天的数据（每天1点20分更新）
+     */
+    @Scheduled(cron = "0 20 1 * * ?")
+    public void updateAnalysisRegisterUser(){
+    	
+    	String txnId = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(), -1),"yyyyMMdd") ;
+    	
+    	Map<String,Object> map = Maps.newHashMap();
+    	map.put("isDelete", "00");
+    	map.put("txnId",txnId);
+    	map.put("type","2");
+    	/*** 更新昨天的注册用户数*/
+    	dataAnalysisService.updateAnalysisRegisterUser(map);
+    }
     
 	/**
 	 * 每小时需要查询的粒度
