@@ -81,9 +81,9 @@ public class ReportLoginController {
                 }
             }
             UsersDO users = usersService.selectByUsername(username);
-            String usersId = users.getId();
-            String token = tokenManager.createToken(usersId, username, TOKEN_EXPIRES_SPACE);
-            map.put("usersId",usersId);
+            String userId = users.getId();
+            String token = tokenManager.createToken(userId, username, TOKEN_EXPIRES_SPACE);
+            map.put("userId",userId);
             map.put("token",token);
             listeningAuthenticationManager.authentication(username, password);
             map.put("ifShowGenral",ifShowGenral);
