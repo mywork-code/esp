@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.rbac.UsersDO;
+import com.apass.esp.service.rbac.UsersService;
 import com.apass.gfb.framework.security.toolkit.ListeningAuthenticationManager;
 import com.apass.gfb.framework.utils.CommonUtils;
 /**
@@ -28,11 +30,13 @@ import com.apass.gfb.framework.utils.CommonUtils;
  *
  */
 @Controller
-@RequestMapping("/noauth/home/reportLoginController")
+@RequestMapping("/noauth/dataanalysis/reportLoginController")
 public class ReportLoginController {
     private static final Logger logger = LoggerFactory.getLogger(ReportLoginController.class);
     @Autowired
     private ListeningAuthenticationManager listeningAuthenticationManager;
+    @Autowired
+	private UsersService usersService;
     @Autowired
 	public TokenManager tokenManager;
     // 安家派token失效时间间隔(默认7天失效)
@@ -76,7 +80,10 @@ public class ReportLoginController {
                     }
                 }
             }
-            String token = tokenManager.createToken(username, username, TOKEN_EXPIRES_SPACE);
+            UsersDO users = usersService.selectByUsername(username);
+            String usersId = users.getId();
+            String token = tokenManager.createToken(usersId, username, TOKEN_EXPIRES_SPACE);
+            map.put("usersId",usersId);
             map.put("token",token);
             listeningAuthenticationManager.authentication(username, password);
             map.put("ifShowGenral",ifShowGenral);
