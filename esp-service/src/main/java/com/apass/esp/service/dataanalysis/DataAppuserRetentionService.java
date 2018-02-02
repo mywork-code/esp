@@ -301,42 +301,46 @@ public class DataAppuserRetentionService {
 		
 		
 		/*** 留存分析*/
-		Double day1Sum = 0.0;
-		Double day1Avg = 0.0;
+		BigDecimal day1Sum = BigDecimal.ZERO;
+		BigDecimal day1Avg = BigDecimal.ZERO;
 		
-		Double day7Sum = 0.0;
-		Double day7Avg = 0.0;
+		BigDecimal day7Sum = BigDecimal.ZERO;
+		BigDecimal day7Avg = BigDecimal.ZERO;
 		
-		Double day30Sum = 0.0;
-		Double day30Avg = 0.0;
+		BigDecimal day30Sum = BigDecimal.ZERO;
+		BigDecimal day30Avg = BigDecimal.ZERO;
 		List<DataAppuserRetention> list = dataAppuserRetentionMapper.getAppuserRetentionList(params);
 		List<DataRetentionVo> retentionVo = Lists.newArrayList(); 
 		for (DataAppuserRetention data : list) {
 			DataRetentionVo vo = new DataRetentionVo();
-			day1Sum += Double.parseDouble(data.getDay1retention());
-			day7Sum += Double.parseDouble(data.getDay7retention());
-			day30Sum += Double.parseDouble(data.getDay30retention());
+			BigDecimal day1 = new BigDecimal(data.getDay1retention()).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+			BigDecimal day7 = new BigDecimal(data.getDay7retention()).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+			BigDecimal day30 = new BigDecimal(data.getDay30retention()).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+			
+			day1Sum = day1Sum.add(day1);
+			day7Sum = day7Sum.add(day7);
+			day30Sum = day30Sum.add(day30);
+			
 			vo.setDaily(data.getTxnId());
-			vo.setDay1retention(data.getDay1retention());
-			vo.setDay7retention(data.getDay7retention());
-			vo.setDay30retention(data.getDay30retention());
+			vo.setDay1retention(String.valueOf(day1)+"%");
+			vo.setDay7retention(String.valueOf(day7)+"%");
+			vo.setDay30retention(String.valueOf(day30)+"%");
 			retentionVo.add(vo);
 		}
 		
 		/*** 次日留存均值    7日留存均值    30日留存均值*/
 		if(CollectionUtils.isNotEmpty(list)){
-			long size = list.size();
-			day1Avg = day1Sum / size;
-			day7Avg = day7Sum / size;
-			day30Avg = day30Sum / size;
+			BigDecimal size = BigDecimal.valueOf(list.size());
+			day1Avg = day1Sum.divide(size, 2, BigDecimal.ROUND_HALF_UP);
+			day7Avg = day7Sum.divide(size, 2, BigDecimal.ROUND_HALF_UP);
+			day30Avg = day30Sum.divide(size, 2, BigDecimal.ROUND_HALF_UP);
 		}
-		
 		values.putAll(userSessionMap);
 		values.put("activeAnalysis", dataActivityUserVo);
 		values.put("retainAnalysis", retentionVo);
-		values.put("day1RetentionAvg", day1Avg);
-		values.put("day7RetentionAvg", day7Avg);
-		values.put("day30RetentionAvg", day30Avg);
+		values.put("day1RetentionAvg", String.valueOf(day1Avg)+"%");
+		values.put("day7RetentionAvg", String.valueOf(day7Avg)+"%");
+		values.put("day30RetentionAvg", String.valueOf(day30Avg)+"%");
 		return values;
 	}
 	
