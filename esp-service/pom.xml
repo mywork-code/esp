@@ -290,12 +290,6 @@
 			<artifactId>bsdiff-util</artifactId>
 			<version>RELEASE</version>
 		</dependency>
-		<!--spring  security-->
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-			<version>4.0.3.RELEASE</version>
-		</dependency>
 	</dependencies>
 
 	<!-- Plugins -->

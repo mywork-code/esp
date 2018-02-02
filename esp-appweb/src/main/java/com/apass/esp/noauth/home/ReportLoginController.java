@@ -1,7 +1,6 @@
 package com.apass.esp.noauth.home;
 import java.util.List;
 import java.util.Map;
-
 import com.apass.esp.domain.entity.rbac.MenusDO;
 import com.apass.esp.domain.entity.rbac.RoleMenuDO;
 import com.apass.esp.domain.entity.rbac.RolesDO;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
-import com.apass.esp.service.rbac.UsersService;
+import com.apass.esp.service.rbac.UserService;
 import com.apass.gfb.framework.utils.CommonUtils;
 /**
  * 报表相关数据  
@@ -34,15 +33,13 @@ import com.apass.gfb.framework.utils.CommonUtils;
 public class ReportLoginController {
     private static final Logger logger = LoggerFactory.getLogger(ReportLoginController.class);
     @Autowired
-	private UsersService usersService;
+	private UserService usersService;
     @Autowired
 	public TokenManager tokenManager;
-
     @Autowired
     private RolesService rolesService;
     @Autowired
     private MenusService menusService;
-
     // 安家派token失效时间间隔(默认7天失效)
  	public static final Long TOKEN_EXPIRES_SPACE = 7 * 24 * 60 * 60L;
     /**
