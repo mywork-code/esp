@@ -2,6 +2,11 @@ package com.apass.esp.noauth.home;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.apass.esp.domain.entity.rbac.MenusSettingDO;
+import com.apass.esp.domain.entity.rbac.RolesDO;
+import com.apass.esp.service.MenusService;
+import com.apass.esp.service.RolesService;
 import com.apass.gfb.framework.jwt.TokenManager;
 import com.apass.gfb.framework.security.domains.SecurityAccordion;
 import com.apass.gfb.framework.security.domains.SecurityAccordionTree;
@@ -39,6 +44,11 @@ public class ReportLoginController {
 	private UsersService usersService;
     @Autowired
 	public TokenManager tokenManager;
+    @Autowired
+    private MenusService menusService;
+    @Autowired
+    private RolesService rolesService;
+
     // 安家派token失效时间间隔(默认7天失效)
  	public static final Long TOKEN_EXPIRES_SPACE = 7 * 24 * 60 * 60L;
     /**
@@ -56,7 +66,17 @@ public class ReportLoginController {
             	map.put("msg", "用户名或密码不能为空！");
                 return Response.fail("用户名或密码不能为空！",map);
             }
+            UsersDO users = usersService.selectByUsername(username);
+            String userId = users.getId();
+
             //获取菜单
+            /*List<RolesDO> roles = usersService.loadAssignedRoles(usersId);
+            if(CollectionUtils.isNotEmpty(roles)){
+                for(RolesDO role: roles){
+                    List<MenusSettingDO> menusSettingDOs = rolesService.selectRoleMenuSettings(role.getId());
+                }
+            }
+
             Object principal = SpringSecurityUtils.getAuthentication().getPrincipal();
             if (principal == null || !(principal instanceof ListeningCustomSecurityUserDetails)) {
             	map.put("msg", "加载登陆菜单失败,请联系管理员！");
@@ -79,15 +99,14 @@ public class ReportLoginController {
                         }
                     }
                 }
-            }
-            UsersDO users = usersService.selectByUsername(username);
-            String userId = users.getId();
+            }*/
+
             String token = tokenManager.createToken(userId, username, TOKEN_EXPIRES_SPACE);
             map.put("userId",userId);
             map.put("token",token);
             listeningAuthenticationManager.authentication(username, password);
-            map.put("ifShowGenral",ifShowGenral);
-            map.put("ifShowRunAnalysis",ifShowRunAnalysis);
+//            map.put("ifShowGenral",ifShowGenral);
+//            map.put("ifShowRunAnalysis",ifShowRunAnalysis);
             map.put("msg", "用户登录成功！");
             return Response.success("用户登录成功！",map);
         }catch (Exception e) {
