@@ -67,7 +67,7 @@ public class ReportLoginController {
                 return Response.fail("用户名或密码不能为空！",map);
             }
             UsersDO users = usersService.selectByUsername(username);
-            String usersId = users.getId();
+            String userId = users.getId();
 
             //获取菜单
             /*List<RolesDO> roles = usersService.loadAssignedRoles(usersId);
@@ -101,8 +101,8 @@ public class ReportLoginController {
                 }
             }*/
 
-            String token = tokenManager.createToken(usersId, username, TOKEN_EXPIRES_SPACE);
-            map.put("usersId",usersId);
+            String token = tokenManager.createToken(userId, username, TOKEN_EXPIRES_SPACE);
+            map.put("userId",userId);
             map.put("token",token);
             listeningAuthenticationManager.authentication(username, password);
 //            map.put("ifShowGenral",ifShowGenral);
