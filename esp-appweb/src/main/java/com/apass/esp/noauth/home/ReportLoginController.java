@@ -1,23 +1,18 @@
 package com.apass.esp.noauth.home;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.apass.esp.domain.entity.rbac.MenusSettingDO;
-import com.apass.esp.domain.entity.rbac.RolesDO;
 import com.apass.esp.service.MenusService;
 import com.apass.esp.service.RolesService;
 import com.apass.gfb.framework.jwt.TokenManager;
 import com.apass.gfb.framework.security.domains.SecurityAccordion;
 import com.apass.gfb.framework.security.domains.SecurityAccordionTree;
 import com.apass.gfb.framework.security.domains.SecurityMenus;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.service.rbac.UsersService;
-import com.apass.gfb.framework.security.toolkit.ListeningAuthenticationManager;
 import com.apass.gfb.framework.utils.CommonUtils;
 /**
  * 报表相关数据  
@@ -38,8 +32,6 @@ import com.apass.gfb.framework.utils.CommonUtils;
 @RequestMapping("/noauth/dataanalysis/reportLoginController")
 public class ReportLoginController {
     private static final Logger logger = LoggerFactory.getLogger(ReportLoginController.class);
-    @Autowired
-    private ListeningAuthenticationManager listeningAuthenticationManager;
     @Autowired
 	private UsersService usersService;
     @Autowired
@@ -67,8 +59,15 @@ public class ReportLoginController {
                 return Response.fail("用户名或密码不能为空！",map);
             }
             UsersDO users = usersService.selectByUsername(username);
+            if(users==null){
+            	map.put("msg", "用户名不存在！");
+				return Response.fail("用户名不存在！",map);
+            }
+            if (!new BCryptPasswordEncoder().matches(password, users.getPassword())) {
+				map.put("msg", "密码不正确！");
+				return Response.fail("密码不正确！",map);
+			}
             String userId = users.getId();
-
             //获取菜单
             /*List<RolesDO> roles = usersService.loadAssignedRoles(usersId);
             if(CollectionUtils.isNotEmpty(roles)){
@@ -100,11 +99,9 @@ public class ReportLoginController {
                     }
                 }
             }*/
-
             String token = tokenManager.createToken(userId, username, TOKEN_EXPIRES_SPACE);
             map.put("userId",userId);
             map.put("token",token);
-            listeningAuthenticationManager.authentication(username, password);
 //            map.put("ifShowGenral",ifShowGenral);
 //            map.put("ifShowRunAnalysis",ifShowRunAnalysis);
             map.put("msg", "用户登录成功！");
