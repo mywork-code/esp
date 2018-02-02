@@ -1,18 +1,18 @@
 package com.apass.esp.web.dataanalysis;
 import java.util.List;
 import java.util.Map;
-
 import com.apass.gfb.framework.security.domains.SecurityAccordion;
 import com.apass.gfb.framework.security.domains.SecurityAccordionTree;
 import com.apass.gfb.framework.security.domains.SecurityMenus;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
-import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.dataanalysis.DataAppuserRetentionService;
 import com.apass.esp.service.dataanalysis.DataEsporderAnalysisService;
+import com.apass.esp.service.rbac.UsersService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.ListeningAuthenticationManager;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -43,8 +44,6 @@ public class OperationAnalysisController {
     private ListeningAuthenticationManager listeningAuthenticationManager;
     @Autowired
 	private UsersService usersService;
-    @Autowired
-    private SecurityInfoController securityInfo;
     /**
      * 用户留存数据载入
      * @param map
@@ -132,8 +131,7 @@ public class OperationAnalysisController {
             }
             ListeningCustomSecurityUserDetails details = (ListeningCustomSecurityUserDetails) principal;
             SecurityMenus securityMenus = details.getSecurityMenus();
-            securityInfo.treatSecurityMenus(securityMenus, resultList);
-
+            treatSecurityMenus(securityMenus, resultList);
             String ifShowGenral = "0";
             String ifShowRunAnalysis = "0";
             for(SecurityAccordionTree securityTree:resultList){
@@ -157,6 +155,32 @@ public class OperationAnalysisController {
             logger.error(e.getMessage(), e);
             map.put("msg", "用户名或密码不正确！");
             return Response.fail("用户名或密码不正确！",map);
+        }
+    }
+    /**
+     * Convert SecurityMenus To List<SecurityMenusModel>
+     * 
+     * @param securityMenus
+     * @param resultList
+     */
+    private void treatSecurityMenus(SecurityMenus securityMenus, List<SecurityAccordionTree> resultList) {
+        List<SecurityAccordion> accordionList = securityMenus.getSecurityAccordionList();
+        Map<String, List<SecurityAccordionTree>> menuMap = securityMenus.getAccordionTreeListMap();
+        if (CollectionUtils.isEmpty(accordionList)) {
+            return;
+        }
+        for (SecurityAccordion accordion : accordionList) {
+            SecurityAccordionTree accordionMenu = new SecurityAccordionTree();
+            accordionMenu.setId(accordion.getId());
+            accordionMenu.setText(accordion.getText());
+            if (menuMap == null || !menuMap.containsKey(accordion.getId())) {
+                resultList.add(accordionMenu);
+                continue;
+            }
+            if (!CollectionUtils.isEmpty(menuMap.get(accordion.getId()))) {
+                accordionMenu.setChildren(menuMap.get(accordion.getId()));
+                resultList.add(accordionMenu);
+            }
         }
     }
     /**

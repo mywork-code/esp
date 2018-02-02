@@ -1,11 +1,8 @@
 package com.apass.esp.web.rbac;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +12,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.rbac.RolesDO;
 import com.apass.esp.domain.entity.rbac.UsersDO;
-import com.apass.esp.service.UsersService;
 import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.esp.service.rbac.UsersService;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -31,7 +27,6 @@ import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserD
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.RegExpUtils;
-
 /**
  * 
  * @description 用户管理

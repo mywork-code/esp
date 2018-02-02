@@ -290,7 +290,11 @@
 			<artifactId>bsdiff-util</artifactId>
 			<version>RELEASE</version>
 		</dependency>
-
+		<!--spring  security-->
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
 	</dependencies>
 
 	<!-- Plugins -->
