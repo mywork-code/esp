@@ -16,8 +16,8 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.rbac.RolesDO;
 import com.apass.esp.domain.entity.rbac.UsersDO;
+import com.apass.esp.service.UsersService;
 import com.apass.esp.service.merchant.MerchantInforService;
-import com.apass.esp.service.rbac.UsersService;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -38,13 +38,7 @@ import com.apass.gfb.framework.utils.RegExpUtils;
 @Controller
 @RequestMapping("/application/rbac/user")
 public class UsersController {
-	/**
-	 * 日志
-	 */
 	private static final Logger LOG = LoggerFactory.getLogger(UsersController.class);
-	/**
-	 * Users Service
-	 */
 	@Autowired
 	private UsersService usersService;
 	@Autowired

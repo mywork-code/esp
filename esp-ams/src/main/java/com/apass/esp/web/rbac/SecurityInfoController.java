@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
-import com.apass.gfb.framework.security.controller.SecurityController;
+import com.apass.esp.web.controller.SecurityController;
 import com.apass.gfb.framework.security.domains.SecurityAccordion;
 import com.apass.gfb.framework.security.domains.SecurityAccordionTree;
 import com.apass.gfb.framework.security.domains.SecurityAuthentication;

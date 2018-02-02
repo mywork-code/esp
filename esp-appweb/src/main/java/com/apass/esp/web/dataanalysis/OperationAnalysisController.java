@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.dataanalysis.DataAppuserRetentionService;
 import com.apass.esp.service.dataanalysis.DataEsporderAnalysisService;
-import com.apass.esp.service.rbac.UsersService;
+import com.apass.esp.service.rbac.UserService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 /**
@@ -32,7 +32,7 @@ public class OperationAnalysisController {
     @Autowired
     private DataEsporderAnalysisService dataEsporderAnalysisService;
     @Autowired
-	private UsersService usersService;
+	private UserService userService;
     /**
      * 用户留存数据载入
      * @param map
@@ -117,11 +117,11 @@ public class OperationAnalysisController {
 				map.put("msg", "新密码和确认密码不一致！");
 				return Response.fail("新密码和确认密码不一致！",map);
 			}
-			if (!new BCryptPasswordEncoder().matches(oldpassword, usersService.selectByUsername(username).getPassword())) {
+			if (!new BCryptPasswordEncoder().matches(oldpassword, userService.selectByUsername(username).getPassword())) {
 				map.put("msg", "旧密码不正确！");
 				return Response.fail("旧密码不正确！",map);
 			}
-			return usersService.resetpassword(username, newpassword,map);
+			return userService.resetpassword(username, new BCryptPasswordEncoder().encode(newpassword),map);
 		} catch (Exception e) {
 			logger.error("修改密码失败！", e);
 			map.put("msg", "修改密码失败！");

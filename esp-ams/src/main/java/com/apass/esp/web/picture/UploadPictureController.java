@@ -20,7 +20,7 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.esp.web.banner.BannerController;
-import com.apass.gfb.framework.security.controller.BaseController;
+import com.apass.esp.web.controller.BaseController;
 
 @Controller
 @RequestMapping(value = "/application/picture")

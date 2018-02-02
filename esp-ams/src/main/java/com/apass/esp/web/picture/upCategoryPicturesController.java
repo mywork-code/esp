@@ -22,7 +22,7 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.gfb.framework.cache.CacheManager;
-import com.apass.gfb.framework.security.controller.BaseController;
+import com.apass.esp.web.controller.BaseController;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 @Controller

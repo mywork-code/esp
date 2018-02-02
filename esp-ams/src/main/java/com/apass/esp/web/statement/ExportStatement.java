@@ -33,7 +33,7 @@ import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.apass.gfb.framework.security.controller.BaseController;
+import com.apass.esp.web.controller.BaseController;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 
