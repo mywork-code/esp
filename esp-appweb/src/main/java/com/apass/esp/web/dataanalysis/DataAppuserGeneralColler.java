@@ -1,5 +1,16 @@
 package com.apass.esp.web.dataanalysis;
-
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.vo.DataAppAnalysisVo;
@@ -11,27 +22,11 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.xhtmlrenderer.css.style.derived.StringValue;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by xiaohai on 2018/1/26.
  */
 @Controller
-@RequestMapping("/noauth/dataanalysis/generate")
+@RequestMapping("/dataanalysis/generate")
 public class DataAppuserGeneralColler {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataAppuserGeneralColler.class);
 
