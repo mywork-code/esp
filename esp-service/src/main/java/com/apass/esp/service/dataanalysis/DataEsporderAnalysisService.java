@@ -186,6 +186,7 @@ public class DataEsporderAnalysisService {
 		List<OrderInfoEntity> orderlist = orderService.getSectionOrderList(beginDate, endDate);
 		if(orderlist==null||orderlist.size()==0){
 			//无订单直接 插入总表 t_data_esporder_analysis  详情表t_data_esporderdetail无需插入
+			entity.setPercentConv(new BigDecimal(0));
 			createdEntity(entity);
 		}else{
 			//统计总表字段数据  t_data_esporder_analysis
