@@ -130,7 +130,7 @@ public class UsersService {
 	 * @throws BusinessException
 	 */
 	public Response resetpassword(String username, String newpassword,Map<String, Object> map) {
-//		usersRepository.resetPassword(username, new BCryptPasswordEncoder().encode(newpassword), username);
+		usersRepository.resetPassword(username, new BCryptPasswordEncoder().encode(newpassword), username);
 		map.put("msg", "确认新密码修改成功！");
 		return Response.success("确认新密码修改成功！",map);
 	}
