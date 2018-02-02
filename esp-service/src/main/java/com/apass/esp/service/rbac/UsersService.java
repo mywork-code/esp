@@ -5,7 +5,6 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
@@ -130,7 +129,7 @@ public class UsersService {
 	 * @throws BusinessException
 	 */
 	public Response resetpassword(String username, String newpassword,Map<String, Object> map) {
-		usersRepository.resetPassword(username, new BCryptPasswordEncoder().encode(newpassword), username);
+//		usersRepository.resetPassword(username, new BCryptPasswordEncoder().encode(newpassword), username);
 		map.put("msg", "确认新密码修改成功！");
 		return Response.success("确认新密码修改成功！",map);
 	}
@@ -143,21 +142,21 @@ public class UsersService {
 	 * @throws BusinessException
 	 */
 	public void resetpassword(String username, String oldpassword, String newpassword) throws BusinessException {
-		UsersDO usersDO = usersRepository.selectByUsername(username);
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		if (!encoder.matches(oldpassword, usersDO.getPassword())) {
-			throw new BusinessException("旧密码不正确");
-		}
-		String operator = SpringSecurityUtils.getCurrentUser();
-		usersRepository.resetPassword(username, new BCryptPasswordEncoder().encode(newpassword), operator);
+//		UsersDO usersDO = usersRepository.selectByUsername(username);
+//		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//		if (!encoder.matches(oldpassword, usersDO.getPassword())) {
+//			throw new BusinessException("旧密码不正确");
+//		}
+//		String operator = SpringSecurityUtils.getCurrentUser();
+//		usersRepository.resetPassword(username, new BCryptPasswordEncoder().encode(newpassword), operator);
 	}
 
 	/**
 	 * 强制重置密码
 	 */
 	public void forceResetpassword(String username, String newpassword) {
-		String operator = SpringSecurityUtils.getCurrentUser();
-		usersRepository.resetPassword(username, new BCryptPasswordEncoder().encode(newpassword), operator);
+//		String operator = SpringSecurityUtils.getCurrentUser();
+//		usersRepository.resetPassword(username, new BCryptPasswordEncoder().encode(newpassword), operator);
 	}
 
 	public UsersDO loadBasicInfo() {

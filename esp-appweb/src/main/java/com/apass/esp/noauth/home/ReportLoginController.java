@@ -1,18 +1,11 @@
 package com.apass.esp.noauth.home;
-import java.util.List;
 import java.util.Map;
-import com.apass.esp.service.MenusService;
-import com.apass.esp.service.RolesService;
+
 import com.apass.gfb.framework.jwt.TokenManager;
-import com.apass.gfb.framework.security.domains.SecurityAccordion;
-import com.apass.gfb.framework.security.domains.SecurityAccordionTree;
-import com.apass.gfb.framework.security.domains.SecurityMenus;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,10 +29,6 @@ public class ReportLoginController {
 	private UsersService usersService;
     @Autowired
 	public TokenManager tokenManager;
-    @Autowired
-    private MenusService menusService;
-    @Autowired
-    private RolesService rolesService;
 
     // 安家派token失效时间间隔(默认7天失效)
  	public static final Long TOKEN_EXPIRES_SPACE = 7 * 24 * 60 * 60L;
@@ -63,10 +52,10 @@ public class ReportLoginController {
             	map.put("msg", "用户名不存在！");
 				return Response.fail("用户名不存在！",map);
             }
-            if (!new BCryptPasswordEncoder().matches(password, users.getPassword())) {
-				map.put("msg", "密码不正确！");
-				return Response.fail("密码不正确！",map);
-			}
+//            if (!new BCryptPasswordEncoder().matches(password, users.getPassword())) {
+//				map.put("msg", "密码不正确！");
+//				return Response.fail("密码不正确！",map);
+//			}
             String userId = users.getId();
             //获取菜单
             /*List<RolesDO> roles = usersService.loadAssignedRoles(usersId);
@@ -117,21 +106,21 @@ public class ReportLoginController {
      * @param securityMenus
      * @param resultList
      */
-    private void treatSecurityMenus(SecurityMenus securityMenus, List<SecurityAccordionTree> resultList) {
-        List<SecurityAccordion> accordionList = securityMenus.getSecurityAccordionList();
-        Map<String, List<SecurityAccordionTree>> menuMap = securityMenus.getAccordionTreeListMap();
-        for (SecurityAccordion accordion : accordionList) {
-            SecurityAccordionTree accordionMenu = new SecurityAccordionTree();
-            accordionMenu.setId(accordion.getId());
-            accordionMenu.setText(accordion.getText());
-            if (menuMap == null || !menuMap.containsKey(accordion.getId())) {
-                resultList.add(accordionMenu);
-                continue;
-            }
-            if (!CollectionUtils.isEmpty(menuMap.get(accordion.getId()))) {
-                accordionMenu.setChildren(menuMap.get(accordion.getId()));
-                resultList.add(accordionMenu);
-            }
-        }
-    }
+//    private void treatSecurityMenus(SecurityMenus securityMenus, List<SecurityAccordionTree> resultList) {
+//        List<SecurityAccordion> accordionList = securityMenus.getSecurityAccordionList();
+//        Map<String, List<SecurityAccordionTree>> menuMap = securityMenus.getAccordionTreeListMap();
+//        for (SecurityAccordion accordion : accordionList) {
+//            SecurityAccordionTree accordionMenu = new SecurityAccordionTree();
+//            accordionMenu.setId(accordion.getId());
+//            accordionMenu.setText(accordion.getText());
+//            if (menuMap == null || !menuMap.containsKey(accordion.getId())) {
+//                resultList.add(accordionMenu);
+//                continue;
+//            }
+//            if (!CollectionUtils.isEmpty(menuMap.get(accordion.getId()))) {
+//                accordionMenu.setChildren(menuMap.get(accordion.getId()));
+//                resultList.add(accordionMenu);
+//            }
+//        }
+//    }
 }
