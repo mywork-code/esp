@@ -291,6 +291,13 @@ public class OrderExceptionController {
     }
     
     @ResponseBody
+    @RequestMapping("/updateAnalysisRegisterUser")
+    public Response updateAnalysisRegisterUser(){
+    	analysisSchedule.updateAnalysisRegisterUser();
+    	return Response.success("更新注册用户数据成功(t_data_appuser_analysis)!");
+    }
+    
+    @ResponseBody
     @RequestMapping("/analysis")
     public Response everyDayScheduleData(){
     	analysisSchedule.everyDayScheduleData();

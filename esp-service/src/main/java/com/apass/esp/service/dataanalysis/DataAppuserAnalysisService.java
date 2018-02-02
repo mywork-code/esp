@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +17,11 @@ import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataAppuserAnalysisDto;
 import com.apass.esp.mapper.DataAppuserAnalysisMapper;
 import com.apass.esp.service.bill.CustomerServiceClient;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
 public class DataAppuserAnalysisService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(DataAppuserAnalysisService.class);
+	
 	@Autowired
 	private DataAppuserAnalysisMapper analysisMapper;
 	@Autowired
@@ -71,22 +75,6 @@ public class DataAppuserAnalysisService {
 			DataAppuserAnalysis analysis = analysisMapper.getDataAnalysisByTxnId(new DataAnalysisVo(retention.getDaily(), retention.getPlatformids().toString(),"2","00"));;
 			if(null == analysis){
 			   analysis = new DataAppuserAnalysis();
-			   /*** 此处是获取昨天的 APP端新增的注册用户数 安卓、苹果、全平台*/
-			   String yesterday = DateFormatUtil.getAddDaysString(new Date(), -1).replace("-", "");
-			   if(StringUtils.equals(retention.getDaily(), yesterday)){
-				   RegisterUser user = client.getRegisteruser();
-				   String register = null;
-				   if(null != user){
-					   if(StringUtils.equals(retention.getPlatformids().toString(),TermainalTyps.TYPE_ANDROID.getCode())){
-						   register = user.getAndroidNum();
-					   }else if(StringUtils.equals(retention.getPlatformids().toString(),TermainalTyps.TYPE_IOS.getCode())){
-						   register = user.getIosNum();
-					   }else if(StringUtils.equals(retention.getPlatformids().toString(),TermainalTyps.TYPE_FULL.getCode())){
-						   register = user.getTotalNum();
-					   }
-					   analysis.setRegisteruser(register);
-				   }
-			   }
 			}
 			Date date = new Date();
 			analysis.setTxnId(retention.getDaily());
@@ -161,5 +149,30 @@ public class DataAppuserAnalysisService {
 	 */
 	public List<DataAppuserAnalysis> getAppuserAnalysisList(Map<String, Object> map) {
 		return analysisMapper.getAppuserAnalysisList(map);
+	}
+	
+	public void updateAnalysisRegisterUser(Map<String,Object> map){
+		
+		/*** 此处是获取昨天的 APP端新增的注册用户数 安卓、苹果、全平台*/
+		RegisterUser user = client.getRegisteruser();
+	    if(null == user){
+	    	logger.info("getRegisteruser is null！");
+	    	return;
+	    }
+	    /**** 获取昨天的数据*/
+	    List<DataAppuserAnalysis> datas = getAppuserAnalysisList(map);
+	    String register = null;
+    	for (DataAppuserAnalysis data : datas) {
+    	   if(StringUtils.equals(data.getPlatformids().toString(),TermainalTyps.TYPE_ANDROID.getCode())){
+ 			   register = user.getAndroidNum();
+ 		   }else if(StringUtils.equals(data.getPlatformids().toString(),TermainalTyps.TYPE_IOS.getCode())){
+ 			   register = user.getIosNum();
+ 		   }else if(StringUtils.equals(data.getPlatformids().toString(),TermainalTyps.TYPE_FULL.getCode())){
+ 			   register = user.getTotalNum();
+ 		   }
+    	   data.setRegisteruser(register);
+    	   data.setUpdatedTime(new Date());
+    	   analysisMapper.updateByPrimaryKeySelective(data);
+		}	
 	}
 }
