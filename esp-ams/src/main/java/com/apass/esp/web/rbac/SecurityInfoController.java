@@ -74,7 +74,7 @@ public class SecurityInfoController {
      * @param securityMenus
      * @param resultList
      */
-    private void treatSecurityMenus(SecurityMenus securityMenus, List<SecurityAccordionTree> resultList) {
+    public void treatSecurityMenus(SecurityMenus securityMenus, List<SecurityAccordionTree> resultList) {
         List<SecurityAccordion> accordionList = securityMenus.getSecurityAccordionList();
         Map<String, List<SecurityAccordionTree>> menuMap = securityMenus.getAccordionTreeListMap();
         if (CollectionUtils.isEmpty(accordionList)) {
