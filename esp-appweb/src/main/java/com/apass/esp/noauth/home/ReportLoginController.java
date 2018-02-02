@@ -1,6 +1,14 @@
 package com.apass.esp.noauth.home;
+import java.util.List;
 import java.util.Map;
+import com.apass.esp.domain.entity.rbac.MenusDO;
+import com.apass.esp.domain.entity.rbac.RoleMenuDO;
+import com.apass.esp.domain.entity.rbac.RolesDO;
+import com.apass.esp.domain.entity.rbac.UsersDO;
+import com.apass.esp.service.rbac.MenusService;
+import com.apass.esp.service.rbac.RolesService;
 import com.apass.gfb.framework.jwt.TokenManager;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.service.rbac.UserService;
 import com.apass.gfb.framework.utils.CommonUtils;
 /**
@@ -29,6 +36,10 @@ public class ReportLoginController {
 	private UserService usersService;
     @Autowired
 	public TokenManager tokenManager;
+    @Autowired
+    private RolesService rolesService;
+    @Autowired
+    private MenusService menusService;
     // 安家派token失效时间间隔(默认7天失效)
  	public static final Long TOKEN_EXPIRES_SPACE = 7 * 24 * 60 * 60L;
     /**
@@ -57,41 +68,35 @@ public class ReportLoginController {
 			}
             String userId = users.getId();
             //获取菜单
-            /*List<RolesDO> roles = usersService.loadAssignedRoles(usersId);
-            if(CollectionUtils.isNotEmpty(roles)){
-                for(RolesDO role: roles){
-                    List<MenusSettingDO> menusSettingDOs = rolesService.selectRoleMenuSettings(role.getId());
-                }
-            }
-
-            Object principal = SpringSecurityUtils.getAuthentication().getPrincipal();
-            if (principal == null || !(principal instanceof ListeningCustomSecurityUserDetails)) {
-            	map.put("msg", "加载登陆菜单失败,请联系管理员！");
-                return Response.fail("加载登陆菜单失败,请联系管理员！",map);
-            }
-            List<SecurityAccordionTree> resultList = new ArrayList<SecurityAccordionTree>();
-            ListeningCustomSecurityUserDetails details = (ListeningCustomSecurityUserDetails) principal;
-            SecurityMenus securityMenus = details.getSecurityMenus();
-            treatSecurityMenus(securityMenus, resultList);
+            List<RolesDO> roles = usersService.loadAssignedRoles(userId);
             String ifShowGenral = "0";
             String ifShowRunAnalysis = "0";
-            for(SecurityAccordionTree securityTree:resultList){
-                if(StringUtils.equals(securityTree.getText(),"数据报表")){
-                    for(SecurityAccordionTree chirld: securityTree.getChildren()){
-                        if(StringUtils.equals(chirld.getText(),"应用概况")){
-                            ifShowGenral = "1";
-                        }
-                        if(StringUtils.equals(chirld.getText(),"运营分析")){
-                            ifShowRunAnalysis = "1";
+            if(CollectionUtils.isNotEmpty(roles)){
+                for(RolesDO role: roles){
+                    //根据roleId查询ls_rbac_role_menu表中该用户的所有角色
+                    List<RoleMenuDO> roleMenuDOs = rolesService.selectRoleMenuByRoleId(role.getId());
+                    if(CollectionUtils.isNotEmpty(roleMenuDOs)){
+                        for(RoleMenuDO roleMenuDO: roleMenuDOs){
+                            //根据menusSettingDO中的menuId查询ls_rbac_menus中的数据
+                            MenusDO menusDO = menusService.select(roleMenuDO.getMenuId());
+                            if(menusDO != null){
+                                if(StringUtils.equals(menusDO.getText(),"应用概况")){
+                                    ifShowGenral = "1";
+                                }
+                                if(StringUtils.equals(menusDO.getText(),"运营分析")){
+                                    ifShowRunAnalysis = "1";
+                                }
+                            }
                         }
                     }
                 }
-            }*/
+            }
+            map.put("ifShowGenral",ifShowGenral);
+            map.put("ifShowRunAnalysis",ifShowRunAnalysis);
+
             String token = tokenManager.createToken(userId, username, TOKEN_EXPIRES_SPACE);
             map.put("userId",userId);
             map.put("token",token);
-//            map.put("ifShowGenral",ifShowGenral);
-//            map.put("ifShowRunAnalysis",ifShowRunAnalysis);
             map.put("msg", "用户登录成功！");
             return Response.success("用户登录成功！",map);
         }catch (Exception e) {

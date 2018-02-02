@@ -105,4 +105,8 @@ public class RolesRepository extends BaseMybatisRepository<RolesDO, String> {
         String sql = this.getSQL("insertRolePermission");
         this.getSqlSession().insert(sql, rolePermissionDO);
     }
+
+    public List<RoleMenuDO> selectRoleMenuByRoleId(String roleId) {
+        return this.getSqlSession().selectList(getSQL("selectRoleMenuByRoleId"), roleId);
+    }
 }

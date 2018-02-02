@@ -73,7 +73,7 @@ public class DataAppuserAnalysisSchedule {
     @Scheduled(cron = "0 0 0/1 * * ?")
     public void everyDayScheduleData(){
 		ArrayList<String> metrics = getDailyMetrics();
-		Date time = new Date(); //DateFormatUtil.addDays(new Date(), -1);//今天获取的数据，应该是昨天的 ，此处待确认 TODO
+		Date time = new Date(); //DateFormatUtil.addDays(new Date(), -1);
     	for (TermainalTyps termainal : TermainalTyps.values()) {
     		String newusers =  talkData.getTalkingDataByDataAnalysis(time,time,metrics, daily,termainal.getMessage());
     		JSONObject newuserObj = (JSONObject) JSONArray.parseArray(JSONObject.parseObject(newusers).getString("result")).get(0);
