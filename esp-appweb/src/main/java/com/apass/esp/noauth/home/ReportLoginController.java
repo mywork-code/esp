@@ -104,7 +104,6 @@ public class ReportLoginController {
             String token = tokenManager.createToken(userId, username, TOKEN_EXPIRES_SPACE);
             map.put("userId",userId);
             map.put("token",token);
-            listeningAuthenticationManager.authentication(username, password);
 //            map.put("ifShowGenral",ifShowGenral);
 //            map.put("ifShowRunAnalysis",ifShowRunAnalysis);
             map.put("msg", "用户登录成功！");
