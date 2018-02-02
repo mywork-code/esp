@@ -47,7 +47,7 @@ public class DataAppuserRetentionSchedule {
     public void retentionEveryDayScheduleData(){
 		ArrayList<String> metrics = getMetrics();
 		Date time1 = DateFormatUtil.addDays(new Date(), -1);
-		Date time = DateFormatUtil.addDays(new Date(), -30);//今天获取的数据，应该是昨天的 ，此处待确认TODO
+		Date time = DateFormatUtil.addDays(new Date(), -30);
 		for (TermainalTyps termainal : TermainalTyps.values()) {
 			String day1retentions = talkData.getTalkingDataByDataAnalysis(time,time1,metrics, daily,termainal.getMessage());
 			logger.info("result--->"+day1retentions);
