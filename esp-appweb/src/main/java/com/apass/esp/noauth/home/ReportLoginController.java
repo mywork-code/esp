@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,10 +53,10 @@ public class ReportLoginController {
             	map.put("msg", "用户名不存在！");
 				return Response.fail("用户名不存在！",map);
             }
-//            if (!new BCryptPasswordEncoder().matches(password, users.getPassword())) {
-//				map.put("msg", "密码不正确！");
-//				return Response.fail("密码不正确！",map);
-//			}
+            if (!new BCryptPasswordEncoder().matches(password, users.getPassword())) {
+				map.put("msg", "密码不正确！");
+				return Response.fail("密码不正确！",map);
+			}
             String userId = users.getId();
             //获取菜单
             /*List<RolesDO> roles = usersService.loadAssignedRoles(usersId);
