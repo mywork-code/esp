@@ -3,10 +3,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
-
-import com.apass.gfb.framework.utils.GsonUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +17,6 @@ import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
-import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
@@ -51,15 +46,18 @@ public class GoodsBatchPutawayController {
     private OrderService orderService;
     @Autowired
     private GoodsEsDao goodsEsDao;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(GoodsBatchPutawayController.class);
+    /**
+     * wz批量上架
+     * 上架参考GoodsBaseInfoController shelves 方法
+     * 复核参考GoodsBaseInfoController checkview 方法 
+     */
     @ResponseBody
     @RequestMapping("/batchPutaway")
     @LogAnnotion(operationType = "wz商品批量上架", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public void batchPutaway() {
-        LOGGER.info("wz商品批量上架方法执行......");
+        LOGGER.info("wz商品批量上架..");
         try{
-            //上架方法参考 见GoodsBaseInfoController   shelves 方法
             Map<String,Object> params = Maps.newHashMap();
             params.put("status",GoodStatus.GOOD_NEW.getCode());
             params.put("source",SourceType.WZ.getCode());
@@ -67,28 +65,29 @@ public class GoodsBatchPutawayController {
             List<GoodsInfoEntity> goodsList= goodsService.selectByCategoryId2AndsordNo(params);
             for(GoodsInfoEntity goods : goodsList){
                 LOGGER.info("wz商品批量上架方法，goodId:{}",goods.getId());
+                String user = SpringSecurityUtils.getCurrentUser();
+                goods.setGoodsTitle("品牌直供正品保证，京东配送快至当天到货");//修改标准小标题
+                goods.setUpdateUser(user);
+                if (goods.getListTime()==null) {//商品上架时间为空,设置上架日期
+                    goods.setListTime(new Date());
+                }
+                goodsService.updateService(goods);
                 List<GoodsStockInfoEntity> stockList = goodsStockInfoService.getGoodsStock(goods.getId());
                 String skuId = goods.getExternalId();
-                String user = SpringSecurityUtils.getCurrentUser();
-                if (stockList.isEmpty()||stockList.size()>2) {
+                if (stockList.isEmpty()||stockList.size()>2) {//商品库存为空或者错误
                     continue;
-//                    return "商品库存为空,请添加！";
                 }
-                if (goods.getListTime()==null) {
-                    goods.setListTime(new Date());
-//                    return "商品上架时间不能为空，请先选择类目！";
+                if (goods.getGoodsName().startsWith("【")) {//商品标题名称非法！
+                	continue;
                 }
                 GoodsStockInfoEntity goodsStockInfo = stockList.get(0);
                 BigDecimal goodsPrice = goodsStockInfo.getGoodsPrice();
                 BigDecimal goodsCostPrice = goodsStockInfo.getGoodsCostPrice();
-                if(goodsCostPrice.compareTo(new BigDecimal(99))<0){
+                if(goodsCostPrice.compareTo(new BigDecimal(110))<0){//微知协议价格低于110元
                     continue;
-//                    return "微知协议价格低于99元，不能上架";
                 }
-                //验证商品是否可售（当验证为不可售时，提示操作人员）
-                if(!orderService.checkGoodsSalesOrNot(skuId)){
+                if(!orderService.checkGoodsSalesOrNot(skuId)){//验证商品是否可售状态
                     continue;
-//                     return "该微知商品暂时不可售，不能上架";
                 }
                 SystemParamEntity systemParamEntity =  systemParamService.querySystemParamInfo().get(0);
                 BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_DOWN);
@@ -96,38 +95,34 @@ public class GoodsBatchPutawayController {
                 Map<String, Object> descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(skuId));
                 String jdGoodsSimilarSku = (String) descMap.get("jdGoodsSimilarSku");
                 int jdSimilarSkuListSize = (int) descMap.get("jdSimilarSkuListSize");
-                if (StringUtils.isBlank(jdGoodsSimilarSku) && jdSimilarSkuListSize > 0) {
+                if (StringUtils.isBlank(jdGoodsSimilarSku) && jdSimilarSkuListSize > 0) {//未关联的微知商品      京东商品无法匹配规格无法上架
                     continue;
-//                        return "该京东商品无法匹配规格无法上架！";
                 }
                 goods.setAttrDesc(jdGoodsSimilarSku);
-                if (dividePoint.compareTo(dividePoint1) == -1) {
-                    goods.setStatus(GoodStatus.GOOD_BBEN.getCode());
+                if (dividePoint.compareTo(dividePoint1) == -1) {//商品已进入保本率审核页面
+                    goods.setStatus(GoodStatus.GOOD_BBEN.getCode());//保本审核 不上架
                     goods.setUpdateUser(user);
                     goodsService.updateService(goods);
-                    //保本审核 不上架
-//                    return "该商品已进入保本率审核页面";
-                } else {
-                    //商品复核  全部上架
-                    goods.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
+                } else {//商品已进入复核状态 
+                    goods.setStatus(GoodStatus.GOOD_NOCHECK.getCode());// 商品复核  全部上架
                     goods.setUpdateUser(user);
                     goods.setUpdateDate(new Date());
                     goodsService.updateService(goods);
-//                    return "该商品已进入带审核状态";
-                    //一下为商品复核方法   见GoodsBaseInfoController   checkview 方法
+                    //以下为商品复核方法   见GoodsBaseInfoController   checkview 方法  
+                    //默认复核批量通过全部上架
                     goods.setStatus(GoodStatus.GOOD_UP.getCode());
                     goods.setUpdateUser(user);
                     goods.setUpdateDate(new Date());
                     goods.setRemark("商品批量复核");
                     goodsService.updateService(goods);
                     //TODO在ES中相似规格的商品只上架一件（即：如果商品多规格则在ES中添加一个规格）
-                    Goods entity = goodsService.goodsInfoToGoods(goodsService.selectByGoodsId(goods.getId()));
                     //如果ES中没有商品规格中任何一个，则添加到ES中
+                    Goods entity = goodsService.goodsInfoToGoods(goodsService.selectByGoodsId(goods.getId()));
                     goodsEsDao.update(entity);
                 }
             }
         }catch(Exception e){
-            
+        	LOGGER.error("wz商品批量上架,出现异常");
         }
     }
 }
