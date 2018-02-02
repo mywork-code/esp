@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * @version $Id: MenusService.java, v 0.1 2016年6月23日 下午1:48:28 lixining Exp $
  */
 @Component
-public class MenusService {
+public class MenuService {
 
     @Autowired
     private MenusRepository menusRepository;

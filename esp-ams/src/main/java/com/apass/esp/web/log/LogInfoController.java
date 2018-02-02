@@ -20,7 +20,7 @@ import com.apass.esp.service.log.LogService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.apass.gfb.framework.security.controller.BaseController;
+import com.apass.esp.web.controller.BaseController;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 /**
  * 

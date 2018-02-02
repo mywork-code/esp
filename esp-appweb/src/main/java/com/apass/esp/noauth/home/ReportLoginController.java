@@ -5,8 +5,8 @@ import com.apass.esp.domain.entity.rbac.MenusDO;
 import com.apass.esp.domain.entity.rbac.RoleMenuDO;
 import com.apass.esp.domain.entity.rbac.RolesDO;
 import com.apass.esp.domain.entity.rbac.UsersDO;
-import com.apass.esp.service.rbac.MenusService;
-import com.apass.esp.service.rbac.RolesService;
+import com.apass.esp.service.rbac.MenuService;
+import com.apass.esp.service.rbac.RoleService;
 import com.apass.gfb.framework.jwt.TokenManager;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,9 +37,9 @@ public class ReportLoginController {
     @Autowired
 	public TokenManager tokenManager;
     @Autowired
-    private RolesService rolesService;
+    private RoleService rolesService;
     @Autowired
-    private MenusService menusService;
+    private MenuService menusService;
     // 安家派token失效时间间隔(默认7天失效)
  	public static final Long TOKEN_EXPIRES_SPACE = 7 * 24 * 60 * 60L;
     /**

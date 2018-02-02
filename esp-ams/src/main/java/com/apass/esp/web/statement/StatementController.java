@@ -21,7 +21,7 @@ import com.apass.esp.service.statement.StatementService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.apass.gfb.framework.security.controller.BaseController;
+import com.apass.esp.web.controller.BaseController;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.DateFormatUtil;

@@ -12,7 +12,7 @@ import com.apass.esp.repository.rbac.RolesRepository;
  * @version $Id: RolesService.java, v 0.1 2016年6月23日 下午4:25:04 lixining Exp $
  */
 @Component
-public class RolesService {
+public class RoleService {
     /**
      * Roles Repository
      */
