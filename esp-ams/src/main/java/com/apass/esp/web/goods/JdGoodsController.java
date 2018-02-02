@@ -1,13 +1,6 @@
 package com.apass.esp.web.goods;
-
 import java.text.ParseException;
 import java.util.Map;
-import java.util.TreeSet;
-
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
-import com.apass.esp.service.jd.JdGoodsInfoService;
-import com.apass.gfb.framework.utils.RandomUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
-import com.apass.esp.service.UsersService;
 import com.apass.esp.service.jd.JdCategoryService;
 import com.apass.esp.service.jd.JdGoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -28,7 +19,6 @@ import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
-
 /**
  * Created by jie.xu on 17/7/5.
  */
