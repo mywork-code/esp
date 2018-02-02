@@ -1,7 +1,5 @@
 package com.apass.esp.web.dataanalysis;
-
 import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,12 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.dataanalysis.DataAppuserRetentionService;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
-
 /**
  * 
  * @author pyc
@@ -25,7 +21,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
  * @description 数据趋势
  */
 @Controller
-@RequestMapping("/noauth/dataanalysis/datatrend")
+@RequestMapping("/dataanalysis/datatrend")
 public class DataTrendController {
 
 	private static final Logger logger = LoggerFactory.getLogger(DataTrendController.class);
