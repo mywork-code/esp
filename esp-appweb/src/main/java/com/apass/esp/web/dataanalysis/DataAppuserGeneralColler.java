@@ -76,7 +76,8 @@ public class DataAppuserGeneralColler {
                 vo.setYesetodayNewuser(dataAppuserAnalysises2.get(i).getNewuser());
                 vo.setTodaySession(dataAppuserAnalysises.get(i).getSession());
                 vo.setYesetodaySession(dataAppuserAnalysises2.get(i).getSession());
-                vo.setTxnId(dataAppuserAnalysises.get(i).getTxnId());
+                Date txnIdDate = DateFormatUtil.string2date(dataAppuserAnalysises.get(i).getTxnId(),"yyyyMMddHH");
+                vo.setTxnId(DateFormatUtil.dateToString(txnIdDate,"HH:mm"));
 
                 voLsit.add(vo);
             }
