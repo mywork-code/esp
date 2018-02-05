@@ -136,32 +136,29 @@ public class DataEsporderAnalysisService {
 //			dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
 //			map.put("dateStart", dateStart);
 //			map.put("dateEnd", dateEnd);
-			map.put("platformids", "0");
+//			map.put("platformids", "0");
 			return map;
 		}
+		map.put("dateEnd", dateEnd);
 		switch (days) {
 			case "0":
 				dateStart = dateEnd;
 				map.put("dateStart", dateStart);
-				map.put("dateEnd", dateEnd);
 				break;
 			case "-1":
 				date = DateFormatUtil.addDays(now, -1);
 				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
 				map.put("dateStart", dateStart);
-				map.put("dateEnd", dateEnd);
 				break;
 			case "-7":
 				date = DateFormatUtil.addDays(now, -7);
 				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
 				map.put("dateStart", dateStart);
-				map.put("dateEnd", dateEnd);
 				break;
 			case "-30":
 				date = DateFormatUtil.addDays(now, -30);
 				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
 				map.put("dateStart", dateStart);
-				map.put("dateEnd", dateEnd);
 				break;
 		}
 		return map;
