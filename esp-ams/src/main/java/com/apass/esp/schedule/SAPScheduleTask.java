@@ -34,7 +34,7 @@ public class SAPScheduleTask {
 
 
 
-	@Scheduled(cron = "0 0 8 * * ?")
+	@Scheduled(cron = "0 30 7 * * ?")
 	public void task() {
 		String path = basePath;
 		sapService.sendCaiWuPingZhengCsv(ip,port,username,password,path);
