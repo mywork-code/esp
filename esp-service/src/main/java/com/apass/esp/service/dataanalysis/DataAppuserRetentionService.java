@@ -289,7 +289,7 @@ public class DataAppuserRetentionService {
 		List<DataAppuserAnalysisVo> dataActivityUserVo = Lists.newArrayList();
 		for (DataAppuserAnalysis data : analysis) {
 			DataAppuserAnalysisVo vo =  new DataAppuserAnalysisVo();
-			vo.setDaily(data.getTxnId());
+			vo.setDaily(DateFormatUtil.string2string(data.getTxnId(), "yyyyMMdd", "MM月dd日"));
 			vo.setActiveuser(data.getActiveuser());//日活跃
 			vo.setWau(data.getWau());//周活跃
 			vo.setMau(data.getMau());//月活跃
@@ -318,7 +318,7 @@ public class DataAppuserRetentionService {
 			day7Sum = day7Sum.add(day7);
 			day30Sum = day30Sum.add(day30);
 			
-			vo.setDaily(data.getTxnId());
+			vo.setDaily(DateFormatUtil.string2string(data.getTxnId(), "yyyyMMdd", "MM月dd日"));
 			vo.setDay1retention(String.valueOf(day1)+"%");
 			vo.setDay7retention(String.valueOf(day7)+"%");
 			vo.setDay30retention(String.valueOf(day30)+"%");
@@ -366,7 +366,7 @@ public class DataAppuserRetentionService {
 			newuserSum += Integer.parseInt(data.getNewuser());
 			sessionSum += Integer.parseInt(data.getSession());
 			avgsessionSum += Double.parseDouble(data.getAvgsessionlength());
-			vo.setDaily(data.getTxnId());
+			vo.setDaily(DateFormatUtil.string2string(data.getTxnId(), "yyyyMMdd", "MM月dd日"));
 			vo.setNewuser(data.getNewuser());
 			vo.setSession(data.getSession());
 			vo.setSessionAvg(data.getAvgsessionlength());
