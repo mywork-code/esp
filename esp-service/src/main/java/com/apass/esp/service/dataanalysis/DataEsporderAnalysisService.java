@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,43 +126,42 @@ public class DataEsporderAnalysisService {
 	 * @throws BusinessException 
 	 */
 	private Map<String, Object> conversionParam(Map<String, Object> map) throws BusinessException {
-		String dateType = CommonUtils.getValue(map, "dateType");
+		String days = CommonUtils.getValue(map, "days");
 		Date now = new Date();
 		Date date = null;
 		String dateStart = null;
 		String dateEnd = DateFormatUtil.dateToString(now, "yyyyMMdd");
-		switch (dateType) {
-			case "other":
-				return map;
-			case "today":
+		if(StringUtils.isBlank(days)){
+//			date = DateFormatUtil.addDays(now, -7);
+//			dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+//			map.put("dateStart", dateStart);
+//			map.put("dateEnd", dateEnd);
+			map.put("platformids", "0");
+			return map;
+		}
+		switch (days) {
+			case "0":
 				dateStart = dateEnd;
 				map.put("dateStart", dateStart);
 				map.put("dateEnd", dateEnd);
 				break;
-			case "yesterday":
+			case "-1":
 				date = DateFormatUtil.addDays(now, -1);
 				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
 				map.put("dateStart", dateStart);
 				map.put("dateEnd", dateEnd);
 				break;
-			case "lastseven":
+			case "-7":
 				date = DateFormatUtil.addDays(now, -7);
 				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
 				map.put("dateStart", dateStart);
 				map.put("dateEnd", dateEnd);
 				break;
-			case "lastthirty":
+			case "-30":
 				date = DateFormatUtil.addDays(now, -30);
 				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
 				map.put("dateStart", dateStart);
 				map.put("dateEnd", dateEnd);
-				break;
-			default://默认查询 7天 全平台 运营数据
-				date = DateFormatUtil.addDays(now, -7);
-				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
-				map.put("dateStart", dateStart);
-				map.put("dateEnd", dateEnd);
-				map.put("platformids", "0");
 				break;
 		}
 		return map;
