@@ -31,6 +31,8 @@ public class DataAppuserRetentionService {
 	private DataAppuserRetentionMapper dataAppuserRetentionMapper;
 	@Autowired
 	private DataAppuserAnalysisMapper dataAppuserAnalysisMapper;
+	@Autowired
+	private DataAppuserAnalysisService dataAppuserAnalysisService;
 	/**
 	 * CREATE
 	 * @param entity
@@ -83,7 +85,8 @@ public class DataAppuserRetentionService {
 		List<DataAppuserRetentionVo> newList = new ArrayList<DataAppuserRetentionVo>();
 		List<DataAppuserRetentionVo> activityList = new ArrayList<DataAppuserRetentionVo>();
 		for(DataAppuserRetention entity : list){
-			Map<String, DataAppuserRetentionVo> mapEntity = conversionEntity(entity);
+			DataAppuserAnalysis appuser = dataAppuserAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(entity.getTxnId(), map.get("platformids").toString(), "2","00"));
+			Map<String, DataAppuserRetentionVo> mapEntity = conversionEntity(entity,appuser);
 			DataAppuserRetentionVo newEntity = mapEntity.get("newEntity");
 			DataAppuserRetentionVo activityEntity = mapEntity.get("activityEntity");
 			newList.add(newEntity);
@@ -178,12 +181,12 @@ public class DataAppuserRetentionService {
 	 * @param entity
 	 * @return
 	 */
-	private Map<String, DataAppuserRetentionVo> conversionEntity(DataAppuserRetention entity) {
+	private Map<String, DataAppuserRetentionVo> conversionEntity(DataAppuserRetention entity,DataAppuserAnalysis appuser) {
 		Map<String, DataAppuserRetentionVo> map = new HashMap<String, DataAppuserRetentionVo>();
 		DataAppuserRetentionVo newEntity = new DataAppuserRetentionVo();
 		DataAppuserRetentionVo activityEntity = new DataAppuserRetentionVo();
 		String dayData = DateFormatUtil.string2string(entity.getTxnId(), "yyyyMMdd", "MM月dd日");
-		newEntity.setDataType("new");
+		newEntity.setDataType(appuser.getNewuser());
 		newEntity.setDay1(entity.getDay1retention());
 		newEntity.setDay3(entity.getDay3retention());
 		newEntity.setDay7(entity.getDay7retention());
@@ -193,7 +196,7 @@ public class DataAppuserRetentionService {
 		newEntity.setDay14churnuser(entity.getDay14churnuser());
 		newEntity.setDay7backuser(entity.getDay7backuser());
 		newEntity.setDay14backuser(entity.getDay14backuser());
-		activityEntity.setDataType("activity");
+		activityEntity.setDataType(appuser.getActiveuser());
 		activityEntity.setDay1(entity.getDauday1retention());
 		activityEntity.setDay3(entity.getDauday3retention());
 		activityEntity.setDay7(entity.getDauday7retention());
@@ -289,7 +292,7 @@ public class DataAppuserRetentionService {
 		List<DataAppuserAnalysisVo> dataActivityUserVo = Lists.newArrayList();
 		for (DataAppuserAnalysis data : analysis) {
 			DataAppuserAnalysisVo vo =  new DataAppuserAnalysisVo();
-			vo.setDaily(data.getTxnId());
+			vo.setDaily(DateFormatUtil.string2string(data.getTxnId(), "yyyyMMdd", "MM月dd日"));
 			vo.setActiveuser(data.getActiveuser());//日活跃
 			vo.setWau(data.getWau());//周活跃
 			vo.setMau(data.getMau());//月活跃
@@ -318,7 +321,7 @@ public class DataAppuserRetentionService {
 			day7Sum = day7Sum.add(day7);
 			day30Sum = day30Sum.add(day30);
 			
-			vo.setDaily(data.getTxnId());
+			vo.setDaily(DateFormatUtil.string2string(data.getTxnId(), "yyyyMMdd", "MM月dd日"));
 			vo.setDay1retention(String.valueOf(day1)+"%");
 			vo.setDay7retention(String.valueOf(day7)+"%");
 			vo.setDay30retention(String.valueOf(day30)+"%");
@@ -366,7 +369,7 @@ public class DataAppuserRetentionService {
 			newuserSum += Integer.parseInt(data.getNewuser());
 			sessionSum += Integer.parseInt(data.getSession());
 			avgsessionSum += Double.parseDouble(data.getAvgsessionlength());
-			vo.setDaily(data.getTxnId());
+			vo.setDaily(DateFormatUtil.string2string(data.getTxnId(), "yyyyMMdd", "MM月dd日"));
 			vo.setNewuser(data.getNewuser());
 			vo.setSession(data.getSession());
 			vo.setSessionAvg(data.getAvgsessionlength());
