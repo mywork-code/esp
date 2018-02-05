@@ -106,11 +106,12 @@ public class DataAppuserRetentionService {
 		String dateStart = null;
 		String dateEnd = DateFormatUtil.dateToString(now, "yyyyMMdd");
 		if(StringUtils.isBlank(days)){
-//			date = DateFormatUtil.addDays(now, -7);
-//			dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
-//			map.put("dateStart", dateStart);
-//			map.put("dateEnd", dateEnd);
-//			map.put("platformids", "0");
+			dateStart = CommonUtils.getValue(map, "dateStart");
+			dateEnd = CommonUtils.getValue(map, "dateEnd");
+			dateStart = DateFormatUtil.string2string(dateStart, "yyyy-MM-dd","yyyyMMdd");
+			dateEnd = DateFormatUtil.string2string(dateEnd, "yyyy-MM-dd","yyyyMMdd");
+			map.put("dateStart", dateStart);
+			map.put("dateEnd", dateEnd);
 			return map;
 		}
 		map.put("dateEnd", dateEnd);
