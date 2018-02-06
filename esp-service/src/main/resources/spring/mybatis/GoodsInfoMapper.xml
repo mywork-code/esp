@@ -74,6 +74,7 @@
                 t.category_id3 categoryId3,
                 t.ID id,
                 t.goods_code goodsCode,
+                t.main_goods_code mainGoodsCode,
                 t.category_code categoryCode,
                 t.goods_name goodsName,
                 t.goods_title goodsTitle,
