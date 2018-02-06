@@ -389,7 +389,7 @@ public class DataAppuserRetentionService {
 		values.put("newuserAvg",newuserAvg);//日均新增用户
 		values.put("sessionSum",sessionSum);//启动次数总计
 		values.put("sessionAvg",sessionAvg);//日均启动次数
-		values.put("avgsessionLength",avgsessionLength);//平均单次使用时长
+		values.put("avgsessionLength",String.format("%.2f",avgsessionLength));//平均单次使用时长
 		return values;
 	}
 	
