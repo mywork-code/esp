@@ -304,9 +304,9 @@ public class DataAppuserRetentionService {
 			day30Sum = day30Sum.add(day30);
 			
 			vo.setDaily(DateFormatUtil.string2string(data.getTxnId(), "yyyyMMdd", "MM月dd日"));
-			vo.setDay1retention(String.valueOf(day1)+"%");
-			vo.setDay7retention(String.valueOf(day7)+"%");
-			vo.setDay30retention(String.valueOf(day30)+"%");
+			vo.setDay1retention(String.valueOf(day1));
+			vo.setDay7retention(String.valueOf(day7));
+			vo.setDay30retention(String.valueOf(day30));
 			retentionVo.add(vo);
 		}
 		
@@ -371,7 +371,7 @@ public class DataAppuserRetentionService {
 		values.put("newuserAvg",newuserAvg);//日均新增用户
 		values.put("sessionSum",sessionSum);//启动次数总计
 		values.put("sessionAvg",sessionAvg);//日均启动次数
-		values.put("avgsessionLength",avgsessionLength);//平均单次使用时长
+		values.put("avgsessionLength",String.format("%.2f",avgsessionLength));//平均单次使用时长
 		return values;
 	}
 	

@@ -1,6 +1,5 @@
 use esp;
 
-DROP TABLE t_data_appuser_analysis;
 CREATE TABLE `t_data_appuser_analysis` (
 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
 `created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
@@ -24,7 +23,6 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='设备用户talkingdata分析';
 
 
-DROP TABLE t_data_appuser_retention;
 CREATE TABLE `t_data_appuser_retention` (
 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
 `created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
@@ -50,7 +48,6 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='用户talkingdata留存分析';
 
 
-DROP TABLE t_data_esporder_analysis;
 CREATE TABLE `t_data_esporder_analysis` (
 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
 `created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
@@ -69,7 +66,6 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='商城订单统计';
 
 
-DROP TABLE t_data_esporderdetail;
 CREATE TABLE `t_data_esporderdetail` (
 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
 `created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
