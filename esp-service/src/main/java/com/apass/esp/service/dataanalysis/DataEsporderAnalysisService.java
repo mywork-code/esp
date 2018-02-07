@@ -140,28 +140,10 @@ public class DataEsporderAnalysisService {
 			map.put("dateEnd", dateEnd);
 			return map;
 		}
+		date = DateFormatUtil.addDays(now, Integer.parseInt(days));
+		dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+		map.put("dateStart", dateStart);
 		map.put("dateEnd", dateEnd);
-		switch (days) {
-			case "0":
-				dateStart = dateEnd;
-				map.put("dateStart", dateStart);
-				break;
-			case "-1":
-				date = DateFormatUtil.addDays(now, -1);
-				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
-				map.put("dateStart", dateStart);
-				break;
-			case "-7":
-				date = DateFormatUtil.addDays(now, -7);
-				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
-				map.put("dateStart", dateStart);
-				break;
-			case "-30":
-				date = DateFormatUtil.addDays(now, -30);
-				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
-				map.put("dateStart", dateStart);
-				break;
-		}
 		return map;
 	}
 	/**
@@ -176,8 +158,6 @@ public class DataEsporderAnalysisService {
 		String txnId = DateFormatUtil.dateToString(date, "yyyyMMdd");
 		String day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
 		DataEsporderAnalysis entity = new DataEsporderAnalysis();
-//		txnId = "20180112";
-//		day = "2018-01-12";
 		entity.setTxnId(txnId);
 		entity.setIsDelete("00");
 		String beginDate = day + " 00:00:00";

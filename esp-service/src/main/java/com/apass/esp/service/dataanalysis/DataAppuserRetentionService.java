@@ -117,28 +117,10 @@ public class DataAppuserRetentionService {
 			map.put("dateEnd", dateEnd);
 			return map;
 		}
+		date = DateFormatUtil.addDays(now, Integer.parseInt(days));
+		dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
+		map.put("dateStart", dateStart);
 		map.put("dateEnd", dateEnd);
-		switch (days) {
-			case "0":
-				dateStart = dateEnd;
-				map.put("dateStart", dateStart);
-				break;
-			case "-1":
-				date = DateFormatUtil.addDays(now, -1);
-				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
-				map.put("dateStart", dateStart);
-				break;
-			case "-7":
-				date = DateFormatUtil.addDays(now, -7);
-				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
-				map.put("dateStart", dateStart);
-				break;
-			case "-30":
-				date = DateFormatUtil.addDays(now, -30);
-				dateStart = DateFormatUtil.dateToString(date, "yyyyMMdd");
-				map.put("dateStart", dateStart);
-				break;
-		}
 		return map;
 	}
 	/**
