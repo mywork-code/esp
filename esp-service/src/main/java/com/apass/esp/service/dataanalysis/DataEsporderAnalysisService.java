@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataEsporderAnalysis;
@@ -27,6 +27,7 @@ import com.apass.esp.mapper.DataEsporderAnalysisMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderDetailInfoService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -44,6 +45,8 @@ public class DataEsporderAnalysisService {
 	private OrderDetailInfoService orderDetailInfoService;
 	@Autowired
 	private GoodsService goodsService;
+	@Autowired
+    private SystemEnvConfig systemEnvConfig;
 	/**
 	 * CREATE
 	 * @param entity
@@ -153,6 +156,10 @@ public class DataEsporderAnalysisService {
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
 	public void flushEsporderAnalysis() {
+		//sit定时任务return
+		if(systemEnvConfig.isDEV()){
+			return;
+		}
 		Date now = new Date();
 		Date date = DateFormatUtil.addDays(now, -1);
 		String txnId = DateFormatUtil.dateToString(date, "yyyyMMdd");
@@ -163,7 +170,7 @@ public class DataEsporderAnalysisService {
 		String beginDate = day + " 00:00:00";
 		String endDate = day + " 23:59:59";
 		List<OrderInfoEntity> orderlist = orderService.getSectionOrderList(beginDate, endDate);
-		if(orderlist==null||orderlist.size()==0){
+		if(CollectionUtils.isEmpty(orderlist)){
 			//无订单直接 插入总表 t_data_esporder_analysis  详情表t_data_esporderdetail无需插入
 			entity.setCreatedTime(new Date());
 			entity.setUpdatedTime(new Date());
