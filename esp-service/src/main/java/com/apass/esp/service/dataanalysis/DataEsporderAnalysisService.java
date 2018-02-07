@@ -155,9 +155,10 @@ public class DataEsporderAnalysisService {
 	public void batchFlushEsporderAnalysis() {
 		String startdate = "2017-01-01";
 		Date start2017 = DateFormatUtil.string2date(startdate, "yyyy-MM-dd");
+		Date now = new Date();
+		Date date = null;
 		while(true){
-			Date date = DateFormatUtil.addDays(start2017, 1);
-			Date now = new Date();
+			date = DateFormatUtil.addDays(start2017, 1);
 			//直到当天时间  跳出循环
 			if(date.getTime() - now.getTime()>0){
 				return;
