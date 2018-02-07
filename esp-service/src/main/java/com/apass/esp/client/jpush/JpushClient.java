@@ -48,8 +48,9 @@ public class JpushClient {
         
         String paramsRSAJson=RSAUtils.encryptByPublicKey(paramsJson, espClientPublicKey);
         paramsMap.put("data", paramsRSAJson);
-        
+
         String reqJson = GsonUtils.toJson(paramsMap);
+        LOGGER.info("jpushSendPushAlias,推送传递的参数paramsMap:{}",reqJson);
         StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
         String respJson = HttpClientUtils.getMethodPostResponse(address, entity);
         LOGGER.info("jpushSendPushAlias" + respJson);
