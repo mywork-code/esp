@@ -150,6 +150,44 @@ public class DataEsporderAnalysisService {
 		return map;
 	}
 	/**
+	 * 订单分析   批量刷新  刷新2017年历史数据
+	 */
+	public void batchFlushEsporderAnalysis() {
+		String startdate = "2017-01-01";
+		Date start2017 = DateFormatUtil.string2date(startdate, "yyyy-MM-dd");
+		while(true){
+			Date date = DateFormatUtil.addDays(start2017, 1);
+			Date now = new Date();
+			//直到当天时间  跳出循环
+			if(date.getTime() - now.getTime()>0){
+				return;
+			}
+			//以下复制flushEsporderAnalysis 方法  刷新每天商城订单数据
+			String txnId = DateFormatUtil.dateToString(date, "yyyyMMdd");
+			String day = DateFormatUtil.dateToString(date, "yyyy-MM-dd");
+			DataEsporderAnalysis entity = new DataEsporderAnalysis();
+			entity.setTxnId(txnId);
+			entity.setIsDelete("00");
+			String beginDate = day + " 00:00:00";
+			String endDate = day + " 23:59:59";
+			List<OrderInfoEntity> orderlist = orderService.getSectionOrderList(beginDate, endDate);
+			if(CollectionUtils.isEmpty(orderlist)){
+				//无订单直接 插入总表 t_data_esporder_analysis  详情表t_data_esporderdetail无需插入
+				entity.setCreatedTime(new Date());
+				entity.setUpdatedTime(new Date());
+				entity.setPercentConv(new BigDecimal(0));
+				createdEntity(entity);
+			}else{
+				//统计总表字段数据  t_data_esporder_analysis
+				Long orderAnalysisId = createdOrderEntity(entity, orderlist);
+				//统计详情表字段数据 t_data_esporderdetail
+				createdOrderDetailEntity(orderAnalysisId,orderlist);
+			}
+			//刷新条件
+			start2017 = date;
+		}
+	}
+	/**
 	 * 商城订单统计
      * 每日2点执行，刷新昨日订单统计
      * 针对 t_data_esporder_analysis 和  t_data_esporderdetail
