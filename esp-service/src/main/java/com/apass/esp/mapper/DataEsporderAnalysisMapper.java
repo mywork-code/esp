@@ -17,4 +17,10 @@ public interface DataEsporderAnalysisMapper extends GenericMapper<DataEsporderAn
 	 * @return
 	 */
 	public List<DataEsporderAnalysis> getOperationAnalysisList(Map<String, Object> map);
+	/**
+	 * READ
+	 * @param entity
+	 * @return
+	 */
+	public DataEsporderAnalysis readDataEsporderAnalysis(DataEsporderAnalysis entity);
 }
