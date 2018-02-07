@@ -84,6 +84,14 @@ public class DataEsporderAnalysisService {
 		return dataEsporderAnalysisMapper.updateByPrimaryKeySelective(entity);
 	}
 	/**
+	 * READ
+	 * @param entity
+	 * @return
+	 */
+	public DataEsporderAnalysis readDataEsporderAnalysis(DataEsporderAnalysis entity){
+		return dataEsporderAnalysisMapper.readDataEsporderAnalysis(entity);
+	}
+	/**
 	 * 运营分析数据载入
 	 * 参数含有
 	 * @param dateStart
@@ -177,15 +185,25 @@ public class DataEsporderAnalysisService {
 				entity.setCreatedTime(new Date());
 				entity.setUpdatedTime(new Date());
 				entity.setPercentConv(new BigDecimal(0));
-				createdEntity(entity);
+				if(dataEsporderAnalysisMapper.readDataEsporderAnalysis(entity)==null){
+					createdEntity(entity);
+				}
 			}else{
 				//统计总表字段数据  t_data_esporder_analysis
-				Long orderAnalysisId = createdOrderEntity(entity, orderlist);
-				//统计详情表字段数据 t_data_esporderdetail
-				if(orderAnalysisId!=0L){
-					if(createdOrderDetailEntity(orderAnalysisId,orderlist)==null){
-						start2017 = date;
-						continue;
+				entity = createdOrderEntity(entity, orderlist);
+				if(entity!=null){
+					DataEsporderAnalysis en = dataEsporderAnalysisMapper.readDataEsporderAnalysis(entity);
+					if(en==null){
+						createdEntity(entity);
+						//统计详情表字段数据 t_data_esporderdetail
+						if(createdOrderDetailEntity(entity.getId(),orderlist)==null){
+							start2017 = date;
+							continue;
+						}
+					}else{
+						Long dataEsporderAnalysisId = en.getId();
+						entity.setId(dataEsporderAnalysisId);
+						updateEntity(entity);
 					}
 				}else{
 					start2017 = date;
@@ -223,13 +241,16 @@ public class DataEsporderAnalysisService {
 			entity.setCreatedTime(new Date());
 			entity.setUpdatedTime(new Date());
 			entity.setPercentConv(new BigDecimal(0));
-			createdEntity(entity);
+			if(dataEsporderAnalysisMapper.readDataEsporderAnalysis(entity)==null){
+				createdEntity(entity);
+			}
 		}else{
 			//统计总表字段数据  t_data_esporder_analysis
-			Long orderAnalysisId = createdOrderEntity(entity, orderlist);
-			//统计详情表字段数据 t_data_esporderdetail
-			if(orderAnalysisId!=0L){
-				if(createdOrderDetailEntity(orderAnalysisId,orderlist)==null){
+			entity = createdOrderEntity(entity, orderlist);
+			if(entity!=null){
+				createdEntity(entity);
+				//统计详情表字段数据 t_data_esporderdetail
+				if(createdOrderDetailEntity(entity.getId(),orderlist)==null){
 					throw new BusinessException("订单统计异常！");
 				}
 			}else{
@@ -244,7 +265,7 @@ public class DataEsporderAnalysisService {
 	 * @return
 	 */
 	@Transactional(rollbackFor = {Exception.class,RuntimeException.class})
-	private Long createdOrderEntity(DataEsporderAnalysis entity , List<OrderInfoEntity> orderlist){
+	private DataEsporderAnalysis createdOrderEntity(DataEsporderAnalysis entity , List<OrderInfoEntity> orderlist){
 		String userIdStr = "";
 		String userIdStrByPayfalg = "";
 		Boolean payfalg = true;
@@ -290,10 +311,9 @@ public class DataEsporderAnalysisService {
 			entity.setPayGoodsNum(payGoodsNum);
 			entity.setPayAmt(payAmt);
 			entity.setPercentConv(percentConv);
-			createdEntity(entity);
-			return entity.getId();
+			return entity;
 		}catch(Exception e){
-			return 0L;
+			return null;
 		}
 	}
 	/**
