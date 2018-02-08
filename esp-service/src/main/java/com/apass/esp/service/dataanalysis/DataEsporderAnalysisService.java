@@ -113,25 +113,39 @@ public class DataEsporderAnalysisService {
 		List<DataEsporderAnalysisVo> voflist = new ArrayList<DataEsporderAnalysisVo>();
 		for(DataEsporderAnalysis entity : list){
 			DataEsporderAnalysisVo vof = new DataEsporderAnalysisVo();
-			vof.setPercent(formartString(entity.getPercentConv().compareTo(new BigDecimal(0E-8))==0?new BigDecimal(0):entity.getPercentConv()));
-			Long orderAnalysisId = entity.getId();
-			map.put("orderAnalysisId", orderAnalysisId);
-			List<DataEsporderdetail> orderlist = dataEsporderdetailService.getDataEsporderdetailList(map);
+//			vof.setPercent(formartString(entity.getPercentConv().compareTo(new BigDecimal(0E-8))==0?new BigDecimal(0):entity.getPercentConv()));
+			BigDecimal pp = new BigDecimal(entity.getPayGoodsNum()).divide(new BigDecimal(entity.getConfirmGoodsNum()),4,BigDecimal.ROUND_HALF_UP);
+			vof.setPercent(formartString(pp));
 			String dayData = DateFormatUtil.string2string(entity.getTxnId(), "yyyyMMdd", "MM月dd日");
+			//设置日期
 			vof.setDayData(dayData);
 			DataAppuserAnalysis dataAppuserAnalysis = dataAppuserAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(entity.getTxnId(), map.get("platformids").toString(), "2","00"));
 			if(dataAppuserAnalysis!=null){
+				//设置新增活跃用户
 				vof.setActiveuser(dataAppuserAnalysis.getActiveuser());
 				vof.setRegisteruser(dataAppuserAnalysis.getRegisteruser());
 			}
-			List<DataEsporderdetailVo> orderVolist = new ArrayList<DataEsporderdetailVo>();
-			List<DataEsporderdetailVo> orderVolist2 = new ArrayList<DataEsporderdetailVo>();
+			//设置支付下单6个字段
+			coptProperties(entity, vof);
+				//商品总计
 			DataEsporderdetailVo count = new DataEsporderdetailVo();
 			count.setGoodsName("总计");
-			count.setConfirmAmt(BigDecimal.ZERO);
-			count.setConfirmGoodsNum(0);
-			count.setPayAmt(BigDecimal.ZERO);
-			count.setPayGoodsNum(0);
+			count.setConfirmAmt(entity.getConfirmAmt());
+			count.setConfirmGoodsNum(entity.getConfirmGoodsNum());
+			count.setPayAmt(entity.getPayAmt());
+			count.setPayGoodsNum(entity.getPayGoodsNum());
+			if(count.getConfirmGoodsNum()>0){
+				BigDecimal p = new BigDecimal(count.getPayGoodsNum()).divide(new BigDecimal(count.getConfirmGoodsNum()),4,BigDecimal.ROUND_HALF_UP);
+				count.setPercent(formartString(p));
+			}else{
+				count.setPercent("0.00%");
+			}
+			List<DataEsporderdetailVo> orderVolist = new ArrayList<DataEsporderdetailVo>();
+			orderVolist.add(count);
+			//子商品集合
+			Long orderAnalysisId = entity.getId();
+			map.put("orderAnalysisId", orderAnalysisId);
+			List<DataEsporderdetail> orderlist = dataEsporderdetailService.getDataEsporderdetailList(map);
 			for(DataEsporderdetail order : orderlist){
 				DataEsporderdetailVo vo = new DataEsporderdetailVo();
 				BeanUtils.copyProperties(order, vo);
@@ -141,60 +155,32 @@ public class DataEsporderAnalysisService {
 				}
 				vo.setPercent(formartString(order.getPercentConv().compareTo(new BigDecimal(0E-8))==0?new BigDecimal(0):order.getPercentConv()));
 				orderVolist.add(vo);
-				count.setConfirmAmt(count.getConfirmAmt().add(order.getConfirmAmt()));
-				count.setConfirmGoodsNum(count.getConfirmGoodsNum()+order.getConfirmGoodsNum());
-				count.setPayAmt(count.getPayAmt().add(order.getPayAmt()));
-				count.setPayGoodsNum(count.getPayGoodsNum()+order.getPayGoodsNum());
 			}
-			if(count.getConfirmGoodsNum()>0){
-				BigDecimal p = new BigDecimal(count.getPayGoodsNum()).divide(new BigDecimal(count.getConfirmGoodsNum()),2,BigDecimal.ROUND_HALF_UP);
-				count.setPercent(formartString(p));
-			}else{
-				count.setPercent("0%");
-			}
-			coptProperties(entity, vof);
-			orderVolist2.add(count);
-			orderVolist2.addAll(orderVolist);
-			vof.setList(orderVolist2);
+			//设置子商品集合
+			vof.setList(orderVolist);
 			voflist.add(vof);
 		}
 		logger.info("excute method time is --->{}",(System.currentTimeMillis() - currentTime));
 		return Response.success("运营分析数据载入成功！", voflist);
 	}
 	/**
-	 * 格式化字符串
+	 * 格式化BigDecimal字符串
 	 * @param str
 	 * @return
 	 */
-	private String formartString(BigDecimal str){
-		if(str==null||str==BigDecimal.ZERO||str.compareTo(BigDecimal.ZERO)==-1){
-			return "0%";
+	private String formartString(BigDecimal str){//entity.getPercentConv().compareTo(new BigDecimal(0E-8))==0
+		if(str==null||str==BigDecimal.ZERO||str.compareTo(new BigDecimal(0E-8))==0||str.compareTo(new BigDecimal(0))==0||str.compareTo(BigDecimal.ZERO)==0){
+			return "0.00%";
 		}
+		str = str.multiply(new BigDecimal(100));
 		String s = str.toString();
 		if(s.indexOf(".")!=-1){
 			if(s.length()>s.indexOf(".")+3){
 				s = s.substring(0, s.indexOf(".")+3);
 			}
 		}
-		str = new BigDecimal(s);
-		str = str.multiply(new BigDecimal(100));
-		return str.toString() + "%";
+		return s.toString() + "%";
 	}
-	/**
-	 * 格式化字符串
-	 * @param str
-	 * @return
-	 *//*
-	private String formartString(String str){
-		if(str.indexOf(".")!=-1){
-			if(str.length()>str.indexOf(".")+5){
-				str = str.substring(0, str.indexOf(".")+5);
-			}
-		}
-		BigDecimal data = new BigDecimal(str);
-		data = data.multiply(new BigDecimal(100));
-		return data.toString() + "%";
-	}*/
 	/**
 	 * copy 参数
 	 * @param entity
