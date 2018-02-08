@@ -154,7 +154,7 @@ public class DataAppuserAnalysisService {
 	public void updateAnalysisRegisterUser(Map<String,Object> map){
 		
 		/*** 此处是获取昨天的 APP端新增的注册用户数 安卓、苹果、全平台*/
-		RegisterUser user = client.getRegisteruser();
+		RegisterUser user = client.getRegisteruser(String.valueOf(map.get("txnId")));
 	    if(null == user){
 	    	logger.info("getRegisteruser is null！");
 	    	return;
