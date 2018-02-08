@@ -120,7 +120,7 @@ public class DataAppuserGeneralColler {
 
             LOGGER.info("应用概况相关数据:{}",GsonUtils.toJson(analyVo));
         }catch (Exception e){
-            LOGGER.error("应用概况相关数据获取成功",e);
+            LOGGER.error("应用概况相关数据获取失败",e);
             return Response.fail("应用概况相关数据获取失败");
         }
         return Response.success("应用概况相关数据获取成功！",analyVo);
