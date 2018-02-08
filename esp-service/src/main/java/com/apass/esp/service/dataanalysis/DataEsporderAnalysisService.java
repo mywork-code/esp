@@ -108,6 +108,7 @@ public class DataEsporderAnalysisService {
 	public Response getOperationAnalysisList(Map<String, Object> map) throws BusinessException {
 		Long currentTime = System.currentTimeMillis();
 		map = conversionParam(map);
+		map.put("isDelete", "00");
 		List<DataEsporderAnalysis> list = dataEsporderAnalysisMapper.getOperationAnalysisList(map);
 		List<DataEsporderAnalysisVo> voflist = new ArrayList<DataEsporderAnalysisVo>();
 		for(DataEsporderAnalysis entity : list){
