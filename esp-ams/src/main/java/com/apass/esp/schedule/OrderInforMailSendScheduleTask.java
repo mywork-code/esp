@@ -17,13 +17,10 @@ import org.springframework.stereotype.Component;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 @Component
 @Configurable
 @EnableScheduling
 @Profile("Schedule")
-@RequestMapping("/testSc")
 public class OrderInforMailSendScheduleTask {
 
 	private static final Logger logger  = LoggerFactory.getLogger(OrderInforMailSendScheduleTask.class);
@@ -41,7 +38,6 @@ public class OrderInforMailSendScheduleTask {
     private ExportExcleCommonModel model;
 
     @Scheduled(cron = "0 0 9 * * ?")
-	@RequestMapping("/testSc")
     public void sendOrderMailEveryDay(){
     	logger.info("-----------sendOrderMailEveryDay now time:{}-------------",DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd HH:mm:ss"));
     	String dateBegin = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(), -1), "YYYY-MM-dd");
