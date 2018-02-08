@@ -320,19 +320,11 @@ public class OrderDetailInfoEntity {
     }
 
     public Date getDelistTime() {
-        if(delistTime!=null && DateFormatUtil.dateToString(delistTime).contains("1900")){
-            return null;
-        }
         return delistTime;
     }
 
     public void setDelistTime(Date delistTime) {
-        if(delistTime ==null){
-            this.delistTime = DateFormatUtil.string2date("1900-01-01 00:00:00");
-        }else {
             this.delistTime = delistTime;
-        }
-
     }
 
     public Date getProDate() {
