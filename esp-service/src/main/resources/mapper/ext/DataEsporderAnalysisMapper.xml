@@ -18,4 +18,14 @@
 	    	<include refid="QueryConditionSql" />
         ORDER BY TXN_ID DESC
     </select>
+    <select id="readDataEsporderAnalysis" resultMap="BaseResultMap">
+	    SELECT
+	    	<include refid="Base_Column_List"/>
+	    FROM 
+	    	t_data_esporder_analysis
+	    WHERE 1=1
+        	AND txn_id = #{txnId}
+ 	       	AND is_delete = #{isDelete}
+		ORDER BY TXN_ID DESC
+	</select>
 </mapper>
