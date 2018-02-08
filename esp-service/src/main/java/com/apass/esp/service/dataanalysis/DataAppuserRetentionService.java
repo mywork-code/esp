@@ -80,6 +80,7 @@ public class DataAppuserRetentionService {
 	 */
 	public Response getAppuserRetentionList(Map<String, Object> map) throws BusinessException {
 		map = conversionParam(map);
+		map.put("isDelete", "00");
 		List<DataAppuserRetention> list = dataAppuserRetentionMapper.getAppuserRetentionList(map);
 		list = conversionList(list);
 		List<DataAppuserRetentionVo> newList = new ArrayList<DataAppuserRetentionVo>();

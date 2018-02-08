@@ -5,6 +5,7 @@ public class DataEsporderAnalysisVo extends DataEsporderAnalysis {
 	private String dayData;
 	private String registeruser;
 	private String activeuser;
+	private String percent;
 	private List<DataEsporderdetailVo> list;
 	public String getDayData() {
 		return dayData;
@@ -29,5 +30,11 @@ public class DataEsporderAnalysisVo extends DataEsporderAnalysis {
 	}
 	public void setList(List<DataEsporderdetailVo> list) {
 		this.list = list;
+	}
+	public String getPercent() {
+		return percent;
+	}
+	public void setPercent(String percent) {
+		this.percent = percent;
 	}
 }

@@ -106,39 +106,94 @@ public class DataEsporderAnalysisService {
 	 * @throws BusinessException 
 	 */
 	public Response getOperationAnalysisList(Map<String, Object> map) throws BusinessException {
-		long currentTime = System.currentTimeMillis();
+		Long currentTime = System.currentTimeMillis();
 		map = conversionParam(map);
 		List<DataEsporderAnalysis> list = dataEsporderAnalysisMapper.getOperationAnalysisList(map);
 		List<DataEsporderAnalysisVo> voflist = new ArrayList<DataEsporderAnalysisVo>();
 		for(DataEsporderAnalysis entity : list){
 			DataEsporderAnalysisVo vof = new DataEsporderAnalysisVo();
+			vof.setPercent(formartString(entity.getPercentConv().compareTo(new BigDecimal(0E-8))==0?new BigDecimal(0):entity.getPercentConv()));
 			Long orderAnalysisId = entity.getId();
 			map.put("orderAnalysisId", orderAnalysisId);
 			List<DataEsporderdetail> orderlist = dataEsporderdetailService.getDataEsporderdetailList(map);
 			String dayData = DateFormatUtil.string2string(entity.getTxnId(), "yyyyMMdd", "MM月dd日");
-			List<DataEsporderdetailVo> orderVolist = new ArrayList<DataEsporderdetailVo>();
-			for(DataEsporderdetail order : orderlist){
-				DataEsporderdetailVo vo = new DataEsporderdetailVo();
-				BeanUtils.copyProperties(order, vo);
-				GoodsInfoEntity goods = goodsRepository.select(order.getGoodsId());
-				if(goods!=null){
-					vo.setGoodsName(goods.getGoodsName());
-					orderVolist.add(vo);
-				}
-			}
 			vof.setDayData(dayData);
 			DataAppuserAnalysis dataAppuserAnalysis = dataAppuserAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(entity.getTxnId(), map.get("platformids").toString(), "2","00"));
 			if(dataAppuserAnalysis!=null){
 				vof.setActiveuser(dataAppuserAnalysis.getActiveuser());
 				vof.setRegisteruser(dataAppuserAnalysis.getRegisteruser());
 			}
+			List<DataEsporderdetailVo> orderVolist = new ArrayList<DataEsporderdetailVo>();
+			List<DataEsporderdetailVo> orderVolist2 = new ArrayList<DataEsporderdetailVo>();
+			DataEsporderdetailVo count = new DataEsporderdetailVo();
+			count.setGoodsName("总计");
+			count.setConfirmAmt(BigDecimal.ZERO);
+			count.setConfirmGoodsNum(0);
+			count.setPayAmt(BigDecimal.ZERO);
+			count.setPayGoodsNum(0);
+			for(DataEsporderdetail order : orderlist){
+				DataEsporderdetailVo vo = new DataEsporderdetailVo();
+				BeanUtils.copyProperties(order, vo);
+				GoodsInfoEntity goods = goodsRepository.select(order.getGoodsId());
+				if(goods!=null){
+					vo.setGoodsName(goods.getGoodsName());
+				}
+				vo.setPercent(formartString(order.getPercentConv().compareTo(new BigDecimal(0E-8))==0?new BigDecimal(0):order.getPercentConv()));
+				orderVolist.add(vo);
+				count.setConfirmAmt(count.getConfirmAmt().add(order.getConfirmAmt()));
+				count.setConfirmGoodsNum(count.getConfirmGoodsNum()+order.getConfirmGoodsNum());
+				count.setPayAmt(count.getPayAmt().add(order.getPayAmt()));
+				count.setPayGoodsNum(count.getPayGoodsNum()+order.getPayGoodsNum());
+			}
+			if(count.getConfirmGoodsNum()>0){
+				BigDecimal p = new BigDecimal(count.getPayGoodsNum()).divide(new BigDecimal(count.getConfirmGoodsNum()),2,BigDecimal.ROUND_HALF_UP);
+				count.setPercent(formartString(p));
+			}else{
+				count.setPercent("0%");
+			}
 			coptProperties(entity, vof);
-			vof.setList(orderVolist);
+			orderVolist2.add(count);
+			orderVolist2.addAll(orderVolist);
+			vof.setList(orderVolist2);
 			voflist.add(vof);
 		}
 		logger.info("excute method time is --->{}",(System.currentTimeMillis() - currentTime));
 		return Response.success("运营分析数据载入成功！", voflist);
 	}
+	/**
+	 * 格式化字符串
+	 * @param str
+	 * @return
+	 */
+	private String formartString(BigDecimal str){
+		if(str==null||str==BigDecimal.ZERO||str.compareTo(BigDecimal.ZERO)==-1){
+			return "0%";
+		}
+		String s = str.toString();
+		if(s.indexOf(".")!=-1){
+			if(s.length()>s.indexOf(".")+3){
+				s = s.substring(0, s.indexOf(".")+3);
+			}
+		}
+		str = new BigDecimal(s);
+		str = str.multiply(new BigDecimal(100));
+		return str.toString() + "%";
+	}
+	/**
+	 * 格式化字符串
+	 * @param str
+	 * @return
+	 *//*
+	private String formartString(String str){
+		if(str.indexOf(".")!=-1){
+			if(str.length()>str.indexOf(".")+5){
+				str = str.substring(0, str.indexOf(".")+5);
+			}
+		}
+		BigDecimal data = new BigDecimal(str);
+		data = data.multiply(new BigDecimal(100));
+		return data.toString() + "%";
+	}*/
 	/**
 	 * copy 参数
 	 * @param entity
