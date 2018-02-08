@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,19 +15,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataEsporderAnalysis;
 import com.apass.esp.domain.entity.DataEsporderdetail;
-import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.vo.DataAnalysisVo;
 import com.apass.esp.domain.vo.DataEsporderAnalysisVo;
 import com.apass.esp.domain.vo.DataEsporderdetailVo;
 import com.apass.esp.mapper.DataEsporderAnalysisMapper;
-import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.service.order.OrderDetailInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
@@ -51,7 +49,7 @@ public class DataEsporderAnalysisService {
 	@Autowired
 	private OrderDetailInfoService orderDetailInfoService;
 	@Autowired
-	private GoodsService goodsService;
+	private GoodsRepository goodsRepository;
 	@Autowired
     private SystemEnvConfig systemEnvConfig;
 	/**
@@ -118,18 +116,18 @@ public class DataEsporderAnalysisService {
 			map.put("orderAnalysisId", orderAnalysisId);
 			List<DataEsporderdetail> orderlist = dataEsporderdetailService.getDataEsporderdetailList(map);
 			String dayData = DateFormatUtil.string2string(entity.getTxnId(), "yyyyMMdd", "MM月dd日");
-			DataAppuserAnalysis dataAppuserAnalysis = dataAppuserAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(entity.getTxnId(), map.get("platformids").toString(), "2","00"));
 			List<DataEsporderdetailVo> orderVolist = new ArrayList<DataEsporderdetailVo>();
 			for(DataEsporderdetail order : orderlist){
 				DataEsporderdetailVo vo = new DataEsporderdetailVo();
 				BeanUtils.copyProperties(order, vo);
-				GoodsBasicInfoEntity goods = goodsService.serchGoodsByGoodsId(order.getGoodsId().toString());
+				GoodsInfoEntity goods = goodsRepository.select(order.getGoodsId());
 				if(goods!=null){
 					vo.setGoodsName(goods.getGoodsName());
 					orderVolist.add(vo);
 				}
 			}
 			vof.setDayData(dayData);
+			DataAppuserAnalysis dataAppuserAnalysis = dataAppuserAnalysisService.getDataAnalysisByTxnId(new DataAnalysisVo(entity.getTxnId(), map.get("platformids").toString(), "2","00"));
 			if(dataAppuserAnalysis!=null){
 				vof.setActiveuser(dataAppuserAnalysis.getActiveuser());
 				vof.setRegisteruser(dataAppuserAnalysis.getRegisteruser());
@@ -141,7 +139,6 @@ public class DataEsporderAnalysisService {
 		logger.info("excute method time is --->{}",(System.currentTimeMillis() - currentTime));
 		return Response.success("运营分析数据载入成功！", voflist);
 	}
-	
 	/**
 	 * copy 参数
 	 * @param entity
