@@ -168,7 +168,10 @@ public class DataAppuserRetentionService {
 		DataAppuserRetentionVo newEntity = new DataAppuserRetentionVo();
 		DataAppuserRetentionVo activityEntity = new DataAppuserRetentionVo();
 		String dayData = DateFormatUtil.string2string(entity.getTxnId(), "yyyyMMdd", "MM月dd日");
-		newEntity.setDataType(appuser.getNewuser());
+		if(appuser!=null){
+			newEntity.setDataType(appuser.getNewuser());
+			activityEntity.setDataType(appuser.getActiveuser());
+		}
 		newEntity.setDay1(entity.getDay1retention());
 		newEntity.setDay3(entity.getDay3retention());
 		newEntity.setDay7(entity.getDay7retention());
@@ -178,7 +181,6 @@ public class DataAppuserRetentionService {
 		newEntity.setDay14churnuser(entity.getDay14churnuser());
 		newEntity.setDay7backuser(entity.getDay7backuser());
 		newEntity.setDay14backuser(entity.getDay14backuser());
-		activityEntity.setDataType(appuser.getActiveuser());
 		activityEntity.setDay1(entity.getDauday1retention());
 		activityEntity.setDay3(entity.getDauday3retention());
 		activityEntity.setDay7(entity.getDauday7retention());
