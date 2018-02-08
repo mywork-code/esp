@@ -61,6 +61,7 @@ public class OperationAnalysisController {
             return dataAppuserRetentionService.getAppuserRetentionList(map);
         } catch (BusinessException e) {
             logger.error(e.getMessage(), e);
+            logger.error("getAppuserRetentionList-------exception----->{}",e);
             return Response.fail("用户留存数据载入失败,"+e.getErrorDesc());
         }catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -90,6 +91,7 @@ public class OperationAnalysisController {
             return dataEsporderAnalysisService.getOperationAnalysisList(map);
         } catch (BusinessException e) {
             logger.error(e.getMessage(), e);
+            logger.error("getOperationAnalysisList-------exception----->{}",e);
             return Response.fail("运行分析数据载入失败,"+e.getErrorDesc());
         }catch (Exception e) {
             logger.error(e.getMessage(), e);

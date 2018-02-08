@@ -7,12 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.DataAppuserAnalysis;
 import com.apass.esp.domain.entity.DataEsporderAnalysis;
@@ -33,6 +37,9 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 @Service
 public class DataEsporderAnalysisService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(DataEsporderAnalysisService.class);
+	
 	@Autowired
 	private DataEsporderAnalysisMapper dataEsporderAnalysisMapper;
 	@Autowired
@@ -101,6 +108,7 @@ public class DataEsporderAnalysisService {
 	 * @throws BusinessException 
 	 */
 	public Response getOperationAnalysisList(Map<String, Object> map) throws BusinessException {
+		long currentTime = System.currentTimeMillis();
 		map = conversionParam(map);
 		List<DataEsporderAnalysis> list = dataEsporderAnalysisMapper.getOperationAnalysisList(map);
 		List<DataEsporderAnalysisVo> voflist = new ArrayList<DataEsporderAnalysisVo>();
@@ -130,6 +138,8 @@ public class DataEsporderAnalysisService {
 			vof.setList(orderVolist);
 			voflist.add(vof);
 		}
+		
+		logger.info("excute method time is --->{}",(System.currentTimeMillis() - currentTime));
 		return Response.success("运营分析数据载入成功！", voflist);
 	}
 	/**
