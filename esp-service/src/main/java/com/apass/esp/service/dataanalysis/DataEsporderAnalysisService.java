@@ -134,13 +134,32 @@ public class DataEsporderAnalysisService {
 				vof.setActiveuser(dataAppuserAnalysis.getActiveuser());
 				vof.setRegisteruser(dataAppuserAnalysis.getRegisteruser());
 			}
-			BeanUtils.copyProperties(entity, vof);
+			coptProperties(entity, vof);
 			vof.setList(orderVolist);
 			voflist.add(vof);
 		}
 		logger.info("excute method time is --->{}",(System.currentTimeMillis() - currentTime));
 		return Response.success("运营分析数据载入成功！", voflist);
 	}
+	
+	/**
+	 * copy 参数
+	 * @param entity
+	 * @param vof
+	 */
+	public void coptProperties(DataEsporderAnalysis entity,DataEsporderAnalysisVo vof){
+		if(null != entity){
+			vof.setConfirmAmt(entity.getConfirmAmt());
+			vof.setConfirmGoodsNum(entity.getConfirmGoodsNum());
+			vof.setConfirmNum(entity.getConfirmNum());
+			vof.setId(entity.getId());
+			vof.setPayAmt(entity.getPayAmt());
+			vof.setPayGoodsNum(entity.getPayGoodsNum());
+			vof.setPayNum(entity.getPayNum());
+			vof.setTxnId(entity.getTxnId());
+		}
+	}
+	
 	/**
 	 * 转化参数
 	 * @param map
