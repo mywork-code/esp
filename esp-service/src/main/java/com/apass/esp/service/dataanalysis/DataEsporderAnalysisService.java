@@ -126,19 +126,18 @@ public class DataEsporderAnalysisService {
 				GoodsBasicInfoEntity goods = goodsService.serchGoodsByGoodsId(order.getGoodsId().toString());
 				if(goods!=null){
 					vo.setGoodsName(goods.getGoodsName());
+					orderVolist.add(vo);
 				}
-				orderVolist.add(vo);
 			}
 			vof.setDayData(dayData);
 			if(dataAppuserAnalysis!=null){
-				BeanUtils.copyProperties(dataAppuserAnalysis, vof);
+				vof.setActiveuser(dataAppuserAnalysis.getActiveuser());
+				vof.setRegisteruser(dataAppuserAnalysis.getRegisteruser());
 			}
 			BeanUtils.copyProperties(entity, vof);
-			vof.setId(orderAnalysisId);
 			vof.setList(orderVolist);
 			voflist.add(vof);
 		}
-		
 		logger.info("excute method time is --->{}",(System.currentTimeMillis() - currentTime));
 		return Response.success("运营分析数据载入成功！", voflist);
 	}
