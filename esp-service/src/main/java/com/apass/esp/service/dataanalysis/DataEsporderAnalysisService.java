@@ -122,7 +122,9 @@ public class DataEsporderAnalysisService {
 				orderVolist.add(vo);
 			}
 			vof.setDayData(dayData);
-			BeanUtils.copyProperties(dataAppuserAnalysis, vof);
+			if(dataAppuserAnalysis!=null){
+				BeanUtils.copyProperties(dataAppuserAnalysis, vof);
+			}
 			BeanUtils.copyProperties(entity, vof);
 			vof.setId(orderAnalysisId);
 			vof.setList(orderVolist);
