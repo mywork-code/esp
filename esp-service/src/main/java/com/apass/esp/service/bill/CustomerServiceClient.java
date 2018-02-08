@@ -96,9 +96,9 @@ public class CustomerServiceClient {
 	 * @return
 	 * @throws BusinessException
 	 */
-    public RegisterUser getRegisteruser() {
+    public RegisterUser getRegisteruser(String date) {
         try {
-            String requestUrl = "http://10.254.60.13/rms/register/num";
+            String requestUrl = "http://10.254.60.13/rms/register/num?queryDate="+date;
             String responseJson = HttpClientUtils.getMethodGetResponse(requestUrl);
             LOGGER.info("获取APP端新增的注册用户数::Response::[{}]", responseJson);
             Response response = GsonUtils.convertObj(responseJson, Response.class);
