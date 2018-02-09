@@ -216,8 +216,7 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 
     public GoodsInfoEntity selectGoodsByExternalId(@Param("externalId") String externalId) {
         try {
-            List<GoodsInfoEntity> goodsInfoEnties = this.getSqlSession().selectList(
-                    "selectGoodsByExternalId", externalId);
+            List<GoodsInfoEntity> goodsInfoEnties = this.getSqlSession().selectList("selectGoodsByExternalId", externalId);
             if (goodsInfoEnties.isEmpty() || goodsInfoEnties == null) {
                 LOGGER.error("数据有误，externalId={}的京东东商品在商品表里不存在", externalId);
                 throw new BusinessException("数据有误");
@@ -241,8 +240,8 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
     }
 
     // 根据京东skuid查询数据库中是否已经插入数据
-    public GoodsInfoEntity selectGoodsBySkuId(String skuId) {
-        return this.getSqlSession().selectOne("selectGoodsByExternalId", skuId);
+    public GoodsInfoEntity selectGoodsBySkuId(String externalId) {
+        return this.getSqlSession().selectOne("selectGoodsByExternalId", externalId);
     }
 
     // 根据京东skuid查询数据库中是否已经上架了的商品
