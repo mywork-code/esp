@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,9 +18,9 @@ import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.mapper.LimitGoodsSkuMapper;
+import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
-import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -41,7 +40,7 @@ public class LimitGoodsSkuService {
     @Autowired
     public LimitCommonService limitCommonService;
     @Autowired
-    public GoodsService goodsService;
+    public GoodsRepository goodsRepository;
     @Autowired
     private CategoryInfoService categoryInfoService;
     @Autowired
@@ -177,22 +176,12 @@ public class LimitGoodsSkuService {
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
             GoodsInfoEntity goods = null;
             if(stock!=null){
-                goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                goods = goodsRepository.select(stock.getGoodsId());
             }else{
-                List<String> strlist = new ArrayList<String>();
-                strlist.add(skuId);
-                List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
-                if(goodsList!=null&&goodsList.size()>0){
-                    goods = goodsList.get(0);
-                    stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
-                }else{
-                    //是否跑出异常  待上传商品列表  skuid查询商品失败
-                    underfindlist.add(entity);
-                    continue;
-                }
+                goods = goodsRepository.selectGoodsBySkuId(skuId);
             }
-            if(goods!=null&&goods.getId()!=null){
-                Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(goods.getId());  
+            if(goods!=null){
+                Boolean result=proGroupGoodsService.selectEffectiveGoodsBySkuId(skuId);  
                 if(!result){
                     //是否跑出异常  待上传商品列表含有有效满减活动中的商品
                     flist.add(entity);
@@ -252,7 +241,9 @@ public class LimitGoodsSkuService {
             skuvolist.add(vo);
             numal++;
         }
+        LOGGER.info("导入成功的商品有：{}", GsonUtils.toJson(skuvolist));
         LOGGER.info("导入失败的商品有：{}", GsonUtils.toJson(flist));
+        LOGGER.info("导入SKUID错误商品有：{}", GsonUtils.toJson(underfindlist));
         //验证不通过，导入不成功
         for(LimitGoodsSku entity : flist){
             String skuId = entity.getSkuId();
@@ -260,12 +251,9 @@ public class LimitGoodsSkuService {
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
             GoodsInfoEntity goods = null;
             if(stock!=null){
-                goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                goods = goodsRepository.select(stock.getGoodsId());
             }else{
-                List<String> strlist = new ArrayList<String>();
-                strlist.add(skuId);
-                List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
-                goods = goodsList.get(0);
+                goods = goodsRepository.selectGoodsBySkuId(skuId);
                 stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
             }
             Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
@@ -318,7 +306,6 @@ public class LimitGoodsSkuService {
                 break;
             }
         }
-
         String msg = "共" + list.size() + "件商品，关联成功" + numal + "件，失败" + unnumal + "件.";
         map.put("msg", msg);
         map.put("date", skuvolist);
@@ -334,15 +321,9 @@ public class LimitGoodsSkuService {
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
             GoodsInfoEntity goods = null;
             if(stock!=null){
-                goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                goods = goodsRepository.select(stock.getGoodsId());
             }else {
-                List<String> strlist = new ArrayList<String>();
-                strlist.add(skuId);
-                List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
-                if (goodsList != null && goodsList.size() > 0) {
-                    goods = goodsList.get(0);
-                    stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
-                }
+                goods = goodsRepository.selectGoodsBySkuId(skuId);
             }
             if(goods==null){
                 return true;
@@ -377,12 +358,9 @@ public class LimitGoodsSkuService {
                 GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
                 GoodsInfoEntity goods = null;
                 if(stock!=null){
-                    goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                    goods = goodsRepository.select(stock.getGoodsId());
                 }else{
-                    List<String> strlist = new ArrayList<String>();
-                    strlist.add(sku.getSkuId());
-                    List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
-                    goods = goodsList.get(0);
+                    goods = goodsRepository.selectGoodsBySkuId(sku.getSkuId());
                     stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
                 }
                 Boolean fwz = StringUtils.equals("wz", goods.getSource());
