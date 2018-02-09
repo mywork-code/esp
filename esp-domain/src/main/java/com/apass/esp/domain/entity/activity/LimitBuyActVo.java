@@ -11,9 +11,15 @@ import com.apass.esp.domain.entity.LimitGoodsSku;
  *
  */
 public class LimitBuyActVo extends LimitBuyAct{
-    private Long limitBuyActId;//冗余活动ID ==活动ID
+    /**
+     * 冗余活动ID ==活动ID
+     */
+    private Long limitBuyActId;
     private String startDay;
     private List<LimitGoodsSku> list;
+    private Date startDayBefore;
+    private Date startDayAfter;
+    private MultipartFile upLoadGoodsFile;
     public Long getLimitBuyActId() {
         return limitBuyActId;
     }
@@ -32,8 +38,6 @@ public class LimitBuyActVo extends LimitBuyAct{
     public void setList(List<LimitGoodsSku> list) {
         this.list = list;
     }
-    private Date startDayBefore;
-    private Date startDayAfter;
     public Date getStartDayBefore() {
         return startDayBefore;
     }
@@ -46,7 +50,6 @@ public class LimitBuyActVo extends LimitBuyAct{
     public void setStartDayAfter(Date startDayAfter) {
         this.startDayAfter = startDayAfter;
     }
-    private MultipartFile upLoadGoodsFile;
     public MultipartFile getUpLoadGoodsFile() {
         return upLoadGoodsFile;
     }
