@@ -418,26 +418,29 @@
         </foreach>
         )  
    </delete>
+   <!-- 通过skuid查库存，（左）连接商品表source字段过滤掉京东  只查微知和供应商 -->
    <select id="getStockInfoEntityBySkuId" parameterType="GoodsStockInfoEntity" resultType="GoodsStockInfoEntity">
     SELECT
-        id id,
-        goods_id goodsId,
-        goods_sku_attr goodsSkuAttr,
-        goods_price goodsPrice,
-        stock_total_amt stockTotalAmt,
-        stock_curr_amt stockCurrAmt,
-        attr_val_ids    attrValIds,
-        create_user createUser,
-        update_user updateUser,
-        create_date createDate,
-        update_date updateDate,
-        market_price marketPrice,
-        goods_Cost_Price goodsCostPrice,
-        stock_Logo stockLogo
+        x.id id,
+        x.goods_id goodsId,
+        x.goods_sku_attr goodsSkuAttr,
+        x.goods_price goodsPrice,
+        x.stock_total_amt stockTotalAmt,
+        x.stock_curr_amt stockCurrAmt,
+        x.attr_val_ids    attrValIds,
+        x.create_user createUser,
+        x.update_user updateUser,
+        x.create_date createDate,
+        x.update_date updateDate,
+        x.market_price marketPrice,
+        x.goods_Cost_Price goodsCostPrice,
+        x.stock_Logo stockLogo
     FROM
-        t_esp_goods_stock_info
+        t_esp_goods_stock_info x
+    JOIN t_esp_goods_base_info y on y.id = x.goods_id
     WHERE 1=1
-        AND sku_id = #{skuId, jdbcType=VARCHAR}
-        AND delete_flag = 'N'
+        AND x.sku_id = #{skuId, jdbcType=VARCHAR}
+        AND x.delete_flag = 'N'
+        AND y.source != 'jd'
     </select>
 </mapper> 
