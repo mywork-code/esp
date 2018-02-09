@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +48,8 @@ public class LimitGoodsSkuService {
     private CommonService commonService;
     @Autowired
     private ProGroupGoodsService proGroupGoodsService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LimitGoodsSkuService.class);
     /**
      * CREATE
      * @param entity
@@ -163,6 +169,7 @@ public class LimitGoodsSkuService {
             }
             if(sb.toString().contains(skuId)){
                 //是否跑出异常   待上传商品列表含有重复相同商品
+                LOGGER.info("重复商品：{}",GsonUtils.toJson(entity));
                 flist.add(entity);
                 continue;
             }
@@ -245,6 +252,7 @@ public class LimitGoodsSkuService {
             skuvolist.add(vo);
             numal++;
         }
+        LOGGER.info("导入失败的商品有：{}", GsonUtils.toJson(flist));
         //验证不通过，导入不成功
         for(LimitGoodsSku entity : flist){
             String skuId = entity.getSkuId();
@@ -310,6 +318,7 @@ public class LimitGoodsSkuService {
                 break;
             }
         }
+
         String msg = "共" + list.size() + "件商品，关联成功" + numal + "件，失败" + unnumal + "件.";
         map.put("msg", msg);
         map.put("date", skuvolist);
