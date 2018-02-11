@@ -105,26 +105,4 @@ public class ReportLoginController {
             return Response.fail("用户名或密码不正确！",map);
         }
     }
-    /**
-     * Convert SecurityMenus To List<SecurityMenusModel>
-     * @param securityMenus
-     * @param resultList
-     */
-//    private void treatSecurityMenus(SecurityMenus securityMenus, List<SecurityAccordionTree> resultList) {
-//        List<SecurityAccordion> accordionList = securityMenus.getSecurityAccordionList();
-//        Map<String, List<SecurityAccordionTree>> menuMap = securityMenus.getAccordionTreeListMap();
-//        for (SecurityAccordion accordion : accordionList) {
-//            SecurityAccordionTree accordionMenu = new SecurityAccordionTree();
-//            accordionMenu.setId(accordion.getId());
-//            accordionMenu.setText(accordion.getText());
-//            if (menuMap == null || !menuMap.containsKey(accordion.getId())) {
-//                resultList.add(accordionMenu);
-//                continue;
-//            }
-//            if (!CollectionUtils.isEmpty(menuMap.get(accordion.getId()))) {
-//                accordionMenu.setChildren(menuMap.get(accordion.getId()));
-//                resultList.add(accordionMenu);
-//            }
-//        }
-//    }
 }

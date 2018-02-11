@@ -172,7 +172,7 @@ public class MonitorController {
 	@ResponseBody
 	public Response orderStatis(){
 		mailStatisScheduleTask.mailStatisSchedule();
-		return   Response.success("发送成功");
+		return Response.success("发送成功");
 	}
 
 	/**
