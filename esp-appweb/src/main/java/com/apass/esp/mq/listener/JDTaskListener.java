@@ -112,6 +112,7 @@ public class JDTaskListener implements MessageListener {
 
       //检查商品是否可售
         if(!orderService.checkGoodsSalesOrNot(skuId)){
+          LOGGER.info("skuId {}-------> 商品不可售，更新状态至下架 ", skuId);
           goodsService.goodDownAndRemoveFromES(goodsInfoEntity.getId());
         }
 
