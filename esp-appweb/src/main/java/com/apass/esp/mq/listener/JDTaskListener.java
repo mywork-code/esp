@@ -114,6 +114,12 @@ public class JDTaskListener implements MessageListener {
         if(!orderService.checkGoodsSalesOrNot(skuId)){
           LOGGER.info("skuId {}-------> 商品不可售，更新状态至下架 ", skuId);
           goodsService.goodDownAndRemoveFromES(goodsInfoEntity.getId());
+          ml.setType("102");
+          ml.setStatus("0");
+          ml.setResult("商品id["+goodsInfoEntity.getId()+"],调用是否可售接口结果：不可售");
+          ml.setCreatedTime(new Date());
+          ml.setUpdatedTime(new Date());
+          messageListenerMapper.insertSelective(ml);
         }
 
       List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getGoodId());
