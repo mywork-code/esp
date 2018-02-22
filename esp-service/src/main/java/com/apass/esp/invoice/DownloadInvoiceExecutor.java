@@ -42,7 +42,7 @@ public class DownloadInvoiceExecutor {
     @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
     private class DownLoadFaPiaoThread extends  Thread {
         private boolean flag = true;
-        private int errTime = 10;
+        private int errTime = 3;
         private String orderId;
         private DownLoadFaPiaoThread(String orderId){
             this.orderId = orderId;
