@@ -746,6 +746,7 @@
     <!-- 获取失效和删除的预占库存的京东订单 -->
 	<select id="getInvalidAndDeleteJdOrder" resultType="OrderInfoEntity">
 	<![CDATA[
+        SELECT
 			id id,
 			order_id orderId,
 			user_id userId,
