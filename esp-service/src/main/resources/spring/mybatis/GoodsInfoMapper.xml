@@ -154,6 +154,7 @@
                 t.source source,
                 t.external_id externalId,
                 t.goods_code goodsCode,
+                t.main_goods_code mainGoodsCode,
                 t.newCreat_date newCreatDate,
                 t3.goods_sku_attr goodsSkuAttr,
                 t3.goods_price  goodsPrice,
