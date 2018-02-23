@@ -19,6 +19,7 @@ import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+
 /**
  * 定时任务
  * @description  
@@ -50,7 +51,7 @@ public class OrderScheduleTask {
     /**
      * 订单24小时未支付自动取消[五分钟一次]
      */
-    @Scheduled(cron = "0 0/15 * * * *")
+    @Scheduled(cron = "0 0/30 * * * *")
     public void handleOrderInvalidTask() {
 
         Date now = new Date();
@@ -102,10 +103,10 @@ public class OrderScheduleTask {
         LOGGER.info("handleAutoSignOrder执行时间:{}ms", System.currentTimeMillis() - now.getTime());
     }
     /**
-     * 订单交易完成7天后   1小时一次
+     * 订单交易完成7天后   2小时一次
      * 开具发票  《监控无售后交易》
      */
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0 0/2 * * *")
     public void findCompelateOrder() {
         List<OrderInfoEntity> list = orderInfoDao.findCompelateOrder();
         for (OrderInfoEntity order : list) {
@@ -130,7 +131,7 @@ public class OrderScheduleTask {
      * 售后完成的订单1天后   开具发票  《监控有售后交易》
      * sprint12:售后失败的退换货，订单状态改为交易完成
      */
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0 0/2 * * *")
     public void handleReturningOrders(){
         try {
             orderRefundService.handleReturningOrders();
