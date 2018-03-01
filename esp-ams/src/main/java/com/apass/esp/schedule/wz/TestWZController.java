@@ -805,7 +805,7 @@ public class TestWZController {
 	@RequestMapping(value = "/initGoodsByCateId", method = RequestMethod.POST)
 	@ResponseBody
 	public Response initGoodsByCateId(){
-		LOGGER.info("初始化指定类目下微知商品开始执行....",DateFormatUtil.dateToString(new Date()));
+		LOGGER.info("初始化指定类目下微知商品开始执行.... 开始时间：{}",DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
 		ClassLoader classLoader = TestWZController.class.getClassLoader();
 		InputStream in = classLoader.getResourceAsStream(FILE_SEPARATOR+"file"+FILE_SEPARATOR+"catIds.txt");
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))){
