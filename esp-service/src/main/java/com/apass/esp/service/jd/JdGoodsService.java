@@ -268,8 +268,8 @@ public class JdGoodsService {
                         .getSkuId().toString());
                 if (goodsInfoEntity == null) {
                     LOGGER.error("数据库数据有误,externalId:{}", jdGoodsList.get(i).getSkuId().toString());
-                    throw new BusinessException("数据库数据有误");
-                    // continue;
+//                    throw new BusinessException("数据库数据有误");
+                     continue;
                 }
                 goodIdsStock.add(goodsInfoEntity.getId());
                 externalIdGoods.add(goodsInfoEntity.getExternalId());
