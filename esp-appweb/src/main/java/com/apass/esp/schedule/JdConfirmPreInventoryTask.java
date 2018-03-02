@@ -54,52 +54,7 @@ public class JdConfirmPreInventoryTask {
     @Autowired
     private SystemEnvConfig systemEnvConfig;
 
-//    @Scheduled(cron = "0 0/30 * * * *")
-//    public void handleJdConfirmPreInventoryTask() {
-//        if(!systemEnvConfig.isPROD()){
-//            return;
-//        }
-//        List<OrderInfoEntity> orderInfoEntityList = orderService.getOrderByOrderStatusAndPreStatus();
-//        if (CollectionUtils.isEmpty(orderInfoEntityList)) {
-//            return;
-//        }
-//        for (OrderInfoEntity orderInfoEntity : orderInfoEntityList
-//                ) {
-//            String jdOrderIdp = orderInfoEntity.getExtOrderId();
-//            LOGGER.info(" JdConfirmPreInventoryTask  jdOrderIdp {}  begin....", jdOrderIdp);
-//            long jdOrderId = Long.valueOf(jdOrderIdp);
-//            JdApiResponse<Boolean> confirmResponse = jdOrderApiClient.orderOccupyStockConfirm(jdOrderId);
-//            LOGGER.info("confirm order jdOrderIdp {} confirmResponse {}", jdOrderIdp, confirmResponse.toString());
-//            int confirmStatus = 0;
-//            if (confirmResponse.isSuccess() && confirmResponse.getResult()) {
-//                JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(jdOrderId);
-//                if (!jdApiResponse.isSuccess()) {
-//                    LOGGER.info("confirm order jdOrderIdp {} confirmResponse {} orderJdOrderQuery result {}", jdOrderIdp, confirmResponse.toString(), jdApiResponse);
-//                    continue;
-//                }
-//                JSONObject jsonObject = jdApiResponse.getResult();
-//                try {
-//                    orderService.jdSplitOrderMessageHandle(jsonObject, orderInfoEntity);
-//                } catch (BusinessException e) {
-//                    LOGGER.info("jdSplitOrderMessageHandle do not have split ", jdOrderIdp);
-//                    continue;
-//                } catch (Exception e) {
-//                    continue;
-//                }
-//            } else {
-//                //确认预占库存失败
-//                ServiceError serviceError = new ServiceError();
-//                serviceError.setCreateDate(new Date());
-//                serviceError.setOrderId(jdOrderIdp);
-//                serviceError.setUpdateDate(new Date());
-//                serviceError.setType(ServiceErrorType.JD_ORDER_PAY.getDesc());
-//                serviceErrorMapper.insertSelective(serviceError);
-//                LOGGER.info("confirm order jdOrderIdp {}  error confirmResponse: {}", jdOrderIdp, confirmResponse);
-//            }
-//        }
-//    }
 
-    
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
     	if(!systemEnvConfig.isPROD()){
