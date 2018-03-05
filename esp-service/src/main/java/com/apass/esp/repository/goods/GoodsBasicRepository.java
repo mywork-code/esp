@@ -118,4 +118,8 @@ public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEn
 		return this.getSqlSession().delete("deleteRepeatSku");
 	}
 
+	public List<GoodsBasicInfoEntity> getRepeatG02Sku(){
+		return this.getSqlSession().selectList("getRepeatG02Sku");
+	}
+
 }
