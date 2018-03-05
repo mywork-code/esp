@@ -199,6 +199,9 @@ public class JDTaskListener implements MessageListener {
               ml.setCreatedTime(new Date());
               ml.setUpdatedTime(new Date());
               messageListenerMapper.insertSelective(ml);
+          }else{
+            //添加京东商品
+            addJDGoods(ml, skuId, 1,jdApiMessage.getType());
           }
         }
        } catch (Exception e) {
@@ -252,137 +255,8 @@ public class JDTaskListener implements MessageListener {
       ml.setType(JdMessageEnum.DELETEADD_SKU.getType() + "");
       ml.setSkuid(skuId);
       if (state == 1) {
-        Product product = null;
-        try {
-          product = weiZhiProductApiClient.getWeiZhiProductDetail(skuId);
-        } catch (Exception e) {
-          LOGGER.error("getWeiZhiProductDetail error",e);
-        }
-        if (product == null) {
-          LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-          return;
-        }
-
-        String category = product.getCategory();
-        String[] categorys = category.split(";");
-        String name = product.getName();//商品名称
-        String brandName = product.getBrandName();//
-        String imagePath = product.getImagePath();//
-        String weight = product.getWeight();//
-        String productArea = product.getProductArea();//
-        String upc =product.getUpc();//
-        String saleUnit = product.getSaleUnit();//
-        String wareQD = product.getWareQD();//
-        List<String> skulist = new ArrayList<>();
-        skulist.add(skuId);
-        List<WZPriceResponse>  wzPriceResponse = null;
-        try {
-          wzPriceResponse = weiZhiPriceApiClient.getWzPrice(skulist);
-        } catch (Exception e) {
-          LOGGER.error("getWzPrice error",e);
-        }
-        if (wzPriceResponse == null) {
-          LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-          return;
-        }
-
-        BigDecimal price = new BigDecimal(wzPriceResponse.get(0).getWzPrice());
-        BigDecimal jdPrice =  new BigDecimal(wzPriceResponse.get(0).getJDPrice());
-        int firstCategory = Integer.valueOf(categorys[0]);
-        int secondCategory = Integer.valueOf(categorys[1]);
-        int thirdCategory = Integer.valueOf(categorys[2]);
-        JdGoods jdGoods = new JdGoods();
-        jdGoods.setFirstCategory(firstCategory);
-        jdGoods.setSecondCategory(secondCategory);
-        jdGoods.setThirdCategory(thirdCategory);
-        jdGoods.setSkuId(Long.valueOf(skuId));
-        jdGoods.setBrandName(brandName);
-        jdGoods.setImagePath(imagePath);
-        jdGoods.setName(name);
-        jdGoods.setProductArea(productArea);
-        jdGoods.setJdPrice(jdPrice);
-        jdGoods.setPrice(price);
-        jdGoods.setSaleUnit(saleUnit);
-        jdGoods.setWeight(new BigDecimal(weight));
-        jdGoods.setUpc(upc);
-        jdGoods.setState(state == 1 ? true : false);
-        jdGoods.setUpdateDate(new Date());
-        jdGoods.setCreateDate(new Date());
-        try {
-          jdGoodsMapper.insertSelective(jdGoods);
-          ml.setResult("商品添加到jdgoods表成功");
-          ml.setStatus("1");
-          ml.setCreatedTime(new Date());
-          ml.setUpdatedTime(new Date());
-          messageListenerMapper.insertSelective(ml);
-        } catch (Exception e) {
-          LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-          LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
-          return;
-        }
-        JdCategory jdCategory3 = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
-        if (jdCategory3 == null) {
-          addCategory(String.valueOf(thirdCategory), 3);
-        }
-        JdCategory jdCategory2 = jdCategoryMapper.getCateGoryByCatId(secondCategory);
-        if (jdCategory2 == null) {
-          addCategory(String.valueOf(secondCategory), 2);
-        }
-        JdCategory jdCategory1 = jdCategoryMapper.getCateGoryByCatId(firstCategory);
-        if (jdCategory1 == null) {
-          addCategory(String.valueOf(firstCategory), 1);
-        }
-        JdCategory jdCategory = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
-        //已关联
-        if (jdCategory != null && jdCategory.getFlag()) {
-          GoodsInfoEntity entity = new GoodsInfoEntity();
-          entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
-          entity.setCategoryId1(Long.valueOf(firstCategory));
-          entity.setCategoryId2(Long.valueOf(secondCategory));
-          entity.setCategoryId3(Long.valueOf(thirdCategory));
-          entity.setGoodsName(jdGoods.getName());
-          entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-          entity.setMerchantCode(ExtentMerchantCode.WZMERCHANTCODE);
-          entity.setStatus(GoodStatus.GOOD_NEW.getCode());
-          entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
-          entity.setListTime(null);
-          entity.setDelistTime(null);
-          entity.setCreateUser("wz");
-          entity.setUpdateUser("wz");
-          entity.setSource("wz");
-          entity.setGoodsLogoUrl(jdGoods.getImagePath());
-          entity.setGoodsSiftUrl(jdGoods.getImagePath());
-          entity.setExternalId(jdGoods.getSkuId().toString());
-          entity.setUpdateDate(new Date());
-          entity.setCreateDate(new Date());
-          GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
-          //往t_esp_goods_stock_info表插数据
-          GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
-          stockEntity.setStockTotalAmt(-1l);
-          stockEntity.setStockCurrAmt(-1l);
-          stockEntity.setGoodsId(insertJdGoods.getGoodId());
-          stockEntity.setGoodsPrice(jdGoods.getJdPrice());
-          stockEntity.setMarketPrice(jdGoods.getJdPrice());
-          stockEntity.setGoodsCostPrice(jdGoods.getPrice());
-          stockEntity.setCreateUser("wzAdmin");
-          stockEntity.setUpdateUser("wzAdmin");
-          try {
-            goodsStockInfoService.insert(stockEntity);
-            ml.setResult("商品添加到base_goods表成功");
-            ml.setStatus("1");
-            ml.setCreatedTime(new Date());
-            ml.setUpdatedTime(new Date());
-            messageListenerMapper.insertSelective(ml);
-          } catch (Exception e) {
-            LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-            ml.setStatus("0");
-            ml.setResult("京东商品添加失败！");
-            ml.setCreatedTime(new Date());
-            ml.setUpdatedTime(new Date());
-            messageListenerMapper.insertSelective(ml);
-            return;
-          }
-        }
+        //添加京东商品
+        addJDGoods(ml, skuId, state,jdApiMessage.getType());
       } else {
         try {
           //商品池商品删除  直接将商品下架
@@ -419,6 +293,139 @@ public class JDTaskListener implements MessageListener {
           messageListenerMapper.insertSelective(ml);
           return;
         }
+      }
+    }
+  }
+
+  private void addJDGoods(com.apass.esp.domain.entity.MessageListener ml, String skuId, int state,int type) {
+    Product product = null;
+    try {
+      product = weiZhiProductApiClient.getWeiZhiProductDetail(skuId);
+    } catch (Exception e) {
+      LOGGER.error("getWeiZhiProductDetail error",e);
+    }
+    if (product == null) {
+      LOGGER.error("skuId {} type {} state {} error", skuId, type,state);
+      return;
+    }
+
+    String category = product.getCategory();
+    String[] categorys = category.split(";");
+    String name = product.getName();//商品名称
+    String brandName = product.getBrandName();//
+    String imagePath = product.getImagePath();//
+    String weight = product.getWeight();//
+    String productArea = product.getProductArea();//
+    String upc =product.getUpc();//
+    String saleUnit = product.getSaleUnit();//
+    List<String> skulist = new ArrayList<>();
+    skulist.add(skuId);
+    List<WZPriceResponse>  wzPriceResponse = null;
+    try {
+      wzPriceResponse = weiZhiPriceApiClient.getWzPrice(skulist);
+    } catch (Exception e) {
+      LOGGER.error("getWzPrice error",e);
+    }
+    if (wzPriceResponse == null) {
+      LOGGER.error("skuId {} type {} state {} error", skuId, type,state);
+      return;
+    }
+
+    BigDecimal price = new BigDecimal(wzPriceResponse.get(0).getWzPrice());
+    BigDecimal jdPrice =  new BigDecimal(wzPriceResponse.get(0).getJDPrice());
+    int firstCategory = Integer.valueOf(categorys[0]);
+    int secondCategory = Integer.valueOf(categorys[1]);
+    int thirdCategory = Integer.valueOf(categorys[2]);
+    JdGoods jdGoods = new JdGoods();
+    jdGoods.setFirstCategory(firstCategory);
+    jdGoods.setSecondCategory(secondCategory);
+    jdGoods.setThirdCategory(thirdCategory);
+    jdGoods.setSkuId(Long.valueOf(skuId));
+    jdGoods.setBrandName(brandName);
+    jdGoods.setImagePath(imagePath);
+    jdGoods.setName(name);
+    jdGoods.setProductArea(productArea);
+    jdGoods.setJdPrice(jdPrice);
+    jdGoods.setPrice(price);
+    jdGoods.setSaleUnit(saleUnit);
+    jdGoods.setWeight(new BigDecimal(weight));
+    jdGoods.setUpc(upc);
+    jdGoods.setState(state == 1 ? true : false);
+    jdGoods.setUpdateDate(new Date());
+    jdGoods.setCreateDate(new Date());
+    try {
+      jdGoodsMapper.insertSelective(jdGoods);
+      ml.setResult("商品添加到jdgoods表成功");
+      ml.setStatus("1");
+      ml.setCreatedTime(new Date());
+      ml.setUpdatedTime(new Date());
+      messageListenerMapper.insertSelective(ml);
+    } catch (Exception e) {
+      LOGGER.error("skuId {} type {} state {} error", skuId, type,state);
+      LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
+      return;
+    }
+    JdCategory jdCategory3 = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
+    if (jdCategory3 == null) {
+      addCategory(String.valueOf(thirdCategory), 3);
+    }
+    JdCategory jdCategory2 = jdCategoryMapper.getCateGoryByCatId(secondCategory);
+    if (jdCategory2 == null) {
+      addCategory(String.valueOf(secondCategory), 2);
+    }
+    JdCategory jdCategory1 = jdCategoryMapper.getCateGoryByCatId(firstCategory);
+    if (jdCategory1 == null) {
+      addCategory(String.valueOf(firstCategory), 1);
+    }
+    JdCategory jdCategory = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
+    //已关联
+    if (jdCategory != null && jdCategory.getFlag()) {
+      GoodsInfoEntity entity = new GoodsInfoEntity();
+      entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
+      entity.setCategoryId1(Long.valueOf(firstCategory));
+      entity.setCategoryId2(Long.valueOf(secondCategory));
+      entity.setCategoryId3(Long.valueOf(thirdCategory));
+      entity.setGoodsName(jdGoods.getName());
+      entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
+      entity.setMerchantCode(ExtentMerchantCode.WZMERCHANTCODE);
+      entity.setStatus(GoodStatus.GOOD_NEW.getCode());
+      entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
+      entity.setListTime(null);
+      entity.setDelistTime(null);
+      entity.setCreateUser("wz");
+      entity.setUpdateUser("wz");
+      entity.setSource("wz");
+      entity.setGoodsLogoUrl(jdGoods.getImagePath());
+      entity.setGoodsSiftUrl(jdGoods.getImagePath());
+      entity.setExternalId(jdGoods.getSkuId().toString());
+      entity.setUpdateDate(new Date());
+      entity.setCreateDate(new Date());
+      GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
+      //往t_esp_goods_stock_info表插数据
+      GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
+      stockEntity.setStockTotalAmt(-1l);
+      stockEntity.setStockCurrAmt(-1l);
+      stockEntity.setGoodsId(insertJdGoods.getGoodId());
+      stockEntity.setGoodsPrice(jdGoods.getJdPrice());
+      stockEntity.setMarketPrice(jdGoods.getJdPrice());
+      stockEntity.setGoodsCostPrice(jdGoods.getPrice());
+      stockEntity.setCreateUser("wzAdmin");
+      stockEntity.setUpdateUser("wzAdmin");
+      try {
+        goodsStockInfoService.insert(stockEntity);
+        ml.setResult("商品添加到base_goods表成功");
+        ml.setStatus("1");
+        ml.setCreatedTime(new Date());
+        ml.setUpdatedTime(new Date());
+        messageListenerMapper.insertSelective(ml);
+      } catch (Exception e) {
+        LOGGER.error("skuId {} type {} state {} error", skuId, type,state);
+        ml.setStatus("0");
+        ml.setResult("京东商品添加失败！");
+        ml.setCreatedTime(new Date());
+        ml.setUpdatedTime(new Date());
+        messageListenerMapper.insertSelective(ml);
+        return;
       }
     }
   }
