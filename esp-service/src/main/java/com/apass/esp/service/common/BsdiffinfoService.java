@@ -44,10 +44,11 @@ public class BsdiffinfoService {
 
 	/**
 	 * 思路:
-	 * 1,先判断:对应ver是否已经存在，版本号和文件名是否一致
-	 * 2,判断是否是第一次上传:
-	 * 				是,创建verzip目录，插入数据库，把源zip包上传至该目录
-	 * 				否,插入数据库，把zip包传入verzip目录，创建zip目录把，递减循环ver-1，用bsdiff方法把ver_i存储到patchzip目录中
+	 * 1,验证：先判断对应ver是否已经存在，版本号和文件名是否一致
+	 * 2,上传：
+	 * 3,解压：
+	 * 4,合并：
+	 * 5,增量更新:
 	 * @param bsdiffEntity
 	 * @param bsdiffInfoEntity
 	 * @throws IOException
@@ -100,8 +101,6 @@ public class BsdiffinfoService {
 
 		int count = bsdiffInfoEntityMapper.insertSelective(bsdiffInfoEntity);
 
-		//先上传zip文件，方便后续解压
-		FileUtilsCommons.uploadFilesUtil(rootPath,zipPath+zipName,bsdiffFile);
 		if(new File(directory.getParent()).listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
@@ -123,11 +122,6 @@ public class BsdiffinfoService {
 					File oldFile = new File(oldFilePath);
 					File newFile = new File(newFilePath);
 					File diffFile = new File(diffFilePath);
-
-//					File temp1 = oldFile.length()<newFile.length()?oldFile:newFile;
-//					File temp2 = oldFile.length()>newFile.length()?oldFile:newFile;
-//					newFile = temp2;
-//					oldFile = temp1;
 
 					BSDiff.bsdiff(oldFile,newFile,diffFile);
 				}
