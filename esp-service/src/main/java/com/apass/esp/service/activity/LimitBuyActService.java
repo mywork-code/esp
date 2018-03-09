@@ -96,6 +96,14 @@ public class LimitBuyActService {
         return limitBuyActMapper.getLimitBuyActList(entity);
     }
     /**
+     * getLimitBuyActListByVo
+     * @param entity
+     * @return
+     */
+    public List<LimitBuyAct> getLimitBuyActListByVo(LimitBuyActVo entity) {
+        return limitBuyActMapper.getLimitBuyActListByVo(entity);
+    }
+    /**
      * READ LIST 反选
      * @param userId
      * @return
@@ -765,6 +773,19 @@ public class LimitBuyActService {
                 en.fillTime();
                 updatedEntity(en);
             }
+        }
+        //以下逻辑新增
+        LimitBuyActVo vo = new LimitBuyActVo();
+        Date db = DateFormatUtil.addDays(nowDate, -3);
+        String dbs = DateFormatUtil.dateToString(db, DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
+        Date dbsd = DateFormatUtil.string2date(dbs, null);
+        vo.setStartDayBefore(dbsd);
+        vo.setStartDayAfter(nowDate);
+        List<LimitBuyAct> list = getLimitBuyActListByVo(vo);
+        for(LimitBuyAct en : list){
+            en.setStatus((byte)3);
+            en.fillTime();
+            updatedEntity(en);
         }
         return sb.toString();
     }

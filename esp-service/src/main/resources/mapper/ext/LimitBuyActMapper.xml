@@ -60,6 +60,26 @@
         <if test="startTime!=null and startTime!=''"> AND start_time = #{startTime}</if>
         ORDER BY start_date DESC
     </select>
+    <select id="getLimitBuyActListByVo" resultType="com.apass.esp.domain.entity.LimitBuyAct" parameterType="com.apass.esp.domain.entity.activity.LimitBuyActVo">
+        <![CDATA[
+        SELECT
+            id id,
+            start_date startDate,
+            end_date endDate,
+            status status,
+            start_time startTime,
+            create_user createUser,
+            update_user updateUser,
+            created_time createdTime,
+            updated_time updatedTime
+        FROM
+            t_esp_limit_buy_act
+        WHERE 1=1
+        ]]>
+        <if test="startDayBefore!=null and startDayBefore!=''"> <![CDATA[ AND end_date >= #{startDayBefore} ]]></if>
+        <if test="startDayAfter!=null and startDayAfter!=''"> <![CDATA[ AND end_date <= #{startDayAfter} ]]></if>
+        ORDER BY start_date DESC
+    </select>
     <select id="getLimitBuyActListDeSelect" resultType="com.apass.esp.domain.entity.LimitBuyAct">
         <![CDATA[
         SELECT

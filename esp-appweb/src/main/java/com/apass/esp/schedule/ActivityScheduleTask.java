@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.apass.esp.service.activity.ActivityInfoService;
 import com.apass.esp.service.activity.LimitBuyActService;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 @Component
 @Configurable
