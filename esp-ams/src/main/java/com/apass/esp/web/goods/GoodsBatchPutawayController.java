@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -17,6 +19,7 @@ import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
+import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
@@ -36,6 +39,8 @@ import com.google.common.collect.Maps;
 public class GoodsBatchPutawayController {
     @Autowired
     private GoodsService goodsService;
+    @Autowired
+    private CategoryInfoService categoryInfoService;
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
     @Autowired
@@ -89,6 +94,12 @@ public class GoodsBatchPutawayController {
                 if(!orderService.checkGoodsSalesOrNot(skuId)){//验证商品是否可售状态
                     continue;
                 }
+                Long categoryId1 = goods.getCategoryId1();
+                Category category = categoryInfoService.selectNameById(categoryId1);
+                String arr = "运动,数码,鞋服,百货,数码,宠物";//运动，数码，鞋服，百货，数码，宠物  非此一级类目不安排上架
+				if(category!=null&&StringUtils.isNotBlank(category.getCategoryName())&&!StringUtils.contains(arr, category.getCategoryName())){
+					continue;
+				}
                 SystemParamEntity systemParamEntity =  systemParamService.querySystemParamInfo().get(0);
                 BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_DOWN);
                 BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01)).setScale(4, BigDecimal.ROUND_DOWN);
