@@ -426,7 +426,7 @@ public class JdGoodsInfoService {
 		map.put("jdSimilarSkuList", jdSimilarSkuList2);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
 
-		cacheManager.set(cacheKey,JSONObject.toJSONString(map),600);
+		cacheManager.set(cacheKey,JSONObject.toJSONString(map),1200);
 		return map; 
 	}
 
