@@ -114,8 +114,12 @@ public class DataEsporderAnalysisService {
 		for(DataEsporderAnalysis entity : list){
 			DataEsporderAnalysisVo vof = new DataEsporderAnalysisVo();
 //			vof.setPercent(formartString(entity.getPercentConv().compareTo(new BigDecimal(0E-8))==0?new BigDecimal(0):entity.getPercentConv()));
-			BigDecimal pp = new BigDecimal(entity.getPayGoodsNum()).divide(new BigDecimal(entity.getConfirmGoodsNum()),4,BigDecimal.ROUND_HALF_UP);
-			vof.setPercent(formartString(pp));
+			if(entity.getConfirmGoodsNum()>0){
+				BigDecimal pp = new BigDecimal(entity.getPayGoodsNum()).divide(new BigDecimal(entity.getConfirmGoodsNum()),4,BigDecimal.ROUND_HALF_UP);
+				vof.setPercent(formartString(pp));
+			}else{
+				vof.setPercent("0.00%");
+			}
 			String dayData = DateFormatUtil.string2string(entity.getTxnId(), "yyyyMMdd", "MM月dd日");
 			//设置日期
 			vof.setDayData(dayData);
@@ -127,7 +131,7 @@ public class DataEsporderAnalysisService {
 			}
 			//设置支付下单6个字段
 			coptProperties(entity, vof);
-				//商品总计
+			//商品总计
 			DataEsporderdetailVo count = new DataEsporderdetailVo();
 			count.setGoodsName("总计");
 			count.setConfirmAmt(entity.getConfirmAmt());
