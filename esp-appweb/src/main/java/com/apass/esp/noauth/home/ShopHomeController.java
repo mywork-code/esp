@@ -183,10 +183,10 @@ public class ShopHomeController {
             returnMap.put("recommendGoods", recommendGoods.getDataList());
             ArrayList<ResponseInit> mapArrayList = new ArrayList<>(2);
             ResponseInit responseInit = new ResponseInit();
-            responseInit.setTitle("商城首付价购物指引");
+//            responseInit.setTitle("商城首付价购物指引");
             responseInit.setUrl("http://ajqh.download.apass.cn/activity/20170912/index.html");
             ResponseInit responseInit2 = new ResponseInit();
-            responseInit2.setTitle("客户谨慎还款重要提示");
+//            responseInit2.setTitle("客户谨慎还款重要提示");
             if (systemEnvConfig.isPROD()) {
                 responseInit2.setUrl("http://ajqh.app.apass.cn/#/Announcement");
             } else {
