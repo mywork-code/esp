@@ -181,28 +181,28 @@ public class ShopHomeController {
             Pagination<GoodsBasicInfoEntity> recommendGoods = goodService.loadRecommendGoods(0, 10);
             returnMap.put("banners", banners);
             returnMap.put("recommendGoods", recommendGoods.getDataList());
-            ArrayList<ResponseInit> mapArrayList = new ArrayList<>(2);
-            ResponseInit responseInit = new ResponseInit();
-            responseInit.setTitle("商城首付价购物指引");
-            responseInit.setUrl("http://ajqh.download.apass.cn/activity/20170912/index.html");
-            ResponseInit responseInit2 = new ResponseInit();
-            responseInit2.setTitle("客户谨慎还款重要提示");
-            if (systemEnvConfig.isPROD()) {
-                responseInit2.setUrl("http://ajqh.app.apass.cn/#/Announcement");
-            } else {
-                responseInit2.setUrl("http://gfbapp.vcash.cn/#/Announcement");
-            }
+//            ArrayList<ResponseInit> mapArrayList = new ArrayList<>(2);
+//            ResponseInit responseInit = new ResponseInit();
+//            responseInit.setTitle("商城首付价购物指引");
+//            responseInit.setUrl("http://ajqh.download.apass.cn/activity/20170912/index.html");
+//            ResponseInit responseInit2 = new ResponseInit();
+//            responseInit2.setTitle("客户谨慎还款重要提示");
+//            if (systemEnvConfig.isPROD()) {
+//                responseInit2.setUrl("http://ajqh.app.apass.cn/#/Announcement");
+//            } else {
+//                responseInit2.setUrl("http://gfbapp.vcash.cn/#/Announcement");
+//            }
 
-            mapArrayList.add(responseInit);
-            mapArrayList.add(responseInit2);
-            returnMap.put("guide", mapArrayList);
+//            mapArrayList.add(responseInit);
+//            mapArrayList.add(responseInit2);
+//            returnMap.put("guide", mapArrayList);
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 ActivityInfoEntity param = new ActivityInfoEntity();
                 param.setGoodsId(goods.getGoodId());
                 param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
 
                 Map<String,Object> result= goodsService.getMinPriceNotJdGoods(goods.getGoodId());
-                GoodsStockInfoEntity defaultGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
+//                GoodsStockInfoEntity defaultGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
                 BigDecimal price=(BigDecimal) result.get("minPrice");
 
                 //判断是否参加限时购活动

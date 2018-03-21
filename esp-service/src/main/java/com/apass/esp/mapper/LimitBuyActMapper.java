@@ -18,6 +18,12 @@ public interface LimitBuyActMapper extends GenericMapper<LimitBuyAct,Long> {
      */
     public List<LimitBuyAct> getLimitBuyActList(LimitBuyAct entity);
     /**
+     * getLimitBuyActListByVo
+     * @param entity
+     * @return
+     */
+    public List<LimitBuyAct> getLimitBuyActListByVo(LimitBuyActVo entity);
+    /**
      * 分页查询
      * @param entity
      * @return
@@ -29,5 +35,4 @@ public interface LimitBuyActMapper extends GenericMapper<LimitBuyAct,Long> {
      * @return
      */
     public Integer getLimitBuyActPageCount(LimitBuyActVo entity);
-
 }

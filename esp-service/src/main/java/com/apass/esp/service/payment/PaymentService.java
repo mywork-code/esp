@@ -521,29 +521,29 @@ public class PaymentService {
 		payReq.setSystemType(systemType);
 		payReq.setDownPayType(downPayType);
 		// 首付金额
-		Response response = commonHttpClient.getCustomerBasicInfo("",userId);
-				//paymentHttpClient.getCustomerInfo("",userId);
-		if(!response.statusResult()){
-			throw new BusinessException("客户信息查询失败");
-		}
-		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
-		if (customerBasicInfo == null) {
-			throw new BusinessException("客户信息查询失败");
-		}
-		Response responseCredit =  commonHttpClient.getCustomerCreditInfo("",userId);
-		if(!responseCredit.statusResult()){
-			throw new BusinessException("额度信息查询失败");
-		}
-		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
-		if (customerBasicInfo == null) {
-			throw new BusinessException("额度信息查询失败");
-		}
-		PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
+//		Response response = commonHttpClient.getCustomerBasicInfo("",userId);
+//				//paymentHttpClient.getCustomerInfo("",userId);
+//		if(!response.statusResult()){
+//			throw new BusinessException("客户信息查询失败");
+//		}
+//		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
+//		if (customerBasicInfo == null) {
+//			throw new BusinessException("客户信息查询失败");
+//		}
+//		Response responseCredit =  commonHttpClient.getCustomerCreditInfo("",userId);
+//		if(!responseCredit.statusResult()){
+//			throw new BusinessException("额度信息查询失败");
+//		}
+//		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
+//		if (customerBasicInfo == null) {
+//			throw new BusinessException("额度信息查询失败");
+//		}
+		PayInfoEntity payInfo = calculateCreditPayRatio(BigDecimal.ZERO, totalAmt);//calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
 		payReq.setDownPayAmt(payInfo.getCreditPayDownPayAmt());
 		if(StringUtils.isNotEmpty(cardNo)){
-			if (!cardNo.equals(customerBasicInfo.getCardNo())) {
-				throw new BusinessException("支付银行卡号与绑定银行卡号不符");
-			}
+//			if (!cardNo.equals(customerBasicInfo.getCardNo())) {
+//				throw new BusinessException("支付银行卡号与绑定银行卡号不符");
+//			}
 			payReq.setAccNo(cardNo);
 		}
 		return paymentHttpClient.defary(payReq);
@@ -716,116 +716,116 @@ public class PaymentService {
 		/**
 		 * 查询用户基本信息和绑卡信息
 		 */
-		Response response = commonHttpClient.getCustomerBasicInfo(requestId,userId);
-		if(!response.statusResult()){
+//		Response response = commonHttpClient.getCustomerBasicInfo(requestId,userId);
+//		if(!response.statusResult()){
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
 			resultMap.put("page", page);
 			return resultMap;
-		}
+//		}
 		/**
 		 * 查询用户基本信息和绑卡信息
 		 */
-		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
-		if (customerBasicInfo == null) {
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
-			resultMap.put("page", page);
-			return resultMap;
-		}
-		resultMap.put("bankCode", customerBasicInfo.getBankCode());
-		resultMap.put("cardNo", customerBasicInfo.getCardNo());
-		resultMap.put("cardBank", customerBasicInfo.getCardBank());
-		resultMap.put("cardType", customerBasicInfo.getCardType());
+//		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
+//		if (customerBasicInfo == null) {
+//			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
+//			resultMap.put("page", page);
+//			return resultMap;
+//		}
+//		resultMap.put("bankCode", customerBasicInfo.getBankCode());
+//		resultMap.put("cardNo", customerBasicInfo.getCardNo());
+//		resultMap.put("cardBank", customerBasicInfo.getCardBank());
+//		resultMap.put("cardType", customerBasicInfo.getCardType());
 		
 		/**
 		 * 查询用户的查询未结清借款&额度消费已出账笔数
 		 */
-		Response resp = paymentHttpClient.creditPayAuthority(userId);
-		if(!resp.statusResult()){
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
-			resultMap.put("page", page);
-			return resultMap;
-		}
-		Integer num = ((Double)resp.getData()).intValue();
+//		Response resp = paymentHttpClient.creditPayAuthority(userId);
+//		if(!resp.statusResult()){
+//			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
+//			resultMap.put("page", page);
+//			return resultMap;
+//		}
+//		Integer num = ((Double)resp.getData()).intValue();
 		
 		/**
 		 * 用户的费率信息及CustomerId
 		 */
-		Response responseCredit = commonHttpClient.getCustomerCreditInfo(requestId,userId);
-
-		if(!responseCredit.statusResult()){
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
-			resultMap.put("page", page);
-			return resultMap;
-		}
-		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
-		if (customerCreditInfo == null) {
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
-			resultMap.put("page", page);
-			return resultMap;
-		}
-		if(num != null && num >= 3){
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
-			resultMap.put("page", page);
-			LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));
-			return resultMap;
-		}
+//		Response responseCredit = commonHttpClient.getCustomerCreditInfo(requestId,userId);
+//
+//		if(!responseCredit.statusResult()){
+//			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
+//			resultMap.put("page", page);
+//			return resultMap;
+//		}
+//		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
+//		if (customerCreditInfo == null) {
+//			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
+//			resultMap.put("page", page);
+//			return resultMap;
+//		}
+//		if(num != null && num >= 3){
+//			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
+//			resultMap.put("page", page);
+//			LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));
+//			return resultMap;
+//		}
 		//1、用户可用额度为0
-		BigDecimal availableAmt = customerCreditInfo.getAvailableAmount();
-		if(availableAmt == null|| availableAmt.compareTo(BigDecimal.ZERO) == 0){
-			if("06".equals(customerBasicInfo.getStatus())
-					|| "03".equals(customerBasicInfo.getStatus())){
-				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
-			} else {
-				//跳到授信页
-				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYONE;
-			}
-		} else {
+//		BigDecimal availableAmt = customerCreditInfo.getAvailableAmount();
+//		if(availableAmt == null|| availableAmt.compareTo(BigDecimal.ZERO) == 0){
+//			if("06".equals(customerBasicInfo.getStatus())
+//					|| "03".equals(customerBasicInfo.getStatus())){
+//				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+//			} else {
+//				//跳到授信页
+//				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYONE;
+//			}
+//		} else {
 			//2、用户可用额度>0
 			// 计算额度支付金额
-			PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
+//			PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
 			
-			if(payInfo.isSupportCreditPay()){
-				Response overDue = paymentHttpClient.hasOverDueBill(userId);
-				boolean overDue1 = false;
-				if(!overDue.statusResult()){
-					overDue1=true;
-				}else{
-					overDue1 = (boolean)overDue.getData();
-				}
-				if(overDue1){
-					page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
-				} else {
-					Map<String, Object> param = Maps.newHashMap();
-					param.put("userId", userId);
-					param.put("customerId", customerCreditInfo.getCustomerId());
-					param.put("amount", payInfo.getCreditPayAmt()); // 额度支付总金额
-					Response response1 = paymentHttpClient.creditPaymentAuth(param);
-					if(!response1.statusResult()){
-						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付
-					}else{
-						// 支持额度支付
-						Map<String, String> map = (Map<String, String>) response1.getData();
-						if ("1".equals(map.get("available"))) {
-							if("1".equals(map.get("needAuthActive"))){
-								//需要额度激活
-								page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYONE; // 支持额度支付
-							}else{
-								page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTWO; // 支持额度支付
-							}
-						} else {
-							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
-						}
-					}
-				}
-			}else{
-				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
-			}
+//			if(payInfo.isSupportCreditPay()){
+//				Response overDue = paymentHttpClient.hasOverDueBill(userId);
+//				boolean overDue1 = false;
+//				if(!overDue.statusResult()){
+//					overDue1=true;
+//				}else{
+//					overDue1 = (boolean)overDue.getData();
+//				}
+//				if(overDue1){
+//					page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+//				} else {
+//					Map<String, Object> param = Maps.newHashMap();
+//					param.put("userId", userId);
+//					param.put("customerId", customerCreditInfo.getCustomerId());
+//					param.put("amount", payInfo.getCreditPayAmt()); // 额度支付总金额
+//					Response response1 = paymentHttpClient.creditPaymentAuth(param);
+//					if(!response1.statusResult()){
+//						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付
+//					}else{
+//						// 支持额度支付
+//						Map<String, String> map = (Map<String, String>) response1.getData();
+//						if ("1".equals(map.get("available"))) {
+//							if("1".equals(map.get("needAuthActive"))){
+//								//需要额度激活
+//								page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYONE; // 支持额度支付
+//							}else{
+//								page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTWO; // 支持额度支付
+//							}
+//						} else {
+//							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
+//						}
+//					}
+//				}
+//			}else{
+//				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
+//			}
 			
-		}
+//		}
 
-		resultMap.put("page", page);
-		LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));
-		return resultMap;
+//		resultMap.put("page", page);
+//		LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));
+//		return resultMap;
 	}
 
 	/**
@@ -839,6 +839,8 @@ public class PaymentService {
 	 */
 	public PayInfoEntity calculateCreditPayRatio(BigDecimal creditAvailAmt, BigDecimal orderAmt) {
 
+		creditAvailAmt = BigDecimal.ZERO;
+		
 		PayInfoEntity payInfo = new PayInfoEntity();
 		boolean supportCredit = false;
 		// 首付金额
@@ -848,34 +850,34 @@ public class PaymentService {
 	    //银行卡支付
 	    BigDecimal cardPayAmt = orderAmt; //默认订单金额
 
-	    String paymentType = PaymentType.ALIPAY_PAYMENT.getCode();
+//	    String paymentType = PaymentType.ALIPAY_PAYMENT.getCode();
 	    
-		if(creditAvailAmt != null && creditAvailAmt.compareTo(BigDecimal.ZERO) == 1){
-			// 订单金额的50%
-			BigDecimal halfOrderAmt = orderAmt.multiply(BigDecimal.valueOf(0.5));
-			//订单金额的90%
-			BigDecimal orderAmt90 = orderAmt.multiply(BigDecimal.valueOf(0.9));
-			if(creditAvailAmt.compareTo(halfOrderAmt) == -1) {
-				//用户可用额度<订单价格50%，不展示趣花
-				cardPayAmt = orderAmt;
-			} else if (creditAvailAmt.compareTo(orderAmt90) >= 0) {
-				//首付比例固定10%
-				supportCredit = true;
-				paymentType = PaymentType.CREDIT_PAYMENT.getCode();
-				downPayAmt = scale2Decimal(orderAmt.multiply(new BigDecimal(getDownRatio())));
-				creditPayAmt = orderAmt.subtract(downPayAmt);
-			} else if (creditAvailAmt.compareTo(halfOrderAmt) >= 0
-					&& creditAvailAmt.compareTo(orderAmt90) == -1) {
-				supportCredit = true;
-				paymentType = PaymentType.CREDIT_PAYMENT.getCode();
-				downPayAmt = scale2Decimal(orderAmt.subtract(creditAvailAmt));
-				creditPayAmt = orderAmt.subtract(downPayAmt);
-			}
-		}
+//		if(creditAvailAmt != null && creditAvailAmt.compareTo(BigDecimal.ZERO) == 1){
+//			// 订单金额的50%
+//			BigDecimal halfOrderAmt = orderAmt.multiply(BigDecimal.valueOf(0.5));
+//			//订单金额的90%
+//			BigDecimal orderAmt90 = orderAmt.multiply(BigDecimal.valueOf(0.9));
+//			if(creditAvailAmt.compareTo(halfOrderAmt) == -1) {
+//				//用户可用额度<订单价格50%，不展示趣花
+//				cardPayAmt = orderAmt;
+//			} else if (creditAvailAmt.compareTo(orderAmt90) >= 0) {
+//				//首付比例固定10%
+//				supportCredit = true;
+//				paymentType = PaymentType.CREDIT_PAYMENT.getCode();
+//				downPayAmt = scale2Decimal(orderAmt.multiply(new BigDecimal(getDownRatio())));
+//				creditPayAmt = orderAmt.subtract(downPayAmt);
+//			} else if (creditAvailAmt.compareTo(halfOrderAmt) >= 0
+//					&& creditAvailAmt.compareTo(orderAmt90) == -1) {
+//				supportCredit = true;
+//				paymentType = PaymentType.CREDIT_PAYMENT.getCode();
+//				downPayAmt = scale2Decimal(orderAmt.subtract(creditAvailAmt));
+//				creditPayAmt = orderAmt.subtract(downPayAmt);
+//			}
+//		}
 		payInfo.setCreditPayAmt(creditPayAmt);
 		payInfo.setCreditPayDownPayAmt(downPayAmt);
 		payInfo.setSupportCreditPay(supportCredit);
-		payInfo.setPaymentType(paymentType);
+//		payInfo.setPaymentType(paymentType);
 		// 若使用银行卡支付需要金额
 		payInfo.setCardPayAmt(cardPayAmt);
 		return payInfo;
@@ -915,8 +917,6 @@ public class PaymentService {
 	public PayInfoEntity confirmPayMethod(String requestId, Long userId, List<String> orderList, String paymentType) throws BusinessException {
 		PayInfoEntity payInfo = new PayInfoEntity();
 		payInfo.setUserId(userId);
-		// 设置支付方式
-		payInfo.setPaymentType(paymentType);
 
 		Map<String, Object> validateMap = validateDefary(requestId,userId, orderList);
 		if(!validateMap.containsKey("totalAmt")){
@@ -935,30 +935,32 @@ public class PaymentService {
 		    String requestIdOrder=requestId+"_"+orderDetail.getOrderId();
 			orderService.validateGoodsStock(requestIdOrder,orderDetail.getGoodsId(), orderDetail.getGoodsStockId(),orderDetail.getGoodsNum(),orderDetail.getOrderId());
 		}
-		Response response  =  commonHttpClient.getCustomerBasicInfo(requestId, userId);
-		if(!response.statusResult()){
-			throw new BusinessException("客户信息查询失败");
-		}
-		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
-		if (customerBasicInfo == null) {
-			throw new BusinessException("客户信息查询失败");
-		}
+//		Response response  =  commonHttpClient.getCustomerBasicInfo(requestId, userId);
+//		if(!response.statusResult()){
+//			throw new BusinessException("客户信息查询失败");
+//		}
+//		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
+//		if (customerBasicInfo == null) {
+//			throw new BusinessException("客户信息查询失败");
+//		}
 
-		Response responseCredit =  commonHttpClient.getCustomerCreditInfo(requestId,userId);
-		if(!responseCredit.statusResult()){
-			throw new BusinessException("额度信息查询失败");
-		}
-		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
-		if (customerBasicInfo == null) {
-			throw new BusinessException("额度信息查询失败");
-		}
+//		Response responseCredit =  commonHttpClient.getCustomerCreditInfo(requestId,userId);
+//		if(!responseCredit.statusResult()){
+//			throw new BusinessException("额度信息查询失败");
+//		}
+//		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
+//		if (customerBasicInfo == null) {
+//			throw new BusinessException("额度信息查询失败");
+//		}
 		// 设置不同支付方式支付金额
-		payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
+		payInfo = calculateCreditPayRatio(BigDecimal.ZERO, totalAmt);
 		payInfo.setCardPayAmt(totalAmt);
-		payInfo.setBankCode(customerBasicInfo.getBankCode());
-		payInfo.setCardNo(customerBasicInfo.getCardNo());
-		payInfo.setCardType(customerBasicInfo.getCardType());
-		payInfo.setCardBank(customerBasicInfo.getCardBank());
+		// 设置支付方式
+	    payInfo.setPaymentType(paymentType);
+//		payInfo.setBankCode(customerBasicInfo.getBankCode());
+//		payInfo.setCardNo(customerBasicInfo.getCardNo());
+//		payInfo.setCardType(customerBasicInfo.getCardType());
+//		payInfo.setCardBank(customerBasicInfo.getCardBank());
 		return payInfo;
 	}
 

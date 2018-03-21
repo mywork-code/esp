@@ -210,7 +210,12 @@ public class InvoiceService {
             InvoiceDetails entity = new InvoiceDetails();
             BeanUtils.copyProperties(invoice, entity);
             entity.setId(invoice.getId()+"");
-            entity.setName(orderInfoRepository.selectByOrderId(invoice.getOrderId()).getName());
+            OrderInfoEntity order = orderInfoRepository.selectByOrderId(invoice.getOrderId());
+            if(order!=null&&order.getName()!=null){
+            	entity.setName(order.getName());
+            }else{
+            	continue;
+            }
             entity.setOrderId(invoice.getOrderId());
             entity.setTelphone(invoice.getTelphone());
             entity.setContent(invoice.getContent());
