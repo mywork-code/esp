@@ -27,6 +27,7 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    * @return
    */
   Integer selectCountByInviteMobile(String moblie);
+
   /**
    * 查看在当前活动下是否已被邀请
    * @param AwardBindRel
@@ -61,6 +62,7 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    * @return
    */
   List<AwardBindRel> getAllByInviterUserId(@Param("userId") String userId);
+  List<AwardBindRel> getAllByUserIdForExport(@Param("userId") String userId);
 
   /**
    * 统计查询同一用户邀总人数
