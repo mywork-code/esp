@@ -49,7 +49,7 @@ public class JsonTokenHelper {
      * @param userId
      * @return String
      */
-    public   String createJsonWebToken(String userId, String mobile, Long expires) {
+    public String createJsonWebToken(String userId, String mobile, Long expires) {
         try {
             String audience = jwtApp.getAudience();
             String issuer = jwtApp.getIssuer();

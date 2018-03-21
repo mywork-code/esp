@@ -114,7 +114,6 @@ public class CheckAccount {
                         chOrder.setPartPayment(null);//2
                         chOrder.setAnotherPayment(txnInfoEntityList.get(0).getTxnAmt());//3
                         chOrder.setParTxnType(null);//4
-
                     } else {
                         LOGGER.error("error-----Exception--,数据有误");
                     }
