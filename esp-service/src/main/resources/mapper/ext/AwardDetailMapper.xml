@@ -49,6 +49,13 @@
            <include refid="PAGINATION.MYSQL_PAGINATION" />
         </if>
     </select>
+
+	<select id="queryAwardIntroListForExport" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" />
+		from t_esp_award_detail
+		group by user_id
+		ORDER BY CREATE_DATE DESC
+	</select>
     
     <select id="countAwardIntroList" resultType="Integer">
     	select count(1) from t_esp_award_detail

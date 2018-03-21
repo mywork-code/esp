@@ -37,8 +37,7 @@ public class AwardExport {
         try{
             //获取数据
             List<AwardBindRelIntroVo> awardBindRelVos = new ArrayList<AwardBindRelIntroVo>();
-            Map<String, Object> paramMap = Maps.newHashMap();
-            List<AwardDetail> awardDetails  = awardDetailMapper.queryAwardIntroList(paramMap);
+            List<AwardDetail> awardDetails  = awardDetailMapper.queryAwardIntroListForExport();
             for(AwardDetail awardDetail : awardDetails){
                 //计算可提现金额
                 AwardBindRelIntroVo awardBindRelIntroVo = new AwardBindRelIntroVo();
