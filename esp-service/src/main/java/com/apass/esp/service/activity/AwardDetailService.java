@@ -302,7 +302,7 @@ public class AwardDetailService {
 	 * @return
 	 */
 	public BigDecimal getCanUserAmt(Long userId, Date createDate) {
-		Map<String,Object> parMap = Maps.newHashMap();
+		Map<String,Object> 	parMap = Maps.newHashMap();
 		parMap.put("userId", userId);
 		parMap.put("applyDate2", DateFormatUtil.dateToString(createDate, DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
 		List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(userId);
@@ -355,4 +355,5 @@ public class AwardDetailService {
 
 		return awardDetailMapper.getAllAwardByUserIdAndInviteUserId(query);
 	}
+
 }

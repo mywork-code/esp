@@ -45,10 +45,11 @@ public class BsdiffinfoService {
 	/**
 	 * 思路:
 	 * 1,验证：先判断对应ver是否已经存在，版本号和文件名是否一致
-	 * 2,上传：
-	 * 3,解压：
-	 * 4,合并：
-	 * 5,增量更新:
+	 * 2,上传：把原始zip文件上传至 /data/nfs/gfb/eshop/bsdiff/verzip/ "lineId"/"bsdiffVer"目录下
+	 * 3,解压：解压缩,并生成文件清单,解压至 /data/nfs/gfb/eshop/bsdiff/verzip/ "lineId"/"bsdiffVer" 目录，供合并使用
+	 * 4,合并：合并并生成文件清单,目录/data/nfs/gfb/eshop/bsdiff/verzip/ "lineId"/"bsdiffVer"，名称固定为merge.
+	 * 	访问路径：域名+/static/eshop/bsdiff/verzip/commission/1/merge/ "lineId"/"bsdiffVer"
+	 * 5,增量更新:拿上传版本的版本，与已经上传的zip文件增量更新。名称如：3_2,3_1。目录:data/nfs/gfb/eshop/bsdiff/patchzip/
 	 * @param bsdiffEntity
 	 * @param bsdiffInfoEntity
 	 * @throws IOException
@@ -92,8 +93,7 @@ public class BsdiffinfoService {
 		//先上传zip文件，方便后续解压
 		FileUtilsCommons.uploadFilesUtil(rootPath,zipPath+zipName,bsdiffFile);
 
-		//解压缩,并重成文件清单,
-//			ZipUtil.unZipFiles(rootPath+zipPath+zipName,rootPath+zipPath);
+		//解压缩,并生成文件清单,
 		new ZipUtil().unZipFiles(rootPath,zipPath,zipName);
 
 		//合并并生成文件清单
@@ -159,7 +159,6 @@ public class BsdiffinfoService {
 				throw new RuntimeException(descDir.getAbsolutePath()+"目录下无.zip文件");
 			}
 
-
 			//生成合并文件和清单
 			File[] files2 = descDir.listFiles(new FileFilter() {
 				@Override
@@ -183,7 +182,6 @@ public class BsdiffinfoService {
 
 				countEnd = countStart+file.length();
 				fileContent.setExcursionSize(String.valueOf(countStart)+","+String.valueOf(countEnd));
-				//TODO 变更环境
 				fileContent.setUrl(appWebDomain+"/static"+zipPath+file.getName());
 				fileEntitis.setFileContent(fileContent);
 				list.add(fileEntitis);
@@ -217,7 +215,6 @@ public class BsdiffinfoService {
 				bos.write(buf,0,len);
 				bos.flush();
 			}
-
 		}finally {
 			if(bos!=null){
 				bos.close();
