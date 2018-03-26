@@ -69,6 +69,10 @@ public class AwardBindRelService {
 	public List<AwardBindRel> getAllByInviterUserId(String userId){
 		return wihdrawBindRelMapper.getAllByInviterUserId(userId);
 	}
+
+	public List<AwardBindRel> getAllByUserIdForExport(String userId){
+		return wihdrawBindRelMapper.getAllByUserIdForExport(userId);
+	}
 	/**
 	  * 统计查询在某一时间内邀请的总人数
 	  */

@@ -79,7 +79,7 @@ public class UsersController {
 			}
 		} catch (BusinessException e) {
 			LOG.error("商户信息查询失败", e);
-			e.printStackTrace();
+			return Response.fail("商户信息查询失败");
 		}
 		return Response.success(SUCCESS, merchantList);
 	}

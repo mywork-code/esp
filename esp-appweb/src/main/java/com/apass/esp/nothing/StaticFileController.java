@@ -325,9 +325,9 @@ public class StaticFileController {
         return Response.successResponse(commissionWalletVos);
     }
 
-    @Deprecated
     @RequestMapping(value = "bsdiff/download2")
     @ResponseBody
+    @Deprecated
     public Response downLoad2(@RequestBody(required=true) Map<String,Object> paramMap){
         LOGGER.info("bsdiff下载开始执行了,参数:{}", GsonUtils.toJson(paramMap));
         Map<String,String> resultMap = Maps.newHashMap();

@@ -34,6 +34,7 @@ public interface AwardDetailMapper extends GenericMapper<AwardDetail, Long> {
 	 * @return
 	 */
 	List<AwardDetail> queryAwardIntroList(Map<String, Object> paramMap);
+	List<AwardDetail> queryAwardIntroListForExport();
 	/**
 	 * 查询当前活动下该用户本月共获得多少奖励金额
 	 * @param paramMap

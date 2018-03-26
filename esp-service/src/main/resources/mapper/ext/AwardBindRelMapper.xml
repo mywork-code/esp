@@ -104,6 +104,13 @@
 		where invite_user_id = #{userId}
 	    ORDER BY create_date DESC
 	</select>
+
+	<select id="getAllByUserIdForExport" resultMap="BaseResultMap" >
+		select *
+		from t_esp_award_bind_rel
+		where user_id = #{userId}
+		ORDER BY create_date DESC
+	</select>
 	
 	<!-- 查询被邀请的人数根据传入的时间 -->
 	<select id="getInviterUserCountByTime" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">

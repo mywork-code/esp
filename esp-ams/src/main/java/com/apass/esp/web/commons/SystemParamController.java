@@ -60,8 +60,6 @@ public class SystemParamController {
      * 日志
      */
     private static final Logger LOG = LoggerFactory.getLogger(SystemParamController.class);
-    private static final String VERPATH = "/verzip";
-    private static final String PATCHPATH = "/patchzip";
 
     @Autowired
     private SystemParamService  systemParamService;
