@@ -27,9 +27,10 @@ import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 /**
- * wz商品批量上架
+ * wz商品批量上架   下架
  * @author Administrator
  *
  */
@@ -133,6 +134,44 @@ public class GoodsBatchPutawayController {
             }
         }catch(Exception e){
         	LOGGER.error("wz商品批量上架,出现异常");
+        }
+    }
+    /**
+     * 指定类目商品批量下架
+     * 下架方法参考GoodsBaseInfoController shelf 方法
+     * 一级类目 百货 二级类目 情趣用品  该类目商品全部下架
+     */
+    @ResponseBody
+    @RequestMapping("/batchSoldOut")
+    @LogAnnotion(operationType = "指定类目商品批量下架", valueType = LogValueTypeEnum.VALUE_REQUEST)
+    public void batchSoldOut() {
+        LOGGER.info("wz商品批量下架..");
+        String user = SpringSecurityUtils.getCurrentUser();
+        Map<String,Object> params = Maps.newHashMap();
+        params.put("status",GoodStatus.GOOD_UP.getCode());
+        params.put("isDelete","01");
+        //查询全部上架商品
+        List<GoodsInfoEntity> goodsList= goodsService.selectByCategoryId2AndsordNo(params);
+        for(GoodsInfoEntity entity : goodsList){
+        	Long categoryId1 = entity.getCategoryId1();
+            Category category1 = categoryInfoService.selectNameById(categoryId1);
+            Long categoryId2 = entity.getCategoryId2();
+            Category category2 = categoryInfoService.selectNameById(categoryId2);
+            //判断类目
+        	if(category1!=null&&StringUtils.equals(category1.getCategoryName(), "百货")
+        			&&category2!=null&&StringUtils.equals(category2.getCategoryName(), "情趣用品")){
+        		//类目符合 商品下架
+        		entity.setStatus(GoodStatus.GOOD_DOWN.getCode());
+                entity.setUpdateUser(user);
+            	Integer count = goodsService.updateService(entity);
+                if(count == 1){
+                	//es删除
+                    Goods goods = new Goods();
+                    goods.setId(entity.getId().intValue());
+                    LOGGER.info("商品下架，删除索引传递的参数:{}",GsonUtils.toJson(goods));
+                    goodsEsDao.delete(goods);
+                }
+        	}
         }
     }
 }
