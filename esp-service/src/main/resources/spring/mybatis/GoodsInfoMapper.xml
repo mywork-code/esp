@@ -6,6 +6,7 @@
     <!-- 查询条件 -->
     <sql id="QueryGoodsSql">
         <where>
+            AND t.is_delete = '01 '
             <if test="categoryId1 != null and categoryId1 != ''">
                 AND t.category_id1 = #{categoryId1, jdbcType=BIGINT}
             </if>
@@ -44,9 +45,6 @@
             </if>
             <if test="delistTime != null and delistTime != ''">
                 AND t.EXPIRE_DATE &lt;= #{delistTime, jdbcType=DATE}
-            </if>
-            <if test="isDelete != null and isDelete != ''">
-                AND t.is_delete = #{isDelete}
             </if>
             <if test="merchantName != null and merchantName != ''">
                 AND t2.merchant_name LIKE '%${merchantName}%'
