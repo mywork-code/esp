@@ -42,6 +42,7 @@ public enum MerchantCode {
     MERCHANT_LIKE_INDUSTRY("上海立客实业有限公司", "","0shmh13"),
     MERCHANT_JINGDONG("北京京东世纪信息技术有限公司","400002","0000097"),
     MERCHANT_WEIZHI("微知（上海）服务外包有限公司","400685","05103"),
+    MERCHANT_AOLI("上海澳立投资发展有限公司 ","400686","09101"),
     MERCHANT_SUYU("上海素域贸易有限公司","401257","02107");
     private String name;
     private String code;
