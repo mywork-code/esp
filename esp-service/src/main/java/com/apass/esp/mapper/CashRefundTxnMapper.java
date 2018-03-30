@@ -27,4 +27,7 @@ public interface CashRefundTxnMapper extends GenericMapper<CashRefundTxn, Long>{
 	List<CashRefundTxn> queryByStatusAndDate(@Param("status") String status,
 											@Param("dateBegin") String dateBegin,
 											@Param("dateEnd") String endDate);
+
+	List<CashRefundTxn> queryByStatusAndOrderId(@Param("status") String status,
+											   @Param("orderId")String orderId);
 }

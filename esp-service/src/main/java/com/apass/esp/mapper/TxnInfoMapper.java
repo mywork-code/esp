@@ -57,6 +57,8 @@ public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
                                              @Param("dateBegin") String dateBegin,
                                              @Param("dateEnd") String dateEnd);
 
+    List<TxnOrderInfo> selectVBSBusinessNumListByMainOrderId(String mainOrderId);
+
   List<TxnInfoEntity> queryRepayTxnByUserId(@Param("userId") Long userId,
                                             @Param("dateBegin") String dateBegin,
                                             @Param("dateEnd") String dateEnd);
@@ -65,4 +67,5 @@ public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
   Integer getTotalCreditPayNum(@Param("userId") Long userId);
 
     List<TxnOrderInfo> selectByTxnTypeCodeList(@Param("typeCodeList")List<String> typeCodeList, @Param("dateBegin")String dateBegin, @Param("dateEnd")String dateEnd);
+    List<TxnOrderInfo> selectTxnOrderByMainOrderId(@Param("mainOrderId") String mainOrderId);
 }

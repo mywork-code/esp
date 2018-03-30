@@ -113,6 +113,9 @@ public class TxnInfoService {
         return txnInfoMapper.selectVBSBusinessNumList(dateBegin,dateEnd);
     }
 
+  public List<TxnOrderInfo> selectVBSBusinessNumListByMainOrderId(String mainOrderId) {
+    return txnInfoMapper.selectVBSBusinessNumListByMainOrderId(mainOrderId);
+  }
     public List<TxnInfoEntity> selectRepayTxnByUserId(Long userId,String startDate,String endDate){
       return txnInfoMapper.queryRepayTxnByUserId(userId,startDate,endDate);
     }
@@ -124,4 +127,9 @@ public class TxnInfoService {
   public List<TxnOrderInfo> selectByTxnTypeCodeList(List<String> typeCodeList, String dateBegin, String dateEnd) {
     return txnInfoMapper.selectByTxnTypeCodeList(typeCodeList, dateBegin, dateEnd);
   }
+
+  public List<TxnOrderInfo> selectTxnOrderByMainOrderId(String mainOrderId){
+      return txnInfoMapper.selectTxnOrderByMainOrderId(mainOrderId);
+  }
+
 }
