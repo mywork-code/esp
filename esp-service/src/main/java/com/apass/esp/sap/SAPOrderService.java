@@ -594,6 +594,9 @@ public class SAPOrderService {
           }
           contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "yyyyMMdd"));
           contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "HHmmss"));
+
+
+          //TODO 定单创建时间
           contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "yyyyMMdd"));
           contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "HHmmss"));
           contentList.add("ajqh");
@@ -648,6 +651,8 @@ public class SAPOrderService {
        }
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "HHmmss"));
+
+        //TODO 定单创建时间
         contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "HHmmss"));
         contentList.add("ajqh");
@@ -855,6 +860,8 @@ public class SAPOrderService {
 
           contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "yyyyMMdd"));
           contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "HHmmss"));
+
+          //TODO 订单创建时间
           contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "yyyyMMdd"));
           contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "HHmmss"));
           contentList.add("");
@@ -910,6 +917,8 @@ public class SAPOrderService {
         contentList.add(orderInfoEntity.getOrderId());
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "HHmmss"));
+
+        //TODO 订单创建时间
         contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "HHmmss"));
         contentList.add("");

@@ -79,7 +79,7 @@ public class SAPScheduleTask {
 	public void exec2(){
 		String path = basePath;
 		List<OrderInfoEntity> orderInfoEntityList = new ArrayList<>();
-		String[] orderIds = {"17011313903","14160926401l","14660298890l","83001732901l","01131767803",
+		String[] orderIds = {"17011313903","14160926401","14660298890","83001732901","01131767803",
 		"22381480501","52090163901"};
 		for(String orderId:orderIds){
 			try {
