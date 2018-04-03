@@ -10,10 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -87,6 +85,8 @@ public class GoodsService {
     @Autowired
     private GoodsRepository goodsDao;
     @Autowired
+    private GoodsBasicRepository goodsBasicRepository;
+    @Autowired
     private GoodsStockInfoRepository goodsStockDao;
     @Autowired
     private BannerInfoRepository bannerInfoDao;
@@ -96,8 +96,6 @@ public class GoodsService {
     private ImageService imageService;
     @Autowired
     private MerchantInforService merchantInforService;
-    @Autowired
-    private GoodsBasicRepository goodsBasicRepository;
     @Autowired
     private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
     @Autowired
@@ -137,7 +135,15 @@ public class GoodsService {
     @Autowired
     private GoodsEsDao goodsEsDao;
     /**
-     * 修改
+     * READ
+     * @param goodsId
+     * @return
+     */
+    public GoodsInfoEntity selectByGoodsId(Long goodsId) {
+        return goodsDao.select(goodsId);
+    }
+    /**
+     * UPDATE
      * @param entity
      * @return
      */
@@ -146,13 +152,13 @@ public class GoodsService {
         return goodsDao.updateGoods(entity);
     }
     /**
-     * READ
-     * @param goodsId
+     * DELETE
+     * @param goodId
      * @return
      */
-    public GoodsInfoEntity selectByGoodsId(Long goodsId) {
-        return goodsDao.select(goodsId);
-    }
+    public Integer deleteEntity(Long goodId) {
+		return goodsBasicRepository.delete(goodId);
+	}
   /**
    * app 加载精品推荐商品列表
    *
@@ -2083,4 +2089,16 @@ public class GoodsService {
             goodsEsDao.delete(goods);
         }
     }
+	public Integer deleteRepeatSku() {
+		return goodsBasicRepository.deleteRepeatSku();
+	}
+	public List<GoodsBasicInfoEntity> getRepeatG02Sku() {
+		return goodsBasicRepository.getRepeatG02Sku();
+	}
+	public Object deleteRepeatGoodsCode() {
+		return goodsBasicRepository.deleteRepeatGoodsCode();
+	}
+	public List<GoodsBasicInfoEntity> getRepeatG02GoodsCode() {
+		return goodsBasicRepository.getRepeatG02GoodsCode();
+	}
 }
