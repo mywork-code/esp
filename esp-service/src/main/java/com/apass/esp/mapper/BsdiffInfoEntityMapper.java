@@ -18,4 +18,6 @@ public interface BsdiffInfoEntityMapper extends GenericMapper<BsdiffInfoEntity, 
     BsdiffInfoEntity selectMaxBsdiffInfoById(String id);
 
 
+    List<BsdiffInfoEntity> listAllNewestVer();
+
 }

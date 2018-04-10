@@ -258,4 +258,7 @@ public class BsdiffinfoService {
 		return pattern.matcher(str).matches();
 	}
 
+	public List<BsdiffInfoEntity> listAllNewestVer() {
+		return bsdiffInfoEntityMapper.listAllNewestVer();
+	}
 }
