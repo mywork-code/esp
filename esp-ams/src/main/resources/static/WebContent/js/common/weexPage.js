@@ -11,7 +11,7 @@ $ (function (){
 	// Grid 列表
 	$ ('#weexJslist').datagrid (
 	{
-	    title : 'weex管理',
+	    title : 'WEEX版本管理',
 	    fit : true,
 		toolbar:"#tb",
 	    rownumbers : true,
@@ -21,70 +21,29 @@ $ (function (){
 	    columns : [
 		    [
 		            {
-		                title : 'id',
+		                title : 'NO',
 		                field : 'id',
 		                width : 150,
 		                align : 'center'
 		            },
-		            {
-		                title : '环境',
-		                field : 'weexEve',
-		                width : 150,
-		                align : 'center'
-		            },
 					{
-		                title : 'weex类型',
-		                field : 'weexType',
-		                width : 150,
-		                align : 'center'
-		            },
-
-		            {
-		                title : 'ios版本号',
-		                field : 'iosVer',
-		                width : 100,
-		                align : 'center'
-		            },
-					{
-						title : 'android版本号',
-						field : 'androidVer',
+						title : 'ID',
+						field : 'lineId',
 						width : 100,
 						align : 'center'
 					},
+		            {
+		                title : 'VER',
+		                field : 'bsdiffVer',
+		                width : 100,
+		                align : 'center'
+		            },
 					{
-						title : '归属项目',
-						field : 'weexBlong',
+						title : 'isForce',
+						field : 'ifCompelUpdate',
 						width : 100,
 						align : 'center'
-					},
-
-		            {
-		                title : '修改人',
-		                field : 'updateUser',
-		                width : 100,
-		                align : 'center'
-		            },
-		            
-		            {
-		                title : '修改时间',
-		                field : 'updateDateStr',
-		                width : 150,
-		                align : 'center'
-		            },
-		            {
-		                title : '操作',
-		                field : 'opt',
-		                width : 100,
-		                align : 'center',
-		                formatter : function (value, row, index)
-		                {
-			                var content = "";
-			                content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
-			                content += " onclick='$.editWeexjsInfo(" + JSON.stringify (row) + ");'>编辑</a>";
-
-							return content;
-		                }
-		            }
+					}
 		    ]
 	    ],
 	    
@@ -92,32 +51,20 @@ $ (function (){
 	    {
 		    $.ajax (
 		    {
-		        url : ctx + '/application/system/param/listAndriodJs',
+		        url : ctx + '/application/system/param/list',
 		        data : param,
 		        type : "post",
 		        dataType : "json",
 		        success : function (data)
 		        {
-			        $.validateResponse (data, function ()
-			        {
+					debugger;
+			        $.validateResponse (data, function (){
 				        success (data);
 			        });
 		        }
 		    })
 	    }
 	});
-	$.editWeexjsInfo = function (data)
-	{
-		$ ("#editWeexJsInfo").dialog ("open");
-		
-		$ ("#iosVer").val (data.iosVer);
-		$ ("#androidVer").val (data.androidVer);
-		$ ("#weexType").combobox ('setValue',data.weexType);
-		$ ("#weexFile").val (data.weexFile);
-		$ ("#weexId").val (data.id);
-		$ ("#weexEve").val (data.weexEve);
-		$ ("#weexBlong").val (data.weexBlong);
-	}
 
 	$("#bsDiffUpload").click(function () {
 		$("#bsdiffFile").val("");
@@ -221,7 +168,6 @@ function confirmWeexBtn ()
 				url : ctx + '/application/system/param/updateWeex2',
 				success : function(data) {
 					var response = JSON.parse(data);
-					console.log(response);
 					if(response.status=="1"){
 						$.messager.alert ('消息', response.msg);
 						closeWeexBtn ();

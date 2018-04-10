@@ -74,7 +74,7 @@ public class SystemParamController {
     private SystemEnvConfig systemEnvConfig;
 
     @Autowired
-    private BsdiffinfoService bsdiffinfoEntityService;
+    private BsdiffinfoService bsdiffinfoService;
 
     /**
      * 系统参数信息页面
@@ -285,9 +285,10 @@ public class SystemParamController {
     }
 
     /**
-     * 查询js列表
+     * 查询js列表:作废不用
      * @return
      */
+    @Deprecated
     @ResponseBody
     @RequestMapping("/listAndriodJs")
     public ResponsePageBody queryCommisionAndWallet(){
@@ -303,7 +304,22 @@ public class SystemParamController {
         }
         return respBody;
     }
+    @ResponseBody
+    @RequestMapping("/list")
+    public ResponsePageBody pageList(HttpServletRequest request) {
+        ResponsePageBody<BsdiffInfoEntity> respBody = new ResponsePageBody<BsdiffInfoEntity>();
+        try {
+            List<BsdiffInfoEntity> list = bsdiffinfoService.listAllNewestVer();
+            respBody.setRows(list);
+            respBody.setTotal(list.size());
+            respBody.setStatus(CommonCode.SUCCESS_CODE);
+        }catch (Exception e){
+            LOG.error("查询成功bsdiff列表失败",e);
+            respBody.setStatus(CommonCode.FAILED_CODE);
+        }
 
+        return respBody;
+    }
     @Deprecated
     @ResponseBody
     @RequestMapping("/updateWeex")
@@ -422,7 +438,7 @@ public class SystemParamController {
             bsdiffInfoEntity.setUpdatedTime(new Date());
             bsdiffInfoEntity.setUpdateUser(SpringSecurityUtils.getCurrentUser());
             bsdiffInfoEntity.setIfCompelUpdate(bsdiffVo.getIfCompelUpdate());
-            bsdiffinfoEntityService.bsdiffUpload(bsdiffVo,bsdiffInfoEntity);
+            bsdiffinfoService.bsdiffUpload(bsdiffVo,bsdiffInfoEntity);
         }catch (Exception e){
             LOG.error("增量添加上传失败",e);
             return Response.fail(e.getMessage());

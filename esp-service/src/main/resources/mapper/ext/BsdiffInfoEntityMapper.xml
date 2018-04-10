@@ -19,6 +19,22 @@
     from t_esp_bsdiff_info ORDER BY created_time DESC
   </select>
 
+  <select id="listAllNewestVer" resultMap="BaseResultMap">
+    SELECT
+      a.id id,
+      a.bsdiff_ver bsdiffVer,
+      a.line_id lineId,
+      a.if_compel_update ifCompelUpdate
+      FROM
+          t_esp_bsdiff_info a,
+      (
+          SELECT MAX(id) id,MAX(bsdiff_ver) ver FROM t_esp_bsdiff_info GROUP BY line_id
+      ) b
+      WHERE a.id = b.id
+      ORDER BY
+          a.created_time DESC
+  </select>
+
  <select id="selectAllBsdiffNewest" resultMap="BaseResultMap">
    SELECT <include refid="Base_Column_List" />
    from t_esp_bsdiff_info
