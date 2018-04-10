@@ -1,19 +1,13 @@
 package com.apass.esp.repository.goods;
-
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
-
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 @MyBatisRepository
 public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEntity, Long> {
-
 	public Pagination<GoodsBasicInfoEntity> loadGoodsPages(Page page, GoodsBasicInfoEntity param) {
 		return this.page(param, page);
 	}
@@ -113,13 +107,16 @@ public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEn
 		param.put("count", count);
 		return this.getSqlSession().selectList("getRemainderGoodsNew", param);
 	}
-
 	public int deleteRepeatSku(){
 		return this.getSqlSession().delete("deleteRepeatSku");
 	}
-
 	public List<GoodsBasicInfoEntity> getRepeatG02Sku(){
 		return this.getSqlSession().selectList("getRepeatG02Sku");
 	}
-
+	public int deleteRepeatGoodsCode(){
+		return this.getSqlSession().delete("deleteRepeatGoodsCode");
+	}
+	public List<GoodsBasicInfoEntity> getRepeatG02GoodsCode(){
+		return this.getSqlSession().selectList("getRepeatG02GoodsCode");
+	}
 }
