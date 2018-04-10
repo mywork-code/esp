@@ -9,6 +9,7 @@ import com.apass.esp.domain.entity.RepaySchedule.RepayScheduleEntity;
 import com.apass.esp.domain.entity.bill.SapData;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.bill.TxnOrderInfo;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
@@ -23,6 +24,7 @@ import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.repaySchedule.RepayScheduleRepository;
 import com.apass.esp.service.TxnInfoService;
+import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.jwt.common.ListeningStringUtils;
@@ -79,6 +81,8 @@ public class SAPService {
 
   @Autowired
   private OrderDetailInfoRepository orderDetailInfoRepository;
+  @Autowired
+  private GoodsStockInfoService goodsStockInfoService;
 
   /**
    * 财务凭证调整收款(首付款，全额)
@@ -511,8 +515,10 @@ public class SAPService {
             contentList.add("200001");
             contentList.add(orderDetailInfoEntity.getGoodsName());
             contentList.add("");
-            BigDecimal goodsPrice = orderDetailInfoEntity.getGoodsPrice()==null?new BigDecimal(0):orderDetailInfoEntity.getGoodsPrice();
-            contentList.add(goodsPrice.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoService.goodsStockInfoEntityByStockId(orderDetailInfoEntity.getGoodsStockId());
+            //此处需改成成本价2018-04-10修改
+//            BigDecimal goodsPrice = orderDetailInfoEntity.getGoodsPrice()==null?new BigDecimal(0):orderDetailInfoEntity.getGoodsPrice();
+            contentList.add(goodsStockInfoEntity.getGoodsCostPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
             contentList.add("EA");
             contentList.add(String.valueOf(orderDetailInfoEntity.getGoodsNum()));
             csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
@@ -943,8 +949,10 @@ public class SAPService {
             contentList.add(String.valueOf(rowNum));
             contentList.add("200001");
             contentList.add(orderDetailInfoEntity.getGoodsName());
-            BigDecimal goodPrice = orderDetailInfoEntity.getGoodsPrice()==null?new BigDecimal(0):orderDetailInfoEntity.getGoodsPrice();
-            contentList.add(goodPrice.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoService.goodsStockInfoEntityByStockId(orderDetailInfoEntity.getGoodsStockId());
+            //此处传值修改为成本价
+//            BigDecimal goodPrice = orderDetailInfoEntity.getGoodsPrice()==null?new BigDecimal(0):orderDetailInfoEntity.getGoodsPrice();
+            contentList.add(goodsStockInfoEntity.getGoodsCostPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
             contentList.add("EA");
             contentList.add(String.valueOf(orderDetailInfoEntity.getGoodsNum()));
             csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
