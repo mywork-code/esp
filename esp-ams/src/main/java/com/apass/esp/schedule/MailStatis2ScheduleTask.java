@@ -14,6 +14,7 @@ import com.apass.esp.utils.ExportDomain1;
 import com.apass.esp.utils.mailUtils.MailSenderInfo;
 import com.apass.esp.utils.mailUtils.MailUtil;
 import com.apass.esp.web.commons.JsonDateValueProcessor;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import net.sf.json.JsonConfig;
@@ -79,9 +80,17 @@ public class MailStatis2ScheduleTask {
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
 
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
+
 
     @Scheduled(cron = "0 0 8 * * ?")
     public void mailStatisSchedule() {
+
+        if(!systemEnvConfig.isPROD()){
+            return;
+        }
+
         String currentDate = DateFormatUtil.getCurrentTime("YYYY-MM-dd");//当天
         Date date = DateFormatUtil.addDays(new Date(), -1);//前一天
         String dateBefore = DateFormatUtil.dateToString(date, "YYYY-MM-dd");

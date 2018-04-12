@@ -13,6 +13,7 @@ import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 
@@ -70,9 +71,14 @@ public class MailStatisScheduleTask {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
+
     @Scheduled(cron = "0 0 8 * * ?")
     public void mailStatisSchedule() {
-
+        if(!systemEnvConfig.isPROD()){
+            return;
+        }
         String currentDate = DateFormatUtil.getCurrentTime("YYYY-MM-dd");//当天
         Date date = DateFormatUtil.addDays(new Date(), -1);//前一天
         String dateBefore = DateFormatUtil.dateToString(date, "YYYY-MM-dd");
