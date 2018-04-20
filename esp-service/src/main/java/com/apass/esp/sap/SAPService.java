@@ -515,10 +515,10 @@ public class SAPService {
             contentList.add("200001");
             contentList.add(orderDetailInfoEntity.getGoodsName());
             contentList.add("");
-            GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoService.goodsStockInfoEntityByStockId(orderDetailInfoEntity.getGoodsStockId());
+//            GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoService.goodsStockInfoEntityByStockId(orderDetailInfoEntity.getGoodsStockId());
             //此处需改成成本价2018-04-10修改
-//            BigDecimal goodsPrice = orderDetailInfoEntity.getGoodsPrice()==null?new BigDecimal(0):orderDetailInfoEntity.getGoodsPrice();
-            contentList.add(goodsStockInfoEntity.getGoodsCostPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            BigDecimal goodsPrice = orderDetailInfoEntity.getGoodsPrice()==null?new BigDecimal(0):orderDetailInfoEntity.getGoodsPrice();
+            contentList.add(goodsPrice.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
             contentList.add("EA");
             contentList.add(String.valueOf(orderDetailInfoEntity.getGoodsNum()));
             csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
@@ -950,7 +950,7 @@ public class SAPService {
             contentList.add("200001");
             contentList.add(orderDetailInfoEntity.getGoodsName());
             GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoService.goodsStockInfoEntityByStockId(orderDetailInfoEntity.getGoodsStockId());
-            //此处传值修改为成本价
+            //此处传值修改为单个商品成本价
 //            BigDecimal goodPrice = orderDetailInfoEntity.getGoodsPrice()==null?new BigDecimal(0):orderDetailInfoEntity.getGoodsPrice();
             contentList.add(goodsStockInfoEntity.getGoodsCostPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
             contentList.add("EA");
