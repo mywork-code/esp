@@ -591,12 +591,8 @@ public class SAPService {
           }else{
             contentList.add("0");
           }
-//          contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "yyyyMMdd"));
-//          contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "HHmmss"));
-
-          //TODO 重新推送数据商城创建时间改成"2018-04-01"，推送完改回来
-          contentList.add("2018-04-01");
-          contentList.add("2018-04-01");
+          contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "yyyyMMdd"));
+          contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "HHmmss"));
           contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "yyyyMMdd"));
           contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "HHmmss"));
           contentList.add("ajqh");
@@ -643,11 +639,8 @@ public class SAPService {
        }else{
          contentList.add("0");
        }
-//        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
-//        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "HHmmss"));
-        //TODO 重新推送数据商城创建时间改成"2018-04-01"，推送完改回来
-        contentList.add("2018-04-01");
-        contentList.add("2018-04-01");
+        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "HHmmss"));
         contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "HHmmss"));
         contentList.add("ajqh");
@@ -850,11 +843,8 @@ public class SAPService {
           contentList.add("0.00");
           contentList.add(orderInfoEntity.getOrderId());
 
-//          contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "yyyyMMdd"));
-//          contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "HHmmss"));
-          //TODO 重新推送数据商城创建时间改成"2018-04-01"，推送完改回来
-          contentList.add("2018-04-01");
-          contentList.add("2018-04-01");
+          contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "yyyyMMdd"));
+          contentList.add(DateFormatUtil.dateToString(txn.getTxnDate(), "HHmmss"));
           contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "yyyyMMdd"));
           contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "HHmmss"));
           contentList.add("");
@@ -902,11 +892,8 @@ public class SAPService {
         contentList.add("");
         contentList.add("0.00");
         contentList.add(orderInfoEntity.getOrderId());
-//        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
-//        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "HHmmss"));
-        //TODO 重新推送数据商城创建时间改成"2018-04-01"，推送完改回来
-        contentList.add("2018-04-01");
-        contentList.add("2018-04-01");
+        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "HHmmss"));
         contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(orderInfoEntity.getCreateDate(), "HHmmss"));
         contentList.add("");
@@ -1056,8 +1043,7 @@ public class SAPService {
 
       Calendar cal = Calendar.getInstance();
       cal.add(Calendar.DATE, -1);
-    return "2018-01-01";
-//    return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+    return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
   }
 
   private String getDateEnd() {
