@@ -345,9 +345,9 @@ public class InvoiceService {
         faPiaoKJ.setQdBz("0");
         //价税金额
         faPiaoKJ.setKphjje(in.getOrderAmt() + "");
-        BigDecimal hjbhsje = in.getOrderAmt().divide(new BigDecimal(1.17),2);
+        BigDecimal hjbhsje = in.getOrderAmt().divide(new BigDecimal(1.16),2);
         faPiaoKJ.setHjbhsje(hjbhsje.toString());
-        faPiaoKJ.setHjse(hjbhsje.multiply(new BigDecimal(0.17)).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+        faPiaoKJ.setHjse(hjbhsje.multiply(new BigDecimal(0.16)).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
 
         faPiaoKJ.setGhfSj(order.getTelephone());
 
@@ -402,7 +402,7 @@ public class InvoiceService {
             faPiaoKJXM.setXmsl(goodsNum.toString());
             BigDecimal xmje = new BigDecimal(faPiaoKJXM.getXmdj()).multiply(new BigDecimal(goodsNum));
             faPiaoKJXM.setXmje(xmje.toString());
-            faPiaoKJXM.setSl("0.17");
+            faPiaoKJXM.setSl("0.16");
             faPiaoKJXM = (FaPiaoKJXM) FarmartJavaBean.farmartJavaB(faPiaoKJXM, FaPiaoKJXM.class);
             list.add(faPiaoKJXM);
         }

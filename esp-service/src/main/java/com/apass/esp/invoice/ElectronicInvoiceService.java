@@ -181,7 +181,7 @@ public class ElectronicInvoiceService {
     faPiaoKJXM.setZzstsgl("");
     faPiaoKJXM.setKce("0");
     faPiaoKJXM.setXmje("20.0");
-    faPiaoKJXM.setSl("0.17");
+    faPiaoKJXM.setSl("0.16");
     faPiaoKJXM.setSe("");
     faPiaoKJXM.setByzd1("");
     faPiaoKJXM.setByzd2("");
