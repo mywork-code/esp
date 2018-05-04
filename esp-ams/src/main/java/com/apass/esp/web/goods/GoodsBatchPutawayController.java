@@ -140,6 +140,7 @@ public class GoodsBatchPutawayController {
      * 指定类目商品批量下架
      * 下架方法参考GoodsBaseInfoController shelf 方法
      * 一级类目 百货 二级类目 情趣用品  该类目商品全部下架
+     * 鞋服-精选女装-私密内衣 该类目商品全部下架
      */
     @ResponseBody
     @RequestMapping("/batchSoldOut")
@@ -157,9 +158,12 @@ public class GoodsBatchPutawayController {
             Category category1 = categoryInfoService.selectNameById(categoryId1);
             Long categoryId2 = entity.getCategoryId2();
             Category category2 = categoryInfoService.selectNameById(categoryId2);
+            Long categoryId3 = entity.getCategoryId3();
+            Category category3 = categoryInfoService.selectNameById(categoryId3);
             //判断类目
-        	if(category1!=null&&StringUtils.equals(category1.getCategoryName(), "百货")
-        			&&category2!=null&&StringUtils.equals(category2.getCategoryName(), "情趣用品")){
+        	if(category1!=null&&StringUtils.equals(category1.getCategoryName(), "鞋服")
+        			&&category2!=null&&StringUtils.equals(category2.getCategoryName(), "精选女装")
+        				&&category3!=null&&StringUtils.equals(category3.getCategoryName(), "私密内衣")){
         		//类目符合 商品下架
         		entity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                 entity.setUpdateUser(user);
