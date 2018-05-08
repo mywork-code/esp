@@ -1146,9 +1146,15 @@ public class OrderService {
 
                                 //更新该skuId 的成本价，售价
                                 GoodsStockInfoEntity goodsStockInfoEntity =goodsStockDao.getGoodsStockInfoEntityByStockId(purchase.getGoodsStockId());
-                                goodsStockInfoEntity.setGoodsCostPrice(new BigDecimal(goodsCostPrice));
-                                goodsStockInfoEntity.setGoodsPrice(new BigDecimal(jdGoodsPrice));
-                                goodsStockDao.update(goodsStockInfoEntity);
+                                BigDecimal newGoodsCostPrice = new BigDecimal(goodsCostPrice);
+                                BigDecimal newJdGoodsPrice = new BigDecimal(jdGoodsPrice);
+
+                                if(goodsStockInfoEntity.getGoodsCostPrice().compareTo(newGoodsCostPrice) != 0
+                                        || goodsStockInfoEntity.getGoodsPrice().compareTo(newJdGoodsPrice) != 0){
+                                    goodsStockInfoEntity.setGoodsCostPrice(newGoodsCostPrice);
+                                    goodsStockInfoEntity.setGoodsPrice(newJdGoodsPrice);
+                                    goodsStockDao.update(goodsStockInfoEntity);
+                                }
                         	}
 						} catch (Exception e) {
 							LOGGER.error("call wz method getWzPrice is failed!!!{}",e);
