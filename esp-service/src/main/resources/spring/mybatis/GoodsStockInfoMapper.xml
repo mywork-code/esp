@@ -63,7 +63,6 @@
 			t_esp_goods_stock_info
 			WHERE 1=1
 		AND id = #{id, jdbcType=BIGINT}
-		ORDER BY update_date DESC 
 	</select>
 	
 	<!-- 商品管理count -->
