@@ -46,8 +46,8 @@ import java.util.*;
  * @version $Id: SystemParamController.java, v 0.1 2017年1月11日 上午11:15:57 chenbo
  *          Exp $
  */
-    @Controller
-    @RequestMapping("/application/system/param")
+@Controller
+@RequestMapping("/application/system/param")
 public class SystemParamController {
     @Value("${nfs.rootPath}")
     private String rootPath;
