@@ -95,7 +95,7 @@ $ (function (){
 					}
 
 					theForm.form("submit",{
-						url : ctx + '/application/system/param/bsdiffUpload',
+						url : ctx + '/noauth/application/system/param/bsdiffUpload',
 						success : function(data) {
 							var response = JSON.parse(data);
 							if(response.status=="1"){

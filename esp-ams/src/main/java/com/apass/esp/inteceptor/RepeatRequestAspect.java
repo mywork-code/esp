@@ -1,7 +1,12 @@
 package com.apass.esp.inteceptor;
 
-import java.util.Map;
-
+import com.apass.esp.domain.enums.StatusCode;
+import com.apass.esp.domain.enums.YesNo;
+import com.apass.gfb.framework.cache.CacheManager;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -15,14 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.apass.esp.domain.enums.StatusCode;
-import com.apass.esp.domain.enums.YesNo;
-import com.apass.gfb.framework.cache.CacheManager;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.google.common.collect.Maps;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * 重复提交锁
@@ -53,15 +56,23 @@ public class RepeatRequestAspect {
 
 	@Around("aspectPointcut()")
 	public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
-		Class<?> returnType = null;
+			Class<?> returnType = null;
 		String uniquekey = null;
+        RequestAttributes ra = RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes sra = (ServletRequestAttributes) ra;
+        HttpServletRequest request = sra.getRequest();
 
+        String url = request.getRequestURL().toString();
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        String queryString = GsonUtils.toJson(request.getParameterMap());
+        LOG.info("请求开始, 各个参数, url: {}, method: {}, uri: {}, params: {}", url, method, uri, queryString);
 		// Step 1. 检测请求是否在进行中
 		try {
 			Signature signature = joinPoint.getSignature();
 			returnType = ((MethodSignature) signature).getReturnType();
 			Object[] arr = joinPoint.getArgs();
-			String methodName = signature.getDeclaringTypeName() + "_" + signature.getName();
+            String methodName = signature.getDeclaringTypeName() + "_" + signature.getName();
 			String prefixOpenId = getRequestOpenId(arr);
 
 			if (StringUtils.isBlank(prefixOpenId)) {
