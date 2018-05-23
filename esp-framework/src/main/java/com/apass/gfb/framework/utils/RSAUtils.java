@@ -284,19 +284,5 @@ public class RSAUtils {
 		System.err.println("public decode->" + publicDecryptContent);
 	}
 
-	public void testJdParams() throws Exception {
-		Map<String,Object> params = new HashMap<>();
-		Map<String,Object> paramJson = new HashMap<>();
-		paramJson.put("sku","107164,179638");
-		params.put("method","biz.product.state.query");
-		params.put("jdParams", JSONObject.valueToString(paramJson));
-		String content = 	encryptByPublicKey(JSONObject.valueToString(params),"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCv/j/jFVnCwVQwsgx0rs1nhbg2kxmLrF3dl1W2dJ9wkPPACyMrgWO9dCk3nM3HBda4sabcWqNrHJcK5CIvSFp5dU0oAG8LCtMQUTCXEeLZAEAzDcdwBA7LYhTYEwZAbf789B0azaeEHi3po56oraPwJs7GZ1mzTzJTNXkP4FhNFwIDAQAB");
-		System.err.println("public encode ->" + content);
 
-	}
-
-	public static void main(String[] args) throws Exception {
-		RSAUtils rsaUtils = new RSAUtils();
-		rsaUtils.testJdParams();
-	}
 }

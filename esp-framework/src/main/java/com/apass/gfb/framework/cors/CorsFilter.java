@@ -113,10 +113,10 @@ import org.springframework.stereotype.Component;
  * @author Administrator
  *
  */
-
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@Component
-@ConditionalOnExpression("'${jdev.cors}' == 'true'")
+//
+//@Order(Ordered.HIGHEST_PRECEDENCE)
+//@Component
+//@ConditionalOnExpression("'${jdev.cors}' == 'true'")
 // @WebFilter not work now
 // @WebFilter(urlPatterns = { "/*" }, initParams = {
 // @WebInitParam(name = "cors.allowed.origins", value = "*"),
@@ -132,7 +132,7 @@ public final class CorsFilter implements Filter {
 
 	private static final Log LOG = LogFactory.getLog(CorsFilter.class);
 
-	private static final StringManager sm = StringManager.getManager(Constants.Package);
+	private static final StringManager sm = StringManager.getManager("org.apache.catalina.filters");
 
 	/**
 	 * A {@link Collection} of origins consisting of zero or more origins that
