@@ -53,7 +53,7 @@ public class AwardActivityStatisticsScheduleTask {
 	@Autowired
 	private AwardDetailService awardDetailService;
 	
-	@Scheduled(cron = "0 0 7 * * ?")//每天早上7点
+//	@Scheduled(cron = "0 0 7 * * ?")//每天早上7点
 	public void awardActivityStatistics(){
 		List<ActivityStatisticsVo> chanelStatistisList=awardActivityStatisticsList();
 		String fileName = "转介绍奖励金额统计";

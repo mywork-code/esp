@@ -57,7 +57,8 @@ public class MonitorScheduleTask {
     @Autowired
     private SystemEnvConfig systemEnvConfig;
 
-    @Scheduled(cron = "* 0/30 * * * *")
+//    @Scheduled(cron = "* 0/30 * * * *")
+    @Deprecated
     public void monitorSchedule() {
 
         if(!systemEnvConfig.isPROD()){

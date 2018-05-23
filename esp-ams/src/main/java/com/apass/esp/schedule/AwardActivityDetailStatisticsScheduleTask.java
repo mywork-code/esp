@@ -55,7 +55,8 @@ public class AwardActivityDetailStatisticsScheduleTask {
 	@Autowired
 	private AwardDetailService awardDetailService;
 
-	@Scheduled(cron = "0 0 7 * * ?")//每天早上7点
+//	@Scheduled(cron = "0 0 7 * * ?")//每天早上7点
+	@Deprecated
 	public void awardActivityStatistics() {
 		List<ActivityDetailStatisticsVo> chanelStatistisList = activityDetailStatisList();
 		//根据ActivityDetailStatisticsVo里面的拉新总数排序
