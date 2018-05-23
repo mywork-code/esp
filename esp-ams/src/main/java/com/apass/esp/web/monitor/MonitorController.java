@@ -37,8 +37,8 @@ import java.util.List;
 /**
  * Created by xianzhi.wang on 2017/5/18.
  */
-@Controller
-@RequestMapping(value = "/noauth/monitor")
+//@Controller
+//@RequestMapping(value = "/noauth/monitor")
 public class MonitorController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorController.class);
 

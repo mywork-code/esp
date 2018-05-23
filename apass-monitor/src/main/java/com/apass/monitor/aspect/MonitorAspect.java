@@ -114,6 +114,7 @@ public class MonitorAspect {
             public void run() {
               StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
               try {
+                Thread.sleep(3000L);
                 LOG.info("请求monitor log 地址:" + requestUrl + "|参数:" + requestJson);
                 HttpClientUtils.getMethodPostResponse(requestUrl, entity);
               } catch (Exception e) {
