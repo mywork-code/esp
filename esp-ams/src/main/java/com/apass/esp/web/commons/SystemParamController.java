@@ -46,8 +46,8 @@ import java.util.*;
  * @version $Id: SystemParamController.java, v 0.1 2017年1月11日 上午11:15:57 chenbo
  *          Exp $
  */
-@Controller
-@RequestMapping("/application/system/param")
+    @Controller
+    @RequestMapping("/application/system/param")
 public class SystemParamController {
     @Value("${nfs.rootPath}")
     private String rootPath;
@@ -419,31 +419,6 @@ public class SystemParamController {
 
         //修改数据库存版本号
         return Response.success("更新weex成功");
-    }
-
-
-    /**
-     * 增量更新升级版
-     * @param bsdiffEntity
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping("/bsdiffUpload")
-    public Response bsdiffUpload2(@ModelAttribute("bsdiffEntiry")BsdiffVo bsdiffVo) {
-        try{
-            LOG.info("bsdiff增量更新开始上传,参数 版本号:{},文件名:{}",bsdiffVo.getBsdiffVer(),bsdiffVo.getBsdiffFile().getOriginalFilename());
-            BsdiffInfoEntity bsdiffInfoEntity = new BsdiffInfoEntity();
-            bsdiffInfoEntity.setCreatedTime(new Date());
-            bsdiffInfoEntity.setCreateUser(SpringSecurityUtils.getCurrentUser());
-            bsdiffInfoEntity.setUpdatedTime(new Date());
-            bsdiffInfoEntity.setUpdateUser(SpringSecurityUtils.getCurrentUser());
-            bsdiffInfoEntity.setIfCompelUpdate(bsdiffVo.getIfCompelUpdate());
-            bsdiffinfoService.bsdiffUpload(bsdiffVo,bsdiffInfoEntity);
-        }catch (Exception e){
-            LOG.error("增量添加上传失败",e);
-            return Response.fail(e.getMessage());
-        }
-        return Response.success("增量添加上传成功");
     }
 
 
