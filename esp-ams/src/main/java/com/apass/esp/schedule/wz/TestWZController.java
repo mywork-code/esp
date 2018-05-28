@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zengqingshan
  */
 @Controller
-@RequestMapping("wz")
+@RequestMapping("/noauth/wz")
 public class TestWZController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestWZController.class);
 	private static final String FILE_SEPARATOR = System.getProperty("file.separator");

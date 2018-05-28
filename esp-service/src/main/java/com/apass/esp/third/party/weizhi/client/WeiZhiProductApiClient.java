@@ -86,6 +86,7 @@ public class WeiZhiProductApiClient {
 			}
 		} catch (Exception e) {
 			LOGGER.error("getWeiZhiProductDetail response {} return is not 200");
+			return null;
 		}
 		return wzProductDetail;
 	}
