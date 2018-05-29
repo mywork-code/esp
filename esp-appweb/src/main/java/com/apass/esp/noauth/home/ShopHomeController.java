@@ -1099,7 +1099,9 @@ public class ShopHomeController {
 				}
                 jdSimilarSkuVo.setGoodsId(goodsId.toString());
                 jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
-                jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+                if(returnMap.get("goodsStockDes") != null){
+                    jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+                }
                 jdSimilarSkuTo.setSkuIdOrder("");
                 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
                 JdSimilarSkuToList.add(jdSimilarSkuTo);
