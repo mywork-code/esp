@@ -156,7 +156,7 @@ public class BsdiffinfoService {
 			});
 
 			if(files.length!=1){
-				throw new RuntimeException(descDir.getAbsolutePath()+"目录下无.zip文件");
+				throw new RuntimeException(descDir.getAbsolutePath()+"目录下.zip文件不唯一");
 			}
 
 			//生成合并文件和清单
