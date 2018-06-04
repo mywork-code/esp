@@ -82,13 +82,10 @@ public class TestWZController {
 	@Autowired
 	private WeiZhiAfterSaleApiClient weiZhiAfterSaleApiClient;
 
-	@Autowired
-	private GoodsRepository goodsRepository;
 	@ResponseBody
 	@RequestMapping(value = "/getToken", method = RequestMethod.GET)
 	public Response testGetToken() {
 		try {
-			GoodsInfoEntity gty = goodsRepository.selectGoodsInfoByExternalId("2325792");
 			String token = weiZhiTokenService.getToken();
 			if (StringUtils.equals("success", token)) {
 				return Response.success("微知token获取成功！");

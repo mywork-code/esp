@@ -1098,21 +1098,20 @@
     <!-- 根据京东id查询改商品是否已经上架 -->
     <select id="selectGoodsInfoByExternalId" parameterType="java.lang.String" resultType="GoodsInfoEntity">
         SELECT
-            a.id goodId
+            id goodId
         FROM
             t_esp_goods_base_info
         WHERE
-
-            AND  a.`status`='G02'
-            AND  a.is_delete ='01'
-            AND  CURRENT_TIMESTAMP > a.list_time
+            `status`='G02'
+            AND  is_delete ='01'
+            AND  CURRENT_TIMESTAMP > list_time
             AND  external_id = #{externalId}
             and source = 'wz'
     </select>
 
 
     <!-- 判断当前库存是否大于0 -->
-    <select id="selectGoodsStockInfoByGoodsIdCount" parameterType="java.lang.String" resultType="Integer">
+    <select id="selectGoodsStockInfoByGoodsIdCount" parameterType="java.lang.Long" resultType="Integer">
         SELECT
           count(1)
         FROM
