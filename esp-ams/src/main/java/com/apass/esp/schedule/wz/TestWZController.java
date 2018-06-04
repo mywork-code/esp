@@ -2,10 +2,12 @@ package com.apass.esp.schedule.wz;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardBindRel;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
+import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.wz.WeiZhiProductService;
