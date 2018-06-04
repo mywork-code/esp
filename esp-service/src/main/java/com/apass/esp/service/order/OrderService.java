@@ -812,7 +812,6 @@ public class OrderService {
 	/**
 	 * 商品可售验证接口（单个商品验证）
 	 * 
-	 * @param skuIds
 	 * @return
 	 * @throws Exception
 	 */
@@ -2253,13 +2252,16 @@ public class OrderService {
     public Map<String, String> getOrderNum(String userId) {
         Long userIdVal = Long.valueOf(userId);
         Map<String, String> map = new HashMap<String, String>();
-        List<IdNum> subOrderNumList = orderInfoRepository.getOrderNum(userIdVal);
         /**
          * D00(待付款)、D02(待发货)、D03(待收货)
          */
-        for (IdNum idNum : subOrderNumList) {
-            map.put(idNum.getId(), idNum.getNum());
-        }
+        Integer d_00 = orderInfoRepository.getOrderNum(userIdVal,OrderStatus.ORDER_NOPAY.getCode());
+        Integer d_02 = orderInfoRepository.getOrderNum(userIdVal,OrderStatus.ORDER_PAYED.getCode());
+        Integer d_03 = orderInfoRepository.getOrderNum(userIdVal,OrderStatus.ORDER_SEND.getCode());
+
+        map.put("D00",d_00.toString());
+        map.put("D02",d_02.toString());
+        map.put("D03",d_03.toString());
 
         //查询全部可提金额金额,已经提现金额
         List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));

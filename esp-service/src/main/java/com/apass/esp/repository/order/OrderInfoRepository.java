@@ -108,8 +108,11 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     * @param userId
     * @return
     */
-    public List<IdNum> getOrderNum(Long userId) {
-        return this.getSqlSession().selectList("getOrderNum", userId);
+    public Integer getOrderNum(Long userId,String orderStatus) {
+        Map param = new HashMap();
+        param.put("userId",userId);
+        param.put("orderStatus",orderStatus);
+        return this.getSqlSession().selectOne("getOrderNum", param);
     }
 
     /**

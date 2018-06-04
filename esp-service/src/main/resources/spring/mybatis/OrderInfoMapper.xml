@@ -459,14 +459,13 @@
 
 	<!-- 查询 用户 待付款、待发货、待收货 子订单数量 -->
 	<select id="getOrderNum" parameterType="java.lang.Long"
-		resultType="com.apass.esp.domain.dto.aftersale.IdNum">
+		resultType="java.lang.Integer">
     <![CDATA[
-        SELECT  COUNT(ORDER_ID)     num, 
-                ORDERSTATUS         id 
+        SELECT  COUNT(id)
+
         FROM    t_esp_order_info 
-        WHERE   USER_ID = #{value} 
-        AND     ORDERSTATUS IN ('D00','D02','D03') and ext_parent_id!='-1' and parent_order_id >= 0
-        GROUP BY ORDERSTATUS
+        WHERE   USER_ID = #{userId}
+        AND     ORDERSTATUS = #{orderStatus} and ext_parent_id!='-1' and parent_order_id >= 0
         ]]>
 	</select>
 	
