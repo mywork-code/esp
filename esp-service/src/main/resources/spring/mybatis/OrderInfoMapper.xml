@@ -458,7 +458,7 @@
 
 
 	<!-- 查询 用户 待付款、待发货、待收货 子订单数量 -->
-	<select id="getOrderNum" parameterType="java.lang.Long"
+	<select id="getOrderNum" parameterType="Map"
 		resultType="java.lang.Integer">
     <![CDATA[
         SELECT  COUNT(id)
