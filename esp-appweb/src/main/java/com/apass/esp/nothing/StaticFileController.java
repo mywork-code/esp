@@ -397,8 +397,11 @@ public class StaticFileController {
                 for (BsdiffParamVo bsvo: bspas) {
                     ids.add(bsvo.getId());
                     //判断ver是否是对应id下的最新ver，如果是：最新的merge文件，如果不是，返回对应patch包
-                    //根据id查询对应最大版本号数据s
+                    //根据id查询对应最大版本号数据sr
                     BsdiffInfoEntity entity = bsdiffinfoService.selectMaxBsdiffInfoById(bsvo.getId());
+                    if(entity == null){
+                        continue;
+                    }
                     if(Integer.valueOf(bsvo.getVer()) > Integer.valueOf(entity.getBsdiffVer())){
                         LOGGER.error("数据有误，{}下的最大版本号为{}",entity.getLineId(),entity.getBsdiffVer());
                         throw new RuntimeException("数据有误,"+entity.getLineId()+"下的最大版本号为:"+entity.getBsdiffVer());
