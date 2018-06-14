@@ -402,11 +402,12 @@ public class StaticFileController {
                     if(entity == null){
                         continue;
                     }
-                    if(Integer.valueOf(bsvo.getVer()) > Integer.valueOf(entity.getBsdiffVer())){
-                        LOGGER.error("数据有误，{}下的最大版本号为{}",entity.getLineId(),entity.getBsdiffVer());
-                        throw new RuntimeException("数据有误,"+entity.getLineId()+"下的最大版本号为:"+entity.getBsdiffVer());
-                    }else if(Integer.valueOf(bsvo.getVer()) == Integer.valueOf(entity.getBsdiffVer())){
-                        //返回增量包
+//                    if(Integer.valueOf(bsvo.getVer()) > Integer.valueOf(entity.getBsdiffVer())){
+//                        LOGGER.error("数据有误，{}下的最大版本号为{}",entity.getLineId(),entity.getBsdiffVer());
+//                        throw new RuntimeException("数据有误,"+entity.getLineId()+"下的最大版本号为:"+entity.getBsdiffVer());
+//                    }else
+                    if(Integer.valueOf(bsvo.getVer()) >= Integer.valueOf(entity.getBsdiffVer())){
+                        //返回最新包
                         BsdiffResponse bsr = getBsdiffResponse(entity,true,bsvo);
                         responses.add(bsr);
                     }else{
