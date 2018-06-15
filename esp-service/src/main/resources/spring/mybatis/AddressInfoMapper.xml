@@ -242,7 +242,36 @@
 			LIMIT 1;
 	    ]]>
 	</select>
-	
+
+	<select id="queryOneAddressByUserId2" parameterType="Long" resultType="AddressInfoEntity">
+		<![CDATA[
+	        SELECT
+			    id id,
+			    id addressId,
+			    user_id userId,
+			    province province,
+			    city city,
+			    district district,
+			    towns towns,
+				province_code provinceCode,
+				city_code cityCode,
+				district_code districtCode,
+				towns_code townsCode,
+			    address address,
+			    postcode postcode,
+			    name name,
+			    telephone telephone,
+			    is_default isDefault
+			FROM
+			    t_esp_address_info
+			WHERE
+			    user_id = #{userId, jdbcType=BIGINT}
+			ORDER BY
+			    is_default DESC, id DESC;
+	    ]]>
+	</select>
+
+
 	<select id="selectByPK" parameterType="java.lang.Long" resultType="AddressInfoEntity">
 	<![CDATA[
 		SELECT
