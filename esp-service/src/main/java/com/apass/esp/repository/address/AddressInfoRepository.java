@@ -101,6 +101,9 @@ public class AddressInfoRepository extends BaseMybatisRepository<AddressInfoEnti
     public AddressInfoEntity queryOneAddressByUserId(long userId) {
         return this.getSqlSession().selectOne("queryOneAddressByUserId",userId);
     }
+    public List<AddressInfoEntity> queryOneAddressByUserId_2(long userId) {
+        return this.getSqlSession().selectList("queryOneAddressByUserId2",userId);
+    }
 
 	public AddressInfoEntity queryOneAddressByAddressId(long addressId) {
 		return this.getSqlSession().selectOne("queryOneAddressByAddressId",addressId);
