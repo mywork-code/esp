@@ -170,7 +170,7 @@ public class AddressService {
             if (YesNo.isYes(isDefault)) {
             	AddressInfoEntity address = addressInfoRepository.queryOneAddressByUserId(addInfo.getUserId());
             	if(null != address && StringUtils.equals(address.getIsDefault(), "1")){
-            		addressInfoRepository.updateAddressStatusById(addInfo.getId());
+            		addressInfoRepository.updateAddressStatusById(address.getId());
             	}
             }
             // 更新地址的信息
