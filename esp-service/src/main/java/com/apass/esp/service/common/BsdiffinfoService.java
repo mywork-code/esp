@@ -85,8 +85,6 @@ public class BsdiffinfoService {
 		bsdiffInfoEntity.setLineId(bsdiffVo.getLineId());
 		bsdiffInfoEntity.setBsdiffVer(bsdiffVer);
 
-		int count = bsdiffInfoEntityMapper.insertSelective(bsdiffInfoEntity);
-
 		//判断服务器端是否有更早版本的文件，如果没有 直接上传，如果有 增量拆分
 		File directory = new File(rootPath+zipPath);
 		if(!directory.exists()){//如果目录不存在创建目录
@@ -101,6 +99,7 @@ public class BsdiffinfoService {
 		//合并并生成文件清单
 		mergeFile(zipPath,bsdiffInfoEntity);
 
+		int count = bsdiffInfoEntityMapper.insertSelective(bsdiffInfoEntity);
 
 		if(new File(directory.getParent()).listFiles(new FileFilter() {
 			@Override
