@@ -168,10 +168,15 @@ public class AddressService {
 
         try {
             if (YesNo.isYes(isDefault)) {
-            	AddressInfoEntity address = addressInfoRepository.queryOneAddressByUserId(addInfo.getUserId());
-            	if(null != address && StringUtils.equals(address.getIsDefault(), "1")){
-            		addressInfoRepository.updateAddressStatusById(address.getId());
-            	}
+            	List<AddressInfoEntity> addressList = addressInfoRepository.queryOneAddressByUserId_2(addInfo.getUserId());
+                if(CollectionUtils.isNotEmpty(addressList)){
+                    for(AddressInfoEntity addressInfoEntity : addressList){
+                        if((!addressInfoEntity.getId().equals(addInfo.getId()))
+                                && StringUtils.equals(addressInfoEntity.getIsDefault(), "1")){
+                            addressInfoRepository.updateAddressStatusById(addressInfoEntity.getId());
+                        }
+                    }
+                }
             }
             // 更新地址的信息
             addPropertiesToEntity(addInfo);
