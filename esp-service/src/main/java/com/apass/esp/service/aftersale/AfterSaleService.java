@@ -478,9 +478,11 @@ public class AfterSaleService {
         }
 
         // 交易完成的订单 7天内 才可售后操作
-        if (DateFormatUtil.isExpired(orderInfo.getAcceptGoodsDate(), 7)) {
-            LOG.info(requestId, "订单交易完成超过7天不能进行售后操作", "");
-            throw new BusinessException("当前订单状态不支持售后操作!", BusinessErrorCode.ORDER_STATUS_INVALID);
+        if(orderInfo.getAcceptGoodsDate() != null){
+            if (DateFormatUtil.isExpired(orderInfo.getAcceptGoodsDate(), 7)) {
+                LOG.info(requestId, "订单交易完成超过7天不能进行售后操作", "");
+                throw new BusinessException("当前订单状态不支持售后操作!", BusinessErrorCode.ORDER_STATUS_INVALID);
+            }
         }
 
         Map<String, Object> map = new HashMap<String, Object>();

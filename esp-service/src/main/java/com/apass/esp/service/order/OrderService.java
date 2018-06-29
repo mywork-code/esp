@@ -2224,7 +2224,6 @@ public class OrderService {
                 // 交易完成的订单是否允许售后操作校验
                 afterSaleService.orderRufundValidate(requestId, order.getUserId(), order.getOrderId(), order);
             } catch (Exception e) {
-                LOG.info(requestId, "这个捕获只是为了过滤掉订单售后校验逻辑抛出的异常", "");
                 LOGGER.error(e.getMessage(), e);
                 // 这个捕获只是为了过滤掉 订单售后校验 抛出的 异常
                 orderDetailInfoDto.setRefundAllowedFlag("0");
