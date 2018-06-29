@@ -43,8 +43,15 @@ public class JDMessageScheduleTask {
     @Autowired
     private WeiZhiMessageClient weiZhiMessageClient;
 
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
+
     @Scheduled(cron = "0 0 0/1 * * *")
     public void handleJDMessageScheduleTask() {
+        if (!systemEnvConfig.isPROD()){
+            //为了避免测试环境误用微知生产环境配置，而导致消费了生产环境消息数据
+            return ;
+        }
      List<JdMessageEnum> messageEnumList = new ArrayList<>();
         messageEnumList.add(JdMessageEnum.DELIVERED_ORDER);
         messageEnumList.add(JdMessageEnum.WITHDRAW_SKU);

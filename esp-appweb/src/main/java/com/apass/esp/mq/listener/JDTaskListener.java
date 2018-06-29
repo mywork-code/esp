@@ -25,6 +25,7 @@ import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.entity.Category;
 import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,10 +69,16 @@ public class JDTaskListener implements MessageListener {
 
   @Autowired
   private OrderService orderService;
-
+  @Autowired
+  private SystemEnvConfig systemEnvConfig;
 
   @Override
   public void onMessage(Message message) {
+    if (!systemEnvConfig.isPROD()){
+      //为了避免测试环境误用微知生产环境配置，而导致消费了生产环境消息数据
+      return ;
+    }
+
     JdApiMessage jdApiMessage = JSONObject.parseObject(message.getBody(), JdApiMessage.class);
     //记录消息推送接口调用成功或失败
     com.apass.esp.domain.entity.MessageListener ml = new com.apass.esp.domain.entity.MessageListener();
