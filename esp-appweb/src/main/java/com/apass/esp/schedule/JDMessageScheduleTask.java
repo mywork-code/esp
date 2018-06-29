@@ -9,6 +9,7 @@ import com.apass.esp.third.party.jd.client.JdMessager;
 import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
 import com.apass.esp.third.party.weizhi.client.WeiZhiMessageClient;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,6 +54,7 @@ public class JDMessageScheduleTask {
             //为了避免测试环境误用微知生产环境配置，而导致消费了生产环境消息数据
             return ;
         }
+        LOGGER.info("-----------start invoke weiZhiMessageClient.getMsg()-------------- date :" + DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
      List<JdMessageEnum> messageEnumList = new ArrayList<>();
         messageEnumList.add(JdMessageEnum.DELIVERED_ORDER);
         messageEnumList.add(JdMessageEnum.WITHDRAW_SKU);
