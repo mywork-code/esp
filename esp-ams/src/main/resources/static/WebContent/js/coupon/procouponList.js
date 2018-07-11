@@ -39,6 +39,11 @@ $(function(){
 				width : 120,
 				align : 'center'
 			},{
+				title : '发放节点',
+				field : 'grantNode',
+				width : 120,
+				align : 'center'
+			},{
 				title : '优惠门槛',
 				field : 'couponSill',
 				width : 120,
@@ -148,7 +153,7 @@ $(function(){
 							"offerRange":$("#offerRange").combobox('getValue'),
 							"brandId":$("#brandId").combobox('getValue'),
 							"skuId":$("#skuId").textbox('getValue'),
-
+							"grantNode":$("#grant").combobox('getValue'),
 						}
 
 						$.ajax({
@@ -314,6 +319,8 @@ $(function(){
 			extendType = "PTFF"
 		}else if(extendType == "新用户专享"){
 			extendType = "XYH"
+		}else if(extendType == "房易贷用户专享"){
+			extendType = "FYDYHZX"
 		}else{
 			$.messager.alert('<span style="color: black">提示</span>',"推广方式数据有误？");
 			return;
@@ -406,9 +413,6 @@ $(function(){
 	//推广方式类型监听事件
 	$('#addExtendType').combobox({
 		onChange: function(param){
-			// $("#addCouponSill").textbox("clear");
-			// $("#addDiscountAmonut").textbox("clear");
-
 			if(param == 'YHLQ'){
 				$("#offerRangeTr").show();
 				$("#offerRange").combobox("setValue","");
@@ -421,7 +425,19 @@ $(function(){
 
 				$("#goodsCodeTr").css("display","none");
 				$("#goosCategoryTr").css("display","none");
-
+				$(".grantClass").css("display","none");
+				
+				$("#addType2").combobox('setValue','HDSP')
+				type = $("#addType2").combobox('getValue');
+				$("#addType2").combobox({ disabled: true });
+			}else if(param == 'FYDYHZX'){
+				$(".grantClass").show();
+				
+				$(".rangeTr").css("display","none");
+				$("#typeTd1").css("display","none");
+				$("#effectiveTimeTr").css("display","none");
+				$("#skuId").textbox("setValue","");
+				$("#typeTd2").show();
 				$("#addType2").combobox('setValue','HDSP')
 				type = $("#addType2").combobox('getValue');
 				$("#addType2").combobox({ disabled: true });
@@ -430,7 +446,7 @@ $(function(){
 
 				$("#addType").combobox('setValue','');
 				$("#addType1").combobox("clear");
-
+				$(".grantClass").css("display","none");
 				$("#typeTd1").show();
 				$("#typeTd2").css("display","none");
 				$("#effectiveTimeTr").show()
@@ -517,6 +533,12 @@ $(function(){
 			return false;
 		}
 
+		if($("#addExtendType").textbox("getValue") == "FYDYHZX"){
+			if($("#grant").combobox("getValue")==null || $("#grant").combobox("getValue")==""){
+				$.messager.alert('<span style="color: black">提示</span>','请选择发放节点');
+				return false;
+			}
+		}
 		if(type == "ZDPL"){
 			debugger;
 			if($("#addExtendType").textbox("getValue") == "PTFF" || $("#addExtendType").textbox("getValue") == "XYH"){
@@ -601,9 +623,6 @@ $(function(){
 			$.messager.alert('<span style="color: black">提示</span>','优惠金额只能输入正整数');
 			return false;
 		}
-
-
-
 		return true;
 	}
 
@@ -655,10 +674,14 @@ function brancCombo() {
 
 //添加优惠券窗口初始化
 function clearFunction() {
-	$("#offerRange").combobox("setValue",""),
-	$("#brandId").combobox("setValue",""),
-	$("#skuId").textbox("clear"),
+	$("#offerRange").combobox("setValue","");
+	$("#brandId").combobox("setValue","");
+	$("#skuId").textbox("clear");
 	$(".rangeTr").css("display","none");
+	
+	$("#grant").combobox("setValue","");
+	$(".grantClass").css("display","none");   
+	$("#effectiveTimeTr").show();
 
 	$("#addCouponName").textbox("clear");
 	$("#addExtendType").textbox("clear");
@@ -667,6 +690,9 @@ function clearFunction() {
 	$("#addType1").combobox("clear");
 	$("#addType2").combobox({ disabled: false });
 	$("#addType2").combobox("clear");
+	$("#typeTd2").hide();
+	$("#typeTd1").show();
+	
 	$("#addGoodsCode").textbox("clear");
 	$("#addCouponSill").textbox("clear");
 	$("#addCouponSill").textbox({disabled: false});

@@ -4,15 +4,14 @@ package com.apass.esp.domain.enums;
  * Created by xiaohai on 2017/10/27.
  * 优惠券推广方式
  */
-public enum  CouponExtendType {
-    COUPON_YHLQ("YHLQ","用户领取"),
-    COUPON_PTFF("PTFF","平台发放"),
-    COUPON_XYH("XYH","新用户专享"),
-    COUPON_FYDYHZX("FYDYHZX","房易贷用户专享");
+public enum  GrantNode {
+    NODE_SFZRZTG("SFZRZTG","身份证认证通过"),
+    NODE_YHKRZTG("YHKRZTG","银行卡认证通过"),
+    NODE_FKCG("FKCG","放款成功");
 
     private String code;
     private String message;
-    CouponExtendType(String code,String message){
+    GrantNode(String code,String message){
         this.code = code;
         this.message = message;
     }
@@ -31,5 +30,9 @@ public enum  CouponExtendType {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+    
+    public static String getMessage(String code){
+    	return GrantNode.valueOf("NODE_"+code).getMessage();
     }
 }

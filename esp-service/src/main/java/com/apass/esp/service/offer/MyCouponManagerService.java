@@ -24,6 +24,7 @@ import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.enums.GrantNode;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.query.ProMyCouponQuery;
@@ -456,6 +457,39 @@ public class MyCouponManagerService {
 		for(ProCoupon coupon : couponList){
 			ProMyCoupon proMyCoupon = new ProMyCoupon();
 			proMyCoupon.setUserId(userId);
+			proMyCoupon.setCouponRelId(-1l);
+			proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+			proMyCoupon.setCouponId(Long.valueOf(coupon.getId()));
+			proMyCoupon.setTelephone(tel);
+			Date d = new Date();
+			proMyCoupon.setStartDate(d);
+			proMyCoupon.setEndDate(DateFormatUtil.addDays(d,coupon.getEffectiveTime()));
+			proMyCoupon.setCreatedTime(d);
+			proMyCoupon.setUpdatedTime(d);
+			myCouponMapper.insertSelective(proMyCoupon);
+		}
+	}
+	
+	/**
+	 * 房易贷用户专用发放券
+	 * @param userId
+	 * @param tel
+	 */
+	public void addFYDYHZY(Long userId,String tel,String grantNode){
+		/**
+		 * 根据优惠券的类型，查询所有的推广方式为房易贷用户专享的优惠券
+		 */
+		ProCoupon proCoupon = new ProCoupon();
+		proCoupon.setExtendType(CouponExtendType.COUPON_FYDYHZX.getCode());
+		proCoupon.setGrantNode(grantNode);
+		List<ProCoupon> couponList = couponMapper.getProCouponBCoupon(proCoupon);
+		
+		for(ProCoupon coupon : couponList){
+			ProMyCoupon proMyCoupon = new ProMyCoupon();
+			proMyCoupon.setUserId(userId);
+			
+			//couponRelMapper.get
+			
 			proMyCoupon.setCouponRelId(-1l);
 			proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
 			proMyCoupon.setCouponId(Long.valueOf(coupon.getId()));

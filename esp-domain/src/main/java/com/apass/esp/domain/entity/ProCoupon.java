@@ -48,6 +48,8 @@ public class ProCoupon {
 
     private String skuId;
 
+    private String grantNode;
+
     public Long getId() {
         return id;
     }
@@ -222,5 +224,13 @@ public class ProCoupon {
 
     public void setSkuId(String skuId) {
         this.skuId = skuId;
+    }
+
+    public String getGrantNode() {
+        return grantNode;
+    }
+
+    public void setGrantNode(String grantNode) {
+        this.grantNode = grantNode;
     }
 }

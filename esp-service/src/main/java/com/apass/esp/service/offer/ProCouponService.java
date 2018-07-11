@@ -5,7 +5,9 @@ import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.CouponExtendType;
+import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.enums.GrantNode;
 import com.apass.esp.domain.enums.OfferRangeType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.query.ProCouponQuery;
@@ -58,7 +60,9 @@ public class ProCouponService {
                         proCoupon.setExtendType(couponExtendType.getMessage());
                     }
                 }
-
+                if(StringUtils.isNotBlank(proCoupon.getGrantNode())){
+                	proCoupon.setGrantNode(GrantNode.getMessage(proCoupon.getGrantNode()));
+                }
                 for (CouponType couponType : CouponType.values()) {
                     if(StringUtils.equalsIgnoreCase(proCoupon.getType(),couponType.getCode())){
                         proCoupon.setType(couponType.getMessage());
@@ -141,26 +145,24 @@ public class ProCouponService {
     }
 
     public Integer deleteByCouponId(ProCoupon proCoupon) {
-        if(StringUtils.isNotBlank(proCoupon.getId().toString())){
-            if(StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_YHLQ.getCode(),proCoupon.getExtendType())){
-                //根据优惠券id关联查询 t_esp_pro_coupon_rel和t_esp_pro_activity_cfg,再判断当前是否在有效期内
-                List<ProActivityCfg> proActivityCfgList = activityCfgService.selectProActivityCfgByEntity(proCoupon.getId());
-                if(CollectionUtils.isNotEmpty(proActivityCfgList)){
-                    for (ProActivityCfg proActivityCfg:proActivityCfgList) {
-                        if(!(proActivityCfg.getStartTime().getTime()> new Date().getTime() ||
-                                proActivityCfg.getEndTime().getTime()<new Date().getTime())){
-                            throw new RuntimeException("该优惠券正在参与活动!");
-                        }
+        if(StringUtils.isBlank(proCoupon.getId().toString())){
+            throw new RuntimeException("优惠券id不存在！");
+        }
+        if(StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_YHLQ.getCode(),proCoupon.getExtendType()) ||
+        		StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_FYDYHZX.getCode(),proCoupon.getExtendType())){
+            //根据优惠券id关联查询 t_esp_pro_coupon_rel和t_esp_pro_activity_cfg,再判断当前是否在有效期内
+            List<ProActivityCfg> proActivityCfgList = activityCfgService.selectProActivityCfgByEntity(proCoupon.getId());
+            if(CollectionUtils.isNotEmpty(proActivityCfgList)){
+                for (ProActivityCfg proActivityCfg:proActivityCfgList) {
+                    if(!(proActivityCfg.getStartTime().getTime()> new Date().getTime() ||
+                            proActivityCfg.getEndTime().getTime()<new Date().getTime())){
+                        throw new RuntimeException("该优惠券正在参与活动!");
                     }
                 }
             }
-
-            //物理删除
-            proCoupon.setExtendType(null);
-            return couponMapper.updateByPrimaryKeySelective(proCoupon);
-        }else {
-            throw new RuntimeException("优惠券id不存在！");
         }
+        proCoupon.setIsDelete(CouponIsDelete.COUPON_Y.getCode());
+        return couponMapper.updateByPrimaryKeySelective(proCoupon);
     }
 
     public List<ProCoupon> selectProCouponByIds(ArrayList<Long> couponIdList) {
