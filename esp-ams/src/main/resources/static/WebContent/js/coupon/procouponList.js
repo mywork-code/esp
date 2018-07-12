@@ -417,6 +417,7 @@ $(function(){
 				$("#offerRangeTr").show();
 				$("#offerRange").combobox("setValue","");
 				$("#skuId").textbox("setValue","");
+				$("#grant").combobox("setValue","");
 				$("#externalIdTr_range").css("display","none");
 
 				$("#effectiveTimeTr").css("display","none");
@@ -427,7 +428,6 @@ $(function(){
 				$("#goosCategoryTr").css("display","none");
 				$(".grantClass").css("display","none");
 				
-				$("#addType2").combobox('setValue','HDSP')
 				type = $("#addType2").combobox('getValue');
 				$("#addType2").combobox({ disabled: true });
 			}else if(param == 'FYDYHZX'){
@@ -438,15 +438,23 @@ $(function(){
 				$("#effectiveTimeTr").css("display","none");
 				$("#skuId").textbox("setValue","");
 				$("#typeTd2").show();
-				$("#addType2").combobox('setValue','HDSP')
+				
 				type = $("#addType2").combobox('getValue');
 				$("#addType2").combobox({ disabled: true });
 			}else{
 				$(".rangeTr").css("display","none");
+				
+				$("#goodsCodeTr").css("display","none");
+				$("#goosCategoryTr").css("display","none");
+				$("#skuId").textbox("setValue","");
+				
 
 				$("#addType").combobox('setValue','');
 				$("#addType1").combobox("clear");
+				
 				$(".grantClass").css("display","none");
+				$("#grant").combobox("setValue","");
+				
 				$("#typeTd1").show();
 				$("#typeTd2").css("display","none");
 				$("#effectiveTimeTr").show()
@@ -496,7 +504,6 @@ $(function(){
 			}else if(param == 'ZDSP'){
 				$("#goosCategoryTr").css("display","none");
 				$("#goodsCodeTr").show();
-
 			}else{
 				$("#goosCategoryTr").css("display","none");
 				$("#goodsCodeTr").css("display","none");
