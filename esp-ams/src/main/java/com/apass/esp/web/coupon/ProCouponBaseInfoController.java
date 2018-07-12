@@ -240,14 +240,11 @@ public class ProCouponBaseInfoController {
     @ResponseBody
     public Response deleteByCouponId(ProCoupon proCoupon){
         try{
-            proCoupon.setIsDelete(CouponIsDelete.COUPON_Y.getCode());
             Integer count = proCouponService.deleteByCouponId(proCoupon);
-
         }catch (Exception e){
             LOGGER.error("删除优惠券异常，Exception-----",e);
             return Response.fail(e.getMessage());
         }
-
         return Response.success("删除优惠券成功");
     }
 
@@ -276,6 +273,12 @@ public class ProCouponBaseInfoController {
         if(StringUtils.isBlank(proCoupon.getType())){
             throw new RuntimeException("优惠券类型不能为空");
         }
+        
+        if(StringUtils.equals(proCoupon.getExtendType(), CouponExtendType.COUPON_FYDYHZX.getCode())){
+        	if(StringUtils.isBlank(proCoupon.getGrantNode())){
+        		throw new RuntimeException("发放节点不能为空");
+        	}
+        }
         if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_ZDPL.getCode())){
             if(StringUtils.isBlank(proCoupon.getCategoryId1())
                     &&StringUtils.isBlank(proCoupon.getCategoryId2())){
@@ -299,8 +302,8 @@ public class ProCouponBaseInfoController {
         /**
          * 如果是活动商品的优惠券,则要判断优惠范围，根据优惠范围，判断是否需要传值
          */
-        if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_HDSP.getCode())){
-        	
+        if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_HDSP.getCode())
+        		&& !StringUtils.equals(proCoupon.getExtendType(), CouponExtendType.COUPON_FYDYHZX.getCode())){
         	 if(proCoupon.getOfferRange() == null){
         		 throw new RuntimeException("优惠范围不能为空!");
         	 }

@@ -41,6 +41,7 @@
 							<option value="YHLQ">用户领取</option>
 							<option value="PTFF">平台发放</option>
 							<option value="XYH">新用户专享</option>
+							<option value="FYDYHZX">房易贷用户专享</option>
 						</select>
 						<span style="color: red">*</span>
 					</td>
@@ -78,7 +79,20 @@
 					<span style="color: red">*</span>
 					</td>
 				</tr>
-
+				<tr style="display: none;" id="grantNode"  class="grantClass">
+				    <td align="right">发放节点</td>
+					<td colspan="2">
+						<select class="easyui-combobox" style="width: 220px;"
+								data-options="prompt:'请选择'" editable="false" required
+								id="grant" name="type">
+							<option value=""></option>
+							<option value="SFZRZTG">身份证认证通过</option>
+							<option value="YHKRZTG">银行卡认证通过</option>
+							<option value="FKCG">放款成功</option>
+						</select>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
 				<tr style="display: none" id="offerRangeTr" class="rangeTr">
 					<td align="right">优惠范围 </td>
 					<td colspan="2">

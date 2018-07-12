@@ -64,6 +64,7 @@ import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.enums.CouponMessage;
 import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.enums.GoodStatus;
@@ -3149,6 +3150,9 @@ public class OrderService {
 					    					goodslist.add(purchase.getGoodsStockId()+"");
 		    	    			}else if(StringUtils.isNotBlank(coupon.getSkuId()) && (StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
 		    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId()))){//skuid
+		    						total = total.add(purchase.getPayMoney());
+			    					goodslist.add(purchase.getGoodsStockId()+"");
+		    					}else if(StringUtils.equals(coupon.getExtendType(), CouponExtendType.COUPON_FYDYHZX.getCode())){
 		    						total = total.add(purchase.getPayMoney());
 			    					goodslist.add(purchase.getGoodsStockId()+"");
 		    					}

@@ -3,6 +3,7 @@ package com.apass.esp.repository.httpClient;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.statement.TalkingDataDto;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -109,7 +110,15 @@ public class CommonHttpClient {
         }
     }
 
-
+    public CustomerBasicInfo getCustomerInfo(String requestId,String telephone){
+    	Response response = this.getCustomerBasicInfoByTel(requestId, telephone);
+        if(response==null||!response.statusResult()){
+        	LOGGER.error("user is not exist=====>>>>telephone is {}",telephone);
+            return null;
+        }
+        CustomerBasicInfo customerBasicInfo = Response.resolveResult(response, CustomerBasicInfo.class);
+        return customerBasicInfo;
+    }
 
 
 

@@ -2,12 +2,11 @@ package com.apass.esp.domain.query;
 
 import com.apass.esp.common.model.QueryParams;
 
-import java.util.Date;
-
 public class ProCouponQuery extends QueryParams{
 	private String name;
 	private String extendType;
 	private String goodsCode;
+	private String grantNode;
 
 	public String getName() {
 		return name;
@@ -32,4 +31,13 @@ public class ProCouponQuery extends QueryParams{
 	public void setGoodsCode(String goodsCode) {
 		this.goodsCode = goodsCode;
 	}
+
+	public String getGrantNode() {
+		return grantNode;
+	}
+
+	public void setGrantNode(String grantNode) {
+		this.grantNode = grantNode;
+	}
+	
 }
