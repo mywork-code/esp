@@ -32,7 +32,7 @@ public class CouponRelService {
 	 * @return
 	 */
 	public List<ProCouponRel> getCouponRelList(String activityId){
-		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityId(new ProCouponRelQuery(Long.parseLong(activityId)));
+		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityIdOrCouponId(new ProCouponRelQuery(Long.parseLong(activityId)));
 		return relList;
 	}
 	/**

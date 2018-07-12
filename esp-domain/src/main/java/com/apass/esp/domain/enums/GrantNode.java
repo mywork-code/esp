@@ -1,19 +1,22 @@
 package com.apass.esp.domain.enums;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
- * Created by xiaohai on 2017/10/27.
- * 优惠券推广方式
+ * 节点发放
  */
 public enum  GrantNode {
-    NODE_SFZRZTG("SFZRZTG","身份证认证通过"),
-    NODE_YHKRZTG("YHKRZTG","银行卡认证通过"),
-    NODE_FKCG("FKCG","放款成功");
+    NODE_SFZRZTG("SFZRZTG","身份证认证通过","IDENTITY"),
+    NODE_YHKRZTG("YHKRZTG","银行卡认证通过","CARD_AUTH"),
+    NODE_FKCG("FKCG","放款成功","LOAN_PROVIDE");
 
     private String code;
     private String message;
-    GrantNode(String code,String message){
+    private String mapCode;
+    GrantNode(String code,String message,String mapCode){
         this.code = code;
         this.message = message;
+        this.mapCode = mapCode;
     }
 
     public String getCode() {
@@ -32,7 +35,25 @@ public enum  GrantNode {
         this.message = message;
     }
     
-    public static String getMessage(String code){
+    public String getMapCode() {
+		return mapCode;
+	}
+
+	public void setMapCode(String mapCode) {
+		this.mapCode = mapCode;
+	}
+
+	public static String getMessage(String code){
     	return GrantNode.valueOf("NODE_"+code).getMessage();
+    }
+	
+	public static String getCodeByMapCode(String mapCode){
+		GrantNode[] values = GrantNode.values();
+		for (GrantNode node : values) {
+			if(StringUtils.equals(node.getMapCode(), mapCode)){
+				return node.getCode();
+			}
+		}
+		return "";
     }
 }

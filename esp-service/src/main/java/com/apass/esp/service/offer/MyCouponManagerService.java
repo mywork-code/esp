@@ -28,6 +28,7 @@ import com.apass.esp.domain.enums.GrantNode;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.query.ProMyCouponQuery;
+import com.apass.esp.domain.vo.FydActivity;
 import com.apass.esp.domain.vo.MyCouponVo;
 import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.mapper.CashRefundMapper;
@@ -37,6 +38,8 @@ import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.mapper.ProCouponRelMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -69,6 +72,9 @@ public class MyCouponManagerService {
 	
 	@Autowired
 	private ActivityCfgService activityCfgService;
+	
+	@Autowired
+    private CommonHttpClient commonHttpClient;
 
 	@Autowired
 	private OrderInfoRepository orderInfoRepository;
@@ -475,31 +481,48 @@ public class MyCouponManagerService {
 	 * @param userId
 	 * @param tel
 	 */
-	public void addFYDYHZY(Long userId,String tel,String grantNode){
+	public void addFYDYHZY(FydActivity fyd){
 		/**
 		 * 根据优惠券的类型，查询所有的推广方式为房易贷用户专享的优惠券
 		 */
+		if(null == fyd || StringUtils.isBlank(fyd.getMobile()) || StringUtils.isBlank(fyd.getScene())){
+			return;
+		}
+		
+		CustomerBasicInfo customer = commonHttpClient.getCustomerInfo("", fyd.getMobile());
+		if(null == customer){
+			return;
+		}
+		
 		ProCoupon proCoupon = new ProCoupon();
 		proCoupon.setExtendType(CouponExtendType.COUPON_FYDYHZX.getCode());
-		proCoupon.setGrantNode(grantNode);
+		proCoupon.setGrantNode(GrantNode.getCodeByMapCode(fyd.getScene()));
 		List<ProCoupon> couponList = couponMapper.getProCouponBCoupon(proCoupon);
 		
 		for(ProCoupon coupon : couponList){
 			ProMyCoupon proMyCoupon = new ProMyCoupon();
-			proMyCoupon.setUserId(userId);
-			
-			//couponRelMapper.get
-			
-			proMyCoupon.setCouponRelId(-1l);
-			proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
-			proMyCoupon.setCouponId(Long.valueOf(coupon.getId()));
-			proMyCoupon.setTelephone(tel);
-			Date d = new Date();
-			proMyCoupon.setStartDate(d);
-			proMyCoupon.setEndDate(DateFormatUtil.addDays(d,coupon.getEffectiveTime()));
-			proMyCoupon.setCreatedTime(d);
-			proMyCoupon.setUpdatedTime(d);
-			myCouponMapper.insertSelective(proMyCoupon);
+			proMyCoupon.setUserId(customer.getAppId());
+			/**
+			 * 首先根据券的Id,查出与活动,原则上一个房易贷用户专享的券只能配一个活动，但是为过滤测试数据错误，所做的兼容
+			 */
+			List<ProCouponRel> rels = couponRelMapper.getCouponByActivityIdOrCouponId(new ProCouponRelQuery(null, coupon.getId()));
+			Date now = new Date();
+			for (ProCouponRel rel : rels) {
+				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(rel.getProActivityId());
+				if(null == cfg || cfg.getEndTime().getTime() < now.getTime()){
+					continue;
+				}
+				proMyCoupon.setCouponRelId(rel.getId());
+				proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+				proMyCoupon.setCouponId(Long.valueOf(rel.getCouponId()));
+				proMyCoupon.setTelephone(fyd.getMobile());
+				proMyCoupon.setStartDate(cfg.getStartTime());
+				proMyCoupon.setEndDate(cfg.getEndTime());
+				proMyCoupon.setCreatedTime(now);
+				proMyCoupon.setUpdatedTime(now);
+				myCouponMapper.insertSelective(proMyCoupon);
+				break;
+			}
 		}
 	}
 }
