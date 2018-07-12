@@ -433,6 +433,8 @@ $(function(){
 			}else if(param == 'FYDYHZX'){
 				$(".grantClass").show();
 				
+				$("#goodsCodeTr").css("display","none");
+				$("#goosCategoryTr").css("display","none");
 				$(".rangeTr").css("display","none");
 				$("#typeTd1").css("display","none");
 				$("#effectiveTimeTr").css("display","none");
