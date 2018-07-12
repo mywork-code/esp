@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +26,11 @@ import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.enums.GrantNode;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.query.ProMyCouponQuery;
+import com.apass.esp.domain.vo.FydActivity;
 import com.apass.esp.domain.vo.MyCouponVo;
 import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.mapper.CashRefundMapper;
@@ -36,9 +40,12 @@ import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.mapper.ProCouponRelMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 
 /**
@@ -53,6 +60,7 @@ import com.google.common.collect.Maps;
 @Transactional(rollbackFor = { Exception.class })
 public class MyCouponManagerService {
 
+	private static final Logger logger = LoggerFactory.getLogger(MyCouponManagerService.class);
 	
 	@Autowired
 	private ProMyCouponMapper myCouponMapper;
@@ -68,6 +76,9 @@ public class MyCouponManagerService {
 	
 	@Autowired
 	private ActivityCfgService activityCfgService;
+	
+	@Autowired
+    private CommonHttpClient commonHttpClient;
 
 	@Autowired
 	private OrderInfoRepository orderInfoRepository;
@@ -303,6 +314,7 @@ public class MyCouponManagerService {
 		vo.setCategoryId1(coupon.getCategoryId1());
 		vo.setCategoryId2(coupon.getCategoryId2());
 		vo.setCategoryId3(coupon.getCategoryId3());
+		vo.setExtendType(coupon.getExtendType());
 		vo.setSkuId(coupon.getSkuId());
 		vo.setBrandId(coupon.getBrandId()+"");
 		vo.setOfferRange(coupon.getOfferRange()+"");
@@ -326,8 +338,7 @@ public class MyCouponManagerService {
 			buffer.append("【限"+activityName+"活动商品】\t").append(coupon.getName());
 		}else if(StringUtils.equals(type, CouponType.COUPON_ZDSP.getCode())){
 			buffer.append("【指定商品】\t" + goodsName);
-		}
-		else{
+		}else{
 			buffer.append("【"+CouponType.getMessage(type)+"】\t").append(coupon.getName());
 		}
 		vo.setCouponSill(coupon.getCouponSill());
@@ -466,6 +477,57 @@ public class MyCouponManagerService {
 			proMyCoupon.setCreatedTime(d);
 			proMyCoupon.setUpdatedTime(d);
 			myCouponMapper.insertSelective(proMyCoupon);
+		}
+	}
+	
+	/**
+	 * 房易贷用户专用发放券
+	 * @param userId
+	 * @param tel
+	 */
+	public void addFYDYHZY(FydActivity fyd){
+		/**
+		 * 根据优惠券的类型，查询所有的推广方式为房易贷用户专享的优惠券
+		 */
+		if(null == fyd || StringUtils.isBlank(fyd.getMobile()) || StringUtils.isBlank(fyd.getScene())){
+			logger.error("fyd return params is null!!!!", GsonUtils.toJson(fyd));
+			return;
+		}
+		
+		CustomerBasicInfo customer = commonHttpClient.getCustomerInfo("", fyd.getMobile());
+		if(null == customer){
+			return;
+		}
+		
+		ProCoupon proCoupon = new ProCoupon();
+		proCoupon.setExtendType(CouponExtendType.COUPON_FYDYHZX.getCode());
+		proCoupon.setGrantNode(GrantNode.getCodeByMapCode(fyd.getScene()));
+		List<ProCoupon> couponList = couponMapper.getProCouponBCoupon(proCoupon);
+		
+		for(ProCoupon coupon : couponList){
+			ProMyCoupon proMyCoupon = new ProMyCoupon();
+			proMyCoupon.setUserId(customer.getAppId());
+			/**
+			 * 首先根据券的Id,查出与活动,原则上一个房易贷用户专享的券只能配一个活动，但是为过滤测试数据错误，所做的兼容
+			 */
+			List<ProCouponRel> rels = couponRelMapper.getCouponByActivityIdOrCouponId(new ProCouponRelQuery(null, coupon.getId()));
+			Date now = new Date();
+			for (ProCouponRel rel : rels) {
+				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(rel.getProActivityId());
+				if(null == cfg || cfg.getEndTime().getTime() < now.getTime()){
+					continue;
+				}
+				proMyCoupon.setCouponRelId(rel.getId());
+				proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+				proMyCoupon.setCouponId(Long.valueOf(rel.getCouponId()));
+				proMyCoupon.setTelephone(fyd.getMobile());
+				proMyCoupon.setStartDate(cfg.getStartTime());
+				proMyCoupon.setEndDate(cfg.getEndTime());
+				proMyCoupon.setCreatedTime(now);
+				proMyCoupon.setUpdatedTime(now);
+				myCouponMapper.insertSelective(proMyCoupon);
+				break;
+			}
 		}
 	}
 }

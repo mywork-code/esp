@@ -22,7 +22,7 @@ public interface ProCouponRelMapper extends GenericMapper<ProCouponRel, Long> {
 	 * @param activityId
 	 * @return
 	 */
-	List<ProCouponRel> getCouponByActivityId(ProCouponRelQuery couponRel);
+	List<ProCouponRel> getCouponByActivityIdOrCouponId(ProCouponRelQuery couponRel);
 	
 	/**
 	 * 获取优惠券剩余数量大于0的优惠券列表

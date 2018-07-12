@@ -24,11 +24,13 @@
     <result column="offer_range" property="offerRange" jdbcType="TINYINT" />
     <result column="category_id3" property="categoryId3" jdbcType="VARCHAR" />
     <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
+    <result column="grant_node" property="grantNode" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, extend_type, type, effective_time, sill_type, coupon_sill, discount_amonut, 
     category_id1, category_id2, goods_code, similar_goods_code, memo, create_user, update_user, 
-    created_time, updated_time, is_delete, brand_id, offer_range, category_id3, sku_id
+    created_time, updated_time, is_delete, brand_id, offer_range, category_id3, sku_id, 
+    grant_node
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -47,16 +49,16 @@
       goods_code, similar_goods_code, memo, 
       create_user, update_user, created_time, 
       updated_time, is_delete, brand_id, 
-      offer_range, category_id3, sku_id
-      )
+      offer_range, category_id3, sku_id, 
+      grant_node)
     values (#{name,jdbcType=VARCHAR}, #{extendType,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{effectiveTime,jdbcType=INTEGER}, #{sillType,jdbcType=VARCHAR}, #{couponSill,jdbcType=DECIMAL}, 
       #{discountAmonut,jdbcType=DECIMAL}, #{categoryId1,jdbcType=VARCHAR}, #{categoryId2,jdbcType=VARCHAR}, 
       #{goodsCode,jdbcType=VARCHAR}, #{similarGoodsCode,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, 
       #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR}, #{brandId,jdbcType=BIGINT}, 
-      #{offerRange,jdbcType=TINYINT}, #{categoryId3,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}
-      )
+      #{offerRange,jdbcType=TINYINT}, #{categoryId3,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, 
+      #{grantNode,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProCoupon" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_pro_coupon
@@ -124,6 +126,9 @@
       <if test="skuId != null" >
         sku_id,
       </if>
+      <if test="grantNode != null" >
+        grant_node,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="name != null" >
@@ -188,6 +193,9 @@
       </if>
       <if test="skuId != null" >
         #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="grantNode != null" >
+        #{grantNode,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -257,6 +265,9 @@
       <if test="skuId != null" >
         sku_id = #{skuId,jdbcType=VARCHAR},
       </if>
+      <if test="grantNode != null" >
+        grant_node = #{grantNode,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -282,7 +293,8 @@
       brand_id = #{brandId,jdbcType=BIGINT},
       offer_range = #{offerRange,jdbcType=TINYINT},
       category_id3 = #{categoryId3,jdbcType=VARCHAR},
-      sku_id = #{skuId,jdbcType=VARCHAR}
+      sku_id = #{skuId,jdbcType=VARCHAR},
+      grant_node = #{grantNode,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

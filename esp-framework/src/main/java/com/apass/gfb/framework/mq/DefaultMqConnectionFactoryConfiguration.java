@@ -14,7 +14,7 @@ public class DefaultMqConnectionFactoryConfiguration {
     ConnectionFactory rabbitMqConnFactory = new ConnectionFactory();
     rabbitMqConnFactory.setAutomaticRecoveryEnabled(true);
     if(envConfig.isPROD()){
-      //生产环境
+      //生产环境
       rabbitMqConnFactory.setHost("10.1.12.178");
       rabbitMqConnFactory.setPort(5672);
     }else{
