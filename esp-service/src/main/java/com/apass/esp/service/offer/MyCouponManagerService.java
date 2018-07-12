@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,7 @@ import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 
 /**
@@ -57,6 +60,7 @@ import com.google.common.collect.Maps;
 @Transactional(rollbackFor = { Exception.class })
 public class MyCouponManagerService {
 
+	private static final Logger logger = LoggerFactory.getLogger(MyCouponManagerService.class);
 	
 	@Autowired
 	private ProMyCouponMapper myCouponMapper;
@@ -310,6 +314,7 @@ public class MyCouponManagerService {
 		vo.setCategoryId1(coupon.getCategoryId1());
 		vo.setCategoryId2(coupon.getCategoryId2());
 		vo.setCategoryId3(coupon.getCategoryId3());
+		vo.setExtendType(coupon.getExtendType());
 		vo.setSkuId(coupon.getSkuId());
 		vo.setBrandId(coupon.getBrandId()+"");
 		vo.setOfferRange(coupon.getOfferRange()+"");
@@ -333,8 +338,7 @@ public class MyCouponManagerService {
 			buffer.append("【限"+activityName+"活动商品】\t").append(coupon.getName());
 		}else if(StringUtils.equals(type, CouponType.COUPON_ZDSP.getCode())){
 			buffer.append("【指定商品】\t" + goodsName);
-		}
-		else{
+		}else{
 			buffer.append("【"+CouponType.getMessage(type)+"】\t").append(coupon.getName());
 		}
 		vo.setCouponSill(coupon.getCouponSill());
@@ -486,6 +490,7 @@ public class MyCouponManagerService {
 		 * 根据优惠券的类型，查询所有的推广方式为房易贷用户专享的优惠券
 		 */
 		if(null == fyd || StringUtils.isBlank(fyd.getMobile()) || StringUtils.isBlank(fyd.getScene())){
+			logger.error("fyd return params is null!!!!", GsonUtils.toJson(fyd));
 			return;
 		}
 		

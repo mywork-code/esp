@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.domain.entity.CreditAuthActivityMessage;
 import com.apass.esp.domain.vo.FydActivity;
 import com.apass.esp.service.offer.MyCouponManagerService;
 

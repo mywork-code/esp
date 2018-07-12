@@ -12,6 +12,8 @@ public class ProMyCouponVo {
     
     private String couponName;//优惠券名字
     
+    private String extendType;//推广方式
+    
     private Long activityId;//活动的Id
     
     private String categoryId1;//一级类目的Id
@@ -272,6 +274,14 @@ public class ProMyCouponVo {
 
 	public void setOfferRange(String offerRange) {
 		this.offerRange = offerRange;
+	}
+
+	public String getExtendType() {
+		return extendType;
+	}
+
+	public void setExtendType(String extendType) {
+		this.extendType = extendType;
 	}
 	
 }
