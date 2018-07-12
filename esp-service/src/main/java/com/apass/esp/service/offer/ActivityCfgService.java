@@ -70,38 +70,57 @@ public class ActivityCfgService {
 		if(activityId == 0){
 			throw new BusinessException("添加活动配置信息失败");
 		}
-
-		List<ProcouponRelVoList> procouponRelVoListList1 = vo.getProcouponRelVoListList();
-		if(CollectionUtils.isNotEmpty(procouponRelVoListList1)){
-			Set<Long> sets = Sets.newTreeSet();
-			for (int i=0;i<procouponRelVoListList1.size();i++) {
-				sets.add(procouponRelVoListList1.get(i).getCouponId());
+		if(record.getActivityCate().byteValue() == 0){
+			//普通活动
+			List<ProcouponRelVoList> procouponRelVoListList1 = vo.getProcouponRelVoListList();
+			if(CollectionUtils.isNotEmpty(procouponRelVoListList1)){
+				Set<Long> sets = Sets.newTreeSet();
+				for (int i=0;i<procouponRelVoListList1.size();i++) {
+					sets.add(procouponRelVoListList1.get(i).getCouponId());
+				}
+				if(sets.size() != procouponRelVoListList1.size()){
+					throw new BusinessException("本次发放存在重复优惠券种类，请修改后重试");
+				}
 			}
-			if(sets.size() != procouponRelVoListList1.size()){
-				throw new BusinessException("本次发放存在重复优惠券种类，请修改后重试");
-			}
-		}
 
-		//是否使用优惠券
-		if(StringUtils.equals(ActivityCfgCoupon.COUPON_Y.getCode(),vo.getCoupon())){
-			List<ProcouponRelVoList> procouponRelVoListList = vo.getProcouponRelVoListList();
-			if(CollectionUtils.isNotEmpty(procouponRelVoListList)){
-				for (ProcouponRelVoList relList:procouponRelVoListList) {
-					ProCouponRel proCouponRel = new ProCouponRel();
-					proCouponRel.setCouponId(relList.getCouponId());
-					proCouponRel.setProActivityId(record.getId());
-					proCouponRel.setLimitNum(relList.getLimitNum());
-					proCouponRel.setTotalNum(relList.getTotalNum());
-					proCouponRel.setRemainNum(relList.getTotalNum());
-					proCouponRel.setCreatedTime(new Date());
-					proCouponRel.setUpdatedTime(new Date());
-					Integer relId = couponRelService.addProCouponRel(proCouponRel);
-					if(relId == 0){
-						throw new BusinessException("添加活动配置信息失败");
+			//是否使用优惠券
+			if(StringUtils.equals(ActivityCfgCoupon.COUPON_Y.getCode(),vo.getCoupon())){
+				List<ProcouponRelVoList> procouponRelVoListList = vo.getProcouponRelVoListList();
+				if(CollectionUtils.isNotEmpty(procouponRelVoListList)){
+					for (ProcouponRelVoList relList:procouponRelVoListList) {
+						ProCouponRel proCouponRel = new ProCouponRel();
+						proCouponRel.setCouponId(relList.getCouponId());
+						proCouponRel.setProActivityId(record.getId());
+						proCouponRel.setLimitNum(relList.getLimitNum());
+						proCouponRel.setTotalNum(relList.getTotalNum());
+						proCouponRel.setRemainNum(relList.getTotalNum());
+						proCouponRel.setCreatedTime(new Date());
+						proCouponRel.setUpdatedTime(new Date());
+						Integer relId = couponRelService.addProCouponRel(proCouponRel);
+						if(relId == 0){
+							throw new BusinessException("添加活动配置信息失败");
+						}
 					}
 				}
 			}
+		}else if(record.getActivityCate().byteValue() == 1){
+			//专属活动
+			if(StringUtils.equals(ActivityCfgCoupon.COUPON_Y.getCode(),vo.getCateCoupon())){
+				ProCouponRel proCouponRel = new ProCouponRel();
+				proCouponRel.setCouponId(vo.getFydCouponId());
+				proCouponRel.setProActivityId(record.getId());
+				proCouponRel.setLimitNum(-1);
+				proCouponRel.setTotalNum(-1);
+				proCouponRel.setRemainNum(-1);
+				proCouponRel.setCreatedTime(new Date());
+				proCouponRel.setUpdatedTime(new Date());
+				Integer relId = couponRelService.addProCouponRel(proCouponRel);
+				if(relId == 0){
+					throw new BusinessException("添加活动配置信息失败");
+				}
+			}
 		}
+
 		return record.getId();
 	}
 	

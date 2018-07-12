@@ -294,6 +294,33 @@ $(function(){
 		}
 	});
 
+	//加载activityCate
+	$("#id_activityCate").combobox({
+        onChange: function (n, o) {
+            if (n == '1') {
+                $("#1_xxxxId").show();
+                $("#2_xxxxId").hide();
+                $(".couponsDiv").css("display","none");
+
+            } else {
+                $("#2_xxxxId").show();
+
+                $("#1_xxxxId").hide();
+            }
+        }
+    });
+
+    $(".ifCouCate").change(
+        function () {
+            var value = $("input[name='isCateCoupon']:checked").val();
+            if(value == 'Y'){
+                $("#id_xxx_copon").show();
+            }else{
+                $("#id_xxx_copon").css("display","none");
+            }
+        }
+    );
+
 	//radio监听事件
 	$(".ifCou").change(
 		function () {

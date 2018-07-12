@@ -1,5 +1,7 @@
 package com.apass.esp.domain.vo;
 
+import java.math.BigDecimal;
+
 public class ActivityCfgVo extends ProCouponRelVo {
 	private Long id;
 
@@ -27,6 +29,55 @@ public class ActivityCfgVo extends ProCouponRelVo {
      * 是否使用优惠券；Y：是；N：否
      */
     private String coupon;
+
+    private String cateCoupon;
+
+    private Byte activityCate;
+
+    private BigDecimal fydActPer;
+
+    private BigDecimal fydDownPer;
+    private Long fydCouponId;
+
+    public String getCateCoupon() {
+        return cateCoupon;
+    }
+
+    public void setCateCoupon(String cateCoupon) {
+        this.cateCoupon = cateCoupon;
+    }
+
+    public Byte getActivityCate() {
+        return activityCate;
+    }
+
+    public void setActivityCate(Byte activityCate) {
+        this.activityCate = activityCate;
+    }
+
+    public BigDecimal getFydActPer() {
+        return fydActPer;
+    }
+
+    public void setFydActPer(BigDecimal fydActPer) {
+        this.fydActPer = fydActPer;
+    }
+
+    public BigDecimal getFydDownPer() {
+        return fydDownPer;
+    }
+
+    public void setFydDownPer(BigDecimal fydDownPer) {
+        this.fydDownPer = fydDownPer;
+    }
+
+    public Long getFydCouponId() {
+        return fydCouponId;
+    }
+
+    public void setFydCouponId(Long fydCouponId) {
+        this.fydCouponId = fydCouponId;
+    }
 
     public String getCoupon() {
         return coupon;

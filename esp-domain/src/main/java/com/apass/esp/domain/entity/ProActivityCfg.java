@@ -1,5 +1,6 @@
 package com.apass.esp.domain.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class ProActivityCfg {
@@ -30,6 +31,12 @@ public class ProActivityCfg {
     private Date updatedTime;
 
     private String coupon;
+
+    private Byte activityCate;
+
+    private BigDecimal fydActPer;
+
+    private BigDecimal fydDownPer;
 
     public Long getId() {
         return id;
@@ -141,5 +148,29 @@ public class ProActivityCfg {
 
     public void setCoupon(String coupon) {
         this.coupon = coupon;
+    }
+
+    public Byte getActivityCate() {
+        return activityCate;
+    }
+
+    public void setActivityCate(Byte activityCate) {
+        this.activityCate = activityCate;
+    }
+
+    public BigDecimal getFydActPer() {
+        return fydActPer;
+    }
+
+    public void setFydActPer(BigDecimal fydActPer) {
+        this.fydActPer = fydActPer;
+    }
+
+    public BigDecimal getFydDownPer() {
+        return fydDownPer;
+    }
+
+    public void setFydDownPer(BigDecimal fydDownPer) {
+        this.fydDownPer = fydDownPer;
     }
 }
