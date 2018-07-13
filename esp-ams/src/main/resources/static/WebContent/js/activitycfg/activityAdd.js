@@ -74,207 +74,233 @@ $(function(){
     			return false;
     		}
 		}
-		var activityType = $("#activityType").combobox('getValue');
-		if(activityType == '' || null == activityType){
-			$.messager.alert("<span style='color: black;'>提示</span>","请选择活动类型！",'info');
-			return false;
-		}
-		param.activityType = activityType;
 
-		if(activityType == 'Y') {
-			var offerSill1 = $("#offerSill1").numberbox('getValue');
-			if (offerSill1 == '' || null == offerSill1) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个优惠门槛！", 'info');
-				return false;
+		var activityCate = $('#id_activityCate').combo('getValue');
+		if(activityCate == 1){
+            var fydActivityPer = $('#fydActivityPer').textbox('getValue');
+            var fydDownPer = $('#fydDownPer').textbox('getValue');
+            if(fydActivityPer == '' || fydDownPer == ''){
+                $.messager.alert("<span style='color: black;'>提示</span>","请填写系数！",'info');
+                return false;
 			}
-			if (offerSill1.length > 15) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "第一个优惠门槛金额长度要小于15位！", 'info');
-				return false;
+            var value = $("input[name='cateCoupon']:checked").val();
+            if(value == 'Y'){
+              var fydCouponId =  $('.cateCouponInput ').combo('getValue');
+              if(fydCouponId == ''){
+                  $.messager.alert("<span style='color: black;'>提示</span>","请选择优惠券！",'info');
+                  return false;
+			  }
 			}
-			param.offerSill1 = offerSill1;
-			var offerSill2 = $("#offerSill2").numberbox('getValue');
-			if (offerSill2 == '' || null == offerSill2) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个优惠门槛！", 'info');
-				return false;
-			}
-			if (offerSill2.length > 15) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "第二个优惠门槛金额长度要小于15位！", 'info');
-				return false;
-			}
-			param.offerSill2 = offerSill2;
-			if (offerSill1 == offerSill2) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "优惠门槛不能相同！", 'info');
-				return false;
-			}
-			var discount1 = $("#discount1").numberbox('getValue');
-			if (discount1 == '' || null == discount1) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个优惠金额！", 'info');
-				return false;
-			}
-			if (discount1.length > 15) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "第一个优惠金额长度要小于15位！", 'info');
-				return false;
-			}
-			if (parseInt(discount1) >= parseInt(offerSill1)) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "第一个优惠金额要小于第一个优惠门槛金额！", 'info');
-				return false;
-			}
-			param.discount1 = discount1;
-			var discount2 = $("#discount2").numberbox('getValue');
-			if (discount2 == '' || null == discount2) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个优惠金额！", 'info');
-				return false;
-			}
-			if (discount2.length > 15) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "第二个优惠金额长度要小于15位！", 'info');
-				return false;
-			}
-			if (parseInt(discount2) >= parseInt(offerSill2)) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "第二个优惠金额要小于第二个优惠门槛金额！", 'info');
-				return false;
-			}
-			param.discount2 = discount2;
-		}
-
-		var isCoupon = $("input[name='isCoupon']:checked").val()
-		if (isCoupon == '' || null == isCoupon) {
-			$.messager.alert("<span style='color: black;'>提示</span>", "请选择是否使用优惠券！", 'info');
-			return false;
-		}
-		param.coupon = isCoupon;
-		if(isCoupon == "Y") {
-			var chooseCoupon1 = $('#chooseCoupon1').textbox('getValue');
-			if (chooseCoupon1 == '' || null == chooseCoupon1) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "请选择第一个选择发放优惠券！", 'info');
-				return false;
-			}
-			var issueCouponNum1 = $('#issueCouponNum1').textbox('getValue');
-			if (issueCouponNum1 == '' || null == issueCouponNum1) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个发放总量！", 'info');
-				return false;
-			}
-			var issueLimitNum1 = $('#issueLimitNum1').textbox('getValue');
-			if (issueLimitNum1 == '' || null == issueLimitNum1) {
-				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个每人限领数量！", 'info');
-				return false;
-			}
-
-			if(parseInt(issueLimitNum1)>parseInt(issueCouponNum1)){
-				$.messager.alert("<span style='color: black;'>提示</span>", "第一个每人限领数量不可大于发放总量！", 'info');
-				return false;
-			}
-			obj1.couponId = chooseCoupon1;
-			obj1.totalNum = issueCouponNum1;
-			obj1.limitNum = issueLimitNum1;
-			arr.push(obj1)
+			param.activityCate = activityCate;
+            param.fydActivityPer = fydActivityPer;
+            param.fydDownPer = fydDownPer;
+            param.cateCoupon = value;
+            param.fydCouponId = fydCouponId;
 
 
-			var addOrdeleteCouponTrDisplay2 = $(".addOrdeleteCouponTr2").css("display");
-			var addOrdeleteCouponTrDisplay3 = $(".addOrdeleteCouponTr3").css("display");
-			var addOrdeleteCouponTrDisplay4 = $(".addOrdeleteCouponTr4").css("display");
-			var addOrdeleteCouponTrDisplay5 = $(".addOrdeleteCouponTr5").css("display");
-			if (addOrdeleteCouponTrDisplay2 != "none") {
-				var chooseCoupon2 = $('#chooseCoupon2').textbox('getValue');
-				if (chooseCoupon2 == '' || null == chooseCoupon2) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请选择第二个选择发放优惠券！", 'info');
-					return false;
-				}
-				var issueCouponNum2 = $('#issueCouponNum2').textbox('getValue');
-				if (issueCouponNum2 == '' || null == issueCouponNum2) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个发放总量！", 'info');
-					return false;
-				}
-				var issueLimitNum2 = $('#issueLimitNum2').textbox('getValue');
-				if (issueLimitNum2 == '' || null == issueLimitNum2) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个每人限领数量！", 'info');
-					return false;
-				}
-				if(parseInt(issueLimitNum2)>parseInt(issueCouponNum2)){
-					$.messager.alert("<span style='color: black;'>提示</span>", "第二个每人限领数量不可大于发放总量！", 'info');
-					return false;
-				}
+        } else{
+            var activityType = $("#activityType").combobox('getValue');
+            if(activityType == '' || null == activityType){
+                $.messager.alert("<span style='color: black;'>提示</span>","请选择活动类型！",'info');
+                return false;
+            }
+            param.activityType = activityType;
 
-				obj2.couponId = chooseCoupon2;
-				obj2.totalNum = issueCouponNum2;
-				obj2.limitNum = issueLimitNum2;
-				arr.push(obj2)
-			}
+            if(activityType == 'Y') {
+                var offerSill1 = $("#offerSill1").numberbox('getValue');
+                if (offerSill1 == '' || null == offerSill1) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个优惠门槛！", 'info');
+                    return false;
+                }
+                if (offerSill1.length > 15) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "第一个优惠门槛金额长度要小于15位！", 'info');
+                    return false;
+                }
+                param.offerSill1 = offerSill1;
+                var offerSill2 = $("#offerSill2").numberbox('getValue');
+                if (offerSill2 == '' || null == offerSill2) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个优惠门槛！", 'info');
+                    return false;
+                }
+                if (offerSill2.length > 15) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "第二个优惠门槛金额长度要小于15位！", 'info');
+                    return false;
+                }
+                param.offerSill2 = offerSill2;
+                if (offerSill1 == offerSill2) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "优惠门槛不能相同！", 'info');
+                    return false;
+                }
+                var discount1 = $("#discount1").numberbox('getValue');
+                if (discount1 == '' || null == discount1) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个优惠金额！", 'info');
+                    return false;
+                }
+                if (discount1.length > 15) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "第一个优惠金额长度要小于15位！", 'info');
+                    return false;
+                }
+                if (parseInt(discount1) >= parseInt(offerSill1)) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "第一个优惠金额要小于第一个优惠门槛金额！", 'info');
+                    return false;
+                }
+                param.discount1 = discount1;
+                var discount2 = $("#discount2").numberbox('getValue');
+                if (discount2 == '' || null == discount2) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个优惠金额！", 'info');
+                    return false;
+                }
+                if (discount2.length > 15) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "第二个优惠金额长度要小于15位！", 'info');
+                    return false;
+                }
+                if (parseInt(discount2) >= parseInt(offerSill2)) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "第二个优惠金额要小于第二个优惠门槛金额！", 'info');
+                    return false;
+                }
+                param.discount2 = discount2;
+            }
 
-			if (addOrdeleteCouponTrDisplay3 != "none") {
-				var chooseCoupon3 = $('#chooseCoupon3').textbox('getValue');
-				if (chooseCoupon3 == '' || null == chooseCoupon3) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请选择第三个选择发放优惠券！", 'info');
-					return false;
-				}
-				var issueCouponNum3 = $('#issueCouponNum3').textbox('getValue');
-				if (issueCouponNum3 == '' || null == issueCouponNum3) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第三个发放总量！", 'info');
-					return false;
-				}
-				var issueLimitNum3 = $('#issueLimitNum3').textbox('getValue');
-				if (issueLimitNum3 == '' || null == issueLimitNum3) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第三个每人限领数量！", 'info');
-					return false;
-				}
-				if(parseInt(issueLimitNum3)>parseInt(issueCouponNum3)){
-					$.messager.alert("<span style='color: black;'>提示</span>", "第三个每人限领数量不可大于发放总量！", 'info');
-					return false;
-				}
-				obj3.couponId = chooseCoupon3;
-				obj3.totalNum = issueCouponNum3;
-				obj3.limitNum = issueLimitNum3;
-				arr.push(obj3)
-			}
-			if (addOrdeleteCouponTrDisplay4 != "none") {
-				var chooseCoupon4 = $('#chooseCoupon4').textbox('getValue');
-				if (chooseCoupon4 == '' || null == chooseCoupon4) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请选择第四个选择发放优惠券！", 'info');
-					return false;
-				}
-				var issueCouponNum4 = $('#issueCouponNum4').textbox('getValue');
-				if (issueCouponNum4 == '' || null == issueCouponNum4) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第四个发放总量！", 'info');
-					return false;
-				}
-				var issueLimitNum4 = $('#issueLimitNum4').textbox('getValue');
-				if (issueLimitNum4 == '' || null == issueLimitNum4) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第四个每人限领数量！", 'info');
-					return false;
-				}
-				if(parseInt(issueLimitNum4)>parseInt(issueCouponNum4)){
-					$.messager.alert("<span style='color: black;'>提示</span>", "第四个每人限领数量不可大于发放总量！", 'info');
-					return false;
-				}
-				obj4.couponId = chooseCoupon4;
-				obj4.totalNum = issueCouponNum4;
-				obj4.limitNum = issueLimitNum4;
-				arr.push(obj4)
-			}
-			if (addOrdeleteCouponTrDisplay5 != "none") {
-				var chooseCoupon5 = $('#chooseCoupon5').textbox('getValue');
-				if (chooseCoupon5 == '' || null == chooseCoupon5) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请选择第五个选择发放优惠券！", 'info');
-					return false;
-				}
-				var issueCouponNum5 = $('#issueCouponNum5').textbox('getValue');
-				if (issueCouponNum5 == '' || null == issueCouponNum5) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第五个发放总量！", 'info');
-					return false;
-				}
-				var issueLimitNum5 = $('#issueLimitNum5').textbox('getValue');
-				if (issueLimitNum5 == '' || null == issueLimitNum5) {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第五个每人限领数量！", 'info');
-					return false;
-				}
-				if(parseInt(issueLimitNum5)>parseInt(issueCouponNum5)){
-					$.messager.alert("<span style='color: black;'>提示</span>", "第五个每人限领数量不可大于发放总量！", 'info');
-					return false;
-				}
-				obj5.couponId = chooseCoupon5;
-				obj5.totalNum = issueCouponNum5;
-				obj5.limitNum = issueLimitNum5;
-				arr.push(obj5)
-			}
+            var isCoupon = $("input[name='isCoupon']:checked").val()
+            if (isCoupon == '' || null == isCoupon) {
+                $.messager.alert("<span style='color: black;'>提示</span>", "请选择是否使用优惠券！", 'info');
+                return false;
+            }
+            param.coupon = isCoupon;
+            if(isCoupon == "Y") {
+                var chooseCoupon1 = $('#chooseCoupon1').textbox('getValue');
+                if (chooseCoupon1 == '' || null == chooseCoupon1) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "请选择第一个选择发放优惠券！", 'info');
+                    return false;
+                }
+                var issueCouponNum1 = $('#issueCouponNum1').textbox('getValue');
+                if (issueCouponNum1 == '' || null == issueCouponNum1) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个发放总量！", 'info');
+                    return false;
+                }
+                var issueLimitNum1 = $('#issueLimitNum1').textbox('getValue');
+                if (issueLimitNum1 == '' || null == issueLimitNum1) {
+                    $.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个每人限领数量！", 'info');
+                    return false;
+                }
+
+                if(parseInt(issueLimitNum1)>parseInt(issueCouponNum1)){
+                    $.messager.alert("<span style='color: black;'>提示</span>", "第一个每人限领数量不可大于发放总量！", 'info');
+                    return false;
+                }
+                obj1.couponId = chooseCoupon1;
+                obj1.totalNum = issueCouponNum1;
+                obj1.limitNum = issueLimitNum1;
+                arr.push(obj1)
+
+
+                var addOrdeleteCouponTrDisplay2 = $(".addOrdeleteCouponTr2").css("display");
+                var addOrdeleteCouponTrDisplay3 = $(".addOrdeleteCouponTr3").css("display");
+                var addOrdeleteCouponTrDisplay4 = $(".addOrdeleteCouponTr4").css("display");
+                var addOrdeleteCouponTrDisplay5 = $(".addOrdeleteCouponTr5").css("display");
+                if (addOrdeleteCouponTrDisplay2 != "none") {
+                    var chooseCoupon2 = $('#chooseCoupon2').textbox('getValue');
+                    if (chooseCoupon2 == '' || null == chooseCoupon2) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请选择第二个选择发放优惠券！", 'info');
+                        return false;
+                    }
+                    var issueCouponNum2 = $('#issueCouponNum2').textbox('getValue');
+                    if (issueCouponNum2 == '' || null == issueCouponNum2) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个发放总量！", 'info');
+                        return false;
+                    }
+                    var issueLimitNum2 = $('#issueLimitNum2').textbox('getValue');
+                    if (issueLimitNum2 == '' || null == issueLimitNum2) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个每人限领数量！", 'info');
+                        return false;
+                    }
+                    if(parseInt(issueLimitNum2)>parseInt(issueCouponNum2)){
+                        $.messager.alert("<span style='color: black;'>提示</span>", "第二个每人限领数量不可大于发放总量！", 'info');
+                        return false;
+                    }
+
+                    obj2.couponId = chooseCoupon2;
+                    obj2.totalNum = issueCouponNum2;
+                    obj2.limitNum = issueLimitNum2;
+                    arr.push(obj2)
+                }
+
+                if (addOrdeleteCouponTrDisplay3 != "none") {
+                    var chooseCoupon3 = $('#chooseCoupon3').textbox('getValue');
+                    if (chooseCoupon3 == '' || null == chooseCoupon3) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请选择第三个选择发放优惠券！", 'info');
+                        return false;
+                    }
+                    var issueCouponNum3 = $('#issueCouponNum3').textbox('getValue');
+                    if (issueCouponNum3 == '' || null == issueCouponNum3) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请填写第三个发放总量！", 'info');
+                        return false;
+                    }
+                    var issueLimitNum3 = $('#issueLimitNum3').textbox('getValue');
+                    if (issueLimitNum3 == '' || null == issueLimitNum3) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请填写第三个每人限领数量！", 'info');
+                        return false;
+                    }
+                    if(parseInt(issueLimitNum3)>parseInt(issueCouponNum3)){
+                        $.messager.alert("<span style='color: black;'>提示</span>", "第三个每人限领数量不可大于发放总量！", 'info');
+                        return false;
+                    }
+                    obj3.couponId = chooseCoupon3;
+                    obj3.totalNum = issueCouponNum3;
+                    obj3.limitNum = issueLimitNum3;
+                    arr.push(obj3)
+                }
+                if (addOrdeleteCouponTrDisplay4 != "none") {
+                    var chooseCoupon4 = $('#chooseCoupon4').textbox('getValue');
+                    if (chooseCoupon4 == '' || null == chooseCoupon4) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请选择第四个选择发放优惠券！", 'info');
+                        return false;
+                    }
+                    var issueCouponNum4 = $('#issueCouponNum4').textbox('getValue');
+                    if (issueCouponNum4 == '' || null == issueCouponNum4) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请填写第四个发放总量！", 'info');
+                        return false;
+                    }
+                    var issueLimitNum4 = $('#issueLimitNum4').textbox('getValue');
+                    if (issueLimitNum4 == '' || null == issueLimitNum4) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请填写第四个每人限领数量！", 'info');
+                        return false;
+                    }
+                    if(parseInt(issueLimitNum4)>parseInt(issueCouponNum4)){
+                        $.messager.alert("<span style='color: black;'>提示</span>", "第四个每人限领数量不可大于发放总量！", 'info');
+                        return false;
+                    }
+                    obj4.couponId = chooseCoupon4;
+                    obj4.totalNum = issueCouponNum4;
+                    obj4.limitNum = issueLimitNum4;
+                    arr.push(obj4)
+                }
+                if (addOrdeleteCouponTrDisplay5 != "none") {
+                    var chooseCoupon5 = $('#chooseCoupon5').textbox('getValue');
+                    if (chooseCoupon5 == '' || null == chooseCoupon5) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请选择第五个选择发放优惠券！", 'info');
+                        return false;
+                    }
+                    var issueCouponNum5 = $('#issueCouponNum5').textbox('getValue');
+                    if (issueCouponNum5 == '' || null == issueCouponNum5) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请填写第五个发放总量！", 'info');
+                        return false;
+                    }
+                    var issueLimitNum5 = $('#issueLimitNum5').textbox('getValue');
+                    if (issueLimitNum5 == '' || null == issueLimitNum5) {
+                        $.messager.alert("<span style='color: black;'>提示</span>", "请填写第五个每人限领数量！", 'info');
+                        return false;
+                    }
+                    if(parseInt(issueLimitNum5)>parseInt(issueCouponNum5)){
+                        $.messager.alert("<span style='color: black;'>提示</span>", "第五个每人限领数量不可大于发放总量！", 'info');
+                        return false;
+                    }
+                    obj5.couponId = chooseCoupon5;
+                    obj5.totalNum = issueCouponNum5;
+                    obj5.limitNum = issueLimitNum5;
+                    arr.push(obj5)
+                }
+            }
 		}
 
 		return true;
@@ -312,7 +338,7 @@ $(function(){
 
     $(".ifCouCate").change(
         function () {
-            var value = $("input[name='isCateCoupon']:checked").val();
+            var value = $("input[name='cateCoupon']:checked").val();
             if(value == 'Y'){
                 $("#id_xxx_copon").show();
             }else{
@@ -351,6 +377,25 @@ $(function(){
 			$(this).combobox('setValue','');
 		},
 	});
+
+	//加载房易贷用户优惠券
+    $(".cateCouponInput").combobox({
+        method: "get",
+        valueField: 'id',
+        textField: 'name',
+        queryParams: {
+            "extendType" : "FYDYHZX",
+        },
+        onShowPanel : function(){
+            $(this).combobox('options').url= ctx + "/application/coupon/management/loadp",
+                $(this).combobox('reload');
+        },
+        onLoadSuccess: function () {
+            $(this).combobox('setValue','');
+        },
+    });
+
+
 
 	//手动发放优惠券---->添加优惠券种类
 	$('#issueAddCoupon').bind('click', function(){

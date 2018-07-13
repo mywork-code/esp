@@ -170,4 +170,5 @@ public class ProCouponService {
         paramMap.put("ids",couponIdList);
         return couponMapper.selectProCouponByIds(paramMap);
     }
+
 }

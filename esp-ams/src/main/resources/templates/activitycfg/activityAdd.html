@@ -90,14 +90,14 @@
 						<tr>
 							<td align="right">商品活动价格系数设置：</td>
 							<td align="left">
-								<input types="text" name="fydActivityPer"  class="easyui-numberbox" style="width: 160px;" data-options="min:1" required/> %
+								<input types="text" name="fydActivityPer" id="fydActivityPer"  class="easyui-numberbox" style="width: 160px;" data-options="min:1" required/> %
 								<span style="color: red">*</span>
 							</td>
 						</tr>
 						<tr>
 							<td align="right">商品下架系数设置：</td>
 							<td align="left">
-								<input type="text" name="fydDownPer"  class="easyui-numberbox" style="width: 160px;" data-options="min:1" required/> %
+								<input type="text" name="fydDownPer" id="fydDownPer" class="easyui-numberbox" style="width: 160px;" data-options="min:1" required/> %
 								<span style="color: red">*</span>
 							</td>
 						</tr>
@@ -118,10 +118,8 @@
 						<table style="width: 80%;height: auto;">
 						<tr  >
 							<td align="right">选择发放优惠券：</td>
-							<td align="left">
-								<select class="easyui-combobox" style="width: 160px;"  name="activityType" required="required" required editable="false" >
-									<option value="">请选择</option>
-								</select>
+							<td>
+								<input class="easyui-combobox cateCouponInput" style="width: 160px;" type="text" required editable="false" data-options="prompt:'请选择'"/>
 								<span style="color: red">*</span>
 							</td>
 						</tr>
