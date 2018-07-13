@@ -1,5 +1,6 @@
 package com.apass.esp.service.offer;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.apass.esp.domain.Response;
@@ -160,7 +161,15 @@ public class ActivityCfgService {
 		record.setUpdatedTime(new Date());
 		record.setUpdateUser(vo.getUserName());
 		record.setId(vo.getId());
-		record.setCoupon(vo.getCoupon());
+		record.setActivityCate(vo.getActivityCate());
+		if(record.getActivityCate().intValue() == 1){
+			BigDecimal b100 = new BigDecimal(100);
+			record.setFydActPer(vo.getFydActPer().divide(b100));
+			record.setFydDownPer(vo.getFydDownPer().divide(b100));
+			record.setCoupon(vo.getCateCoupon());
+		}else{
+			record.setCoupon(vo.getCoupon());
+		}
 		return record;
 	}
 	
@@ -192,6 +201,7 @@ public class ActivityCfgService {
 		vo.setId(cfg.getId());
 		vo.setActivityName(cfg.getActivityName());
 		vo.setActivityType(ActivityType.getMessage(cfg.getActivityType()));
+		vo.setActivityCateStr(cfg.getActivityCate().intValue() ==1?"专属活动":"普通活动");
 		vo.setDiscount1(cfg.getDiscountAmonut1());
 		vo.setDiscount2(cfg.getDiscountAmount2());
 		vo.setEndTime(DateFormatUtil.dateToString(cfg.getEndTime(), ""));

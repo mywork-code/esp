@@ -34,10 +34,20 @@ public class ActivityCfgVo extends ProCouponRelVo {
 
     private Byte activityCate;
 
+    private String activityCateStr;
+
     private BigDecimal fydActPer;
 
     private BigDecimal fydDownPer;
     private Long fydCouponId;
+
+    public String getActivityCateStr() {
+        return activityCateStr;
+    }
+
+    public void setActivityCateStr(String activityCateStr) {
+        this.activityCateStr = activityCateStr;
+    }
 
     public String getCateCoupon() {
         return cateCoupon;

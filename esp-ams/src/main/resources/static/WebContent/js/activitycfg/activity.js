@@ -35,6 +35,12 @@ $(function(){
             },
             {
                 title : '活动类型',
+                field : 'activityCateStr',
+                width : 120,
+                align : 'center'
+            },
+            {
+                title : '优惠券类型',
                 field : 'activityType',
                 width : 120,
                 align : 'center'

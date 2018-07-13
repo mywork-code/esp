@@ -1,5 +1,6 @@
 package com.apass.esp.web.offer;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -132,7 +133,9 @@ public class ActivityCfgController {
 		ActivityCfgVo vo = GsonUtils.convertObj(requestDecode, ActivityCfgVo.class);
 
  		try {
- 			validateParams(vo, false);
+ 			if(vo.getActivityCate().intValue() == 0){
+				validateParams(vo, false);
+			}
  			vo.setUserName(SpringSecurityUtils.getLoginUserDetails().getUsername());
  			Long activityId = activityCfgService.saveActivity(vo);
 
@@ -206,9 +209,15 @@ public class ActivityCfgController {
 
 			if(StringUtils.isNotBlank(pro.getCoupon())){
 				if(StringUtils.equals(pro.getCoupon(),ActivityCfgCoupon.COUPON_Y.getCode())){
-					//如果使用优惠券，去优惠券与活动关系表中查询优惠券想着信息
-					List<ProCouponRel> couponRelList = couponRelService.getCouponRelList(String.valueOf(vo.getId()));
-					activityCfgForEditVo.setProCouponRels(couponRelList);
+					if(pro.getActivityCate().intValue() == 1){
+						List<ProCouponRel> couponRelList = couponRelService.getCouponRelList(String.valueOf(vo.getId()));
+						activityCfgForEditVo.setFydCouponId(couponRelList.get(0).getCouponId());
+					}else{
+						//如果使用优惠券，去优惠券与活动关系表中查询优惠券想着信息
+						List<ProCouponRel> couponRelList = couponRelService.getCouponRelList(String.valueOf(vo.getId()));
+						activityCfgForEditVo.setProCouponRels(couponRelList);
+					}
+
 				}
 			}
 
@@ -236,6 +245,15 @@ public class ActivityCfgController {
 			activityCfgForEditVo.setUpdatedTime(pro.getUpdatedTime());
 			activityCfgForEditVo.setUpdateUser(pro.getUpdateUser());
 			activityCfgForEditVo.setCoupon(pro.getCoupon());
+			activityCfgForEditVo.setActivityCate(pro.getActivityCate());
+			if(pro.getActivityCate().intValue() == 1){
+				BigDecimal b100 = new BigDecimal(100);
+				activityCfgForEditVo.setFydActPer(pro.getFydActPer().multiply(b100));
+				activityCfgForEditVo.setFydDownPer(pro.getFydDownPer().multiply(b100));
+
+			}
+				activityCfgForEditVo.setCoupon(pro.getCoupon());
+
 		}
 	}
 

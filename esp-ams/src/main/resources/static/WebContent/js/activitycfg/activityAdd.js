@@ -92,7 +92,7 @@ $(function(){
 			  }
 			}
 			param.activityCate = activityCate;
-            param.fydActivityPer = fydActivityPer;
+            param.fydActPer = fydActivityPer;
             param.fydDownPer = fydDownPer;
             param.cateCoupon = value;
             param.fydCouponId = fydCouponId;

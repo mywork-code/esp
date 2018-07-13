@@ -12,20 +12,7 @@ $(function(){
 	//是否选择优惠券成员变量
 	var coupon = null;
 
-	//获取选择发放优惠券下拉框内容
-	$(".issueCouponInput").combobox({
-		method: "get",
-		url: ctx + "/application/coupon/management/loadp2",
-		valueField: 'id',
-		textField: 'name',
-		queryParams: {
-			"extendType" : "YHLQ",
-		},
-		onLoadSuccess:function (data) {
-			// debugger;
-			// $(this).combobox('setValue','');
-		}
-	});
+
 	//活动id
 	var paramMapActivityId = $("#paramMapActivityId").val();
 	$.ajax({
@@ -41,49 +28,80 @@ $(function(){
 				$("#activityName").textbox('setValue',resp.activityName);
 				$("#startTime").datetimebox('setValue',new Date(resp.startTime).Format("yyyy-MM-dd hh:mm:ss"));
 				$("#endTime").datetimebox('setValue',new Date(resp.endTime).Format("yyyy-MM-dd hh:mm:ss"));
-				var activityType = resp.activityType;
-				$("#activityType").combobox('setValue',activityType);
-
-				coupon = resp.coupon;
-				$("[name='isCoupon']").each(function(){
-					if($(this).val() == coupon){
-						$(this).attr("checked",'true');
+                coupon = resp.coupon;
+				var activityCate = resp.activityCate;
+				$('#id_activityCate').combobox('setValue',activityCate);
+				if(activityCate == 1){
+                    loadCateCouponList();
+                    var fydActPer = resp.fydActPer;
+                    var fydDownPer = resp.fydDownPer;
+                    $("#fydActivityPer").textbox("setValue",fydActPer);
+                    $("#fydDownPer").textbox("setValue",fydDownPer);
+                    $("[name='cateCoupon']").each(function(){
+                        if($(this).val() == coupon){
+                            $(this).attr("checked",'true');
+                        }
+                    });
+					if(coupon == 'Y'){
+						var fydCouponId=resp.fydCouponId;
+                        $('.cateCouponInput').combobox('setValue',fydCouponId);
+                        $('#id_xxx_copon').show();
 					}
-				});
-				if(activityType == "Y"){
-					$("#xxxxxxID").show();
-					$("#offerSill1").numberbox('setValue',resp.offerSill1)
-					$("#discount1").numberbox('setValue',resp.discountAmonut1)
-					$("#offerSill2").numberbox('setValue',resp.offerSill2)
-					$("#discount2").numberbox('setValue',resp.discountAmount2)
-				}else {
-					$("#offerSill1").numberbox('setValue','');
-					$("#offerSill2").numberbox('setValue','');
-					$("#discount1").numberbox('setValue','');
-					$("#discount2").numberbox('setValue','');
-					$("#xxxxxxID").css("display","none");
+                    $('#1_xxxxId').show();
+                    $("#2_xxxxId").hide();
+                    $(".couponsDiv").css("display","none");
+
+
+                }else{
+					loadCouponList();
+
+					var activityType = resp.activityType;
+                    $("#activityType").combobox('setValue',activityType);
+
+
+                    $("[name='isCoupon']").each(function(){
+                        if($(this).val() == coupon){
+                            $(this).attr("checked",'true');
+                        }
+                    });
+                    if(activityType == "Y"){
+                        $("#xxxxxxID").show();
+                        $("#offerSill1").numberbox('setValue',resp.offerSill1)
+                        $("#discount1").numberbox('setValue',resp.discountAmonut1)
+                        $("#offerSill2").numberbox('setValue',resp.offerSill2)
+                        $("#discount2").numberbox('setValue',resp.discountAmount2)
+                    }else {
+                        $("#offerSill1").numberbox('setValue','');
+                        $("#offerSill2").numberbox('setValue','');
+                        $("#discount1").numberbox('setValue','');
+                        $("#discount2").numberbox('setValue','');
+                        $("#xxxxxxID").css("display","none");
+                    }
+
+                    if(coupon == "Y"){
+                        $(".couponsDiv").show();
+
+                        var proCopuonRels = resp.proCouponRels;
+                        $("#chooseCoupon1").combobox("setValue",proCopuonRels[0].couponId)
+                        $("#issueCouponNum1").textbox("setValue",proCopuonRels[0].totalNum)
+                        $("#issueLimitNum1").textbox("setValue",proCopuonRels[0].limitNum)
+                        $("#proCouponRelId1").val(proCopuonRels[0].id)
+
+                        for (var i=2; i<proCopuonRels.length+1; i++) {
+                            $(".addOrdeleteCouponTr"+i).show();
+                            $("#chooseCoupon"+i).combobox("setValue",proCopuonRels[i-1].couponId)
+                            $("#issueCouponNum"+i).textbox("setValue",proCopuonRels[i-1].totalNum)
+                            $("#issueLimitNum"+i).textbox("setValue",proCopuonRels[i-1].limitNum)
+                            $("#proCouponRelId"+i).val(proCopuonRels[i-1].id)
+                        }
+                    }else{
+                        $(".couponsDiv").css("display","none");
+                    }
+                    $("#2_xxxxId").show();
+
+                    $("#1_xxxxId").hide();
 				}
 
-				if(coupon == "Y"){
-					$(".couponsDiv").show();
-
-					var proCopuonRels = resp.proCouponRels;
-					$("#chooseCoupon1").combobox("setValue",proCopuonRels[0].couponId)
-					$("#issueCouponNum1").textbox("setValue",proCopuonRels[0].totalNum)
-					$("#issueLimitNum1").textbox("setValue",proCopuonRels[0].limitNum)
-					$("#proCouponRelId1").val(proCopuonRels[0].id)
-
-					for (var i=2; i<proCopuonRels.length+1; i++) {
-						$(".addOrdeleteCouponTr"+i).show();
-						$("#chooseCoupon"+i).combobox("setValue",proCopuonRels[i-1].couponId)
-						$("#issueCouponNum"+i).textbox("setValue",proCopuonRels[i-1].totalNum)
-						$("#issueLimitNum"+i).textbox("setValue",proCopuonRels[i-1].limitNum)
-						$("#proCouponRelId"+i).val(proCopuonRels[i-1].id)
-					}
-
-				}else{
-					$(".couponsDiv").css("display","none");
-				}
 			}else{
 				$.messager.alert("<span style='color: black;'>警告</span>",data.msg,"warning");
 			}
@@ -110,7 +128,7 @@ $(function(){
 	/**
 	 * 保存活动添加信息
 	 */
-	$("#agreeAdd").click(function(){
+	$("#agreeEdit").click(function(){
 		if(coupon == "Y"){
 			if(checkParams()){
 				param.relList = arr;
@@ -393,4 +411,33 @@ function addTotalNum(id) {
 			}
 		]
 	});
+}
+
+function loadCouponList() {
+    //获取选择发放优惠券下拉框内容
+    $(".issueCouponInput").combobox({
+        method: "get",
+        url: ctx + "/application/coupon/management/loadp2",
+        valueField: 'id',
+        textField: 'name',
+        queryParams: {
+            "extendType" : "YHLQ",
+        },
+        onLoadSuccess:function (data) {
+        }
+    });
+}
+
+function loadCateCouponList() {
+    $(".cateCouponInput").combobox({
+        method: "get",
+        url: ctx + "/application/coupon/management/loadp2",
+        valueField: 'id',
+        textField: 'name',
+        queryParams: {
+            "extendType" : "FYDYHZX",
+        },
+        onLoadSuccess:function (data) {
+        }
+    });
 }
