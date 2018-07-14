@@ -76,6 +76,7 @@ $(function(){
 		}
 
 		var activityCate = $('#id_activityCate').combo('getValue');
+        param.activityCate = activityCate;
 		if(activityCate == 1){
             var fydActivityPer = $('#fydActivityPer').textbox('getValue');
             var fydDownPer = $('#fydDownPer').textbox('getValue');
@@ -91,7 +92,7 @@ $(function(){
                   return false;
 			  }
 			}
-			param.activityCate = activityCate;
+
             param.fydActPer = fydActivityPer;
             param.fydDownPer = fydDownPer;
             param.cateCoupon = value;

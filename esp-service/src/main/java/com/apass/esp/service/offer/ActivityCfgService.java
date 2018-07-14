@@ -248,4 +248,21 @@ public class ActivityCfgService {
 	public List<ProActivityCfg> selectProActivityCfgByActivitCfgQuery(ActivityCfgQuery activityCfgQuery) {
 		return activityCfgMapper.selectProActivityCfgByActivitCfgQuery(activityCfgQuery);
 	}
+
+	/**
+	 * 更新房易贷活动配置信息
+	 */
+	public void updateFydActCouponCfg(Long activityId,String cateCoupon,BigDecimal fydActPer,
+									  BigDecimal fydDownPer,Long fydCouponId){
+		ProActivityCfg updateEntity = new ProActivityCfg();
+		updateEntity.setId(activityId);
+		BigDecimal b100 = new BigDecimal(100);
+		updateEntity.setFydDownPer(fydDownPer.divide(b100));
+		updateEntity.setFydActPer(fydActPer.divide(b100));
+		updateEntity.setCoupon(cateCoupon);
+		activityCfgMapper.updateByPrimaryKeySelective(updateEntity);
+		if(StringUtils.equals(cateCoupon,ActivityCfgCoupon.COUPON_Y.getCode())){
+			couponRelService.updateCouponId(fydCouponId,activityId);
+		}
+	}
 }

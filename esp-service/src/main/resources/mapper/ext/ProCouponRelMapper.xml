@@ -41,4 +41,10 @@
           #{activityId}
         </foreach>
     </select>
+
+    <update id="updateCouponId">
+            update t_esp_pro_coupon_rel set coupon_id = #{couponId},updated_time = now()
+            where pro_activity_id = #{activityId}
+    </update>
+
 </mapper>

@@ -77,4 +77,8 @@ public class CouponRelService {
 		paramMap.put("activityIds",activityIds);
 		return couponRelMapper.getCouponRelListByActivityIdBanch(paramMap);
 	}
+
+	public void updateCouponId(Long couponId,Long activityId){
+		couponRelMapper.updateCouponId(activityId,couponId);
+	}
 }

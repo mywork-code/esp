@@ -1,5 +1,5 @@
 $(function(){
-
+    var arr = [];
     $("#activityType").combobox({
         onChange: function (n,o) {
             if(n == 'Y'){

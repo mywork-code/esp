@@ -6,6 +6,7 @@ import java.util.Map;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.gfb.framework.mybatis.GenericMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Created by jie.xu on 17/10/27.
@@ -31,4 +32,6 @@ public interface ProCouponRelMapper extends GenericMapper<ProCouponRel, Long> {
 	List<ProCouponRel> getCouponList();
 
 	List<ProCouponRel> getCouponRelListByActivityIdBanch(Map<String, Object> activityIds);
+
+	void updateCouponId(@Param("activityId") Long activityId,@Param("couponId") Long couponId);
 }

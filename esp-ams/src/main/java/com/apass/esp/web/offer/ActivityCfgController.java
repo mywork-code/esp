@@ -133,7 +133,7 @@ public class ActivityCfgController {
 		ActivityCfgVo vo = GsonUtils.convertObj(requestDecode, ActivityCfgVo.class);
 
  		try {
- 			if(vo.getActivityCate().intValue() == 0){
+ 			if(vo.getActivityCate() == null || vo.getActivityCate().intValue() == 0){
 				validateParams(vo, false);
 			}
  			vo.setUserName(SpringSecurityUtils.getLoginUserDetails().getUsername());
@@ -158,18 +158,24 @@ public class ActivityCfgController {
 			ProcouponRelListVo procouponRelListVo = GsonUtils.convertObj(requestDecode,ProcouponRelListVo.class);
 
 			if(procouponRelListVo != null){
-				List<ProCouponRel> relList = procouponRelListVo.getRelList();
-				if(CollectionUtils.isNotEmpty(relList)){
-					Iterator<ProCouponRel> iteratorRel = relList.iterator();
-					while(iteratorRel.hasNext()){
-						ProCouponRel proRel1 = iteratorRel.next();
-						//根据id获取remainNum值
-						ProCouponRel proRel2 = couponRelService.getcoupoRelByPrimary(proRel1.getId());
-						Integer subtractNum = proRel2.getTotalNum()-proRel2.getRemainNum();
-						proRel1.setRemainNum(proRel1.getTotalNum()-subtractNum);
-						couponRelService.updateProCouponRel(proRel1);
+				if(procouponRelListVo.getActivityCate().intValue() == 1){
+					activityCfgService.updateFydActCouponCfg(procouponRelListVo.getActivityId(),procouponRelListVo.getCateCoupon(),
+							procouponRelListVo.getFydActPer(),procouponRelListVo.getFydDownPer(),procouponRelListVo.getFydCouponId());
+				}else{
+					List<ProCouponRel> relList = procouponRelListVo.getRelList();
+					if(CollectionUtils.isNotEmpty(relList)){
+						Iterator<ProCouponRel> iteratorRel = relList.iterator();
+						while(iteratorRel.hasNext()){
+							ProCouponRel proRel1 = iteratorRel.next();
+							//根据id获取remainNum值
+							ProCouponRel proRel2 = couponRelService.getcoupoRelByPrimary(proRel1.getId());
+							Integer subtractNum = proRel2.getTotalNum()-proRel2.getRemainNum();
+							proRel1.setRemainNum(proRel1.getTotalNum()-subtractNum);
+							couponRelService.updateProCouponRel(proRel1);
+						}
 					}
 				}
+
 
 			}
 		}catch (Exception e){
@@ -185,7 +191,10 @@ public class ActivityCfgController {
     @RequestMapping(value ="/edit/save",method = RequestMethod.POST)
  	public Response activityEditSave(ActivityCfgVo vo){
  		try {
- 			validateParams(vo, true);
+			if(vo.getActivityCate() == null ||vo.getActivityCate().intValue() == 0){
+				validateParams(vo, true);
+			}
+
  			vo.setUserName(SpringSecurityUtils.getLoginUserDetails().getUsername());
  			activityCfgService.editActivity(vo);
  			return Response.success("编辑成功");
