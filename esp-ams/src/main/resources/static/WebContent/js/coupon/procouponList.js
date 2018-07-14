@@ -427,7 +427,7 @@ $(function(){
 				$("#goodsCodeTr").css("display","none");
 				$("#goosCategoryTr").css("display","none");
 				$(".grantClass").css("display","none");
-				
+				$("#addType2").combobox('setValue','HDSP')
 				type = $("#addType2").combobox('getValue');
 				$("#addType2").combobox({ disabled: true });
 			}else if(param == 'FYDYHZX'){
@@ -440,7 +440,7 @@ $(function(){
 				$("#effectiveTimeTr").css("display","none");
 				$("#skuId").textbox("setValue","");
 				$("#typeTd2").show();
-				
+				$("#addType2").combobox('setValue','HDSP')
 				type = $("#addType2").combobox('getValue');
 				$("#addType2").combobox({ disabled: true });
 			}else{
