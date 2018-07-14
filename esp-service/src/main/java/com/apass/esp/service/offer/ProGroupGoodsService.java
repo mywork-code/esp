@@ -1,8 +1,11 @@
 package com.apass.esp.service.offer;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TreeSet;
+import java.math.BigDecimal;
+import java.util.*;
+
+import com.apass.esp.domain.entity.jd.JdSellPrice;
+import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.vo.ActivityCfgQuery;
+import com.apass.esp.service.goods.GoodsStockInfoService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +76,9 @@ public class ProGroupGoodsService {
 	private CategoryMapper categoryMapper;
 	@Autowired
 	private JdGoodsInfoService jdGoodsInfoService;
+
+	@Autowired
+	private GoodsStockInfoService goodsStockInfoService;
 
 	public ProGroupGoodsBo getByGoodsId(Long goodsId){
 		ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
@@ -242,7 +248,6 @@ public class ProGroupGoodsService {
 	/**
 	 *  判断该商品是否参加了限时购活动，如果参加了且时间有冲突
 	 * @param activityId
-	 * @param goodsId
 	 * @return
 	 */
 	public Boolean getStatusBySkuId(String activityId, String skuId) {
@@ -527,4 +532,50 @@ public class ProGroupGoodsService {
 		return true;
 	}
 
+	/**
+	 * 将专属房易贷用户活动下的商品，根据下架系数下架
+	 */
+	public void downProductOfFyd(){
+		ActivityCfgQuery query = new ActivityCfgQuery();
+		query.setStatus("");
+		query.setActivityCate(Byte.valueOf("1"));
+		query.setStatus("processing");
+		List<ProActivityCfg> activityCfgs = activityCfgService.selectProActivityCfgByActivitCfgQuery(query);
+		if(CollectionUtils.isNotEmpty(activityCfgs)){
+			for(ProActivityCfg cfg : activityCfgs){
+				Long activityId = cfg.getId();
+				BigDecimal fydDownPer = cfg.getFydDownPer();
+				List<ProGroupGoods> goods =	groupGoodsMapper.selectByActivityId(activityId);
+				if(CollectionUtils.isNotEmpty(goods)){
+					for(ProGroupGoods good : goods){
+						//判断下架系数
+						Long goodsId = good.getGoodsId();
+						GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(goodsId);
+						String wzGoodsId = goodsInfoEntity.getExternalId();
+						List<String> wzGoodsIdList = new ArrayList<>();
+						wzGoodsIdList.add(wzGoodsId);
+
+						List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
+						BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
+						BigDecimal wzPrice = jdSellPrices.get(0).getPrice();
+						if(wzPrice.divide(good.getActivityPrice()).compareTo(fydDownPer) >= 0){
+							//自动下架规则：微知价 / 活动价>n%
+							GoodsInfoEntity updateGood = new GoodsInfoEntity();
+							updateGood.setId(goodsId);
+							updateGood.setStatus(GoodStatus.GOOD_DOWN.getCode());
+							goodsService.updateService(updateGood);
+						}
+						List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getGoodId());
+						if(CollectionUtils.isNotEmpty(goodsStockInfoEntityList)){
+							//更新价格
+							GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoEntityList.get(0);
+							goodsStockInfoEntity.setGoodsCostPrice(wzPrice);
+							goodsStockInfoEntity.setGoodsPrice(jdPrice);
+							goodsStockInfoService.update(goodsStockInfoEntity);
+						}
+					}
+				}
+			}
+		}
+	}
 }

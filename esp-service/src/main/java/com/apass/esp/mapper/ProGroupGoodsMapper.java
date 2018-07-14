@@ -43,5 +43,7 @@ public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
    Integer checkActivityGroupGoods(@Param("activityId") Long activityId);
    //删除活动下的商品
    Integer delectGoodsByActivityId(@Param("activityId") Long activityId);
+
+   List<ProGroupGoods> selectByActivityId(@Param("activityId") Long activityId);
    
 }

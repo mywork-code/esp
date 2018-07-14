@@ -156,5 +156,15 @@
 			</if>
 		</where>
 	</sql>
+
+
+    <select id="selectByActivityId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+         FROM t_esp_pro_group_goods
+        WHERE group_id !=-1
+         and `status`='S'
+         and  activity_id = #{activityId}
+    </select>
 </mapper>
 

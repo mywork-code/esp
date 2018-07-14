@@ -16,6 +16,7 @@ import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
@@ -27,6 +28,7 @@ import com.apass.esp.third.party.weizhi.entity.Category;
 import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.RandomUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -37,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -71,6 +74,8 @@ public class JDTaskListener implements MessageListener {
   private OrderService orderService;
   @Autowired
   private SystemEnvConfig systemEnvConfig;
+  @Autowired
+  private JdGoodsInfoService jdGoodsInfoService;
 
   @Override
   public void onMessage(Message message) {
@@ -304,7 +309,7 @@ public class JDTaskListener implements MessageListener {
     }
   }
 
-  private void addJDGoods(com.apass.esp.domain.entity.MessageListener ml, String skuId, int state,int type) {
+  private void addJDGoods(com.apass.esp.domain.entity.MessageListener ml, String skuId, int state,int type){
     Product product = null;
     try {
       product = weiZhiProductApiClient.getWeiZhiProductDetail(skuId);
@@ -387,6 +392,7 @@ public class JDTaskListener implements MessageListener {
     JdCategory jdCategory = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
     //已关联
     if (jdCategory != null && jdCategory.getFlag()) {
+      try {
       GoodsInfoEntity entity = new GoodsInfoEntity();
       entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
       entity.setCategoryId1(Long.valueOf(firstCategory));
@@ -407,20 +413,72 @@ public class JDTaskListener implements MessageListener {
       entity.setExternalId(jdGoods.getSkuId().toString());
       entity.setUpdateDate(new Date());
       entity.setCreateDate(new Date());
+      entity.setNewCreatDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("1900-01-01 00:00:00"));
+      entity.setAttrDesc("");
+      entity.setSupport7dRefund("");
+      entity.setSiftSort(0);
+      entity.setMainGoodsCode("");
       GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
-      //往t_esp_goods_stock_info表插数据
+        LOGGER.info("----------添加已关联类目商品成功... goodsId = " + insertJdGoods.getId());
+
+      if(insertJdGoods != null){
+        // 商品编号
+        StringBuffer sb = new StringBuffer();
+        sb.append("03");
+        String random = RandomUtils.getNum(8);
+        sb.append(random);
+        entity.setGoodsCode(sb.toString());
+        entity.setMainGoodsCode(sb.toString());
+        goodsService.updateService(entity);
+
+        //查询similar skuIds
+        TreeSet<String> similarSkuIds = jdGoodsInfoService.getJdSimilarSkuIdList(jdGoods.getSkuId().toString());
+        if(CollectionUtils.isNotEmpty(similarSkuIds)){
+          for (String skuId2: similarSkuIds) {
+            //根据skuId去goodsbase表中查,如果存在并且mainGoodsCode存在 存储mainGoodsCode
+            GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(skuId2);
+            if(goodsInfoEntity != null){
+              goodsInfoEntity.setMainGoodsCode(sb.toString());
+              goodsService.updateService(goodsInfoEntity);
+            }
+          }
+        }
+      }
+
+      // 往t_esp_goods_stock_info表插数据
       GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
       stockEntity.setStockTotalAmt(-1l);
       stockEntity.setStockCurrAmt(-1l);
+      stockEntity.setStockLogo(jdGoods.getImagePath());
+      stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
       stockEntity.setGoodsId(insertJdGoods.getGoodId());
       stockEntity.setGoodsPrice(jdGoods.getJdPrice());
       stockEntity.setMarketPrice(jdGoods.getJdPrice());
       stockEntity.setGoodsCostPrice(jdGoods.getPrice());
       stockEntity.setCreateUser("wzAdmin");
       stockEntity.setUpdateUser("wzAdmin");
-      try {
+      stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
+
+      //往库存表里插入商品规格
+      Map<String, String> jdGoodsSpecification = jdGoodsInfoService.getJdGoodsSpecification(jdGoods.getSkuId());
+      if(jdGoodsSpecification != null && jdGoodsSpecification.size() > 0){
+        StringBuffer sb = new StringBuffer();
+        for(String value:jdGoodsSpecification.values()){
+          sb.append(value+" ");
+        }
+        String goodsSku = sb.toString();
+        if(org.apache.commons.lang3.StringUtils.isNotBlank(goodsSku)){
+          goodsSku = goodsSku.substring(0,goodsSku.length()-1);
+
+        }
+        stockEntity.setGoodsSkuAttr(goodsSku);
+      }
+      stockEntity.setAttrValIds("");
+      stockEntity.setDeleteFlag("N");
+
         goodsStockInfoService.insert(stockEntity);
-        ml.setResult("商品添加到base_goods表成功");
+        LOGGER.info("----------添加已关联类目商品库存成功... goodsStockId = " + stockEntity.getId());
+        ml.setResult("商品添加到base_goods表&goods_stock表成功");
         ml.setStatus("1");
         ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());

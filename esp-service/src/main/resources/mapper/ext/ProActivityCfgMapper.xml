@@ -9,13 +9,17 @@
                     and  start_time = null or end_time = null or start_time &gt; now()
                 </if>
                 <if test="status=='processing'">
-                    and now()&gt; start_time and now() &lt;end_time
+                    <![CDATA[  and now()>= start_time and now() <= end_time  ]]>
                 </if>
                 <if test="status=='end'">
                     and now() &gt;end_time
                 </if>
                 <if test="coupon != null and coupon != ''">
                     and coupon = #{coupon}
+                </if>
+
+                <if test="activityCate != null and activityCate != ''">
+                    and activity_cate = #{activityCate}
                 </if>
             </if>
         </where>
