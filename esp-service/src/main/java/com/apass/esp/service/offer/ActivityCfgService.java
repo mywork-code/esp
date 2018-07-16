@@ -209,6 +209,7 @@ public class ActivityCfgService {
 		vo.setOfferSill1(cfg.getOfferSill1());
 		vo.setOfferSill2(cfg.getOfferSill2());
 		vo.setStatus(getActivityStatus(cfg).getMessage());
+		vo.setActivityCate(cfg.getActivityCate() == null? Byte.valueOf("0") : cfg.getActivityCate());
 		
 		return vo;
 	}

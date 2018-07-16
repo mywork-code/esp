@@ -38,10 +38,10 @@
 										style="width: 160px;" disabled="disabled"></td>
 				<td align="right">活动类型：</td>
 				<td align="left">
-					<select class="easyui-combobox" style="width: 160px;" id="activityType2" required="required" editable="false" disabled="disabled">
+					<select class="easyui-combobox" style="width: 160px;"  required="required" editable="false" disabled="disabled">
 						<option value="">请选择</option>
-						<option <#if ((activityCfgVo.activityType) == 'N')>selected="selected"</#if> value="N">无优惠</option>
-						<option <#if ((activityCfgVo.activityType) == 'Y')>selected="selected"</#if> value="Y">满减</option>
+						<option <#if ((activityCfgVo.activityCate) == 0)>selected="selected"</#if> value="0">普通活动</option>
+						<option <#if ((activityCfgVo.activityCate) == 1)>selected="selected"</#if> value="1">专属活动</option>
 					</select>
 				</td>
 			</tr>

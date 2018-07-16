@@ -372,8 +372,9 @@ public class ProGroupGoodsExportFikeController {
 							List<String> wzGoodsIdList = new ArrayList<>();
 							wzGoodsIdList.add(id);
 
-							List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
-							BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
+//							List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
+//							BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
+							BigDecimal jdPrice = new BigDecimal(2598);
 							activityPrice  = jdPrice.multiply(activityCfg.getFydActPer());
 
 						}else{
@@ -406,7 +407,9 @@ public class ProGroupGoodsExportFikeController {
 						}else{//该商品在其他有效活动中，导入失败
 							pggds.setGoodsId(gbity.getGoodId());
 							pggds.setSkuId(id);
-							pggds.setGoodsCode(gbity.getGoodsCode().toString());
+							if(gbity.getGoodsCode() != null){
+								pggds.setGoodsCode(gbity.getGoodsCode().toString());
+							}
 							pggds.setMarketPrice(list.get(i).getMarketPrice());
 							pggds.setActivityPrice(list.get(i).getActivityPrice());
 							pggds.setDetailDesc("0");//0表示导入失败
