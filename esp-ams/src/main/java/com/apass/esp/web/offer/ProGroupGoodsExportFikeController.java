@@ -10,6 +10,9 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.apass.esp.domain.entity.ProActivityCfg;
+import com.apass.esp.domain.entity.jd.JdSellPrice;
+import com.apass.esp.service.offer.ActivityCfgService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -80,6 +83,9 @@ public class ProGroupGoodsExportFikeController {
 	private JdGoodsInfoService jdGoodsInfoService;
     @Autowired
     private GoodsStockInfoRepository goodsStockInfoRepository;
+
+    @Autowired
+	private ActivityCfgService activityCfgService;
 
 	/**
      * 商品池分页json
@@ -331,16 +337,13 @@ public class ProGroupGoodsExportFikeController {
 			if (!type.equals("xlsx") && !type.equals("xls")) {
 				return Response.fail("导入文件类型不正确。");
 			}
-			//查看该活动下是否已经存在成功添加到分组的商品
-			int sum=proGroupGoodsService.checkActivityGroupGoods(Long.parseLong(activityId));
-			if(sum>0){
-				 return Response.fail("该活动下已有商品成功添加到分组，请移除后再导入！");
-			}else{//如果没有，则将其活动下是商品都删除
-				proGroupGoodsService.delectGoodsByActivityId(Long.parseLong(activityId));
-			}
+
 			List<ProGroupGoodsTo> list = readImportExcel(importFilein);
+
 			count=list.size();
 			if(null !=list){
+				ProActivityCfg activityCfg = activityCfgService.getById(Long.valueOf(activityId));
+
 				for(int i=0;i<list.size();i++){
 					ProGroupGoods pggds=new ProGroupGoods();
 					pggds.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
@@ -358,14 +361,41 @@ public class ProGroupGoodsExportFikeController {
 					if(null !=id && isNum.matches()){
 						gbity=goodsService.getByGoodsBySkuId(id);
 					}
-					if (null !=id && null != gbity && null != marketPrice && marketPrice.compareTo(zero)>0 && null != activityPrice && activityPrice.compareTo(zero)>0 && countSuccess <= 200) {
+					if (null !=id && null != gbity && null != marketPrice && marketPrice.compareTo(zero)>0) {
 						//判断该商品是否存在其他有效的活动中
 
 						Boolean result=proGroupGoodsService.selectEffectiveGoodsBySkuId(id);
 						Boolean limitResult=proGroupGoodsService.getStatusBySkuId(activityId,id);
+						if(activityCfg.getActivityCate().intValue() == 1){
+							//房易贷专属用户活动
+							//活动价=京东价*n%
+							List<String> wzGoodsIdList = new ArrayList<>();
+							wzGoodsIdList.add(id);
+
+							List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
+							BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
+							activityPrice  = jdPrice.multiply(activityCfg.getFydActPer());
+
+						}else{
+							if( null == activityPrice || activityPrice.compareTo(zero)<=0){
+								GoodsInfoEntity goods = goodsService.getGoodsInfo(id);
+								pggds.setGoodsId(null != goods ? goods.getId() : -1L );
+								pggds.setSkuId(id);
+								pggds.setGoodsCode(null != goods ? goods.getGoodsCode() : "" );
+								pggds.setMarketPrice(list.get(i).getMarketPrice());
+								pggds.setActivityPrice(list.get(i).getActivityPrice());
+								pggds.setDetailDesc("0");//0表示导入失败
+								pggds.setActivityId(Long.parseLong(activityId));
+								proGroupGoodsService.insertSelective(pggds);
+								countFail++;
+								continue;
+							}
+						}
+
+
 						if (result && limitResult) {//允许导入
-							pggds.setMarketPrice(list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP));//对小数点第三位执行四舍五入
-							pggds.setActivityPrice(list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+							pggds.setMarketPrice(marketPrice.setScale(2, BigDecimal.ROUND_HALF_UP));//对小数点第三位执行四舍五入
+							pggds.setActivityPrice(activityPrice.setScale(2, BigDecimal.ROUND_HALF_UP));
 							pggds.setGoodsId(gbity.getGoodId());
 							pggds.setSkuId(id);
 							pggds.setGoodsCode(gbity.getGoodsCodeString());
