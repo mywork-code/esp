@@ -511,6 +511,8 @@ public class MyCouponManagerService {
 			 * 首先根据券的Id,查出与活动,原则上一个房易贷用户专享的券只能配一个活动，但是为过滤测试数据错误，所做的兼容
 			 */
 			List<ProCouponRel> rels = couponRelMapper.getCouponByActivityIdOrCouponId(new ProCouponRelQuery(null, coupon.getId()));
+			
+			logger.error("procouponrel data is null,please check it,couponId is {}",coupon.getId());
 			Date now = new Date();
 			for (ProCouponRel rel : rels) {
 				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(rel.getProActivityId());
