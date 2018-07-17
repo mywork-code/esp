@@ -602,7 +602,4 @@ public class ProGroupGoodsExportFikeController {
 		return Response.success("创建分组成功！");
 	}
 
-	public static void main(String[] args) {
-		System.out.println(new BigDecimal(4.55).setScale(0, BigDecimal.ROUND_HALF_UP));
-	}
 }
