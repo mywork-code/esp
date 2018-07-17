@@ -103,7 +103,7 @@ public class TestWZController {
 				return Response.success("微知token获取成功！");
 			}
 		} catch (Exception e) {
-			LOGGER.error("微知token获取出错！");
+			LOGGER.error("微知token获取出错！",e);
 		}
 
 		return Response.fail("微知token获取失败！");
