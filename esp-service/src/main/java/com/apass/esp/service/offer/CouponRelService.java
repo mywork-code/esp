@@ -82,4 +82,8 @@ public class CouponRelService {
 	public void updateCouponId(Long couponId,Long activityId){
 		couponRelMapper.updateCouponId(activityId,couponId);
 	}
+
+	public List<ProCouponRel> getByCouponId(Long couponId){
+		return couponRelMapper.selectByCouponId(couponId);
+	}
 }

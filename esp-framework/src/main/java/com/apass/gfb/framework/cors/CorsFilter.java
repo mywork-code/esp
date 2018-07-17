@@ -114,9 +114,10 @@ import org.springframework.stereotype.Component;
  *
  */
 //
-//@Order(Ordered.HIGHEST_PRECEDENCE)
-//@Component
-//@ConditionalOnExpression("'${jdev.cors}' == 'true'")
+
+@Order(Ordered.HIGHEST_PRECEDENCE)
+@Component
+@ConditionalOnExpression("'${jdev.cors}' == 'true'")
 // @WebFilter not work now
 // @WebFilter(urlPatterns = { "/*" }, initParams = {
 // @WebInitParam(name = "cors.allowed.origins", value = "*"),

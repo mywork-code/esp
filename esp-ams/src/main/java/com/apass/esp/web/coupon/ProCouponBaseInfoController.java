@@ -1,10 +1,6 @@
 package com.apass.esp.web.coupon;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.apass.esp.mapper.ProCouponMapper;
 import org.apache.commons.collections.CollectionUtils;
@@ -137,16 +133,35 @@ public class ProCouponBaseInfoController {
         	List<ProCoupon> ptff = proCouponService.getProCouponList(proCoupon);
         	coupons.addAll(ptff);
         }
+
         proCoupon.setExtendType(CouponExtendType.COUPON_FYDYHZX.getCode());
         List<ProCoupon> fyd = proCouponService.getProCouponList(proCoupon);
     	coupons.addAll(fyd);
+        Iterator<ProCoupon> it = coupons.iterator();
+        while (it.hasNext()){
+            ProCoupon c = it.next();
+            List<ProCouponRel> relList = couponRelService.getByCouponId(c.getId());
+            if(CollectionUtils.isNotEmpty(relList)){
+                it.remove();
+            }
+        }
         return coupons;
     }
 
     @RequestMapping("/loadp2")
     @ResponseBody
     public List<ProCoupon> loadCouponPTFF2(ProCoupon proCoupon){
-        return proCouponService.getProCouponList(proCoupon);
+
+        List<ProCoupon> result = proCouponService.getProCouponList(proCoupon);
+        Iterator<ProCoupon> it = result.iterator();
+        while (it.hasNext()){
+            ProCoupon c = it.next();
+            List<ProCouponRel> relList = couponRelService.getByCouponId(c.getId());
+            if(CollectionUtils.isNotEmpty(relList)){
+                it.remove();
+            }
+        }
+        return result;
     }
 
     @RequestMapping("/add")
