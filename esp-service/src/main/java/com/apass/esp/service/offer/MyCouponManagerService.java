@@ -515,23 +515,21 @@ public class MyCouponManagerService {
 			if(CollectionUtils.isEmpty(rels)){
 				logger.error("procouponrel data is null,please check it,couponId is {}",coupon.getId());
 			}
+			ProCouponRel rel = rels.get(0);
 			Date now = new Date();
-			for (ProCouponRel rel : rels) {
-				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(rel.getProActivityId());
-				if(null == cfg || cfg.getEndTime().getTime() < now.getTime()){
-					continue;
-				}
-				proMyCoupon.setCouponRelId(rel.getId());
-				proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
-				proMyCoupon.setCouponId(Long.valueOf(rel.getCouponId()));
-				proMyCoupon.setTelephone(fyd.getMobile());
-				proMyCoupon.setStartDate(cfg.getStartTime());
-				proMyCoupon.setEndDate(cfg.getEndTime());
-				proMyCoupon.setCreatedTime(now);
-				proMyCoupon.setUpdatedTime(now);
-				myCouponMapper.insertSelective(proMyCoupon);
-				break;
+			ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(rel.getProActivityId());
+			if(null == cfg || cfg.getEndTime().getTime() < now.getTime()){
+				continue;
 			}
+			proMyCoupon.setCouponRelId(rel.getId());
+			proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+			proMyCoupon.setCouponId(Long.valueOf(rel.getCouponId()));
+			proMyCoupon.setTelephone(fyd.getMobile());
+			proMyCoupon.setStartDate(cfg.getStartTime());
+			proMyCoupon.setEndDate(cfg.getEndTime());
+			proMyCoupon.setCreatedTime(now);
+			proMyCoupon.setUpdatedTime(now);
+			myCouponMapper.insertSelective(proMyCoupon);
 		}
 	}
 }

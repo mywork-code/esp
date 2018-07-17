@@ -194,13 +194,6 @@ $(function(){
 			},
 			onLoadSuccess: function () {
 				$(this).combobox('setValue','请选择');
-				//加载完成后,设置选中第一项
-				// var val = $(this).combobox('getData');
-				// for (var item in val[0]) {
-				// 	if (item == 'id') {
-				// 		$(this).combobox('select', val[0][item]);
-				// 	}
-				// }
 			},
 		});
 		clearIssueAndRestoreDiv();
@@ -212,9 +205,9 @@ $(function(){
 			modal:true,
 			buttons:[
 				{
-					text : "保存",
+					text : "发放",
 					handler : function() {
-						$.messager.confirm('<span style="color: black">提示</span>', '你确认要保存吗？', function(r){
+						$.messager.confirm('<span style="color: black">提示</span>', '你确认要发放吗？', function(r){
 							if (!r){
 								return;
 							}
