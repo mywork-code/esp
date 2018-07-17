@@ -54,6 +54,8 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -118,17 +120,16 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
 @ConditionalOnExpression("'${jdev.cors}' == 'true'")
-// @WebFilter not work now
-// @WebFilter(urlPatterns = { "/*" }, initParams = {
-// @WebInitParam(name = "cors.allowed.origins", value = "*"),
-// @WebInitParam(name = "cors.allowed.methods", value =
-// "POST,GET,DELETE,PUT,HEAD,OPTIONS,PATCH"),
-// @WebInitParam(name = "cors.allowed.headers", value =
-// "Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,dataserviceversion,maxdataserviceversion"),
-// @WebInitParam(name = "cors.exposed.headers", value =
-// "Access-Control-Allow-Origin,Access-Control-Allow-Credentials"),
-// @WebInitParam(name = "cors.support.credentials", value = "true"),
-// @WebInitParam(name = "cors.preflight.maxage", value = "10") })
+ @WebFilter(urlPatterns = { "/*" }, initParams = {
+ @WebInitParam(name = "cors.allowed.origins", value = "*"),
+ @WebInitParam(name = "cors.allowed.methods", value =
+ "POST,GET,DELETE,PUT,HEAD,OPTIONS,PATCH"),
+ @WebInitParam(name = "cors.allowed.headers", value =
+ "Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,dataserviceversion,maxdataserviceversion"),
+ @WebInitParam(name = "cors.exposed.headers", value =
+ "Access-Control-Allow-Origin,Access-Control-Allow-Credentials"),
+ @WebInitParam(name = "cors.support.credentials", value = "true"),
+ @WebInitParam(name = "cors.preflight.maxage", value = "10") })
 public final class CorsFilter implements Filter {
 
 	private static final Log LOG = LogFactory.getLog(CorsFilter.class);
