@@ -17,8 +17,17 @@ public class ProcouponRelListVo{
 
     private BigDecimal fydDownPer;
     private Long fydCouponId;
+    private List<String> fydCouponIdList;
     private String cateCoupon;
     private Byte activityCate;
+
+    public List<String> getFydCouponIdList() {
+        return fydCouponIdList;
+    }
+
+    public void setFydCouponIdList(List<String> fydCouponIdList) {
+        this.fydCouponIdList = fydCouponIdList;
+    }
 
     public Long getActivityId() {
         return activityId;

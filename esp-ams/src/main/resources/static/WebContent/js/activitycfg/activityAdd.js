@@ -9,7 +9,7 @@ $(function(){
 	var obj4 = {};
 	var obj5 = {};
 
-
+    var fydCouponId = null;
 	/**
 	 * 保存活动添加信息
 	 */
@@ -86,7 +86,7 @@ $(function(){
 			}
             var value = $("input[name='cateCoupon']:checked").val();
             if(value == 'Y'){
-              var fydCouponId =  $('.cateCouponInput ').combo('getValue');
+
               if(fydCouponId == ''){
                   $.messager.alert("<span style='color: black;'>提示</span>","请选择优惠券！",'info');
                   return false;
@@ -96,7 +96,7 @@ $(function(){
             param.fydActPer = fydActivityPer;
             param.fydDownPer = fydDownPer;
             param.cateCoupon = value;
-            param.fydCouponId = fydCouponId;
+            param.fydCouponIdList = fydCouponId;
 
 
         } else{
@@ -384,16 +384,20 @@ $(function(){
         method: "get",
         valueField: 'id',
         textField: 'name',
+        multiple:true,
         queryParams: {
             "extendType" : "FYDYHZX",
         },
         onShowPanel : function(){
-            $(this).combobox('options').url= ctx + "/application/coupon/management/loadp",
+            $(this).combobox('options').url= ctx + "/application/coupon/management/loadp";
                 $(this).combobox('reload');
         },
         onLoadSuccess: function () {
             $(this).combobox('setValue','');
         },
+        onSelect: function () {
+            fydCouponId = $(this).combobox('getValues');
+        }
     });
 
 

@@ -1,6 +1,7 @@
 package com.apass.esp.domain.vo;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ActivityCfgVo extends ProCouponRelVo {
 	private Long id;
@@ -40,6 +41,15 @@ public class ActivityCfgVo extends ProCouponRelVo {
 
     private BigDecimal fydDownPer;
     private Long fydCouponId;
+    private List<String> fydCouponIdList;
+
+    public List<String> getFydCouponIdList() {
+        return fydCouponIdList;
+    }
+
+    public void setFydCouponIdList(List<String> fydCouponIdList) {
+        this.fydCouponIdList = fydCouponIdList;
+    }
 
     public String getActivityCateStr() {
         return activityCateStr;

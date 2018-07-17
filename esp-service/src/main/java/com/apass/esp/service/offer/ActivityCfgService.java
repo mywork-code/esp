@@ -107,18 +107,26 @@ public class ActivityCfgService {
 		}else if(record.getActivityCate().byteValue() == 1){
 			//专属活动
 			if(StringUtils.equals(ActivityCfgCoupon.COUPON_Y.getCode(),vo.getCateCoupon())){
-				ProCouponRel proCouponRel = new ProCouponRel();
-				proCouponRel.setCouponId(vo.getFydCouponId());
-				proCouponRel.setProActivityId(record.getId());
-				proCouponRel.setLimitNum(-1);
-				proCouponRel.setTotalNum(-1);
-				proCouponRel.setRemainNum(-1);
-				proCouponRel.setCreatedTime(new Date());
-				proCouponRel.setUpdatedTime(new Date());
-				Integer relId = couponRelService.addProCouponRel(proCouponRel);
-				if(relId == 0){
-					throw new BusinessException("添加活动配置信息失败");
+				if(CollectionUtils.isNotEmpty(vo.getFydCouponIdList())){
+					for(String couponId : vo.getFydCouponIdList()){
+						if(StringUtils.isBlank(couponId)){
+							continue;
+						}
+						ProCouponRel proCouponRel = new ProCouponRel();
+						proCouponRel.setCouponId(Long.valueOf(couponId));
+						proCouponRel.setProActivityId(record.getId());
+						proCouponRel.setLimitNum(-1);
+						proCouponRel.setTotalNum(-1);
+						proCouponRel.setRemainNum(-1);
+						proCouponRel.setCreatedTime(new Date());
+						proCouponRel.setUpdatedTime(new Date());
+						Integer relId = couponRelService.addProCouponRel(proCouponRel);
+						if(relId == 0){
+							throw new BusinessException("添加活动配置信息失败");
+						}
+					}
 				}
+
 			}
 		}
 
@@ -254,7 +262,7 @@ public class ActivityCfgService {
 	 * 更新房易贷活动配置信息
 	 */
 	public void updateFydActCouponCfg(Long activityId,String cateCoupon,BigDecimal fydActPer,
-									  BigDecimal fydDownPer,Long fydCouponId){
+									  BigDecimal fydDownPer,List<String> fydCouponIdList){
 		ProActivityCfg updateEntity = new ProActivityCfg();
 		updateEntity.setId(activityId);
 		BigDecimal b100 = new BigDecimal(100);
@@ -263,7 +271,12 @@ public class ActivityCfgService {
 		updateEntity.setCoupon(cateCoupon);
 		activityCfgMapper.updateByPrimaryKeySelective(updateEntity);
 		if(StringUtils.equals(cateCoupon,ActivityCfgCoupon.COUPON_Y.getCode())){
-			couponRelService.updateCouponId(fydCouponId,activityId);
+			for(String fydCouponId : fydCouponIdList){
+				if(StringUtils.isBlank(fydCouponId)){
+					continue;
+				}
+				couponRelService.updateCouponId(Long.valueOf(fydCouponId),activityId);
+			}
 		}
 	}
 }

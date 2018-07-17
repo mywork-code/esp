@@ -12,7 +12,7 @@ $(function(){
 	//是否选择优惠券成员变量
 	var coupon = null;
     var activityCate = null;
-
+    var fydCouponId = null;
 	//活动id
 	var paramMapActivityId = $("#paramMapActivityId").val();
 	$.ajax({
@@ -43,7 +43,7 @@ $(function(){
                         }
                     });
 					if(coupon == 'Y'){
-						var fydCouponId=resp.fydCouponId;
+						 fydCouponId=resp.fydCouponIdList;
                         $('.cateCouponInput').combobox('setValue',fydCouponId);
                         $('#id_xxx_copon').show();
 					}
@@ -201,7 +201,7 @@ $(function(){
             }
             var value = $("input[name='cateCoupon']:checked").val();
             if(value == 'Y'){
-                var fydCouponId =  $('.cateCouponInput ').combo('getValue');
+
                 if(fydCouponId == ''){
                     $.messager.alert("<span style='color: black;'>提示</span>","请选择优惠券！",'info');
                     return false;
@@ -210,7 +210,8 @@ $(function(){
             param.fydActPer = fydActivityPer;
             param.fydDownPer = fydDownPer;
             param.cateCoupon = value;
-            param.fydCouponId = fydCouponId;
+            param.fydCouponIdList = fydCouponId;
+
 
 		}else{
             var activityType = $("#activityType").combobox('getValue');
@@ -459,10 +460,20 @@ function loadCateCouponList() {
         url: ctx + "/application/coupon/management/loadp2",
         valueField: 'id',
         textField: 'name',
+        multiple:true,
         queryParams: {
             "extendType" : "FYDYHZX",
         },
+        onShowPanel : function(){
+            $(this).combobox('options').url= ctx + "/application/coupon/management/loadp2";
+            $(this).combobox('reload');
+            $(this).combobox('setValue','');
+        },
         onLoadSuccess:function (data) {
+
+        },
+        onSelect: function () {
+            fydCouponId = $(this).combobox('getValues');
         }
     });
 }

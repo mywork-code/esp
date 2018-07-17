@@ -1,10 +1,7 @@
 package com.apass.esp.web.offer;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import com.apass.esp.domain.dto.ProcouponRelListVo;
 import com.apass.esp.domain.dto.ProcouponRelVoList;
@@ -160,7 +157,7 @@ public class ActivityCfgController {
 			if(procouponRelListVo != null){
 				if(procouponRelListVo.getActivityCate().intValue() == 1){
 					activityCfgService.updateFydActCouponCfg(procouponRelListVo.getActivityId(),procouponRelListVo.getCateCoupon(),
-							procouponRelListVo.getFydActPer(),procouponRelListVo.getFydDownPer(),procouponRelListVo.getFydCouponId());
+							procouponRelListVo.getFydActPer(),procouponRelListVo.getFydDownPer(),procouponRelListVo.getFydCouponIdList());
 				}else{
 					List<ProCouponRel> relList = procouponRelListVo.getRelList();
 					if(CollectionUtils.isNotEmpty(relList)){
@@ -220,7 +217,11 @@ public class ActivityCfgController {
 				if(StringUtils.equals(pro.getCoupon(),ActivityCfgCoupon.COUPON_Y.getCode())){
 					if(pro.getActivityCate().intValue() == 1){
 						List<ProCouponRel> couponRelList = couponRelService.getCouponRelList(String.valueOf(vo.getId()));
-						activityCfgForEditVo.setFydCouponId(couponRelList.get(0).getCouponId());
+						List couponIdList = new ArrayList();
+						for(ProCouponRel rel : couponRelList){
+							couponIdList.add(rel.getCouponId());
+						}
+						activityCfgForEditVo.setFydCouponIdList(couponIdList);
 					}else{
 						//如果使用优惠券，去优惠券与活动关系表中查询优惠券想着信息
 						List<ProCouponRel> couponRelList = couponRelService.getCouponRelList(String.valueOf(vo.getId()));
