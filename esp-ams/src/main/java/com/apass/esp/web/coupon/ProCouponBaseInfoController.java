@@ -39,6 +39,7 @@ import com.apass.esp.service.offer.CouponRelService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProCouponService;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants;
@@ -245,12 +246,15 @@ public class ProCouponBaseInfoController {
                 }
             }
 
+        }catch (BusinessException e){
+            logger.error("手动发放优惠券异常，Exception-----",e);
+            return Response.fail(e.getErrorDesc());
         }catch (Exception e){
             logger.error("手动发放优惠券异常，Exception-----",e);
-            return Response.fail(e.getMessage());
+            return Response.fail("发送优惠券失败！");
         }
 
-        return Response.success("发放优惠券成功.");
+        return Response.success("发放优惠券成功！");
     }
 
     @RequestMapping("/delete")
