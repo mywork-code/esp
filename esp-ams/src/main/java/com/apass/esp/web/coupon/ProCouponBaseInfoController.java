@@ -1,8 +1,12 @@
 package com.apass.esp.web.coupon;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.apass.esp.mapper.ProCouponMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,9 +30,7 @@ import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.domain.enums.CouponSillType;
 import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.enums.CouponType;
-import com.apass.esp.domain.enums.OfferRangeType;
 import com.apass.esp.domain.query.ProCouponQuery;
-import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.vo.ActivityCfgQuery;
 import com.apass.esp.domain.vo.ProActivityRelVo;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
@@ -43,7 +45,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
