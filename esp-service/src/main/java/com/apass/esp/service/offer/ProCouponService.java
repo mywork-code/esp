@@ -1,7 +1,23 @@
 package com.apass.esp.service.offer;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.CouponExtendType;
@@ -11,21 +27,17 @@ import com.apass.esp.domain.enums.GrantNode;
 import com.apass.esp.domain.enums.OfferRangeType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.query.ProCouponQuery;
+import com.apass.esp.domain.query.ProCouponRelQuery;
+import com.apass.esp.domain.vo.ProActivityRelVo;
 import com.apass.esp.mapper.ProCouponMapper;
+import com.apass.esp.mapper.ProCouponRelMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Maps;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
 
 /**
  * Created by xiaohai on 2017/10/30.
@@ -33,7 +45,7 @@ import java.util.*;
 @Service
 @Transactional
 public class ProCouponService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProCouponService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProCouponService.class);
     @Autowired
     private ProCouponMapper couponMapper;
     @Autowired
@@ -44,6 +56,8 @@ public class ProCouponService {
     private ActivityCfgService activityCfgService;
     @Autowired
     public GoodsStockInfoService goodsStockInfoService;
+    @Autowired
+    private ProCouponRelMapper couponRelMapper;
 
     /**
      * 分页查询优惠券列表
@@ -99,7 +113,7 @@ public class ProCouponService {
                 TreeSet<String> skuIdSet = jdGoodsInfoService.getJdSimilarSkuIdList(goodsInfoEntity.getExternalId());
                 List<String> skuIdList = new ArrayList<String> (skuIdSet);
                 if(CollectionUtils.isEmpty(skuIdList)){
-                    LOGGER.error("数据有误,京东商品无skuId,商品id为:{}",String.valueOf(goodsInfoEntity.getId()));
+                    logger.error("数据有误,京东商品无skuId,商品id为:{}",String.valueOf(goodsInfoEntity.getId()));
                     throw new RuntimeException("数据有误,京东商品无skuId");
                 }
                 List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(skuIdList);
@@ -134,7 +148,7 @@ public class ProCouponService {
         coupon2.setName(proCoupon.getName());
         List<ProCoupon> couList = couponMapper.getProCouponBCoupon(coupon2);
         if(CollectionUtils.isNotEmpty(couList)){
-            LOGGER.error("优惠券名称重复，name:{}",proCoupon.getName());
+            logger.error("优惠券名称重复，name:{}",proCoupon.getName());
             throw new RuntimeException("优惠券名称已存在，不能重复！");
         }
         return couponMapper.insertSelective(proCoupon);
@@ -171,4 +185,44 @@ public class ProCouponService {
         return couponMapper.selectProCouponByIds(paramMap);
     }
 
+    /**
+     * 根据券的ID，查询出券的类型，根据类型（平台发放、房易贷用户专享）判断，券的开始和结束日期
+     * @param couponId
+     * @return
+     * @throws BusinessException
+     */
+    public ProActivityRelVo getByActivityAndCoupon(Long couponId) throws BusinessException{
+    	Long couponRelId = -1L;
+        Date startDate = new Date();
+        Date endDate = startDate;
+        ProCoupon proCoupon = couponMapper.selectByPrimaryKey(couponId);
+        if(null == proCoupon){
+        	logger.error("coupon is null ,couponId is {}",couponId);
+        	throw new BusinessException("ID为["+couponId+"],的优惠券不存在!");
+        }
+        
+        if(StringUtils.equals(CouponExtendType.COUPON_FYDYHZX.getCode(),proCoupon.getExtendType())){
+        	/**
+			 * 首先根据券的Id,查出与活动,原则上一个房易贷用户专享的券只能配一个活动，但是为过滤测试数据错误，所做的兼容
+			 */
+			List<ProCouponRel> rels = couponRelMapper.getCouponByActivityIdOrCouponId(new ProCouponRelQuery(null, proCoupon.getId()));
+			if(CollectionUtils.isEmpty(rels)){
+				logger.error("procouponrel is null,couponId is {}",proCoupon.getId());
+				throw new BusinessException("ID为["+couponId+"],名称为["+proCoupon.getName()+"]的优惠券,没有跟活动关联!");
+			}
+			ProCouponRel rel = rels.get(0);
+			ProActivityCfg cfg = activityCfgService.getById(rel.getProActivityId());
+			if(null == cfg || cfg.getEndTime().getTime() < startDate.getTime()){
+				logger.error("ProActivityCfg is null or expired,activityId is {}",cfg.getId());
+				throw new BusinessException("ID为["+rel.getProActivityId()+"]的活动,关联优惠券ID为["+rel.getCouponId()+"],名称为["+proCoupon.getName()+"]，不存在或已过期！");
+			}
+			couponRelId = rel.getId();
+			startDate = cfg.getStartTime();
+			endDate = cfg.getEndTime();
+        }else if(StringUtils.equals(CouponExtendType.COUPON_PTFF.getCode(),proCoupon.getExtendType())){
+        	endDate = DateFormatUtil.addDays(new Date(),proCoupon.getEffectiveTime());
+        }
+        
+        return new ProActivityRelVo(couponRelId,startDate,endDate);
+    }
 }
