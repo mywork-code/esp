@@ -47,4 +47,8 @@
             where pro_activity_id = #{activityId}
     </update>
 
+    <select id="selectByCouponId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+      select <include refid="Base_Column_List" />
+      from t_esp_pro_coupon_rel where coupon_id = #{couponId}
+    </select>
 </mapper>

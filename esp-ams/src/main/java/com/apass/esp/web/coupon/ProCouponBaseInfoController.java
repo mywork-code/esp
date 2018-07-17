@@ -2,11 +2,11 @@ package com.apass.esp.web.coupon;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.apass.esp.mapper.ProCouponMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,9 +30,9 @@ import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.domain.enums.CouponSillType;
 import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.enums.CouponType;
-import com.apass.esp.domain.enums.OfferRangeType;
 import com.apass.esp.domain.query.ProCouponQuery;
 import com.apass.esp.domain.vo.ActivityCfgQuery;
+import com.apass.esp.domain.vo.ProActivityRelVo;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
@@ -41,10 +41,10 @@ import com.apass.esp.service.offer.CouponRelService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProCouponService;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
@@ -58,7 +58,7 @@ import com.google.common.collect.Sets;
 @RequestMapping("/application/coupon/management")
 public class ProCouponBaseInfoController {
     private static final String COUPONPAGE = "coupon/procouponList";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProCouponBaseInfoController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProCouponBaseInfoController.class);
     @Autowired
     private ProCouponService proCouponService;
     @Autowired
@@ -78,7 +78,7 @@ public class ProCouponBaseInfoController {
     @RequestMapping("/pageList")
     @ResponseBody
     public ResponsePageBody<ProCoupon> pageList(ProCouponQuery query){
-        LOGGER.info("优惠券分页查询开始,pageList()方法.....");
+        logger.info("优惠券分页查询开始,pageList()方法.....");
         ResponsePageBody<ProCoupon> responseBody = new ResponsePageBody<>();
         try{
             Pagination<ProCoupon> pagination = proCouponService.pageList(query);
@@ -91,7 +91,7 @@ public class ProCouponBaseInfoController {
             responseBody.setTotal(0);
             responseBody.setStatus(BaseConstants.CommonCode.ERROR_CODE);
             responseBody.setMsg("优惠券查询失败！");
-            LOGGER.error("优惠券查询异常,....Exception...",e);
+            logger.error("优惠券查询异常,....Exception...",e);
         }
 
         return responseBody;
@@ -102,6 +102,7 @@ public class ProCouponBaseInfoController {
     @ResponseBody
     public List<ProCoupon> loadCouponPTFF(ProCoupon proCoupon){
         proCoupon.setIsDelete(CouponIsDelete.COUPON_N.getCode());
+        List<ProCoupon> coupons = Lists.newArrayList();
         //如果是用户领取，只显示未关联有效活动的优惠券显示
         if(StringUtils.equals(CouponExtendType.COUPON_YHLQ.getCode(),proCoupon.getExtendType())){
             //先捞取所有使用优惠券的 且有效的 活动
@@ -109,7 +110,7 @@ public class ProCouponBaseInfoController {
             activityCfgQuery.setCoupon(ActivityCfgCoupon.COUPON_Y.getCode());
             activityCfgQuery.setStatus("processing");
             List<ProActivityCfg> activityCfgList = activityCfgService.selectProActivityCfgByActivitCfgQuery(activityCfgQuery);
-            LOGGER.info("活动配置表中有效活动数:{},参数activityCfgList:{}",String.valueOf(activityCfgList.size()),GsonUtils.toJson(activityCfgList));
+            logger.info("活动配置表中有效活动数:{},参数activityCfgList:{}",String.valueOf(activityCfgList.size()),GsonUtils.toJson(activityCfgList));
             List<Long> activityIds = Lists.newArrayList();//有效活动id集合
             if(CollectionUtils.isNotEmpty(activityCfgList)){
                 for (ProActivityCfg proActivityCfg: activityCfgList) {
@@ -122,26 +123,47 @@ public class ProCouponBaseInfoController {
                     for (ProCouponRel proRel:couponRels) {
                         couponIds.add(proRel.getCouponId());
                     }
-
                     ArrayList<Long> couponIdList = new ArrayList<>(couponIds);
-                    LOGGER.info("有效活动对应的优惠券ids：{}",GsonUtils.toJson(couponIdList));
-
+                    logger.info("有效活动对应的优惠券ids：{}",GsonUtils.toJson(couponIdList));
                     //查询用户领取类型优惠券，并not in上述id的优惠券显示在前端
                     List<ProCoupon> lists = proCouponService.selectProCouponByIds(couponIdList);
-
                     return lists;
                 }
             }
 
+        }else if(StringUtils.equals(CouponExtendType.COUPON_PTFF.getCode(),proCoupon.getExtendType())){
+        	List<ProCoupon> ptff = proCouponService.getProCouponList(proCoupon);
+        	coupons.addAll(ptff);
         }
 
-        return proCouponService.getProCouponList(proCoupon);
+        proCoupon.setExtendType(CouponExtendType.COUPON_FYDYHZX.getCode());
+        List<ProCoupon> fyd = proCouponService.getProCouponList(proCoupon);
+    	coupons.addAll(fyd);
+        Iterator<ProCoupon> it = coupons.iterator();
+        while (it.hasNext()){
+            ProCoupon c = it.next();
+            List<ProCouponRel> relList = couponRelService.getByCouponId(c.getId());
+            if(CollectionUtils.isNotEmpty(relList)){
+                it.remove();
+            }
+        }
+        return coupons;
     }
 
     @RequestMapping("/loadp2")
     @ResponseBody
     public List<ProCoupon> loadCouponPTFF2(ProCoupon proCoupon){
-        return proCouponService.getProCouponList(proCoupon);
+
+        List<ProCoupon> result = proCouponService.getProCouponList(proCoupon);
+        Iterator<ProCoupon> it = result.iterator();
+        while (it.hasNext()){
+            ProCoupon c = it.next();
+            List<ProCouponRel> relList = couponRelService.getByCouponId(c.getId());
+            if(CollectionUtils.isNotEmpty(relList)){
+                it.remove();
+            }
+        }
+        return result;
     }
 
     @RequestMapping("/add")
@@ -158,7 +180,7 @@ public class ProCouponBaseInfoController {
             }
 
         }catch (Exception e){
-            LOGGER.error("添加优惠券异常，Exception-----",e);
+            logger.error("添加优惠券异常，Exception-----",e);
             return Response.fail(e.getMessage());
         }
 
@@ -171,7 +193,7 @@ public class ProCouponBaseInfoController {
     public Response issueCoupon(@RequestBody String request) {//ProMyCouponAmsVo
         String requestDecode = EncodeUtils.urlDecode(request);
         requestDecode = requestDecode.substring(0,requestDecode.length()-1);
-        LOGGER.info("前台传递的参数有：{}", requestDecode);
+        logger.info("前台传递的参数有：{}", requestDecode);
         ProMyCouponAmsVo proMyCouponAmsVo = GsonUtils.convertObj(requestDecode, ProMyCouponAmsVo.class);
         try{
             //优惠券id作为key，每个id对应的优惠券数量作为list
@@ -188,29 +210,24 @@ public class ProCouponBaseInfoController {
                 }
             }
 
-            Response response = commonHttpClient.getCustomerBasicInfoByTel("ProCouponBaseInfoController.issueCoupon(),优惠券发布...", proMyCouponAmsVo.getTelephone());
-            if(response==null||!response.statusResult()){
-                return Response.fail("手机号输入错误，请重新输入。");
-            }
-            CustomerBasicInfo customerBasicInfo = Response.resolveResult(response, CustomerBasicInfo.class);
-            if(customerBasicInfo==null){
-                return Response.fail("手机号输入错误，请重新输入。");
+            CustomerBasicInfo customerBasicInfo = commonHttpClient.getCustomerInfo("ProCouponBaseInfoController.issueCoupon(),优惠券发布...", proMyCouponAmsVo.getTelephone());
+            if(null == customerBasicInfo){
+                return Response.fail("该手机号可能尚未注册!");
             }
             //封装数据 map
             for(CouponList couponList: couponLists){
                 List<ProMyCoupon> proMycouponList = Lists.newArrayList();
-                ProCoupon proCoupon = proCouponService.selectProCouponByPrimaryID(Long.valueOf(couponList.getId()));
-
+                ProActivityRelVo vo = proCouponService.getByActivityAndCoupon(Long.valueOf(couponList.getId()));
                 int i = 0;
-                while (i<couponList.getNumer()){
+                while (i < couponList.getNumer()){
                     ProMyCoupon proMyCoupon = new ProMyCoupon();
                     proMyCoupon.setUserId(customerBasicInfo.getAppId());
-                    proMyCoupon.setCouponRelId(-1l);
+                    proMyCoupon.setCouponRelId(vo.getRelId());
                     proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
                     proMyCoupon.setCouponId(Long.valueOf(couponList.getId()));
                     proMyCoupon.setTelephone(proMyCouponAmsVo.getTelephone());
-                    proMyCoupon.setStartDate(new Date());
-                    proMyCoupon.setEndDate(DateFormatUtil.addDays(new Date(),proCoupon.getEffectiveTime()));
+                    proMyCoupon.setStartDate(vo.getStartDate());
+                    proMyCoupon.setEndDate(vo.getEndDate());
                     proMyCoupon.setRemarks(proMyCouponAmsVo.getRemarks());
                     proMyCoupon.setCreatedTime(new Date());
                     proMyCoupon.setUpdatedTime(new Date());
@@ -230,12 +247,15 @@ public class ProCouponBaseInfoController {
                 }
             }
 
+        }catch (BusinessException e){
+            logger.error("手动发放优惠券异常，Exception-----",e);
+            return Response.fail(e.getErrorDesc());
         }catch (Exception e){
-            LOGGER.error("手动发放优惠券异常，Exception-----",e);
-            return Response.fail(e.getMessage());
+            logger.error("手动发放优惠券异常，Exception-----",e);
+            return Response.fail("发送优惠券失败！");
         }
 
-        return Response.success("手动添加优惠券成功.");
+        return Response.success("发放优惠券成功！");
     }
 
     @RequestMapping("/delete")
@@ -244,7 +264,7 @@ public class ProCouponBaseInfoController {
         try{
             Integer count = proCouponService.deleteByCouponId(proCoupon);
         }catch (Exception e){
-            LOGGER.error("删除优惠券异常，Exception-----",e);
+            logger.error("删除优惠券异常，Exception-----",e);
             return Response.fail(e.getMessage());
         }
         return Response.success("删除优惠券成功");

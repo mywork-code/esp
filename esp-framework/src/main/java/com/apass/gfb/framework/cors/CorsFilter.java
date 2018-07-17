@@ -54,6 +54,8 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -114,10 +116,10 @@ import org.springframework.stereotype.Component;
  *
  */
 //
-//@Order(Ordered.HIGHEST_PRECEDENCE)
-//@Component
-//@ConditionalOnExpression("'${jdev.cors}' == 'true'")
-// @WebFilter not work now
+
+@Order(Ordered.HIGHEST_PRECEDENCE)
+@Component
+@ConditionalOnExpression("'${jdev.cors}' == 'true'")
 // @WebFilter(urlPatterns = { "/*" }, initParams = {
 // @WebInitParam(name = "cors.allowed.origins", value = "*"),
 // @WebInitParam(name = "cors.allowed.methods", value =

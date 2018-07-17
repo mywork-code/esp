@@ -30,6 +30,7 @@ import com.apass.esp.third.party.jd.entity.aftersale.AfsInfo;
 import com.apass.esp.third.party.weizhi.client.WeiZhiAfterSaleApiClient;
 import com.apass.esp.third.party.weizhi.entity.aftersale.AfsServicebyCustomerPin;
 import com.apass.esp.third.party.weizhi.entity.aftersale.SkuObject;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -97,11 +98,17 @@ public class JdAfterSaleScheduleTask {
     private MessageListenerMapper messageListenerMapper;
     @Autowired
     private WeiZhiAfterSaleApiClient weiZhiAfterSaleApiClient;
+
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
     /**
      * 京东售后状态更新
      */
     @Scheduled(cron = "0 0 2 * * *")
     public void handleJdConfirmPreInventoryTask() {
+        if(!systemEnvConfig.isPROD()){
+            return;
+        }
         List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D05");
         LOGGER.info("refund task begin...");
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
