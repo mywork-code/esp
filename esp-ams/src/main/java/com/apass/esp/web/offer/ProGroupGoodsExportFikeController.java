@@ -351,8 +351,8 @@ public class ProGroupGoodsExportFikeController {
 					pggds.setCreatedTime(new Date());
 					pggds.setUpdatedTime(new Date());
 					BigDecimal zero=BigDecimal.ZERO;
-					BigDecimal marketPrice=list.get(i).getMarketPrice();
-					BigDecimal activityPrice=list.get(i).getActivityPrice();
+					BigDecimal marketPrice=list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+					BigDecimal activityPrice=list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
 					GoodsBasicInfoEntity gbity=null;
@@ -372,10 +372,9 @@ public class ProGroupGoodsExportFikeController {
 							List<String> wzGoodsIdList = new ArrayList<>();
 							wzGoodsIdList.add(id);
 
-//							List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
-//							BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
-							BigDecimal jdPrice = new BigDecimal(2598);
-							activityPrice  = jdPrice.multiply(activityCfg.getFydActPer());
+							List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
+							BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
+							activityPrice  = jdPrice.multiply(activityCfg.getFydActPer()).setScale(0, BigDecimal.ROUND_HALF_UP);
 
 						}else{
 							if( null == activityPrice || activityPrice.compareTo(zero)<=0){
@@ -395,8 +394,8 @@ public class ProGroupGoodsExportFikeController {
 
 
 						if (result && limitResult) {//允许导入
-							pggds.setMarketPrice(marketPrice.setScale(2, BigDecimal.ROUND_HALF_UP));//对小数点第三位执行四舍五入
-							pggds.setActivityPrice(activityPrice.setScale(2, BigDecimal.ROUND_HALF_UP));
+							pggds.setMarketPrice(marketPrice);//对小数点第三位执行四舍五入
+							pggds.setActivityPrice(activityPrice);
 							pggds.setGoodsId(gbity.getGoodId());
 							pggds.setSkuId(id);
 							pggds.setGoodsCode(gbity.getGoodsCodeString());
@@ -601,5 +600,9 @@ public class ProGroupGoodsExportFikeController {
 		groupManagerService.addGroup(proGroupManager);
 
 		return Response.success("创建分组成功！");
+	}
+
+	public static void main(String[] args) {
+		System.out.println(new BigDecimal(4.55).setScale(0, BigDecimal.ROUND_HALF_UP));
 	}
 }
