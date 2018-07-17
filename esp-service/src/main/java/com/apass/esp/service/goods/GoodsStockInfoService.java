@@ -22,7 +22,7 @@ public class GoodsStockInfoService {
     /**
      * 商品分页(查询)
      * 
-     * @param goodsInfoEntity
+     * @param
      * @param pageNo
      * @param pageSize
      * @return

@@ -2101,4 +2101,13 @@ public class GoodsService {
 	public List<GoodsBasicInfoEntity> getRepeatG02GoodsCode() {
 		return goodsBasicRepository.getRepeatG02GoodsCode();
 	}
+
+    /**
+     * 查询所有插入base表却未插入stock表中的skuId
+     * @return
+     */
+    public List<GoodsInfoEntity> selectAllGoodsNotinStock() {
+        //查詢所
+        return goodsDao.selectAllGoodsNotinStock();
+    }
 }

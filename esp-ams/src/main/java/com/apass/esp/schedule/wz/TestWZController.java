@@ -3,12 +3,16 @@ package com.apass.esp.schedule.wz;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.search.entity.Goods;
 import com.apass.esp.service.activity.AwardBindRelService;
+import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.service.wz.WeiZhiTokenService;
@@ -18,10 +22,7 @@ import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
-import com.apass.esp.third.party.weizhi.client.WeiZhiAfterSaleApiClient;
-import com.apass.esp.third.party.weizhi.client.WeiZhiMessageClient;
-import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
-import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
+import com.apass.esp.third.party.weizhi.client.*;
 import com.apass.esp.third.party.weizhi.entity.*;
 import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
 import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
@@ -77,10 +78,21 @@ public class TestWZController {
 	
 	@Autowired
 	private AwardBindRelService awardBindRelService;
-
+	@Autowired
+	private GoodsStockInfoService goodsStockInfoService;
 
 	@Autowired
 	private WeiZhiAfterSaleApiClient weiZhiAfterSaleApiClient;
+
+	@Autowired
+	private GoodsService goodsService;
+
+	@Autowired
+	private WeiZhiProductApiClient weiZhiProductApiClient;
+
+	//微知
+	@Autowired
+	private WeiZhiPriceApiClient weiZhiPriceApiClient;
 
 	@ResponseBody
 	@RequestMapping(value = "/getToken", method = RequestMethod.GET)
@@ -1051,5 +1063,74 @@ public class TestWZController {
 		}
 		return Response.successResponse(rel);
 	}
-	
+
+
+	/**
+	 * 补全未插入库存表商品
+	 */
+	@RequestMapping(value = "/insertStock", method = RequestMethod.POST)
+	@ResponseBody
+	public Response ddJDGoodsToStock(){
+		try {
+			//查询未插入商品
+			List<GoodsInfoEntity> goodsInfoEntities = goodsService.selectAllGoodsNotinStock();
+
+			//调用微知接口，查询数据插入stock表中
+			if(CollectionUtils.isNotEmpty(goodsInfoEntities)){
+                for(GoodsInfoEntity entity: goodsInfoEntities){
+					LOGGER.error("插入sock表開始執行skuId {} ", entity.getExternalId());
+
+					Product product = weiZhiProductApiClient.getWeiZhiProductDetail(entity.getExternalId());
+					GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
+
+					stockEntity.setStockTotalAmt(-1l);
+					stockEntity.setStockCurrAmt(-1l);
+					stockEntity.setStockLogo(product.getImagePath());
+					stockEntity.setSkuId(entity.getExternalId());
+					stockEntity.setGoodsId(entity.getId());
+					List<String> skus = new ArrayList<>();
+					skus.add(entity.getExternalId());
+					List<WZPriceResponse> jsonArrayJdApiResponse = weiZhiPriceApiClient.getWzPrice(skus);
+					if (jsonArrayJdApiResponse == null  ) continue;
+					WZPriceResponse wzPriceResponse = jsonArrayJdApiResponse.get(0);
+					if(StringUtils.isEmpty(wzPriceResponse.getWzPrice())) continue;
+
+					BigDecimal wzPrice = new BigDecimal(wzPriceResponse.getWzPrice());
+					BigDecimal jdPrice = new BigDecimal(wzPriceResponse.getJDPrice());
+					LOGGER.info("message price skuId {} ,wzPrice {} ,jdPrice {}", entity.getExternalId(), wzPrice,jdPrice);
+
+					stockEntity.setGoodsPrice(jdPrice);
+					stockEntity.setMarketPrice(jdPrice);
+					stockEntity.setGoodsCostPrice(wzPrice);
+					stockEntity.setCreateUser("wzAdmin");
+					stockEntity.setUpdateUser("wzAdmin");
+					//往库存表里插入商品规格
+					Map<String, String> jdGoodsSpecification = jdGoodsInfoService.getJdGoodsSpecification(Long.valueOf(entity.getExternalId()));
+					if(jdGoodsSpecification != null && jdGoodsSpecification.size() > 0){
+						StringBuffer sb = new StringBuffer();
+						for(String value:jdGoodsSpecification.values()){
+							sb.append(value+" ");
+						}
+						String goodsSku = sb.toString();
+						if(org.apache.commons.lang3.StringUtils.isNotBlank(goodsSku)){
+							goodsSku = goodsSku.substring(0,goodsSku.length()-1);
+
+						}
+						stockEntity.setGoodsSkuAttr(goodsSku);
+					}
+					stockEntity.setAttrValIds("");
+					stockEntity.setDeleteFlag("N");
+					List<GoodsStockInfoEntity> goodsStock = goodsStockInfoService.getGoodsStock(entity.getId());
+					if(CollectionUtils.isEmpty(goodsStock)){
+						goodsStockInfoService.insert(stockEntity);
+						LOGGER.info("----------添加已关联类目商品库存成功... goodsStockId = " + stockEntity.getId());
+					}
+            	}
+			}
+		} catch (Exception e) {
+			LOGGER.error("插入数据出错",e);
+		}
+		return null;
+	}
+
 }
