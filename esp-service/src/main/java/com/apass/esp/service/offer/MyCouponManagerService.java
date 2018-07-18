@@ -543,7 +543,7 @@ public class MyCouponManagerService {
 		 * 如果发送成功了优惠券，则发送短信息提醒
 		 */
 		if(sendMessage){
-			smsService.sendNoticeSms(customer.getMobile(), "【安家趣花】");
+			smsService.sendNoticeSms(customer.getMobile(), "【安家趣花】您获取安家趣花发放的优惠券，请注意查收！");
 		}
 	}
 }
