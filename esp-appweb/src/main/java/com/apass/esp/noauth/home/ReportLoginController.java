@@ -1,13 +1,16 @@
 package com.apass.esp.noauth.home;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.apass.esp.domain.entity.rbac.MenusDO;
 import com.apass.esp.domain.entity.rbac.RoleMenuDO;
 import com.apass.esp.domain.entity.rbac.RolesDO;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.service.rbac.MenuService;
 import com.apass.esp.service.rbac.RoleService;
-import com.apass.gfb.framework.jwt.TokenManager;
+import com.apass.gfb.framework.jwt.JWTTokenProvider;
+import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,8 +37,10 @@ public class ReportLoginController {
     private static final Logger logger = LoggerFactory.getLogger(ReportLoginController.class);
     @Autowired
 	private UserService usersService;
+
     @Autowired
-	public TokenManager tokenManager;
+    private JWTTokenProvider jwtTokenProvider;
+
     @Autowired
     private RoleService rolesService;
     @Autowired
@@ -94,7 +99,10 @@ public class ReportLoginController {
             map.put("ifShowGenral",ifShowGenral);
             map.put("ifShowRunAnalysis",ifShowRunAnalysis);
 
-            String token = tokenManager.createToken(userId, username, TOKEN_EXPIRES_SPACE);
+            Map<String,String> jsonMap = new HashMap<>();
+            jsonMap.put("userId",userId);
+            jsonMap.put("username",username);
+            String token = jwtTokenProvider.createToken(GsonUtils.toJson(jsonMap),true);
             map.put("userId",userId);
             map.put("token",token);
             map.put("msg", "用户登录成功！");

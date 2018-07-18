@@ -182,15 +182,9 @@
 		</dependency>
 		<!-- json web token -->
 		<dependency>
-			<groupId>com.googlecode.jsontoken</groupId>
-			<artifactId>jsontoken</artifactId>
-			<version>1.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.servlet</groupId>
-					<artifactId>servlet-api</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.0</version>
 		</dependency>
 		<!-- LogStash日志运营平台 -->
 		<!-- ************* Logstash ******************** -->
