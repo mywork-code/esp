@@ -519,7 +519,7 @@ public class MyCouponManagerService {
 			List<ProCouponRel> rels = couponRelMapper.getCouponByActivityIdOrCouponId(new ProCouponRelQuery(null, coupon.getId()));
 			if(CollectionUtils.isEmpty(rels)){
 				logger.error("procouponrel data is null,please check it,couponId is {}",coupon.getId());
-				return;
+				continue;
 			}
 			ProCouponRel rel = rels.get(0);
 			Date now = new Date();
@@ -537,8 +537,6 @@ public class MyCouponManagerService {
 			proMyCoupon.setUpdatedTime(now);
 			myCouponMapper.insertSelective(proMyCoupon);
 		}
-		
 //		smsService.sendNoticeSms(customer.getMobile(), "【安家趣花】");
-		
 	}
 }
