@@ -108,7 +108,7 @@
                 t_esp_goods_base_info t
             LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code
     ]]>
-        <include refid="QueryGoodsSql" />
+        <include refid="QueryGoodsSql"/>
         <![CDATA[
         ORDER BY t.update_date DESC
     ]]>
@@ -229,8 +229,8 @@
     ]]>
     </select>
 
-	<!-- 查询非京东的商品 -->
-	<select id="getNotJDgoodsList" resultType="GoodsInfoEntity">
+    <!-- 查询非京东的商品 -->
+    <select id="getNotJDgoodsList" resultType="GoodsInfoEntity">
 		SELECT
 			ID id,
 			goods_sku_type  goodsSkuType,
@@ -240,8 +240,8 @@
 		WHERE
 			source != 'wz'
 	</select>
-    
-    
+
+
     <!-- 商品精选分页查询 -->
     <!-- 删除排序字段 t.update_date DESC, 用商品非精选  精选以及排序字段排序 -->
     <select id="pageForSiftList" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
@@ -316,7 +316,7 @@
             FROM    t_esp_goods_base_info t
             LEFT    JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code
         ]]>
-        <include refid="QueryGoodsSql" />
+        <include refid="QueryGoodsSql"/>
     </select>
 
     <!-- 商品精选count -->
@@ -338,14 +338,17 @@
     <!-- 商品精选的数量 -->
     <select id="countByGoodsType" parameterType="String" resultType="Integer">
         <![CDATA[
+
             SELECT COUNT(1) FROM t_esp_goods_base_info t where t.goods_type = '2'
             and t.status IN ('G02', 'G01') and  t.is_delete ='01'
+
         ]]>
     </select>
 
     <!-- 插入 -->
     <insert id="insert" parameterType="GoodsInfoEntity" useGeneratedKeys="true" keyProperty="id">
         <![CDATA[
+
         insert into 
             t_esp_goods_base_info
             (goods_Model,goods_name,category_id1,category_id2,category_id3,
@@ -373,11 +376,12 @@
              #{externalId, jdbcType=VARCHAR}, #{newCreatDate, jdbcType=VARCHAR},
              #{support7dRefund},#{brandId, jdbcType=VARCHAR}, 
              #{mainGoodsCode, jdbcType=VARCHAR})
-    ]]>
+
+        ]]>
     </insert>
 
     <!-- 插入京东商品 -->
-    <insert id="insertJdGoods" parameterType="java.util.List" useGeneratedKeys="true" >
+    <insert id="insertJdGoods" parameterType="java.util.List" useGeneratedKeys="true">
         insert into t_esp_goods_base_info
         (goods_model,
         goods_name,
@@ -407,7 +411,7 @@
         source,
         external_id)
         values
-        <foreach collection="list" item="item" index="index" separator="," >
+        <foreach collection="list" item="item" index="index" separator=",">
             (
             #{item.goodsModel},
             #{item.goodsName},
@@ -724,7 +728,7 @@
     ]]>
     </update>
     <!--根据goodsId查询goodsStockId中价格最低的规格商品  -->
-	<select id="selectMinGoodsStockByGoodsId" parameterType="Long" resultType="Map" >
+    <select id="selectMinGoodsStockByGoodsId" parameterType="Long" resultType="Map">
 			SELECT
 			id goodsStockId,
 			MIN(goods_price) goodsPrice
@@ -736,8 +740,9 @@
 			goods_id
 	</select>
     <!-- 加载 首页精选商品 -->
-    <select id="loadRecommendGoods"  resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
+    <select id="loadRecommendGoods" resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
         <![CDATA[
+
         SELECT
 				a.ID goodId,
 				a.goods_name goodsName,
@@ -757,7 +762,8 @@
 				a.sift_sort ASC,
 				a.sord_no ASC
             limit #{pageIndex},#{pageSize}
-    ]]>
+
+        ]]>
     </select>
     <select id="loadRecommendGoodsCount" resultType="java.lang.Integer">
         SELECT COUNT(1) from
@@ -781,8 +787,9 @@
     </select>
 
     <!-- 加载 精选商品列表 -->
-    <select id="loadRecommendGoodsList"  resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
+    <select id="loadRecommendGoodsList" resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
         <![CDATA[
+
          SELECT
 				a.ID goodId,
 				a.goods_name goodsName,
@@ -799,12 +806,14 @@
 			AND a.`status` = 'G02'
 			AND a.is_delete = '01'
         ORDER BY a.update_date DESC
-    ]]>
+
+        ]]>
     </select>
 
     <!-- 查询商品上架期内 -->
-    <select id="count"  resultType="Integer">
+    <select id="count" resultType="Integer">
         <![CDATA[
+
         SELECT
             count(1)
         FROM
@@ -813,12 +822,14 @@
                 CURRENT_TIMESTAMP > list_time
             AND status='G02'
             AND is_delete = '01'
-    ]]>
+
+        ]]>
     </select>
 
     <!-- 分页查询  商品上架期内-->
     <select id="select" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
         <![CDATA[
+
         SELECT
             a.category_id1 categoryId1,
             a.category_id2 categoryId2,
@@ -861,12 +872,14 @@
     ]]>
         <![CDATA[
         ORDER BY a.update_date DESC
-    ]]>
+
+        ]]>
     </select>
 
     <!--  商品列表展示-->
     <select id="loadGoodsList" resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
         <![CDATA[
+
         SELECT
             a.ID goodId,
             c.goodsStockId goodsStockId,
@@ -910,13 +923,15 @@
     ]]>
         <![CDATA[
         ORDER BY a.update_date DESC
-    ]]>
+
+        ]]>
     </select>
 
 
     <!-- 主键查询基本信息 -->
     <select id="selectByPK" parameterType="Long" resultType="GoodsInfoEntity">
         <![CDATA[
+
         SELECT
             category_id1 categoryId1,
             category_id2 categoryId2,
@@ -958,7 +973,8 @@
             t_esp_goods_base_info
         WHERE
             id=#{value}
-    ]]>
+
+        ]]>
     </select>
 
     <update id="updateGoodsStatus" parameterType="Map">
@@ -971,6 +987,7 @@
     <!-- 商品基本信息+商户信息+库存信息 -->
     <select id="loadContainGoodsAndGoodsStockAndMerchant" parameterType="HashMap" resultType="GoodsDetailInfoEntity">
         <![CDATA[
+
         SELECT
             a.id goodsId,
             b.id goodsStockId,
@@ -995,7 +1012,8 @@
         AND a.merchant_code = c.merchant_code
         AND a.id = #{goodsId}
         AND b.id = #{goodsStockId}
-    ]]>
+
+        ]]>
     </select>
     <!--修改已上架的商品状态(已经到下架时间的商品) -->
     <update id="updateGoodsStatusByDelisttime" parameterType="String">
@@ -1011,6 +1029,7 @@
     </update>
     <select id="getBelongCategoryGoodsNumber" parameterType="java.lang.Long" resultType="java.lang.Integer">
         <![CDATA[
+
         SELECT
             count(*)
         FROM
@@ -1021,11 +1040,13 @@
         AND (a.category_id1 = #{categroyId}
         OR a.category_id2 = #{categroyId}
         OR a.category_id3 = #{categroyId})
-      ]]>
+
+        ]]>
     </select>
     <!-- 根据类目id查询其类目下所有已经下架了的商品信息 -->
     <select id="getDownCategoryGoodsByCategoryId" parameterType="java.lang.Long" resultType="GoodsInfoEntity">
         <![CDATA[
+
         SELECT
                 a.ID id
         FROM
@@ -1036,7 +1057,8 @@
              OR a.category_id2    = #{categroyId}
              OR a.category_id3    = #{categroyId}
              )
-      ]]>
+
+        ]]>
     </select>
     <!-- 更新已经下架商品的类目 -->
     <update id="updateGoodsCategoryStatus" parameterType="java.lang.Long">
@@ -1247,6 +1269,7 @@
     </select>
     <select id="getBelongCategoryGoods" parameterType="java.lang.Long" resultType="GoodsInfoEntity">
         <![CDATA[
+
         SELECT
             t.category_id1 categoryId1,
                 t.category_id2 categoryId2,
@@ -1286,12 +1309,14 @@
         AND (t.category_id1 = #{categroyId}
         OR t.category_id2 = #{categroyId}
         OR t.category_id3 = #{categroyId})
-      ]]>
+
+        ]]>
     </select>
 
 
-    <select id="selectUpGoods"  parameterType="HashMap" resultType="GoodsInfoEntity">
+    <select id="selectUpGoods" parameterType="HashMap" resultType="GoodsInfoEntity">
         <![CDATA[
+
         SELECT
                 t.ID goodId,
                 t.category_id1 categoryId1,
@@ -1334,10 +1359,12 @@
             AND t.category_id3 is not null
             order by id asc
             limit #{index},#{size}
-      ]]>
+
+        ]]>
     </select>
-    <select id="selectJdGoods"  parameterType="HashMap" resultType="GoodsInfoEntity">
+    <select id="selectJdGoods" parameterType="HashMap" resultType="GoodsInfoEntity">
         <![CDATA[
+
         SELECT
                 t.ID goodId,
                 t.ID id,
@@ -1347,7 +1374,8 @@
         WHERE
             t.source ='wz'
             limit #{index},#{size}
-      ]]>
+
+        ]]>
     </select>
     <!-- 根据二级类目id查询其下所有商品 -->
     <select id="selectByCategoryId2AndsordNo" resultType="GoodsInfoEntity">
@@ -1384,7 +1412,7 @@
         t.external_id externalId
         FROM
         t_esp_goods_base_info t
-        <include refid="QueryGoodsSql" />
+        <include refid="QueryGoodsSql"/>
         ORDER BY
         list_time desc
     </select>
@@ -1430,8 +1458,8 @@
                 t.goods_code = #{goodsCode}
 
     </select>
-    
-	 <select id="selectGoodsByGoodsId" resultType="GoodsInfoEntity">
+
+    <select id="selectGoodsByGoodsId" resultType="GoodsInfoEntity">
         SELECT
                 t.category_id1 categoryId1,
                 t.category_id2 categoryId2,
@@ -1506,7 +1534,7 @@
         t.source source,
         t.external_id externalId,
         t.support_7d_refund support7dRefund,
-        t.newCreat_date   newCreatDate
+        t.newCreat_date newCreatDate
         FROM
         t_esp_goods_base_info t
         where source = 'wz' and
@@ -1562,8 +1590,8 @@
             </foreach>
         </if>
     </select>
-    
-    <select id="seletGoodsInfoBySkuId"  resultType="GoodsInfoEntity">
+
+    <select id="seletGoodsInfoBySkuId" resultType="GoodsInfoEntity">
          SELECT
                 t.category_id1 categoryId1,
                 t.category_id2 categoryId2,
@@ -1605,7 +1633,7 @@
     </select>
 
 
-    <insert id="insertSelective"  parameterType="GoodsInfoEntity" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertSelective" parameterType="GoodsInfoEntity" useGeneratedKeys="true" keyProperty="id">
         insert into t_esp_goods_base_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="goodsModel != null">
@@ -1636,42 +1664,42 @@
                 goods_logo_url,
             </if>
             <if test="goodsSiftUrl != null">
-             goods_sift_url,
+                goods_sift_url,
             </if>
             <if test="listTime != null">
-             list_time,
+                list_time,
             </if>
             <if test="delistTime != null">
-              delist_time,
+                delist_time,
             </if>
             <if test="proDate != null">
-              pro_date,
+                pro_date,
             </if>
             <if test="keepDate != null">
-              keep_date,
+                keep_date,
             </if>
             <if test="supNo != null">
-              sup_no,
+                sup_no,
             </if>
             <if test="createUser != null">
-              create_user,
+                create_user,
             </if>
             <if test="updateUser != null">
-              update_user,
+                update_user,
             </if>
-                create_date,
-                update_date,
+            create_date,
+            update_date,
             <if test="merchantCode != null">
-              merchant_code,
+                merchant_code,
             </if>
             <if test="status != null">
-              status,
+                status,
             </if>
             <if test="isDelete != null">
-              is_delete,
+                is_delete,
             </if>
             <if test="googsDetail != null">
-              goods_detail,
+                goods_detail,
             </if>
             <if test="goodsSkuType != null">
                 goods_sku_type,
@@ -1698,7 +1726,7 @@
                 brand_id,
             </if>
             <if test="mainGoodsCode != null">
-              main_goods_code,
+                main_goods_code,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -1839,5 +1867,46 @@
         t.source = 'wz' and t.main_goods_code = ''
         ORDER BY
         t.update_date desc
+    </select>
+
+
+    <select id="selectAllGoodsNotinStock" resultType="GoodsInfoEntity">
+        SELECT
+        t.category_id1 categoryId1,
+        t.category_id2 categoryId2,
+        t.category_id3 categoryId3,
+        t.ID id,
+        t.category_code categoryCode,
+        t.goods_name goodsName,
+        t.goods_code goodsCode,
+        t.goods_title goodsTitle,
+        t.goods_sell_pt goodsSellPt,
+        t.goods_type goodsType,
+        t.goods_type goodsTypeDesc,
+        t.goods_logo_url goodsLogoUrl,
+        t.list_time listTime,
+        t.delist_time delistTime,
+        t.pro_date proDate,
+        t.keep_date keepDate,
+        t.sup_no supNo,
+        t.create_user createUser,
+        t.update_user updateUser,
+        t.create_date createDate,
+        t.update_date updateDate,
+        t.merchant_code merchantCode,
+        t.status status,
+        t.status statusDesc,
+        t.goods_Sku_Type goodsSkuType,
+        t.goods_Model goodsModel,
+        t.goods_sift_url goodsSiftUrl,
+        t.sord_no sordNo,
+        t.un_support_province unSupportProvince,
+        t.source source,
+        t.external_id externalId,
+        t.main_goods_code mainGoodsCode
+        FROM t_esp_goods_base_info t
+        where source = 'wz' and id not in (
+            SELECT goods_id from t_esp_goods_stock_info
+        )
     </select>
 </mapper>

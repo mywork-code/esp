@@ -44,6 +44,7 @@ import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.repository.order.OrderInfoRepository;
+import com.apass.esp.service.common.MobileSmsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -92,6 +93,9 @@ public class MyCouponManagerService {
 	
 	@Autowired
 	private CategoryMapper categoryMapper;
+	
+	@Autowired
+	private MobileSmsService smsService;
 	/**
 	 * 点击领取优惠券
 	 * @throws BusinessException
@@ -485,8 +489,9 @@ public class MyCouponManagerService {
 	 * 房易贷用户专用发放券
 	 * @param userId
 	 * @param tel
+	 * @throws BusinessException 
 	 */
-	public void addFYDYHZY(FydActivity fyd){
+	public void addFYDYHZY(FydActivity fyd) throws BusinessException{
 		/**
 		 * 根据优惠券的类型，查询所有的推广方式为房易贷用户专享的优惠券
 		 */
@@ -514,6 +519,7 @@ public class MyCouponManagerService {
 			List<ProCouponRel> rels = couponRelMapper.getCouponByActivityIdOrCouponId(new ProCouponRelQuery(null, coupon.getId()));
 			if(CollectionUtils.isEmpty(rels)){
 				logger.error("procouponrel data is null,please check it,couponId is {}",coupon.getId());
+				continue;
 			}
 			ProCouponRel rel = rels.get(0);
 			Date now = new Date();
@@ -531,5 +537,6 @@ public class MyCouponManagerService {
 			proMyCoupon.setUpdatedTime(now);
 			myCouponMapper.insertSelective(proMyCoupon);
 		}
+//		smsService.sendNoticeSms(customer.getMobile(), "【安家趣花】");
 	}
 }

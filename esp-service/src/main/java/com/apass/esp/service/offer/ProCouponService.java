@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
@@ -208,13 +207,17 @@ public class ProCouponService {
 			List<ProCouponRel> rels = couponRelMapper.getCouponByActivityIdOrCouponId(new ProCouponRelQuery(null, proCoupon.getId()));
 			if(CollectionUtils.isEmpty(rels)){
 				logger.error("procouponrel is null,couponId is {}",proCoupon.getId());
-				throw new BusinessException("ID为["+couponId+"],名称为["+proCoupon.getName()+"]的优惠券,没有跟活动关联!");
+				throw new BusinessException(proCoupon.getName()+",没有跟活动关联!");
 			}
 			ProCouponRel rel = rels.get(0);
 			ProActivityCfg cfg = activityCfgService.getById(rel.getProActivityId());
-			if(null == cfg || cfg.getEndTime().getTime() < startDate.getTime()){
+			if(null == cfg ){
 				logger.error("ProActivityCfg is null or expired,activityId is {}",cfg.getId());
-				throw new BusinessException("ID为["+rel.getProActivityId()+"]的活动,关联优惠券ID为["+rel.getCouponId()+"],名称为["+proCoupon.getName()+"]，不存在或已过期！");
+				throw new BusinessException(proCoupon.getName()+"关联的活动,不存在！");
+			}
+			if(cfg.getEndTime().getTime() < startDate.getTime()){
+				logger.error("ProActivityCfg is null or expired,activityId is {}",cfg.getId());
+				throw new BusinessException(proCoupon.getName()+"关联的活动,已过期！");
 			}
 			couponRelId = rel.getId();
 			startDate = cfg.getStartTime();

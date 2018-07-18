@@ -42,7 +42,8 @@ public class WeiZhiTokenService {
 				cacheManager.set(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.EXPIRED_TIME,
 						token.getExpired_time());
 			}
-			return "success";
+
+			return token.getAccess_token();
 		}
 		return "fail";
 	}

@@ -1,9 +1,10 @@
 package com.apass.esp.service.common;
 
-import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.gfb.framework.cache.CacheManager;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.GsonUtils;
+import java.net.URL;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,15 +15,16 @@ import org.tempuri.SendMessageService;
 import org.tempuri.SendMessageServiceSoap;
 import org.tempuri.SmsMessageData;
 
-import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import com.apass.gfb.framework.cache.CacheManager;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.GsonUtils;
+
 
 /**
  * 短信发送工具类
+ * 
  * @author admin
- * @update 2016-11-21 15:53
+ * @update 2016-12-01 14:02
  *
  */
 @Component
@@ -44,9 +46,10 @@ public class MobileSmsService {
 	 */
 	@Autowired
 	private CacheManager cacheManager;
+	
 
 	/**
-	 * 短信通道类型，1：逐鹿，2：创蓝(默认使用逐鹿)
+	 * 短信通道类型，1：逐鹿，2：创蓝(默认使用逐鹿)，3：云融正通营销短信
 	 */
 	private String SHORT_MESSAGE_CHANNEL = "short_message_channel";
 
@@ -99,7 +102,7 @@ public class MobileSmsService {
 			Map<String, String> map = GsonUtils.convertMap(cacheCode);
 			String currDate = map.get("currDate");
 			long date = new Date().getTime() / 1000;
-			if (date - Long.valueOf(currDate) > 60) {
+			if (date - Long.valueOf(currDate) > 120) {
 				return true;
 			} else {
 				return false;
@@ -116,7 +119,7 @@ public class MobileSmsService {
 	 * @return String
 	 * @throws BusinessException
 	 */
-	public void sendMobileVerificationCode(String type, String mobile) throws Exception {
+	public void sendMobileVerificationCode(String type, String mobile) throws BusinessException {
 		try {
 			// 创建随机码
 			String code = createRandom(true, 6);
@@ -126,7 +129,7 @@ public class MobileSmsService {
 			map.put("currDate", String.valueOf(new Date().getTime() / 1000));
 
 			cacheManager.set(type + "_" + mobile, GsonUtils.toJson(map), 120);
-			String msg = "【安家趣花】验证码" + code + "（有效时间为2分钟）注意该验证码为重要信息，请勿泄露！";
+			String msg = "【安家趣花】您的验证码是:" + code + "(该验证码2分钟内有效)，如非本人操作，请忽略本短信。";
 			boolean flag = true;
 
 			String cacheCode = cacheManager.get(SHORT_MESSAGE_CHANNEL);
@@ -136,15 +139,13 @@ public class MobileSmsService {
 			} else if ("2".equals(cacheCode)) {
 				flag = this.sendSms(mobile, msg, "创蓝短信验证码", "25");
 			} else {
-				flag = this.sendSms(mobile, msg, "逐鹿验证码短信", "230");
+				flag = this.sendSms(mobile, msg, "云融正通通知短信", "33");
 			}
 			if (!flag) {
-				logger.error("{}--{}短信发送失败,请稍后再试",new Object[]{"MobileSmsService","sendMobileVerificationCode"});
-				throw new BusinessException("短信发送失败,请稍后再试",BusinessErrorCode.MESSAGE_SEND_FAILED);
+				throw new BusinessException("短信发送失败,请稍后再试");
 			}
 		} catch (Exception e) {
 			logger.error("send sms fail", e);
-			throw e;
 		}
 	}
 
@@ -161,17 +162,16 @@ public class MobileSmsService {
 		try {
 			boolean flag = true;
 			String cacheCode = cacheManager.get(SHORT_MESSAGE_CHANNEL);
-
+			logger.info("sendNoticeSms-->cacheCode:{}",cacheCode);
 			if ("1".equals(cacheCode)) {
 				flag = this.sendSms(mobile, msg, "逐鹿通知类短信", "231");
 			} else if ("2".equals(cacheCode)) {
 				flag = this.sendSms(mobile, msg, "创蓝短信验证码", "25");
 			} else {
-				flag = this.sendSms(mobile, msg, "逐鹿通知类短信", "231");
+				flag = this.sendSms(mobile, msg, "云融正通通知短信", "33");
 			}
 			if (!flag) {
-				logger.error("{}--{}短信发送失败,请稍后再试",new Object[]{"MobileSmsService","sendNoticeSms"});
-				throw new BusinessException("短信发送失败,请稍后再试",BusinessErrorCode.MESSAGE_SEND_FAILED);
+				throw new BusinessException("短信发送失败,请稍后再试.");
 			}
 			return flag;
 		} catch (Exception e) {
