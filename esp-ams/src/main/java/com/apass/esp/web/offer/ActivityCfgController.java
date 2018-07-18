@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import com.apass.esp.domain.dto.ProcouponRelListVo;
-import com.apass.esp.domain.dto.ProcouponRelVoList;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.enums.ActivityCfgCoupon;
@@ -13,7 +12,6 @@ import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.CouponRelService;
 import com.apass.gfb.framework.jwt.common.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
-import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
