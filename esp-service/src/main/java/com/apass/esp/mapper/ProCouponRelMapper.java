@@ -36,4 +36,6 @@ public interface ProCouponRelMapper extends GenericMapper<ProCouponRel, Long> {
 	void updateCouponId(@Param("activityId") Long activityId,@Param("couponId") Long couponId);
 
 	List<ProCouponRel> selectByCouponId(@Param("couponId") Long couponId);
+
+	void delCouponRel(@Param("activityId") Long activityId);
 }

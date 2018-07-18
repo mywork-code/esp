@@ -185,4 +185,7 @@ public class CouponManagerService {
 		return couponList;
 	}
 
+	public ProCoupon getById(Long id){
+		return couponMapper.selectByPrimaryKey(id);
+	}
 }

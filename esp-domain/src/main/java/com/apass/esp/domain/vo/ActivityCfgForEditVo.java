@@ -9,14 +9,14 @@ import java.util.List;
 public class ActivityCfgForEditVo extends ProActivityCfg {
     private List<ProCouponRel> proCouponRels;
     private Long fydCouponId;
-    private List<Long> fydCouponIdList;
+    private List<String> fydCouponNameList;
 
-    public List<Long> getFydCouponIdList() {
-        return fydCouponIdList;
+    public List<String> getFydCouponNameList() {
+        return fydCouponNameList;
     }
 
-    public void setFydCouponIdList(List<Long> fydCouponIdList) {
-        this.fydCouponIdList = fydCouponIdList;
+    public void setFydCouponNameList(List<String> fydCouponNameList) {
+        this.fydCouponNameList = fydCouponNameList;
     }
 
     public Long getFydCouponId() {

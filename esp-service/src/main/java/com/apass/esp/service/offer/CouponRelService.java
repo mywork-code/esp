@@ -86,4 +86,8 @@ public class CouponRelService {
 	public List<ProCouponRel> getByCouponId(Long couponId){
 		return couponRelMapper.selectByCouponId(couponId);
 	}
+
+	public void delCouponRel(Long activityId){
+		couponRelMapper.delCouponRel( activityId);
+	}
 }

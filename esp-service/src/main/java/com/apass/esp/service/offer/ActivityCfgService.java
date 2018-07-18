@@ -262,7 +262,7 @@ public class ActivityCfgService {
 	 * 更新房易贷活动配置信息
 	 */
 	public void updateFydActCouponCfg(Long activityId,String cateCoupon,BigDecimal fydActPer,
-									  BigDecimal fydDownPer,List<String> fydCouponIdList){
+									  BigDecimal fydDownPer,List<String> fydCouponIdList)throws BusinessException{
 		ProActivityCfg updateEntity = new ProActivityCfg();
 		updateEntity.setId(activityId);
 		BigDecimal b100 = new BigDecimal(100);
@@ -271,11 +271,23 @@ public class ActivityCfgService {
 		updateEntity.setCoupon(cateCoupon);
 		activityCfgMapper.updateByPrimaryKeySelective(updateEntity);
 		if(StringUtils.equals(cateCoupon,ActivityCfgCoupon.COUPON_Y.getCode())){
+			couponRelService.delCouponRel(activityId);
 			for(String fydCouponId : fydCouponIdList){
 				if(StringUtils.isBlank(fydCouponId)){
 					continue;
 				}
-				couponRelService.updateCouponId(Long.valueOf(fydCouponId),activityId);
+				ProCouponRel proCouponRel = new ProCouponRel();
+				proCouponRel.setCouponId(Long.valueOf(fydCouponId));
+				proCouponRel.setProActivityId(activityId);
+				proCouponRel.setLimitNum(-1);
+				proCouponRel.setTotalNum(-1);
+				proCouponRel.setRemainNum(-1);
+				proCouponRel.setCreatedTime(new Date());
+				proCouponRel.setUpdatedTime(new Date());
+				Integer relId = couponRelService.addProCouponRel(proCouponRel);
+				if(relId == 0){
+					throw new BusinessException("添加活动配置信息失败");
+				}
 			}
 		}
 	}

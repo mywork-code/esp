@@ -9,6 +9,7 @@ import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.enums.ActivityCfgCoupon;
 import com.apass.esp.domain.vo.ActivityCfgForEditVo;
+import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.CouponRelService;
 import com.apass.gfb.framework.jwt.common.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -56,6 +57,9 @@ public class ActivityCfgController {
     private ActivityCfgService activityCfgService;
 	@Autowired
 	private CouponRelService couponRelService;
+
+	@Autowired
+	private CouponManagerService couponManagerService;
     /**
      * 活动配置
      * @return
@@ -217,11 +221,11 @@ public class ActivityCfgController {
 				if(StringUtils.equals(pro.getCoupon(),ActivityCfgCoupon.COUPON_Y.getCode())){
 					if(pro.getActivityCate().intValue() == 1){
 						List<ProCouponRel> couponRelList = couponRelService.getCouponRelList(String.valueOf(vo.getId()));
-						List couponIdList = new ArrayList();
+						List couponNameList = new ArrayList();
 						for(ProCouponRel rel : couponRelList){
-							couponIdList.add(rel.getCouponId());
+							couponNameList.add(couponManagerService.getById(rel.getCouponId()).getName());
 						}
-						activityCfgForEditVo.setFydCouponIdList(couponIdList);
+						activityCfgForEditVo.setFydCouponNameList(couponNameList);
 					}else{
 						//如果使用优惠券，去优惠券与活动关系表中查询优惠券想着信息
 						List<ProCouponRel> couponRelList = couponRelService.getCouponRelList(String.valueOf(vo.getId()));

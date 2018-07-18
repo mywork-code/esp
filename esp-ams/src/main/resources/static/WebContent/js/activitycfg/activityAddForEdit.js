@@ -32,7 +32,7 @@ $(function(){
 				 activityCate = resp.activityCate;
 				$('#id_activityCate').combobox('setValue',activityCate);
 				if(activityCate == 1){
-                    loadCateCouponList();
+
                     var fydActPer = resp.fydActPer;
                     var fydDownPer = resp.fydDownPer;
                     $("#fydActivityPer").textbox("setValue",fydActPer);
@@ -43,8 +43,8 @@ $(function(){
                         }
                     });
 					if(coupon == 'Y'){
-						 fydCouponId=resp.fydCouponIdList;
-                        $('.cateCouponInput').combobox('setValue',fydCouponId);
+						 var couponname=resp.fydCouponNameList;
+                        $('.cateCouponInput').combobox('setValue',couponname);
                         $('#id_xxx_copon').show();
 					}
                     $('#1_xxxxId').show();
@@ -53,8 +53,6 @@ $(function(){
 
 
                 }else{
-					loadCouponList();
-
 					var  activityType = resp.activityType;
                     $("#activityType").combobox('setValue',activityType);
 
@@ -125,6 +123,41 @@ $(function(){
 		addTotalNum("issueCouponNum5");
 	});
 
+    $(".cateCouponInput").combobox({
+        method: "get",
+        url: ctx + "/application/coupon/management/loadp2",
+        valueField: 'id',
+        textField: 'name',
+        multiple:true,
+        queryParams: {
+            "extendType" : "FYDYHZX",
+        },
+        onShowPanel : function(){
+            $(this).combobox('options').url= ctx + "/application/coupon/management/loadp2";
+            $(this).combobox('reload');
+            $(this).combobox('setValue','');
+        },
+        onLoadSuccess:function (data) {
+
+        },
+        onSelect: function () {
+            fydCouponId = $(this).combobox('getValues');
+        }
+    });
+
+
+    //获取选择发放优惠券下拉框内容
+    $(".issueCouponInput").combobox({
+        method: "get",
+        url: ctx + "/application/coupon/management/loadp2",
+        valueField: 'id',
+        textField: 'name',
+        queryParams: {
+            "extendType" : "YHLQ",
+        },
+        onLoadSuccess:function (data) {
+        }
+    });
 	/**
 	 * 保存活动添加信息
 	 */
@@ -202,7 +235,7 @@ $(function(){
             var value = $("input[name='cateCoupon']:checked").val();
             if(value == 'Y'){
 
-                if(fydCouponId == ''){
+                if(fydCouponId == '' || fydCouponId == null){
                     $.messager.alert("<span style='color: black;'>提示</span>","请选择优惠券！",'info');
                     return false;
                 }
@@ -211,7 +244,6 @@ $(function(){
             param.fydDownPer = fydDownPer;
             param.cateCoupon = value;
             param.fydCouponIdList = fydCouponId;
-
 
 		}else{
             var activityType = $("#activityType").combobox('getValue');
@@ -439,41 +471,3 @@ function addTotalNum(id) {
 	});
 }
 
-function loadCouponList() {
-    //获取选择发放优惠券下拉框内容
-    $(".issueCouponInput").combobox({
-        method: "get",
-        url: ctx + "/application/coupon/management/loadp2",
-        valueField: 'id',
-        textField: 'name',
-        queryParams: {
-            "extendType" : "YHLQ",
-        },
-        onLoadSuccess:function (data) {
-        }
-    });
-}
-
-function loadCateCouponList() {
-    $(".cateCouponInput").combobox({
-        method: "get",
-        url: ctx + "/application/coupon/management/loadp2",
-        valueField: 'id',
-        textField: 'name',
-        multiple:true,
-        queryParams: {
-            "extendType" : "FYDYHZX",
-        },
-        onShowPanel : function(){
-            $(this).combobox('options').url= ctx + "/application/coupon/management/loadp2";
-            $(this).combobox('reload');
-            $(this).combobox('setValue','');
-        },
-        onLoadSuccess:function (data) {
-
-        },
-        onSelect: function () {
-            fydCouponId = $(this).combobox('getValues');
-        }
-    });
-}
