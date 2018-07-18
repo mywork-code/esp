@@ -352,7 +352,11 @@ public class ProGroupGoodsExportFikeController {
 					pggds.setUpdatedTime(new Date());
 					BigDecimal zero=BigDecimal.ZERO;
 					BigDecimal marketPrice=list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
-					BigDecimal activityPrice=list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+					BigDecimal activityPrice = BigDecimal.ZERO;
+					if(list.get(i).getActivityPrice() != null){
+						activityPrice=list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+					}
+
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
 					GoodsBasicInfoEntity gbity=null;
