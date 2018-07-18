@@ -10,6 +10,16 @@ public class ActivityCfgForEditVo extends ProActivityCfg {
     private List<ProCouponRel> proCouponRels;
     private Long fydCouponId;
     private List<String> fydCouponNameList;
+    private List<Long> fydCouponIdList;
+
+
+    public List<Long> getFydCouponIdList() {
+        return fydCouponIdList;
+    }
+
+    public void setFydCouponIdList(List<Long> fydCouponIdList) {
+        this.fydCouponIdList = fydCouponIdList;
+    }
 
     public List<String> getFydCouponNameList() {
         return fydCouponNameList;

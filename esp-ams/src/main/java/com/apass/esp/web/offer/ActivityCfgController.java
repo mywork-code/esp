@@ -220,10 +220,13 @@ public class ActivityCfgController {
 					if(pro.getActivityCate().intValue() == 1){
 						List<ProCouponRel> couponRelList = couponRelService.getCouponRelList(String.valueOf(vo.getId()));
 						List couponNameList = new ArrayList();
+						List couponIdList = new ArrayList();
 						for(ProCouponRel rel : couponRelList){
 							couponNameList.add(couponManagerService.getById(rel.getCouponId()).getName());
+							couponIdList.add(rel.getCouponId());
 						}
 						activityCfgForEditVo.setFydCouponNameList(couponNameList);
+						activityCfgForEditVo.setFydCouponIdList(couponIdList);
 					}else{
 						//如果使用优惠券，去优惠券与活动关系表中查询优惠券想着信息
 						List<ProCouponRel> couponRelList = couponRelService.getCouponRelList(String.valueOf(vo.getId()));

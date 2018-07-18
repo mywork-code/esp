@@ -44,6 +44,7 @@ $(function(){
                     });
 					if(coupon == 'Y'){
 						 var couponname=resp.fydCouponNameList;
+                        fydCouponId = resp.fydCouponIdList;
                         $('.cateCouponInput').combobox('setValue',couponname);
                         $('#id_xxx_copon').show();
 					}
