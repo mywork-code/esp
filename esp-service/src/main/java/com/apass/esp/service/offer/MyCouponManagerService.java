@@ -331,7 +331,6 @@ public class MyCouponManagerService {
 				vo.setSource(goods.getSource());
 				goodsName = goods.getGoodsName();
 			}
-			
 		}
 		vo.setType(coupon.getType());
 		String type = coupon.getType();
