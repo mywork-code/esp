@@ -510,6 +510,7 @@ public class MyCouponManagerService {
 		proCoupon.setGrantNode(GrantNode.getCodeByMapCode(fyd.getScene()));
 		List<ProCoupon> couponList = couponMapper.getProCouponBCoupon(proCoupon);
 		
+		boolean sendMessage = false;//此标识用于确认是否发送短信息
 		for(ProCoupon coupon : couponList){
 			ProMyCoupon proMyCoupon = new ProMyCoupon();
 			proMyCoupon.setUserId(customer.getAppId());
@@ -536,7 +537,13 @@ public class MyCouponManagerService {
 			proMyCoupon.setCreatedTime(now);
 			proMyCoupon.setUpdatedTime(now);
 			myCouponMapper.insertSelective(proMyCoupon);
+			sendMessage = true;
 		}
-//		smsService.sendNoticeSms(customer.getMobile(), "【安家趣花】");
+		/**
+		 * 如果发送成功了优惠券，则发送短信息提醒
+		 */
+		if(sendMessage){
+			smsService.sendNoticeSms(customer.getMobile(), "【安家趣花】");
+		}
 	}
 }
