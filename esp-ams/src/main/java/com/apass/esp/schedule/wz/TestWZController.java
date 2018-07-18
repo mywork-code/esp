@@ -559,7 +559,7 @@ public class TestWZController {
 //					break;
 //				}
 
-				long[] catidArr = {652l,670l,737l,5025l,9847l,9987l};//只用到这6个一级类目
+				long[] catidArr = {652L};//只用到这6个一级类目
 				for (long category : catidArr) {
 					//插入类目表level为1
 					addCategory(category,1);
