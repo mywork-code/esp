@@ -1129,8 +1129,9 @@ public class TestWZController {
 			}
 		} catch (Exception e) {
 			LOGGER.error("插入数据出错",e);
+			return Response.fail("插入数据出错");
 		}
-		return null;
+		return Response.success("插入数据成功");
 	}
 
 }
