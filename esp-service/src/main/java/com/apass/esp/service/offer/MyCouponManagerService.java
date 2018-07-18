@@ -500,7 +500,7 @@ public class MyCouponManagerService {
 			return;
 		}
 		
-		CustomerBasicInfo customer = commonHttpClient.getCustomerInfo("", fyd.getMobile());
+		CustomerBasicInfo customer = commonHttpClient.getCustomerInfo("addFYDYHZY method", fyd.getMobile());
 		if(null == customer){
 			return;
 		}
