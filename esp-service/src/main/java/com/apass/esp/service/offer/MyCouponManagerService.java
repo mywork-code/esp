@@ -542,7 +542,16 @@ public class MyCouponManagerService {
 		 * 如果发送成功了优惠券，则发送短信息提醒
 		 */
 		if(sendMessage){
-			smsService.sendNoticeSms(customer.getMobile(), "【安家趣花】您获取安家趣花发放的优惠券，请注意查收！");
+			String code = GrantNode.getCodeByMapCode(fyd.getScene());
+			String message = null;
+			if(StringUtils.equals(code, GrantNode.NODE_SFZRZTG.getCode())){
+				message = "【安家趣花】恭喜您通过客户身份认证，1000元商城购物礼包已经发出，请点击链接XXXXXXXXXXXXXXXXXX下载安家趣花app领取。";
+			}else if(StringUtils.equals(code, GrantNode.NODE_YHKRZTG.getCode())){
+				message = "【安家趣花】感谢您提交信息，我们在对您的信息进行审核。2000元商城购物礼包已经发出，请点击链接XXXXXXXXXXXXXXXXXXX下载安家趣花app领取。";
+			}else if(StringUtils.equals(code, GrantNode.NODE_FKCG.getCode())){
+				message = "【安家趣花】恭喜您，通过放款审批！资金将打入您绑定的银行卡。3000元商城购物礼包已经发出，请点击链接XXXXXXXXXXXXXXXXXXX下载安家趣花app领取。";
+			}
+			smsService.sendNoticeSms(customer.getMobile(), message);
 		}
 	}
 }
