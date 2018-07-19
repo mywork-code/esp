@@ -150,6 +150,19 @@ public class ProCouponBaseInfoController {
         return coupons;
     }
 
+    @RequestMapping("/loadp3")
+    @ResponseBody
+    public List<ProCoupon> loadCouponPTFF3(ProCoupon proCoupon){
+    	List<ProCoupon> coupons = Lists.newArrayList();
+    	proCoupon.setIsDelete(CouponIsDelete.COUPON_N.getCode());
+        List<ProCoupon> ptff = proCouponService.getProCouponList(proCoupon);
+        coupons.addAll(ptff);
+        proCoupon.setExtendType(CouponExtendType.COUPON_FYDYHZX.getCode());
+        List<ProCoupon> fyd = proCouponService.getProCouponList(proCoupon);
+    	coupons.addAll(fyd);
+        return coupons;
+    }
+    
     @RequestMapping("/loadp2")
     @ResponseBody
     public List<ProCoupon> loadCouponPTFF2(ProCoupon proCoupon){

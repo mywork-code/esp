@@ -186,7 +186,7 @@ $(function(){
 	$("#issueCouponButton").click(function () {
 		$(".issueCouponInput").combobox({
 			method: "get",
-			url: ctx + "/application/coupon/management/loadp",
+			url: ctx + "/application/coupon/management/loadp3",
 			valueField: 'id',
 			textField: 'name',
 			queryParams: {
