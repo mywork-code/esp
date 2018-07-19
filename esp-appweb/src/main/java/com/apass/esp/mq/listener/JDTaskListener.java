@@ -484,7 +484,7 @@ public class JDTaskListener implements MessageListener {
         ml.setUpdatedTime(new Date());
         messageListenerMapper.insertSelective(ml);
       } catch (Exception e) {
-        LOGGER.error("skuId {} type {} state {} error", skuId, type,state);
+        LOGGER.error("skuId {} type {} state {} error", skuId, type,state,e);
         ml.setStatus("0");
         ml.setResult("京东商品添加失败！");
         ml.setCreatedTime(new Date());
