@@ -1284,6 +1284,7 @@ public class TestWZController {
         GoodsInfoEntity entity = goodsService.selectGoodsByExternalId(skuId);
         entity.setListTime(new Date());
         entity.setUpdateUser("wzAdmin");
+        entity.setUpdateDate(new Date());
         GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
         goodsStockInfoEntity.setGoodsId(entity.getId());
         PaginationManage<GoodsStockInfoEntity> list = null;
@@ -1321,6 +1322,7 @@ public class TestWZController {
         }
         if (dividePoint.compareTo(dividePoint1) == -1) {//商品已进入保本率审核页面
             entity.setStatus(GoodStatus.GOOD_BBEN.getCode());//保本审核 不上架
+            goodsService.updateService(entity);
         } else {//商品已进入复核状态
             entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());// 商品复核  全部上架
             goodsService.updateService(entity);

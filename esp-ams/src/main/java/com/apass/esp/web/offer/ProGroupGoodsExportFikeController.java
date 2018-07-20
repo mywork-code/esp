@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.service.offer.ActivityCfgService;
+import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -375,8 +376,12 @@ public class ProGroupGoodsExportFikeController {
 							//活动价=京东价*n%
 							List<String> wzGoodsIdList = new ArrayList<>();
 							wzGoodsIdList.add(id);
-
+							LOG.info("wzGoodsIdList:{}", GsonUtils.toJson(wzGoodsIdList));
 							List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
+							if(CollectionUtils.isEmpty(jdSellPrices)){
+								countFail++;
+								continue;
+							}
 							BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
 							activityPrice  = jdPrice.multiply(activityCfg.getFydActPer()).setScale(0, BigDecimal.ROUND_HALF_UP);
 
@@ -397,7 +402,7 @@ public class ProGroupGoodsExportFikeController {
 						}
 
 
-						if (result && limitResult) {//允许导入
+						if (!result && limitResult) {//允许导入
 							pggds.setMarketPrice(marketPrice);//对小数点第三位执行四舍五入
 							pggds.setActivityPrice(activityPrice);
 							pggds.setGoodsId(gbity.getGoodId());
