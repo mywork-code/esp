@@ -107,6 +107,7 @@ public class TestWZController {
     private SystemParamService systemParamService;
     @Autowired
     private GoodsEsDao goodsEsDao;
+
     @ResponseBody
     @RequestMapping(value = "/getToken", method = RequestMethod.GET)
     public Response testGetToken() {
@@ -1165,15 +1166,17 @@ public class TestWZController {
     /**
      * 对skuIds.txt中的商品操作：
      * 如果数据库已经存在，执行上架操作
-     * 如果不存在插入数据库中，再执行上架操作
+     * 如果不存在插入jd_goods表和jd_category表中，再执行上架操作
      *
      * @return
      */
+    @RequestMapping(value = "/addRevealSkuGoods")
+    @ResponseBody
     public Response addRevealSkuGoods() {
-        LOGGER.info("初始化指定类目下微知商品开始执行.... 开始时间：{}", DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
         ClassLoader classLoader = TestWZController.class.getClassLoader();
-        InputStream in = classLoader.getResourceAsStream(FILE_SEPARATOR + "file" + FILE_SEPARATOR + "skuIds.txt");
+        InputStream in = classLoader.getResourceAsStream("file/skuIds.txt");
 
+        //存储在上品池中未上架的商品skuId
         List<String> revealSkuList = Lists.newArrayList();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
             String skuId = null;
@@ -1183,24 +1186,99 @@ public class TestWZController {
                 GoodsInfoEntity entity = goodsService.selectGoodsByExternalId(skuId);
                 if (entity == null) {
                     //插入数据库，上架
-                    insertIntoGoodsBaseAndStock(skuId);
-                    shelves(skuId);
-                    revealSkuList.add(skuId);
+                    String sku = insertIntoJDGoodsAndJDCategory(skuId);//此返回sku表示已在商品池，但未关联，如果返回空说明成功插入商品池
+                    if (StringUtils.isNotEmpty(sku)) {
+                        revealSkuList.add(skuId);
+                    }
                 } else {
                     //直接上架
                     String sku = shelves(skuId);
-                    if(StringUtils.isNotEmpty(sku)){
+                    if (StringUtils.isNotEmpty(sku)) {
                         revealSkuList.add(sku);
                     }
                 }
             }
+        } catch (BusinessException be) {
+            LOGGER.error("skuIds.txt中商品操作异常,=====Exception===>", be);
+            return Response.fail("skuIds.txt中商品操作异常");
         } catch (Exception e) {
-            LOGGER.error("skuIds.txt中商品操作异常,=====Exception===>{}", e);
-            return Response.fail("skuIds.txt中商品操作异常,=====Exception===>{}");
+            LOGGER.error("skuIds.txt中商品操作异常,=====Exception===>", e);
+            return Response.fail("skuIds.txt中商品操作异常");
         }
 
-        return Response.success("批量上架成功",revealSkuList);
+        return Response.success("批量上架成功", revealSkuList);
     }
+
+    /**
+     * 插入京东表和京东类目表
+     *
+     * @param skuId
+     */
+    private String insertIntoJDGoodsAndJDCategory(String skuId) throws Exception {
+        //根据skuId查询catId
+        Product goodDetail = weiZhiProductService.getWeiZhiProductDetail(skuId);
+        if (null == goodDetail) {
+            LOGGER.error("微知不存在此商品，skuid:" + skuId);
+            return null;//微知不存在此商品,未放入商品池
+//            throw new RuntimeException("微知不存在此商品，skuid:"+ skuId);
+        }
+        List<Integer> categories = goodDetail.getCategories();
+        //插入类目表如果存在跳过
+        addCategory(Long.valueOf(categories.get(0)), 1);
+        addCategory(Long.valueOf(categories.get(1)), 2);
+        addCategory(Long.valueOf(categories.get(2)), 3);
+
+        //判断商品是否已经存在
+        JdGoods jd = jdGoodsMapper.queryGoodsBySkuId(Long.valueOf(skuId));
+        if (jd != null) {
+            return skuId;
+        }
+        //插入jd_goods表
+        JdGoods jdGoods = new JdGoods();
+        jdGoods.setFirstCategory(categories.get(0));
+        jdGoods.setSecondCategory(categories.get(1));
+        jdGoods.setThirdCategory(categories.get(2));
+        jdGoods.setSkuId(Long.valueOf(skuId));
+        jdGoods.setBrandName(goodDetail.getBrandName());
+        jdGoods.setImagePath(goodDetail.getImagePath());
+        jdGoods.setName(goodDetail.getName());
+        jdGoods.setProductArea(goodDetail.getProductArea());
+        //批量查询商品价格
+        List<String> skuList = Lists.newArrayList();
+        skuList.add(skuId);
+        List<WZPriceResponse> priceList = price.getWzPrice(skuList);
+
+        if (CollectionUtils.isNotEmpty(priceList)) {
+            try {
+                WZPriceResponse wzPriceResponse = priceList.get(0);
+                jdGoods.setJdPrice(new BigDecimal(wzPriceResponse.getJDPrice()));//京东价
+                jdGoods.setPrice(new BigDecimal(wzPriceResponse.getWzPrice()));//协议价
+            } catch (Exception e) {
+                LOGGER.error("批量商品价格查询结果为空,参数skuList:{}", GsonUtils.toJson(skuList));
+                return null;//赋值出错，未放入商品池
+            }
+        } else {
+            return null;//如果查询出的价格为空则，不放到商品池
+        }
+
+        jdGoods.setSaleUnit(goodDetail.getSaleUnit());
+        jdGoods.setWeight(new BigDecimal(goodDetail.getWeight()));
+        jdGoods.setUpc(goodDetail.getUpc());
+        jdGoods.setState(goodDetail.getState() == 1 ? true : false);
+        jdGoods.setCreateDate(new Date());
+        jdGoods.setUpdateDate(new Date());
+        jdGoods.setSimilarSkus("");
+        try {
+            jdGoodsMapper.insertSelective(jdGoods);
+            return skuId;
+        } catch (Exception e) {
+            LOGGER.error("insert jdGoodsMapper sql skuid:{},Exception:{}", skuId, e);
+            return null;//插入异常，未放入商品池
+//            throw new RuntimeException("insert jdGoodsMapper sql skuid:"+skuId);
+        }
+
+    }
+
 
     private String shelves(String skuId) throws BusinessException {
         GoodsInfoEntity entity = goodsService.selectGoodsByExternalId(skuId);
@@ -1226,13 +1304,13 @@ public class TestWZController {
         GoodsStockInfoEntity goodsStockInfo = stockList.get(0);
         BigDecimal goodsPrice = goodsStockInfo.getGoodsPrice();
         BigDecimal goodsCostPrice = goodsStockInfo.getGoodsCostPrice();
-        if(goodsCostPrice.compareTo(new BigDecimal(110))<0){//微知协议价格低于110元
+        if (goodsCostPrice.compareTo(new BigDecimal(110)) < 0) {//微知协议价格低于110元
             return skuId;
         }
-        if(!orderService.checkGoodsSalesOrNot(skuId)){//验证商品是否可售状态
+        if (!orderService.checkGoodsSalesOrNot(skuId)) {//验证商品是否可售状态
             return skuId;
         }
-        SystemParamEntity systemParamEntity =  systemParamService.querySystemParamInfo().get(0);
+        SystemParamEntity systemParamEntity = systemParamService.querySystemParamInfo().get(0);
         BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_DOWN);
         BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01)).setScale(4, BigDecimal.ROUND_DOWN);
         Map<String, Object> descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(skuId));
@@ -1259,10 +1337,6 @@ public class TestWZController {
 
 
         return null;
-    }
-
-    private void insertIntoGoodsBaseAndStock(String skuId) {
-
     }
 
 
