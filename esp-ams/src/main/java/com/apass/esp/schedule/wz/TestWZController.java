@@ -1096,7 +1096,7 @@ public class TestWZController {
     /**
      * 补全未插入库存表商品
      */
-    @RequestMapping(value = "/insertStock", method = RequestMethod.POST)
+    @RequestMapping(value = "/insertStock", method = RequestMethod.GET)
     @ResponseBody
     public Response ddJDGoodsToStock() {
         try {
