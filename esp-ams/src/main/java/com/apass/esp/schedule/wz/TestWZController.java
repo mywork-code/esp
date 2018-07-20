@@ -1108,6 +1108,9 @@ public class TestWZController {
                     LOGGER.error("插入sock表開始執行skuId {} ", entity.getExternalId());
 
                     Product product = weiZhiProductApiClient.getWeiZhiProductDetail(entity.getExternalId());
+                    if(product == null){
+                        continue;
+                    }
                     GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
 
                     stockEntity.setStockTotalAmt(-1l);
