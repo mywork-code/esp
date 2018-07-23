@@ -107,7 +107,7 @@ public class EspAppRSAHandler {
 			}
 			try {
 				// 私钥解密接受数据
-				String key = new SimpleDateFormat("yyyyMMddHH").format(new Date());
+				String key = new SimpleDateFormat("yyyyMMdd").format(new Date());
 				key = "Apass@" + key;
 				String paraStr = AESUtils.aesDecrypt(paraValue, key);
 				newPara[i] = GsonUtils.convertMap(paraStr);
