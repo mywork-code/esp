@@ -218,8 +218,20 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
         try {
             List<GoodsInfoEntity> goodsInfoEnties = this.getSqlSession().selectList("selectGoodsByExternalId", externalId);
             if (goodsInfoEnties.isEmpty() || goodsInfoEnties == null) {
-                LOGGER.error("数据有误，externalId={}的京东东商品在商品表里不存在", externalId);
+                LOGGER.error("数据有误，externalId={}的京东商品在商品表里不存在", externalId);
                 throw new BusinessException("数据有误");
+            }
+            return goodsInfoEnties.get(0);
+        } catch (BusinessException e) {
+            return null;
+        }
+
+    }
+    public GoodsInfoEntity selectGoodsByExternalId2(@Param("externalId") String externalId) {
+        try {
+            List<GoodsInfoEntity> goodsInfoEnties = this.getSqlSession().selectList("selectGoodsByExternalId2", externalId);
+            if (goodsInfoEnties.isEmpty() || goodsInfoEnties == null) {
+                throw new BusinessException("数据为空");
             }
             return goodsInfoEnties.get(0);
         } catch (BusinessException e) {

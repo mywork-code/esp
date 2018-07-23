@@ -339,8 +339,10 @@
     <select id="countByGoodsType" parameterType="String" resultType="Integer">
         <![CDATA[
 
+
             SELECT COUNT(1) FROM t_esp_goods_base_info t where t.goods_type = '2'
             and t.status IN ('G02', 'G01') and  t.is_delete ='01'
+
 
         ]]>
     </select>
@@ -348,6 +350,7 @@
     <!-- 插入 -->
     <insert id="insert" parameterType="GoodsInfoEntity" useGeneratedKeys="true" keyProperty="id">
         <![CDATA[
+
 
         insert into 
             t_esp_goods_base_info
@@ -376,6 +379,7 @@
              #{externalId, jdbcType=VARCHAR}, #{newCreatDate, jdbcType=VARCHAR},
              #{support7dRefund},#{brandId, jdbcType=VARCHAR}, 
              #{mainGoodsCode, jdbcType=VARCHAR})
+
 
         ]]>
     </insert>
@@ -743,6 +747,7 @@
     <select id="loadRecommendGoods" resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
         <![CDATA[
 
+
         SELECT
 				a.ID goodId,
 				a.goods_name goodsName,
@@ -762,6 +767,7 @@
 				a.sift_sort ASC,
 				a.sord_no ASC
             limit #{pageIndex},#{pageSize}
+
 
         ]]>
     </select>
@@ -790,6 +796,7 @@
     <select id="loadRecommendGoodsList" resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
         <![CDATA[
 
+
          SELECT
 				a.ID goodId,
 				a.goods_name goodsName,
@@ -807,12 +814,14 @@
 			AND a.is_delete = '01'
         ORDER BY a.update_date DESC
 
+
         ]]>
     </select>
 
     <!-- 查询商品上架期内 -->
     <select id="count" resultType="Integer">
         <![CDATA[
+
 
         SELECT
             count(1)
@@ -823,12 +832,14 @@
             AND status='G02'
             AND is_delete = '01'
 
+
         ]]>
     </select>
 
     <!-- 分页查询  商品上架期内-->
     <select id="select" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
         <![CDATA[
+
 
         SELECT
             a.category_id1 categoryId1,
@@ -873,12 +884,14 @@
         <![CDATA[
         ORDER BY a.update_date DESC
 
+
         ]]>
     </select>
 
     <!--  商品列表展示-->
     <select id="loadGoodsList" resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
         <![CDATA[
+
 
         SELECT
             a.ID goodId,
@@ -924,6 +937,7 @@
         <![CDATA[
         ORDER BY a.update_date DESC
 
+
         ]]>
     </select>
 
@@ -931,6 +945,7 @@
     <!-- 主键查询基本信息 -->
     <select id="selectByPK" parameterType="Long" resultType="GoodsInfoEntity">
         <![CDATA[
+
 
         SELECT
             category_id1 categoryId1,
@@ -974,6 +989,7 @@
         WHERE
             id=#{value}
 
+
         ]]>
     </select>
 
@@ -987,6 +1003,7 @@
     <!-- 商品基本信息+商户信息+库存信息 -->
     <select id="loadContainGoodsAndGoodsStockAndMerchant" parameterType="HashMap" resultType="GoodsDetailInfoEntity">
         <![CDATA[
+
 
         SELECT
             a.id goodsId,
@@ -1013,6 +1030,7 @@
         AND a.id = #{goodsId}
         AND b.id = #{goodsStockId}
 
+
         ]]>
     </select>
     <!--修改已上架的商品状态(已经到下架时间的商品) -->
@@ -1030,6 +1048,7 @@
     <select id="getBelongCategoryGoodsNumber" parameterType="java.lang.Long" resultType="java.lang.Integer">
         <![CDATA[
 
+
         SELECT
             count(*)
         FROM
@@ -1041,11 +1060,13 @@
         OR a.category_id2 = #{categroyId}
         OR a.category_id3 = #{categroyId})
 
+
         ]]>
     </select>
     <!-- 根据类目id查询其类目下所有已经下架了的商品信息 -->
     <select id="getDownCategoryGoodsByCategoryId" parameterType="java.lang.Long" resultType="GoodsInfoEntity">
         <![CDATA[
+
 
         SELECT
                 a.ID id
@@ -1057,6 +1078,7 @@
              OR a.category_id2    = #{categroyId}
              OR a.category_id3    = #{categroyId}
              )
+
 
         ]]>
     </select>
@@ -1115,6 +1137,49 @@
         from t_esp_goods_base_info t
         where external_id = #{externalId}
         and source = 'wz'
+    </select>
+    <select id="selectGoodsByExternalId2" parameterType="java.lang.String" resultType="GoodsInfoEntity">
+        SELECT
+        t.ID id,
+        t.category_id1 categoryId1,
+        t.category_id2 categoryId2,
+        t.category_id3 categoryId3,
+        t.category_code categoryCode,
+        t.goods_name goodsName,
+        t.goods_code goodsCode,
+        t.goods_title goodsTitle,
+        t.goods_sell_pt goodsSellPt,
+        t.goods_type goodsType,
+        t.goods_Sku_Type goodsSkuType,
+        t.goods_model goodsModel,
+        t.goods_logo_url goodsLogoUrl,
+        t.list_time listTime,
+        t.delist_time delistTime,
+        t.pro_date proDate,
+        t.keep_date keepDate,
+        t.sup_no supNo,
+        t.merchant_code merchantCode,
+        t.is_delete isDelete,
+        t.status status,
+        t.remark remark,
+        t.goods_detail googsDetail,
+        t.sord_no sordNo,
+        t.goods_sift_url goodsSiftUrl,
+        t.create_user createUser,
+        t.update_user updateUser,
+        t.create_date createDate,
+        t.update_date updateDate,
+        t.un_support_province unSupportProvince,
+        t.source source,
+        t.external_id externalId,
+        t.newCreat_date   newCreatDate,
+        t.attr_desc     attrDesc,
+        t.support_7d_refund support7dRefund,
+        t.sift_sort siftSort,
+        t.main_goods_code mainGoodscode,
+        t.brand_id brandId
+        from t_esp_goods_base_info t
+        where external_id = #{externalId}
     </select>
 
     <!-- 根据京东id查询改商品是否已经上架 -->
@@ -1270,6 +1335,7 @@
     <select id="getBelongCategoryGoods" parameterType="java.lang.Long" resultType="GoodsInfoEntity">
         <![CDATA[
 
+
         SELECT
             t.category_id1 categoryId1,
                 t.category_id2 categoryId2,
@@ -1310,12 +1376,14 @@
         OR t.category_id2 = #{categroyId}
         OR t.category_id3 = #{categroyId})
 
+
         ]]>
     </select>
 
 
     <select id="selectUpGoods" parameterType="HashMap" resultType="GoodsInfoEntity">
         <![CDATA[
+
 
         SELECT
                 t.ID goodId,
@@ -1360,10 +1428,12 @@
             order by id asc
             limit #{index},#{size}
 
+
         ]]>
     </select>
     <select id="selectJdGoods" parameterType="HashMap" resultType="GoodsInfoEntity">
         <![CDATA[
+
 
         SELECT
                 t.ID goodId,
@@ -1374,6 +1444,7 @@
         WHERE
             t.source ='wz'
             limit #{index},#{size}
+
 
         ]]>
     </select>

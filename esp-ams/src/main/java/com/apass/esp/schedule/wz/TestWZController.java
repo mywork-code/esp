@@ -9,6 +9,7 @@ import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.JdGoodsImageType;
+import com.apass.esp.domain.enums.Support7dRefundStatus;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -107,6 +108,8 @@ public class TestWZController {
     private SystemParamService systemParamService;
     @Autowired
     private GoodsEsDao goodsEsDao;
+    @Autowired
+    private GoodsRepository goodsDao;
 
     @ResponseBody
     @RequestMapping(value = "/getToken", method = RequestMethod.GET)
@@ -1183,7 +1186,7 @@ public class TestWZController {
             while ((skuId = br.readLine()) != null) {
                 LOGGER.info("skuId:{}", skuId);
                 //判断商品表中是否存在
-                GoodsInfoEntity entity = goodsService.selectGoodsByExternalId(skuId);
+                GoodsInfoEntity entity = goodsService.selectGoodsByExternalId2(skuId);
                 if (entity == null) {
                     //插入数据库，上架
                     String sku = insertIntoJDGoodsAndJDCategory(skuId);//此返回sku表示已在商品池，但未关联，如果返回空说明成功插入商品池
@@ -1191,7 +1194,29 @@ public class TestWZController {
                         revealSkuList.add(skuId);
                     }
                 } else {
-                    //直接上架
+                    if (StringUtils.equals("jd",entity.getSource())){
+                        entity.setSource("wz");
+                        entity.setUpdateDate(new Date());
+                        entity.setListTime(new Date());
+                        if(StringUtils.isEmpty(entity.getSupport7dRefund())){
+                            entity.setSupport7dRefund(Support7dRefundStatus.GOOD_NEW.getCode());
+                        }
+                        Long goodsId = entity.getId();
+                        GoodsInfoEntity goodsInfoEntity = goodsService.insert(entity);
+
+                        List<GoodsStockInfoEntity> goodsStock = goodsStockInfoService.getGoodsStock(goodsId);
+                        if(CollectionUtils.isEmpty(goodsStock) || goodsStock.size()>1){
+                            revealSkuList.add(skuId);
+                            continue;
+                        }else {
+                            GoodsStockInfoEntity stockInfoEntity = goodsStock.get(0);
+                            stockInfoEntity.setGoodsId(goodsInfoEntity.getId());
+                            goodsStockInfoService.insert(stockInfoEntity);
+                        }
+
+                    }
+
+                    //上架
                     String sku = shelves(skuId);
                     if (StringUtils.isNotEmpty(sku)) {
                         revealSkuList.add(sku);
@@ -1282,6 +1307,10 @@ public class TestWZController {
 
     private String shelves(String skuId) throws BusinessException {
         GoodsInfoEntity entity = goodsService.selectGoodsByExternalId(skuId);
+        //重复请求，商品已上架，返回空
+        if(StringUtils.equals(entity.getStatus(),GoodStatus.GOOD_UP.getCode())){
+            return null;
+        }
         entity.setListTime(new Date());
         entity.setUpdateUser("wzAdmin");
         entity.setUpdateDate(new Date());
