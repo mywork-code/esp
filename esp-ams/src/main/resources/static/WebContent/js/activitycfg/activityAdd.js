@@ -372,6 +372,10 @@ $(function(){
 				$("#addOrDeleteButtonClass").show();
 			}else{
 				clearTextBox('1');
+                clearTextBox('2');
+                clearTextBox('3');
+                clearTextBox('4');
+                clearTextBox('5');
 				$(".couponsDiv").css("display","none");
 			}
 		}
