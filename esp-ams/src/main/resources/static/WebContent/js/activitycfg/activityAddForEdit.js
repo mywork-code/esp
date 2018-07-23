@@ -229,8 +229,20 @@ $(function(){
 		if(activityCate == 1){
             var fydActivityPer = $('#fydActivityPer').textbox('getValue');
             var fydDownPer = $('#fydDownPer').textbox('getValue');
-            if(fydActivityPer == '' || fydDownPer == ''){
-                $.messager.alert("<span style='color: black;'>提示</span>","请填写系数！",'info');
+            if(fydActivityPer == ''){
+                $.messager.alert("<span style='color: black;'>提示</span>","请输入商品活动价格系数",'info');
+                return false;
+            }
+            if(fydActivityPer<1 || fydActivityPer>999){
+                $.messager.alert("<span style='color: black;'>提示</span>","商品活动价格系数填写错误，请重新填写",'info');
+                return false;
+            }
+            if(fydDownPer == ''){
+                $.messager.alert("<span style='color: black;'>提示</span>","请输入商品下架系数",'info');
+                return false;
+            }
+            if(fydDownPer<1 || fydDownPer>999){
+                $.messager.alert("<span style='color: black;'>提示</span>","商品下架系数填写错误，请重新填写",'info');
                 return false;
             }
             var value = $("input[name='cateCoupon']:checked").val();

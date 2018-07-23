@@ -300,7 +300,7 @@ public class ActivityCfgController {
  		}
  		String activityType = vo.getActivityType();
  		ValidateUtils.isNotBlank(activityType, "请选择活动类型！");
- 		
+
  		if(StringUtils.equalsIgnoreCase(activityType, ActivityType.LESS.getCode())){
  			ValidateUtils.isNullObject(vo.getOfferSill1(), "请填写第一个优惠门槛！");
  			ValidateUtils.isNullObject(vo.getOfferSill2(), "请填写第二个优惠门槛！");

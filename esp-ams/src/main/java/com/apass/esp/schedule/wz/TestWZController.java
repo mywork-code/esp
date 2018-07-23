@@ -1,5 +1,6 @@
 package com.apass.esp.schedule.wz;
 
+import com.apass.esp.common.model.ExtentMerchantCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
@@ -7,9 +8,7 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
-import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.JdGoodsImageType;
-import com.apass.esp.domain.enums.Support7dRefundStatus;
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -20,6 +19,7 @@ import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.service.jd.JdGoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.service.wz.WeiZhiTokenService;
@@ -35,10 +35,14 @@ import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
 import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.RandomUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -52,6 +56,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -77,6 +83,8 @@ public class TestWZController {
     private WeiZhiPriceApiClient price;
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
+    @Autowired
+    private JdGoodsService jdGoodsService;
 
     @Autowired
     private JdGoodsMapper jdGoodsMapper;
@@ -1194,21 +1202,21 @@ public class TestWZController {
                         revealSkuList.add(skuId);
                     }
                 } else {
-                    if (StringUtils.equals("jd",entity.getSource())){
+                    if (StringUtils.equals("jd", entity.getSource())) {
                         entity.setSource("wz");
                         entity.setUpdateDate(new Date());
                         entity.setListTime(new Date());
-                        if(StringUtils.isEmpty(entity.getSupport7dRefund())){
+                        if (StringUtils.isEmpty(entity.getSupport7dRefund())) {
                             entity.setSupport7dRefund(Support7dRefundStatus.GOOD_NEW.getCode());
                         }
                         Long goodsId = entity.getId();
                         GoodsInfoEntity goodsInfoEntity = goodsService.insert(entity);
 
                         List<GoodsStockInfoEntity> goodsStock = goodsStockInfoService.getGoodsStock(goodsId);
-                        if(CollectionUtils.isEmpty(goodsStock) || goodsStock.size()>1){
+                        if (CollectionUtils.isEmpty(goodsStock) || goodsStock.size() > 1) {
                             revealSkuList.add(skuId);
                             continue;
-                        }else {
+                        } else {
                             GoodsStockInfoEntity stockInfoEntity = goodsStock.get(0);
                             stockInfoEntity.setGoodsId(goodsInfoEntity.getId());
                             goodsStockInfoService.insert(stockInfoEntity);
@@ -1308,7 +1316,7 @@ public class TestWZController {
     private String shelves(String skuId) throws BusinessException {
         GoodsInfoEntity entity = goodsService.selectGoodsByExternalId(skuId);
         //重复请求，商品已上架，返回空
-        if(StringUtils.equals(entity.getStatus(),GoodStatus.GOOD_UP.getCode())){
+        if (StringUtils.equals(entity.getStatus(), GoodStatus.GOOD_UP.getCode())) {
             return null;
         }
         entity.setListTime(new Date());
@@ -1370,5 +1378,51 @@ public class TestWZController {
         return null;
     }
 
+
+    /**
+     * 手动插入已关联的微知数据
+     * 思路：先插入base表和stock表中，再上架
+     */
+    @ResponseBody
+    @RequestMapping("/revlenceAndShelve")
+    @LogAnnotion(operationType = "手动插入已关联的微知数据", valueType = LogValueTypeEnum.VALUE_DTO)
+    public Response disRelevanceJdCategory() {
+        ClassLoader classLoader = TestWZController.class.getClassLoader();
+        InputStream in = classLoader.getResourceAsStream("file/skuIds2.txt");
+
+        //skuIds2.txt中上架成功的商品skuId
+        List<String> revealSkuList = Lists.newArrayList();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+            String skuIds = null;
+            while ((skuIds = br.readLine()) != null) {
+                LOGGER.error("读取skuIds2结果strArr:{}", skuIds);
+                String[] strArr = skuIds.split(",");
+                if (strArr == null || strArr.length != 4) {
+                    throw new RuntimeException("skuIds2.txt中数据有误");
+                }
+                //根据skuId查询jd_goods表
+                JdGoods jdGoods = jdGoodsMapper.queryGoodsBySkuId(Long.valueOf(strArr[0]));
+                if (jdGoods == null) {
+                    LOGGER.error("skuId:{}", strArr[0]);
+                    throw new RuntimeException("数据有误");
+                }
+                Map<String, String> paramMap = Maps.newHashMap();
+                paramMap.put("categoryId1", strArr[1]);
+                paramMap.put("categoryId2", strArr[2]);
+                paramMap.put("categoryId3", strArr[3]);
+
+                jdGoodsService.insertToGoosbaseAndGoodsstock(paramMap, "wzAdmin", jdGoods);
+                String skuId = shelves(strArr[0]);
+                if (StringUtils.isBlank(skuId)) {
+                    revealSkuList.add(strArr[0]);
+                }
+
+            }
+        } catch (Exception e) {
+            LOGGER.error("skuIds2.txt中商品操作异常,=====Exception===>", e);
+            return Response.fail("skuIds2.txt中商品操作异常", revealSkuList);
+        }
+        return Response.success("上架成功", revealSkuList);
+    }
 
 }
