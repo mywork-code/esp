@@ -163,7 +163,6 @@ $(function(){
 	 * 保存活动添加信息
 	 */
 	$("#agreeEdit").click(function(){
-		if(coupon == "Y"){
 			if(checkParams()){
 				param.relList = arr;
 				console.log(arr);
@@ -186,7 +185,7 @@ $(function(){
 					}
 				})
 			}
-		}else{
+		else{
 			window.location.href = ctx + "/activity/cfg/edit?id="+paramMapActivityId;
 		}
 	});
