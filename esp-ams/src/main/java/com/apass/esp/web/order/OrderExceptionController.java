@@ -22,6 +22,7 @@ import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.domain.vo.FydActivity;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.merchant.MerchantInforRepository;
 import com.apass.esp.schedule.DataAppuserAnalysisSchedule;
@@ -32,6 +33,7 @@ import com.apass.esp.schedule.OrderInforMailSendScheduleTask;
 import com.apass.esp.schedule.OrderModifyStatusScheduleTask;
 import com.apass.esp.schedule.OrderTransactionDetailSchedeuleTask;
 import com.apass.esp.schedule.TalkingDataScheduleTask;
+import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -86,6 +88,9 @@ public class OrderExceptionController {
     
     @Autowired
     private DataAppuserRetentionSchedule retentionSchedule;
+    
+    @Autowired
+    private MyCouponManagerService managerService;
     /**
      * 订单信息页面
      */
@@ -309,5 +314,15 @@ public class OrderExceptionController {
     public Response retentionEveryDayScheduleData(){
     	retentionSchedule.retentionEveryDayScheduleData();
     	return Response.success("每天插入更新数据成功(t_data_appuser_retention)!");
+    }
+    
+    @ResponseBody
+    @RequestMapping("/message")
+    public Response sendMessage() throws BusinessException{
+    	FydActivity fyd = new FydActivity();
+    	fyd.setMobile("17621964882");
+    	fyd.setScene("IDENTITY");
+    	managerService.addFYDYHZY(fyd);
+    	return Response.success("房易贷发送优惠券短信息成功!");
     }
 }
