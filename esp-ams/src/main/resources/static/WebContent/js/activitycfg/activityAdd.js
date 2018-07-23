@@ -10,6 +10,7 @@ $(function(){
 	var obj5 = {};
 
     var fydCouponId = null;
+    var couponFlag = 0;
 	/**
 	 * 保存活动添加信息
 	 */
@@ -324,15 +325,18 @@ $(function(){
 	//加载activityCate
 	$("#id_activityCate").combobox({
         onChange: function (n, o) {
+            ++couponFlag;
             if (n == '1') {
                 $("#1_xxxxId").show();
                 $("#2_xxxxId").hide();
                 $(".couponsDiv").css("display","none");
+                clearAllText(couponFlag);
 
             } else {
                 $("#2_xxxxId").show();
 
                 $("#1_xxxxId").hide();
+                clearAllText(couponFlag);
             }
         }
     });
@@ -478,4 +482,24 @@ function clearTextBox(No){
 	$("#chooseCoupon"+No).combobox('clear');
 	$("#issueCouponNum"+No).textbox('setValue','');
 	$("#issueLimitNum"+No).textbox('setValue','');
+}
+
+//清空活动配置信息
+function clearAllText(couponFlag) {
+    if(couponFlag > 1){
+        $('#activityName').textbox('setValue','');
+        $('#startTime').datebox('setValue','');
+        $('#endTime').datebox('setValue','');
+    }
+    $('#fydActivityPer').textbox('setValue','');
+    $('#fydDownPer').textbox('setValue','');
+    $("input[name='cateCoupon']")[1].checked=true
+    $(".cateCouponInput").combobox('clear');
+    $("#activityType").combobox('clear');
+    $("input[name='isCoupon']")[1].checked=true
+    clearTextBox('1');
+    clearTextBox('2');
+    clearTextBox('3');
+    clearTextBox('4');
+    clearTextBox('5');
 }
