@@ -65,7 +65,7 @@ public class ActivityCfgService {
 	 * @throws BusinessException 
 	 */
 	@Transactional(rollbackFor = { Exception.class})
-	public Long saveActivity(ActivityCfgVo vo) throws BusinessException{
+	public synchronized Long saveActivity(ActivityCfgVo vo) throws BusinessException{
 		ProActivityCfg record = getActivityCfg(vo,true);
 		Integer activityId = activityCfgMapper.insertSelective(record);
 		if(activityId == 0){
