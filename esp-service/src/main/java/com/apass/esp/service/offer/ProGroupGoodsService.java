@@ -182,7 +182,11 @@ public class ProGroupGoodsService {
 		}
 		return result;
 	}
-	//判断商品是否存在其他有效的活动中
+	/**
+	 * 判断商品是否存在其他有效的活动中
+	 * true:不存在
+	 * false:存在
+	 */
 	public Boolean selectEffectiveGoodsBySkuId(String skuId) {
 		Boolean result = true;
 		List<ProGroupGoods> list = groupGoodsMapper.selectEffectiveGoodsBySkuId(skuId);

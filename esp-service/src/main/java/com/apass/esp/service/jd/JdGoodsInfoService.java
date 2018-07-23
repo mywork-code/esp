@@ -1193,12 +1193,14 @@ public class JdGoodsInfoService {
 		List<WZPriceResponse> priceList = new ArrayList<>();
 		try {
 			priceList = priceApiClient.getWzPrice(sku);
-			for (WZPriceResponse price : priceList) {
-				JdSellPrice jdPrice = new JdSellPrice();
-				jdPrice.setJdPrice(new BigDecimal(price.getJDPrice()));
-				jdPrice.setPrice(new BigDecimal(price.getWzPrice()));
-				jdPrice.setSkuId(Long.parseLong(price.getSkuId()));
-				jdSellPriceList.add(jdPrice);
+			if(CollectionUtils.isNotEmpty(priceList)){
+				for (WZPriceResponse price : priceList) {
+					JdSellPrice jdPrice = new JdSellPrice();
+					jdPrice.setJdPrice(new BigDecimal(price.getJDPrice()));
+					jdPrice.setPrice(new BigDecimal(price.getWzPrice()));
+					jdPrice.setSkuId(Long.parseLong(price.getSkuId()));
+					jdSellPriceList.add(jdPrice);
+				}
 			}
 		} catch (Exception e) {
 			logger.error("call method getWzPrice is failed!!!{}",e);

@@ -1649,6 +1649,9 @@ public class GoodsService {
   public GoodsInfoEntity selectGoodsByExternalId(String externalId) {
     return goodsDao.selectGoodsByExternalId(externalId);
   }
+  public GoodsInfoEntity selectGoodsByExternalId2(String externalId) {
+    return goodsDao.selectGoodsByExternalId2(externalId);
+  }
 
   public Pagination<String> jdGoodSalesVolumeByPage(int pageIndex, int pageSize) {
     // int totalConut = jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
@@ -2109,5 +2112,12 @@ public class GoodsService {
     public List<GoodsInfoEntity> selectAllGoodsNotinStock() {
         //查詢所
         return goodsDao.selectAllGoodsNotinStock();
+    }
+
+    public GoodsInfoEntity insert(GoodsInfoEntity entity) {
+        goodsDao.insert(entity);
+        entity.setGoodId(entity.getId());
+
+        return entity;
     }
 }
