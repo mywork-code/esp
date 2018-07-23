@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.third.party.weizhi.client.WeiZhiConstants;
 import com.apass.gfb.framework.cache.CacheManager;
 import org.apache.commons.collections.CollectionUtils;
@@ -47,10 +48,6 @@ import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
-import com.apass.esp.domain.enums.CouponStatus;
-import com.apass.esp.domain.enums.CouponType;
-import com.apass.esp.domain.enums.JdGoodsImageType;
-import com.apass.esp.domain.enums.OfferRangeType;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.ProCouponGoodsDetailVo;
 import com.apass.esp.domain.vo.ProCouponVo;
@@ -581,6 +578,10 @@ public class JdGoodsInfoService {
 	    	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
 	    		List<ProCoupon> proCoupons=couponManagerService.getCouponListsByActivityId(proGroupGoodsBo.getActivityId().toString());
     			for (ProCoupon proCoupon : proCoupons) {
+    				//房易贷用户专享过滤不展示在商品详情页
+    				if(CouponExtendType.COUPON_FYDYHZX.getCode().equals(proCoupon.getExtendType())){
+						continue;
+					}
     				ProCouponGoodsDetailVo proCouponGoodsDetailVo=new ProCouponGoodsDetailVo();
     				proCouponGoodsDetailVo.setCouponSill(proCoupon.getCouponSill());
     				proCouponGoodsDetailVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
