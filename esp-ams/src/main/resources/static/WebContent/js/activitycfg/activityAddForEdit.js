@@ -43,6 +43,7 @@ $(function(){
                         }
                     });
 					if(coupon == 'Y'){
+					    debugger
 						 var couponname=resp.fydCouponNameList;
                         fydCouponId = resp.fydCouponIdList;
                         $('.cateCouponInput').combobox('setValue',couponname);
