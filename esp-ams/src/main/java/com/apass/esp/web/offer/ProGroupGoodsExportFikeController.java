@@ -402,7 +402,7 @@ public class ProGroupGoodsExportFikeController {
 						}
 
 
-						if (!result && limitResult) {//允许导入
+						if (result && limitResult) {//允许导入
 							pggds.setMarketPrice(marketPrice);//对小数点第三位执行四舍五入
 							pggds.setActivityPrice(activityPrice);
 							pggds.setGoodsId(gbity.getGoodId());
