@@ -43,9 +43,9 @@ $(function(){
                     });
 					if(coupon == 'Y'){
 					    debugger
-						 var couponname=resp.fydCouponNameList;
+                        var couponname=resp.fydCouponNameList;
                         fydCouponId = resp.fydCouponIdList;
-                        $('.cateCouponInput').combobox('setValue',couponname);
+                        $('.cateCouponInput').combobox('setValues',couponname);
                         $('#id_xxx_copon').show();
 					}
                     $('#1_xxxxId').show();
@@ -142,6 +142,7 @@ $(function(){
 
         },
         onSelect: function () {
+            debugger;
             fydCouponId = $(this).combobox('getValues');
         }
     });
@@ -247,8 +248,12 @@ $(function(){
             }
             var value = $("input[name='cateCoupon']:checked").val();
             if(value == 'Y'){
-
                 if(fydCouponId == '' || fydCouponId == null){
+                    $.messager.alert("<span style='color: black;'>提示</span>","请选择优惠券！",'info');
+                    return false;
+                }
+                var cateCo = $(".cateCouponInput").combobox("getValues");
+                if(cateCo == '' || cateCo == null){
                     $.messager.alert("<span style='color: black;'>提示</span>","请选择优惠券！",'info');
                     return false;
                 }
