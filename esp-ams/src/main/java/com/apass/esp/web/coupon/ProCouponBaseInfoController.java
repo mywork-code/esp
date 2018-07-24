@@ -172,16 +172,22 @@ public class ProCouponBaseInfoController {
 
     @RequestMapping("/loadp2")
     @ResponseBody
-    public List<ProCoupon> loadCouponPTFF2(ProCoupon proCoupon) {
-
+    public List<ProCoupon> loadCouponPTFF2(String extendType,String activityId) {
+        ProCoupon proCoupon = new ProCoupon();
+        proCoupon.setExtendType(extendType);
         List<ProCoupon> result = proCouponService.getProCouponList(proCoupon);
         Iterator<ProCoupon> it = result.iterator();
         outter: while (it.hasNext()) {
             ProCoupon c = it.next();
             List<ProCouponRel> relList = couponRelService.getByCouponId(c.getId());
+
             if (CollectionUtils.isNotEmpty(relList)) {
                 //判断是否存在有效的活动，如果有效，去除。
                 for (ProCouponRel proCouponRel : relList) {
+                    if(proCouponRel.getProActivityId().toString().equals(activityId)){
+                        continue outter;
+                    }
+
                     ProActivityCfg cfg = activityCfgService.getById(proCouponRel.getProActivityId());
                     if (cfg != null) {
                         logger.info("activityId:{},cfg:{}", proCouponRel.getProActivityId(), GsonUtils.toJson(cfg));

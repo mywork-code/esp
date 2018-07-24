@@ -133,6 +133,7 @@ $(function(){
         multiple:true,
         queryParams: {
             "extendType" : "FYDYHZX",
+            "activityId": paramMapActivityId
         },
         onShowPanel : function(){
             $(this).combobox('options').url= ctx + "/application/coupon/management/loadp2";
