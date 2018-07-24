@@ -72,7 +72,7 @@
         select
         <include refid="Base_Column_List" />
         from t_esp_pro_group_goods
-        where sku_id = #{skuId} and activity_id = #{activityId} and detail_desc = '1'
+        where sku_id = #{skuId} and activity_id = #{activityId} and detail_desc = '1' and group_id != -1
     </select>
     <!--查看该活动下是否已经存在成功添加到分组的商品 -->
     <select id="checkActivityGroupGoods" resultType="java.lang.Integer">
@@ -94,7 +94,7 @@
 		   <if test="groupId != null" >
 	         and group_id = ${groupId}
 	       </if>
-	       and status = 'S'
+               and status = 'S'
 	   </where>
     </select>
 	<select id="getProGroupGoodsListPage" parameterType="com.apass.esp.domain.query.ProGroupGoodsQuery"
