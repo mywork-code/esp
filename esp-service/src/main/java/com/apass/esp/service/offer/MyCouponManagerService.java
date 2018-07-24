@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -96,6 +97,9 @@ public class MyCouponManagerService {
 	
 	@Autowired
 	private MobileSmsService smsService;
+	
+	@Value("${spring.fyd.downloadRegApp}")
+	private String downloadRegApp;
 	/**
 	 * 点击领取优惠券
 	 * @throws BusinessException
@@ -545,11 +549,11 @@ public class MyCouponManagerService {
 			String code = GrantNode.getCodeByMapCode(fyd.getScene());
 			String message = null;
 			if(StringUtils.equals(code, GrantNode.NODE_SFZRZTG.getCode())){
-				message = "【安家趣花】恭喜您通过客户身份认证，1000元商城购物礼包已经发出，请点击链接https://fyd-uat.apass.cn/#/downloadRegApp下载安家趣花app领取。";
+				message = "【安家趣花】恭喜您通过客户身份认证，1000元商城购物礼包已经发出，请点击链接"+ downloadRegApp+" 下载安家趣花app领取。";
 			}else if(StringUtils.equals(code, GrantNode.NODE_YHKRZTG.getCode())){
-				message = "【安家趣花】感谢您提交信息，我们在对您的信息进行审核。2000元商城购物礼包已经发出，请点击链接https://fyd-uat.apass.cn/#/downloadRegApp下载安家趣花app领取。";
+				message = "【安家趣花】感谢您提交信息，我们在对您的信息进行审核。2000元商城购物礼包已经发出，请点击链接"+ downloadRegApp+" 下载安家趣花app领取。";
 			}else if(StringUtils.equals(code, GrantNode.NODE_FKCG.getCode())){
-				message = "【安家趣花】恭喜您，通过放款审批！资金将打入您绑定的银行卡。3000元商城购物礼包已经发出，请点击链接https://fyd-uat.apass.cn/#/downloadRegApp下载安家趣花app领取。";
+				message = "【安家趣花】恭喜您，通过放款审批！资金将打入您绑定的银行卡。3000元商城购物礼包已经发出，请点击链接"+ downloadRegApp+" 下载安家趣花app领取。";
 			}
 			smsService.sendNoticeSms(customer.getMobile(), message);
 		}
