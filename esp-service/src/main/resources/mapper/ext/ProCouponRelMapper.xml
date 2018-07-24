@@ -4,6 +4,7 @@
 
    <sql id="paramSql">
         <where>
+            del_flag = 1
             <if test="activityId != null">
               and  pro_activity_id = #{activityId}
             </if>
@@ -52,7 +53,7 @@
       from t_esp_pro_coupon_rel where coupon_id = #{couponId}
     </select>
 
-    <delete id="delCouponRel" parameterType="java.lang.Long">
-        delete from t_esp_pro_coupon_rel where pro_activity_id = #{activityId}
-    </delete>
+    <update id="delCouponRel" parameterType="java.lang.Long">
+       update t_esp_pro_coupon_rel set del_flag = 0  where pro_activity_id = #{activityId}
+    </update>
 </mapper>

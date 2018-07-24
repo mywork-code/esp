@@ -98,7 +98,6 @@ public class ProCouponBaseInfoController {
     @ResponseBody
     public List<ProCoupon> loadCouponPTFF(ProCoupon proCoupon) {
         proCoupon.setIsDelete(CouponIsDelete.COUPON_N.getCode());
-        List<ProCoupon> coupons = Lists.newArrayList();
         //如果是用户领取，只显示未关联有效活动的优惠券显示
         if (StringUtils.equals(CouponExtendType.COUPON_YHLQ.getCode(), proCoupon.getExtendType())) {
             //先捞取所有使用优惠券的 且有效的 活动
@@ -127,14 +126,10 @@ public class ProCouponBaseInfoController {
                 }
             }
 
-        } else if (StringUtils.equals(CouponExtendType.COUPON_PTFF.getCode(), proCoupon.getExtendType())) {
-            List<ProCoupon> ptff = proCouponService.getProCouponList(proCoupon);
-            coupons.addAll(ptff);
         }
 
-        proCoupon.setExtendType(CouponExtendType.COUPON_FYDYHZX.getCode());
-        List<ProCoupon> fyd = proCouponService.getProCouponList(proCoupon);
-        coupons.addAll(fyd);
+
+        List<ProCoupon> coupons = proCouponService.getProCouponList(proCoupon);
         Iterator<ProCoupon> it = coupons.iterator();
         outter:
         while (it.hasNext()) {
@@ -181,11 +176,26 @@ public class ProCouponBaseInfoController {
 
         List<ProCoupon> result = proCouponService.getProCouponList(proCoupon);
         Iterator<ProCoupon> it = result.iterator();
-        while (it.hasNext()) {
+        outter: while (it.hasNext()) {
             ProCoupon c = it.next();
             List<ProCouponRel> relList = couponRelService.getByCouponId(c.getId());
             if (CollectionUtils.isNotEmpty(relList)) {
-                it.remove();
+                //判断是否存在有效的活动，如果有效，去除。
+                for (ProCouponRel proCouponRel : relList) {
+                    ProActivityCfg cfg = activityCfgService.getById(proCouponRel.getProActivityId());
+                    if (cfg != null) {
+                        logger.info("activityId:{},cfg:{}", proCouponRel.getProActivityId(), GsonUtils.toJson(cfg));
+                        ActivityStatus activityStatus = activityCfgService.getActivityStatus(cfg);
+                        if (StringUtils.equals(activityStatus.getCode(), ActivityStatus.NO.getCode())
+                                || StringUtils.equals(activityStatus.getCode(), ActivityStatus.PROCESSING.getCode())) {
+                            it.remove();
+                            continue outter;
+                        }
+                    }else {
+                        it.remove();
+                        continue outter;
+                    }
+                }
             }
         }
         return result;

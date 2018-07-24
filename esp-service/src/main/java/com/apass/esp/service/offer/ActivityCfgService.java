@@ -118,6 +118,7 @@ public class ActivityCfgService {
 						proCouponRel.setLimitNum(-1);
 						proCouponRel.setTotalNum(-1);
 						proCouponRel.setRemainNum(-1);
+						proCouponRel.setDelFlag(Byte.valueOf("1"));
 						proCouponRel.setCreatedTime(new Date());
 						proCouponRel.setUpdatedTime(new Date());
 						Integer relId = couponRelService.addProCouponRel(proCouponRel);
@@ -282,6 +283,7 @@ public class ActivityCfgService {
 				proCouponRel.setLimitNum(-1);
 				proCouponRel.setTotalNum(-1);
 				proCouponRel.setRemainNum(-1);
+				proCouponRel.setDelFlag(Byte.valueOf("1"));
 				proCouponRel.setCreatedTime(new Date());
 				proCouponRel.setUpdatedTime(new Date());
 				Integer relId = couponRelService.addProCouponRel(proCouponRel);
