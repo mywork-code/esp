@@ -186,9 +186,6 @@ $(function(){
 					}
 				})
 			}
-		else{
-			window.location.href = ctx + "/activity/cfg/edit?id="+paramMapActivityId;
-		}
 	});
 	//校验参数
 	function checkParams(){
