@@ -511,7 +511,7 @@ function clearAllText(couponFlag) {
     $("input[name='cateCoupon']")[1].checked=true
     $(".cateCouponInput").combobox('clear');
     $("#activityType").combobox('clear');
-    $("input[name='isCoupon']")[1].checked=true
+    // $("input[name='isCoupon']")[1].checked=true
     clearTextBox('1');
     clearTextBox('2');
     clearTextBox('3');
