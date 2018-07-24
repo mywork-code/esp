@@ -19,6 +19,8 @@ public class ProCouponRel {
 
     private Date updatedTime;
 
+    private Byte delFlag;
+
     public Long getId() {
         return id;
     }
@@ -81,5 +83,13 @@ public class ProCouponRel {
 
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public Byte getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(Byte delFlag) {
+        this.delFlag = delFlag;
     }
 }
