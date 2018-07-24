@@ -370,6 +370,10 @@ $(function(){
 			if(value == 'Y'){
 				$(".couponsDiv").show();
 				$("#addOrDeleteButtonClass").show();
+                $(".addOrdeleteCouponTr2").css("display","none");
+                $(".addOrdeleteCouponTr3").css("display","none");
+                $(".addOrdeleteCouponTr4").css("display","none");
+                $(".addOrdeleteCouponTr5").css("display","none");
 			}else{
 				clearTextBox('1');
                 clearTextBox('2');
@@ -508,10 +512,10 @@ function clearAllText(couponFlag) {
     }
     $('#fydActivityPer').textbox('setValue','');
     $('#fydDownPer').textbox('setValue','');
-    $("input[name='cateCoupon']")[1].checked=true
+    // $("input[name='cateCoupon']")[1].checked=true
     $(".cateCouponInput").combobox('clear');
     $("#activityType").combobox('clear');
-    // $("input[name='isCoupon']")[1].checked=true
+    $("input[name='isCoupon']")[1].checked=true
     clearTextBox('1');
     clearTextBox('2');
     clearTextBox('3');

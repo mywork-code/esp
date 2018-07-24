@@ -261,7 +261,7 @@ public class ProGroupGoodsExportFikeController {
 			}
 			ProGroupGoods proGroupGoods=new ProGroupGoods();
 			proGroupGoods.setId(Long.parseLong(id));
-			proGroupGoods.setGroupId(-1l);
+			proGroupGoods.setGroupId(-1L);
 			proGroupGoods.setOrderSort(Long.parseLong("1"));
 			proGroupGoods.setStatus("");
 			proGroupGoods.setUpdatedTime(new Date());

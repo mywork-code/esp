@@ -21,7 +21,6 @@ $(function(){
 		type : "post",
 		dataType : "json",
 		success : function(data) {
-			debugger;
 			var resp = data.data;
 			if(data.status=="1"){
 				console.log(data);
@@ -187,11 +186,12 @@ $(function(){
 				})
 			}
 		else{
-			window.location.href = ctx + "/activity/cfg/edit?id="+paramMapActivityId;
+			//window.location.href = ctx + "/activity/cfg/edit?id="+paramMapActivityId;
 		}
 	});
 	//校验参数
 	function checkParams(){
+        debugger;
 		var activityName = $("#activityName").textbox('getValue');
 		if(activityName == '' || null == activityName){
 			$.messager.alert("<span style='color: black;'>提示</span>","请填写活动名称！","info");
