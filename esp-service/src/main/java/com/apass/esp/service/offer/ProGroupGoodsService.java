@@ -571,7 +571,8 @@ public class ProGroupGoodsService {
 						BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
 						BigDecimal wzPrice = jdSellPrices.get(0).getPrice();
 						logger.info("-----------downProductOfFyd skuid:{}, jdprice {},wzprice {}",wzGoodsId,jdPrice,wzPrice);
-						if(wzPrice.divide(good.getActivityPrice()).compareTo(fydDownPer) >= 0){
+						BigDecimal a =  wzPrice.divide(good.getActivityPrice(),2,BigDecimal.ROUND_HALF_UP);
+						if(a.compareTo(fydDownPer) >= 0){
 							//自动下架规则：微知价 / 活动价>n%
 							GoodsInfoEntity updateGood = new GoodsInfoEntity();
 							updateGood.setId(goodsId);
