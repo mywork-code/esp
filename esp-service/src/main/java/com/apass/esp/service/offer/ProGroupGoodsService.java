@@ -431,23 +431,25 @@ public class ProGroupGoodsService {
 			GroupGoodsVo vo = new GroupGoodsVo();
 			Long goodsId = goods.getGoodsId();
 			GoodsInfoEntity g = goodsRepository.select(goodsId);
-			vo.setActivityPrice(goods.getActivityPrice());
-			vo.setGoodsId(goods.getGoodsId());
-			vo.setGroupId(goods.getGroupId());
-			vo.setSource(g.getSource());
-			if(StringUtils.equalsIgnoreCase(g.getSource(), SourceType.WZ.getCode())){
-				vo.setGoodsPic("http://img13.360buyimg.com/n1/" + g.getGoodsLogoUrl());
-			}else{
-				try {
-					vo.setGoodsPic(imageService.getImageUrl(g.getGoodsLogoUrl()));
-				} catch (Exception e) {
-					vo.setGoodsPic("");
+			if(GoodStatus.GOOD_UP.getCode().equals(g.getStatus())){
+				vo.setActivityPrice(goods.getActivityPrice());
+				vo.setGoodsId(goods.getGoodsId());
+				vo.setGroupId(goods.getGroupId());
+				vo.setSource(g.getSource());
+				if(StringUtils.equalsIgnoreCase(g.getSource(), SourceType.WZ.getCode())){
+					vo.setGoodsPic("http://img13.360buyimg.com/n1/" + g.getGoodsLogoUrl());
+				}else{
+					try {
+						vo.setGoodsPic(imageService.getImageUrl(g.getGoodsLogoUrl()));
+					} catch (Exception e) {
+						vo.setGoodsPic("");
+					}
 				}
+				vo.setGoodsTitle(g.getGoodsName());
+				vo.setMarketPrice(goods.getMarketPrice());
+				vo.setOnShelf(goodsService.validateGoodOnShelf(goodsId));
+				voList.add(vo);
 			}
-			vo.setGoodsTitle(g.getGoodsName());
-			vo.setMarketPrice(goods.getMarketPrice());
-			vo.setOnShelf(goodsService.validateGoodOnShelf(goodsId));
-			voList.add(vo);
 		}
 
 		return voList;
