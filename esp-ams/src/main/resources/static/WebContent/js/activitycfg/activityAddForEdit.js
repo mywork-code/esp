@@ -150,17 +150,6 @@ $(function(){
                 });
             }
         },
-        onShowPanel:function () {
-            var opts = $(this).combobox('options');
-            var target = this;
-            var values = $(target).combobox('getValues');//获取选中的值的values
-            if(couponname != null){
-                $.each(couponname,function(index,value){
-                    var el = opts.finder.getEl(target, value);
-                    el.find('input.combobox-checkbox')._propAttr('checked', true);
-                });
-            }
-        },
         onSelect: function (row) { //选中一个选项时调用
             var opts = $(this).combobox('options');
             //获取选中的值的values

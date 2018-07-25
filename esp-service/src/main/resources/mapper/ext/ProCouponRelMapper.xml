@@ -50,7 +50,7 @@
 
     <select id="selectByCouponId" resultMap="BaseResultMap" parameterType="java.lang.Long">
       select <include refid="Base_Column_List" />
-      from t_esp_pro_coupon_rel where coupon_id = #{couponId}
+      from t_esp_pro_coupon_rel where del_flag = 1 and coupon_id = #{couponId}
     </select>
 
     <update id="delCouponRel" parameterType="java.lang.Long">
