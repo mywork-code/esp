@@ -25,7 +25,7 @@ public class CouponActivityScheduleTash {
     /**
      * 每2小时执行下架操作
      */
-    @Scheduled(cron = "0 0 0/2 * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void downProductOfFyd() {
         try {
             logger.info("-----开始下架房易贷专属活动下的商品");
