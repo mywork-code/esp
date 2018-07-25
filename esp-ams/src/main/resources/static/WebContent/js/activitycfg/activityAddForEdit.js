@@ -12,9 +12,10 @@ $(function(){
 	//是否选择优惠券成员变量
 	var coupon = null;
     var activityCate = null;
-    var fydCouponId = null;
 	//活动id
 	var paramMapActivityId = $("#paramMapActivityId").val();
+
+    var couponname = null;
 	$.ajax({
 		url : ctx + '/activity/cfg/edit/find',
 		data : {"id":paramMapActivityId},
@@ -42,10 +43,8 @@ $(function(){
                         }
                     });
 					if(coupon == 'Y'){
-					    debugger
-                        var couponname=resp.fydCouponNameList;
-                        fydCouponId = resp.fydCouponIdList;
-                        $('.cateCouponInput').combobox('setValues',couponname);
+                        couponname=resp.fydCouponIdList;
+                        $(".cateCouponInput").combobox('setValues',couponname);
                         $('#id_xxx_copon').show();
 					}
                     $('#1_xxxxId').show();
@@ -125,26 +124,60 @@ $(function(){
 	});
 
     $(".cateCouponInput").combobox({
-        method: "get",
-        url: ctx + "/application/coupon/management/loadp2",
+        method: "post",
+        url: ctx + "/application/coupon/management/loadp2",//获取所有当前活动可使用优惠券
+        panelHeight:200,//设置为固定高度，combobox出现竖直滚动条
         valueField: 'id',
         textField: 'name',
         multiple:true,
+        formatter: function (row) { //formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法
+            console.log("row:",row)
+            var opts = $(this).combobox('options');
+            return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField]
+        },
         queryParams: {
             "extendType" : "FYDYHZX",
-            "activityId": paramMapActivityId
+            "activityId":  $("#paramMapActivityId").val()
         },
-        onShowPanel : function(){
-            $(this).combobox('options').url= ctx + "/application/coupon/management/loadp2";
-            $(this).combobox('reload');
-            $(this).combobox('setValue','');
+        onLoadSuccess: function () {  //下拉框数据加载成功调用
+            var opts = $(this).combobox('options');
+            var target = this;
+            var values = $(target).combobox('getValues');//获取选中的值的values
+            if(couponname != null){
+                $.each(couponname,function(index,value){
+                    var el = opts.finder.getEl(target, value);
+                    el.find('input.combobox-checkbox')._propAttr('checked', true);
+                });
+            }
         },
-        onLoadSuccess:function (data) {
+        onShowPanel:function () {
+            var opts = $(this).combobox('options');
+            var target = this;
+            var values = $(target).combobox('getValues');//获取选中的值的values
+            if(couponname != null){
+                $.each(couponname,function(index,value){
+                    var el = opts.finder.getEl(target, value);
+                    el.find('input.combobox-checkbox')._propAttr('checked', true);
+                });
+            }
+        },
+        onSelect: function (row) { //选中一个选项时调用
+            var opts = $(this).combobox('options');
+            //获取选中的值的values
+            var val = $(this).combobox('getValues');
+            if(!val[0]){
+                val.shift();
+            }
+            $(".cateCouponInput").combobox('setValues',val);
 
+            //设置选中值所对应的复选框为选中状态
+            var el = opts.finder.getEl(this, row[opts.valueField]);
+            el.find('input.combobox-checkbox')._propAttr('checked', true);
         },
-        onSelect: function () {
-            debugger;
-            fydCouponId = $(this).combobox('getValues');
+        onUnselect: function (row) {//不选中一个选项时调用
+            var opts = $(this).combobox('options');
+            var el = opts.finder.getEl(this, row[opts.valueField]);
+            el.find('input.combobox-checkbox')._propAttr('checked', false);
         }
     });
 
@@ -193,7 +226,6 @@ $(function(){
 	});
 	//校验参数
 	function checkParams(){
-        debugger;
 		var activityName = $("#activityName").textbox('getValue');
 		if(activityName == '' || null == activityName){
 			$.messager.alert("<span style='color: black;'>提示</span>","请填写活动名称！","info");
@@ -248,11 +280,9 @@ $(function(){
                 return false;
             }
             var value = $("input[name='cateCoupon']:checked").val();
+
+            var cateCo = $(".cateCouponInput").combobox("getValues");
             if(value == 'Y'){
-                if(fydCouponId == '' || fydCouponId == null){
-                    $.messager.alert("<span style='color: black;'>提示</span>","请选择优惠券！",'info');
-                    return false;
-                }
                 var cateCo = $(".cateCouponInput").combobox("getValues");
                 if(cateCo == '' || cateCo == null){
                     $.messager.alert("<span style='color: black;'>提示</span>","请选择优惠券！",'info');
@@ -262,7 +292,7 @@ $(function(){
             param.fydActPer = fydActivityPer;
             param.fydDownPer = fydDownPer;
             param.cateCoupon = value;
-            param.fydCouponIdList = fydCouponId;
+            param.fydCouponIdList = cateCo;
 
 		}else{
             var activityType = $("#activityType").combobox('getValue');

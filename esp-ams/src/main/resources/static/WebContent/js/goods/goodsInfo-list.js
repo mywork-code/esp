@@ -654,7 +654,7 @@ $(function() {
             multiple:true,  
             formatter: function (row) { //formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法  
                 var opts = $(this).combobox('options');  
-                return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField]  ;
+                return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField];
             },  
             onSelect: function (row) { //选中一个选项时调用  
                 var opts = $(this).combobox('options');  
