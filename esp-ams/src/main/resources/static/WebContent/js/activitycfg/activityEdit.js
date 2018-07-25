@@ -1,4 +1,5 @@
 $(function () {
+    debugger;
     $("#addGoodsToGroup").window('close');
 
     $('#activityGroupList').datagrid({
