@@ -5,9 +5,13 @@ import java.util.*;
 import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.vo.ActivityCfgQuery;
+import com.apass.esp.search.entity.Goods;
 import com.apass.esp.service.goods.GoodsStockInfoService;
+import com.apass.gfb.framework.logstash.LOG;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +52,7 @@ import com.apass.gfb.framework.utils.BaseConstants;
 @Service
 @Transactional(rollbackFor = { Exception.class,RuntimeException.class})
 public class ProGroupGoodsService {
+	private static final Logger logger = LoggerFactory.getLogger(ProGroupGoodsService.class);
 	@Autowired
 	private ProGroupGoodsMapper groupGoodsMapper;
 	@Autowired
@@ -79,6 +84,9 @@ public class ProGroupGoodsService {
 
 	@Autowired
 	private GoodsStockInfoService goodsStockInfoService;
+
+	@Autowired
+	private GoodsEsDao goodsEsDao;
 
 	public ProGroupGoodsBo getByGoodsId(Long goodsId){
 		ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
@@ -562,12 +570,16 @@ public class ProGroupGoodsService {
 						List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
 						BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
 						BigDecimal wzPrice = jdSellPrices.get(0).getPrice();
+						logger.info("-----------downProductOfFyd skuid:{}, jdprice {},wzprice {}",wzGoodsId,jdPrice,wzPrice);
 						if(wzPrice.divide(good.getActivityPrice()).compareTo(fydDownPer) >= 0){
 							//自动下架规则：微知价 / 活动价>n%
 							GoodsInfoEntity updateGood = new GoodsInfoEntity();
 							updateGood.setId(goodsId);
 							updateGood.setStatus(GoodStatus.GOOD_DOWN.getCode());
 							goodsService.updateService(updateGood);
+							Goods g = new Goods();
+							g.setId(goodsId.intValue());
+							goodsEsDao.delete(g);
 						}
 						List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getGoodId());
 						if(CollectionUtils.isNotEmpty(goodsStockInfoEntityList)){
