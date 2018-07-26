@@ -584,10 +584,10 @@ public class ProGroupGoodsService {
 							g.setId(goodsId.intValue());
 							goodsEsDao.delete(g);
 
-							//下架的商品将ProGroupGoods detail_desc设置为3
+							//下架的商品将ProGroupGoods detail_desc设置为2
 							ProGroupGoods updatePG = new ProGroupGoods();
 							updatePG.setId(good.getId());
-							updatePG.setDetailDesc("3");
+							updatePG.setDetailDesc("2");
 							updatePG.setUpdatedTime(new Date());
 							groupGoodsMapper.updateByPrimaryKeySelective(updatePG);
 						}
