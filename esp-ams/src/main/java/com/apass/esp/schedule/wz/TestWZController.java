@@ -1414,6 +1414,11 @@ public class TestWZController {
                 paramMap.put("categoryId2", strArr[2]);
                 paramMap.put("categoryId3", strArr[3]);
 
+                GoodsInfoEntity gentity = goodsService.selectGoodsByExternalId(strArr[0]);
+                if(gentity != null){
+                    continue;
+                }
+
                 jdGoodsService.insertToGoosbaseAndGoodsstock(paramMap, "wzAdmin", jdGoods);
                 String skuId = shelves(strArr[0]);
                 if (StringUtils.isBlank(skuId)) {
