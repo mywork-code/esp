@@ -22,6 +22,10 @@
                     and activity_cate = #{activityCate}
                 </if>
             </if>
+
+            <if test="activityName != null and activityName != ''">
+                and activity_name = #{activityName}
+            </if>
         </where>
     </sql>
 
