@@ -817,6 +817,7 @@ public class ExportFileController {
                     }
 
                     Long categoryId = b.getCategoryId3();
+                    LOG.info("catId:{}",categoryId.toString());
                     Category category = categoryInfoService.selectNameById(categoryId);
                     LOG.info("第{}个 id为{}商品的三级类目名称是:{}",i++,b.getId(),category.getCategoryName());
                     b.setCategoryName3(category != null ? category.getCategoryName() : "");

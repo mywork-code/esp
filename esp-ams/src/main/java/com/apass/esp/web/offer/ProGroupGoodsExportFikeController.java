@@ -182,6 +182,7 @@ public class ProGroupGoodsExportFikeController {
 						.selectOneBySkuIdAndActivityId(skuIds[i], Long.parseLong(activityId));
 				if (null != proGroupGoods && StringUtils.equals(proGroupGoods.getStatus(), "S")
 						&& StringUtils.equals(proGroupGoods.getGroupId() + "", groupNameId)) {
+					countFail++;
 					continue;
 				}
 				if (null != proGroupGoods && !proGroupGoods.getGroupId().equals(groupNameId)) {
@@ -292,7 +293,7 @@ public class ProGroupGoodsExportFikeController {
 				if(null !=proGroupGoods2 && StringUtils.equals(proGroupGoods2.getStatus(), "S")){
 					ProGroupGoods proGroupGoods3=new ProGroupGoods();
 					proGroupGoods3.setId(proGroupGoods2.getId());
-					proGroupGoods3.setGroupId(-1l);
+					proGroupGoods3.setGroupId(-1L);
 					proGroupGoods3.setOrderSort(Long.parseLong("1"));
 					proGroupGoods3.setStatus("");
 					proGroupGoods3.setUpdatedTime(new Date());
