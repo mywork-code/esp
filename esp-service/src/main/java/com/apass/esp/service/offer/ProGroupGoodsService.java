@@ -583,6 +583,13 @@ public class ProGroupGoodsService {
 							Goods g = new Goods();
 							g.setId(goodsId.intValue());
 							goodsEsDao.delete(g);
+
+							//下架的商品将ProGroupGoods detail_desc设置为3
+							ProGroupGoods updatePG = new ProGroupGoods();
+							updatePG.setId(good.getId());
+							updatePG.setDetailDesc("3");
+							updatePG.setUpdatedTime(new Date());
+							groupGoodsMapper.updateByPrimaryKeySelective(updatePG);
 						}
 						List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getGoodId());
 						if(CollectionUtils.isNotEmpty(goodsStockInfoEntityList)){
