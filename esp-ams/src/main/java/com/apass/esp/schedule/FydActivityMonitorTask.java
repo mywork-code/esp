@@ -7,6 +7,7 @@ import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.utils.mailUtils.MailSenderInfo;
 import com.apass.esp.utils.mailUtils.MailUtil;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +49,14 @@ public class FydActivityMonitorTask {
 
     @Autowired
     private ProGroupGoodsMapper groupGoodsMapper;
-
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
+    
     @Scheduled(cron = "0 0/5 * * * ?")
     public void mailStatisSchedule() {
+        if(!systemEnvConfig.isPROD()){
+            return;
+        }
         log.info("---------执行FydActivityMonitorTask------------");
         String content = "";
         ActivityCfgQuery query = new ActivityCfgQuery();
