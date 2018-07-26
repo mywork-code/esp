@@ -42,7 +42,7 @@ import com.google.common.collect.Maps;
  * Created by xiaohai on 2017/10/30.
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = { Exception.class })
 public class ProCouponService {
     private static final Logger logger = LoggerFactory.getLogger(ProCouponService.class);
     @Autowired

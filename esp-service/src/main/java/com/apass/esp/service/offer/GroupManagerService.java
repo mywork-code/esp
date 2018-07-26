@@ -31,6 +31,7 @@ import com.google.common.collect.Maps;
 
 
 @Service
+@Transactional(rollbackFor = { Exception.class })
 public class GroupManagerService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
