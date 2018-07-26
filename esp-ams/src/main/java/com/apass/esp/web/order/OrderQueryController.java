@@ -28,7 +28,6 @@ import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.service.datadic.DataDicService;
-import com.apass.esp.service.jd.JdLogisticsService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.order.OrderService;
@@ -63,8 +62,6 @@ public class OrderQueryController {
     private LogisticsService    logisticsService;
     @Autowired
     private DataDicService      dataDicService;
-    @Autowired
-    private JdLogisticsService jdLogisticsService;
     @Autowired
     private MyCouponManagerService myCouponManagerService;
 
