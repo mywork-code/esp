@@ -1,9 +1,5 @@
 package com.apass.esp.service.jd;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,27 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.domain.dto.logistics.JdTrack;
 import com.apass.esp.domain.dto.logistics.LogisticsResponseDto;
 import com.apass.esp.domain.dto.logistics.Trace;
-import com.apass.esp.domain.dto.logistics.Track;
-import com.apass.esp.domain.dto.logistics.TrackingData;
-import com.apass.esp.domain.dto.logistics.TrackingInfo;
-import com.apass.esp.domain.entity.common.ConstantEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.utils.ConstantsUtils;
-import com.apass.esp.repository.common.ConstantRepository;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
-import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.logistics.LogisticsService;
-import com.apass.esp.third.party.jd.client.JdApiResponse;
-import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.EncodeUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
 
 @Service
 public class JdLogisticsService {
@@ -43,13 +26,9 @@ public class JdLogisticsService {
     private static final Logger       LOGGER = LoggerFactory.getLogger(JdLogisticsService.class);
 
     @Autowired
-    private JdOrderApiClient       logisticsHttpClient;
-    @Autowired
     private OrderInfoRepository       orderInfoDao;
     @Autowired
     private OrderDetailInfoRepository orderDetailDao;
-    @Autowired
-    private ImageService imageService;
     @Autowired
     private LogisticsService logisticsService;
 
