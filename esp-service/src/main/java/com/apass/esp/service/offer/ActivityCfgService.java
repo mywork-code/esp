@@ -7,12 +7,19 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProcouponRelVoList;
 import com.apass.esp.domain.dto.offo.ActivityfgDto;
 import com.apass.esp.domain.entity.ProCouponRel;
+import com.apass.esp.domain.entity.ProGroupGoods;
+import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.enums.ActivityCfgCoupon;
 import com.apass.esp.domain.vo.ActivityCfgQuery;
+import com.apass.esp.mapper.ProGroupGoodsMapper;
+import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +36,19 @@ import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Service
+@Transactional(rollbackFor = { Exception.class })
 public class ActivityCfgService {
-	
+	private static final Logger LOG = LoggerFactory.getLogger(ActivityCfgService.class);
+
 	@Autowired
 	private ProActivityCfgMapper activityCfgMapper;
 	@Autowired
 	private CouponRelService couponRelService;
+
+	@Autowired
+	private ProGroupGoodsMapper groupGoodsMapper;
+	@Autowired
+	private JdGoodsInfoService jdGoodsInfoService;
 
 	public ProActivityCfg getById(Long activityId){
 		return activityCfgMapper.selectByPrimaryKey(activityId);
@@ -264,6 +278,12 @@ public class ActivityCfgService {
 	 */
 	public void updateFydActCouponCfg(Long activityId,String cateCoupon,BigDecimal fydActPer,
 									  BigDecimal fydDownPer,List<String> fydCouponIdList)throws BusinessException{
+		ProActivityCfg pac = activityCfgMapper.selectByPrimaryKey(activityId);
+		if(pac == null){
+			return;
+		}
+		BigDecimal oldFydActPer = pac.getFydActPer();
+
 		ProActivityCfg updateEntity = new ProActivityCfg();
 		updateEntity.setId(activityId);
 		BigDecimal b100 = new BigDecimal(100);
@@ -271,6 +291,32 @@ public class ActivityCfgService {
 		updateEntity.setFydActPer(fydActPer.divide(b100));
 		updateEntity.setCoupon(cateCoupon);
 		activityCfgMapper.updateByPrimaryKeySelective(updateEntity);
+
+		if(oldFydActPer.compareTo(fydActPer) != 0){
+			//更新活动下商品的活动价
+			List<ProGroupGoods> goodsList = groupGoodsMapper.selectByActivityId(activityId);
+			if(CollectionUtils.isNotEmpty(goodsList)){
+				for(ProGroupGoods g : goodsList){
+					//房易贷专属用户活动
+					//活动价=京东价*n%
+					List<String> wzGoodsIdList = new ArrayList<>();
+					wzGoodsIdList.add(g.getSkuId());
+					LOG.info("wzGoodsIdList:{}", GsonUtils.toJson(wzGoodsIdList));
+					List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
+					if(CollectionUtils.isEmpty(jdSellPrices)){
+						continue;
+					}
+					BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
+					BigDecimal	activityPrice  = jdPrice.multiply(updateEntity.getFydActPer()).setScale(0, BigDecimal.ROUND_HALF_UP);
+					ProGroupGoods updateG = new ProGroupGoods();
+					updateG.setId(g.getId());
+					updateG.setActivityPrice(activityPrice);
+					updateG.setUpdatedTime(new Date());
+					groupGoodsMapper.updateByPrimaryKeySelective(updateG);
+				}
+			}
+		}
+
 		if(StringUtils.equals(cateCoupon,ActivityCfgCoupon.COUPON_Y.getCode())){
 			couponRelService.delCouponRel(activityId);
 			for(String fydCouponId : fydCouponIdList){

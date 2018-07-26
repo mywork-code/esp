@@ -165,10 +165,10 @@ $(function () {
                 width: 80,
                 align: 'center',
                 formatter: function (value, row, index) {
-                    if (value == '1') {
-                        return "成功";
-                    } else {
+                    if (value == '0') {
                         return "失败";
+                    } else {
+                        return "成功";
                     }
                 }
             },{

@@ -163,7 +163,7 @@
         <include refid="Base_Column_List" />
          FROM t_esp_pro_group_goods
         WHERE group_id !=-1
-         and `status`='S'
+         and `detail_desc`='1'
          and  activity_id = #{activityId}
     </select>
 </mapper>
