@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.enums.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.Category;
@@ -24,12 +25,6 @@ import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.CouponExtendType;
-import com.apass.esp.domain.enums.CouponStatus;
-import com.apass.esp.domain.enums.CouponType;
-import com.apass.esp.domain.enums.GrantNode;
-import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.FydActivity;
@@ -490,8 +485,7 @@ public class MyCouponManagerService {
 	
 	/**
 	 * 房易贷用户专用发放券
-	 * @param userId
-	 * @param tel
+	 * @param fyd userId tel
 	 * @throws BusinessException 
 	 */
 	public void addFYDYHZY(FydActivity fyd) throws BusinessException{
@@ -557,5 +551,67 @@ public class MyCouponManagerService {
 			}
 			smsService.sendNoticeSms(customer.getMobile(), message);
 		}
+	}
+
+
+
+	/**
+	 * 扫码领取优惠券，且每个用户只能领取一次
+	 *
+	 * @param userId     用户id
+	 * @param activityId 活动id
+	 * @return
+	 */
+	public int saveCouponToUserFromScan(long userId, long activityId,String telephone) throws BusinessException {
+		ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+		if(activityCfg == null){
+			throw new BusinessException("活动不存在，数据有误!");
+		}
+		//判断活动是否正在进行中
+		if (ActivityStatus.NO == activityCfgService.getActivityStatus(activityCfg)) {
+			throw new BusinessException("活动未开始!");
+		}
+		if (ActivityStatus.END == activityCfgService.getActivityStatus(activityCfg)) {
+			throw new BusinessException("活动已结束!");
+		}
+
+		//查询所有可领取优惠券
+		ProCouponRelQuery couponRel = new ProCouponRelQuery();
+		couponRel.setActivityId(activityId);
+		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityIdOrCouponId(couponRel);
+
+		if (CollectionUtils.isNotEmpty(relList)) {
+			throw new BusinessException("该活动下无可领取优惠券");
+		}
+		for (ProCouponRel rel : relList) {
+			//获取优惠券信息
+			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
+			//如果是扫码类型优惠券才可领取
+			if (!StringUtils.equals(proCoupon.getType(), CouponExtendType.COUPON_SMYHZX.getCode())) {
+				continue;
+			}
+
+			//判断是否是第一次领取，插入mycoupon表中
+			List<ProMyCoupon> myCouponList = getCouponByUserIdAndRelCouponId(userId, rel.getId());
+			if (null != myCouponList && myCouponList.size() > 0) {
+				throw new BusinessException("每个用户仅限领一次!");
+			} else {
+				ProMyCoupon myCoupon = new ProMyCoupon();
+				myCoupon.setUserId(userId);
+				myCoupon.setCouponId(proCoupon.getId());
+				myCoupon.setCouponRelId(rel.getId());
+				myCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+				myCoupon.setTelephone(telephone);
+				myCoupon.setStartDate(activityCfg.getStartTime());
+				myCoupon.setEndDate(activityCfg.getEndTime());
+				myCoupon.setCreatedTime(new Date());
+				myCoupon.setUpdatedTime(new Date());
+
+				return myCouponMapper.insert(myCoupon);
+			}
+
+		}
+
+		return 0;
 	}
 }
