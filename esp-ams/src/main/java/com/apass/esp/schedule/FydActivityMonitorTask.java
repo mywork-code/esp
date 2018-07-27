@@ -51,8 +51,8 @@ public class FydActivityMonitorTask {
     private ProGroupGoodsMapper groupGoodsMapper;
     @Autowired
     private SystemEnvConfig systemEnvConfig;
-    
-    @Scheduled(cron = "0 0/5 * * * ?")
+
+    @Scheduled(cron = "0 0 0/1 * * ?")
     public void mailStatisSchedule() {
         if(!systemEnvConfig.isPROD()){
             return;
