@@ -55,7 +55,7 @@ public class JDMessageScheduleTask {
             return ;
         }
         LOGGER.info("-----------start invoke weiZhiMessageClient.getMsg()-------------- date :" + DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
-     List<JdMessageEnum> messageEnumList = new ArrayList<>();
+        List<JdMessageEnum> messageEnumList = new ArrayList<>();
         messageEnumList.add(JdMessageEnum.DELIVERED_ORDER);
         messageEnumList.add(JdMessageEnum.WITHDRAW_SKU);
         messageEnumList.add(JdMessageEnum.DELETEADD_SKU);

@@ -159,8 +159,8 @@ public class JdGoodsService {
 
         // 往t_esp_goods_stock_info表插数据
         GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
-        stockEntity.setStockTotalAmt(-1l);
-        stockEntity.setStockCurrAmt(-1l);
+        stockEntity.setStockTotalAmt(-1L);
+        stockEntity.setStockCurrAmt(-1L);
         stockEntity.setStockLogo(jdGoods.getImagePath());
         stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
         stockEntity.setGoodsId(insertJdGoods.getGoodId());
