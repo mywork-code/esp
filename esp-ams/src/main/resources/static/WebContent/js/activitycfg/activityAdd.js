@@ -24,6 +24,9 @@ $(function(){
 				type : "post",
 				dataType : "json",
 				success : function(data) {
+                    if(!ifLogout(data)){
+                        return;
+                    }
 					if(data.status == '1'){
 						arr.splice(0);//清空list
 						$.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
@@ -77,7 +80,6 @@ $(function(){
 		var activityCate = $('#id_activityCate').combo('getValue');
         param.activityCate = activityCate;
 		if(activityCate == 1){
-		    debugger
             var fydActivityPer = $('#fydActivityPer').textbox('getValue');
             var fydDownPer = $('#fydDownPer').textbox('getValue');
             if(fydActivityPer == ''){
@@ -96,9 +98,13 @@ $(function(){
                 $.messager.alert("<span style='color: black;'>提示</span>","商品下架系数填写错误，请重新填写",'info');
                 return false;
             }
+            debugger;
             var value = $("input[name='cateCoupon']:checked").val();
+            if(value == null || value == ''){
+                $.messager.alert("<span style='color: black;'>提示</span>","请选择是否使用优惠券！",'info');
+                return false;
+            }
             if(value == 'Y'){
-
               if(fydCouponId == ''){
                   $.messager.alert("<span style='color: black;'>提示</span>","请选择优惠券！",'info');
                   return false;
@@ -357,6 +363,7 @@ $(function(){
             var value = $("input[name='cateCoupon']:checked").val();
             if(value == 'Y'){
                 $("#id_xxx_copon").show();
+                $(".cateCouponInput").combobox("setValues","");
             }else{
                 $("#id_xxx_copon").css("display","none");
             }
@@ -521,4 +528,15 @@ function clearAllText(couponFlag) {
     clearTextBox('3');
     clearTextBox('4');
     clearTextBox('5');
+}
+
+
+// 判断是否超时
+function ifLogout(data) {
+    if (data.message == 'timeout' && data.result == false) {
+        $.messager.alert("操作提示", "登录超时, 请重新登录", "info");
+        window.top.location = ctx + "/logout";
+        return false;
+    }
+    return true;
 }

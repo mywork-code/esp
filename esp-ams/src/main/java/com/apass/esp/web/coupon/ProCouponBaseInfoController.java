@@ -147,8 +147,8 @@ public class ProCouponBaseInfoController {
                             it.remove();
                             continue outter;
                         }
-                    }else {
-                        it.remove();
+                    }else {//有关联过活动，但活动已不存在
+//                        it.remove();
                         continue outter;
                     }
                 }

@@ -8,6 +8,7 @@ import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.enums.ActivityCfgCoupon;
 import com.apass.esp.domain.vo.ActivityCfgForEditVo;
+import com.apass.esp.domain.vo.ActivityCfgQuery;
 import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.CouponRelService;
 import com.apass.gfb.framework.jwt.common.EncodeUtils;
@@ -132,6 +133,12 @@ public class ActivityCfgController {
 		ActivityCfgVo vo = GsonUtils.convertObj(requestDecode, ActivityCfgVo.class);
 
  		try {
+			ActivityCfgQuery activityCfgQuery = new ActivityCfgQuery();
+			activityCfgQuery.setActivityName(vo.getActivityName());
+			List<ProActivityCfg> lists = activityCfgService.selectProActivityCfgByActivitCfgQuery(activityCfgQuery);
+			if(CollectionUtils.isNotEmpty(lists)){
+				throw new BusinessException("活动名称不可相同");
+			}
  			if(vo.getActivityCate() == null || vo.getActivityCate().intValue() == 0){
 				validateParams(vo, false);
 			}
