@@ -137,7 +137,7 @@ public class ActivityCfgController {
 			activityCfgQuery.setActivityName(vo.getActivityName());
 			List<ProActivityCfg> lists = activityCfgService.selectProActivityCfgByActivitCfgQuery(activityCfgQuery);
 			if(CollectionUtils.isNotEmpty(lists)){
-				throw new BusinessException("商品名称不可相同");
+				throw new BusinessException("活动名称不可相同");
 			}
  			if(vo.getActivityCate() == null || vo.getActivityCate().intValue() == 0){
 				validateParams(vo, false);
