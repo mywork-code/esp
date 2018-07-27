@@ -559,12 +559,32 @@ public class ProGroupGoodsService {
 			for(ProActivityCfg cfg : activityCfgs){
 				Long activityId = cfg.getId();
 				BigDecimal fydDownPer = cfg.getFydDownPer();
-				List<ProGroupGoods> goods =	groupGoodsMapper.selectByActivityId(activityId);
+				List<ProGroupGoods> goods =	groupGoodsMapper.selectByActivityId(activityId,"1");
+
+				//查询曾经下架的商品
+				List<ProGroupGoods> goods2 = groupGoodsMapper.selectByActivityId(activityId,"2");
+				for(ProGroupGoods g2 : goods2){
+					//捞取上架的商品
+					Long goodsId2 = g2.getGoodsId();
+					GoodsInfoEntity goodsInfoEntity2 = goodsService.selectByGoodsId(goodsId2);
+					if(GoodStatus.GOOD_UP.getCode().equals(goodsInfoEntity2.getStatus())){
+						goods.add(g2);
+						//上架的商品将ProGroupGoods detail_desc设置为1
+						ProGroupGoods updatePG = new ProGroupGoods();
+						updatePG.setId(g2.getId());
+						updatePG.setDetailDesc("1");
+						updatePG.setUpdatedTime(new Date());
+						groupGoodsMapper.updateByPrimaryKeySelective(updatePG);
+					}
+				}
+
 				if(CollectionUtils.isNotEmpty(goods)){
 					for(ProGroupGoods good : goods){
 						//判断下架系数
 						Long goodsId = good.getGoodsId();
 						GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(goodsId);
+
+
 						String wzGoodsId = goodsInfoEntity.getExternalId();
 						List<String> wzGoodsIdList = new ArrayList<>();
 						wzGoodsIdList.add(wzGoodsId);

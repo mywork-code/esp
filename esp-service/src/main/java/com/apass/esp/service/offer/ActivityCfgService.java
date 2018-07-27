@@ -294,7 +294,7 @@ public class ActivityCfgService {
 
 		if(oldFydActPer.compareTo(fydActPer) != 0){
 			//更新活动下商品的活动价
-			List<ProGroupGoods> goodsList = groupGoodsMapper.selectByActivityId(activityId);
+			List<ProGroupGoods> goodsList = groupGoodsMapper.selectByActivityId(activityId,"1");
 			if(CollectionUtils.isNotEmpty(goodsList)){
 				for(ProGroupGoods g : goodsList){
 					//房易贷专属用户活动

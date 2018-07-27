@@ -67,7 +67,7 @@ public class FydActivityMonitorTask {
         if(CollectionUtils.isNotEmpty(activityCfgs)) {
             for(ProActivityCfg cfg : activityCfgs) {
                 Long activityId = cfg.getId();
-                List<ProGroupGoods> goods = groupGoodsMapper.selectByActivityId(activityId);
+                List<ProGroupGoods> goods = groupGoodsMapper.selectByActivityId(activityId,"1");
                 if(goods.size() < 10){
                     content = "活动名称【" + cfg.getActivityName() + "】 ";
                 }

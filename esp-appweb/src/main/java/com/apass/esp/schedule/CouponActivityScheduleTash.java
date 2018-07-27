@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Configurable
 @EnableScheduling
 @Profile("Schedule")
+@RequestMapping("/test")
 public class CouponActivityScheduleTash {
     private static final Logger logger = LoggerFactory.getLogger(CouponActivityScheduleTash.class);
     @Autowired
@@ -27,6 +28,7 @@ public class CouponActivityScheduleTash {
      * 每1小时执行下架操作
      */
     @Scheduled(cron = "0 0/10 * * * ?")
+    @RequestMapping("/test1")
     public void downProductOfFyd() {
         try {
             logger.info("-----开始下架房易贷专属活动下的商品");
