@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Created by DELL on 2018/7/16.
@@ -25,7 +26,7 @@ public class CouponActivityScheduleTash {
     /**
      * 每1小时执行下架操作
      */
-    @Scheduled(cron = "0 0 0/1 * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     public void downProductOfFyd() {
         try {
             logger.info("-----开始下架房易贷专属活动下的商品");
