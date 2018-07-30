@@ -60,8 +60,10 @@ $(function(){
 					if(row.status != '已结束'){
 						content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGroup('"
 	                        + encodeURI(JSON.stringify(row)) +"');\">编辑</a>";
+						content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.downloadMatrixCode('"
+	                        + row.id +"');\">下载二维码</a>";
 					}
-                    
+
 				 return content;
 			}}]],
         loader : function(param, success, error) {
@@ -78,6 +80,11 @@ $(function(){
             })
         }
     });
+    $.downloadMatrixCode = function (activityId) {
+        console.log(activityId);
+
+        window.location.href= ctx + '/activity/cfg/downloadMatrixCode?id='+activityId;
+    }
 
     $.editGroup = function (row) {
         var rows = JSON.parse(decodeURI(row));

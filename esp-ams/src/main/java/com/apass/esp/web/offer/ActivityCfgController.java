@@ -1,6 +1,9 @@
 package com.apass.esp.web.offer;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.util.*;
 
 import com.apass.esp.domain.dto.ProcouponRelListVo;
@@ -11,8 +14,15 @@ import com.apass.esp.domain.vo.ActivityCfgForEditVo;
 import com.apass.esp.domain.vo.ActivityCfgQuery;
 import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.CouponRelService;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.jwt.common.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +49,10 @@ import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 活动配置
@@ -341,4 +355,56 @@ public class ActivityCfgController {
  			ValidateUtils.isNullObject(vo.getId(), "活动编号不能为空!");
  		}
  	}
+
+	@ResponseBody
+	@RequestMapping(value ="/downloadMatrixCode")
+	public Response downloadMatrixCode(HttpServletRequest request, HttpServletResponse response) {
+		String url = null;
+		try{
+			String activityId = request.getParameter("id");
+			LOGGER.info("downloadMatrixCode方法activityId:{}",activityId);
+			SystemEnvConfig systemEnvConfig = new SystemEnvConfig();
+			if(systemEnvConfig.isPROD()){
+				url = "http://espapp.apass.cn/#/scanReceiveCoupon?activityId="+activityId;
+			}else{
+				url = "http://espapp.uat.apass.cn/#/scanReceiveCoupon?activityId="+activityId;
+			}
+
+			//设置图片格式
+			String format = "png";
+
+			// 设置下二维码的参数
+			Map hint = new HashMap();
+			// 设置二维码的编码格式
+			hint.put(EncodeHintType.CHARACTER_SET, "utf-8");
+			// 设置二维码的纠错等级,等级越高，可存储的数据量就越少
+			// L,M,Q,H这四个值等级依次有低到高
+			hint.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+			// 设置二维码的边距，也就是外面的空白边框大小
+			hint.put(EncodeHintType.MARGIN, 2);
+			BitMatrix bitMatrix = new MultiFormatWriter().encode(url, BarcodeFormat.QR_CODE, 300, 300, hint);
+			String filePath = "/data/nfs/ajqh/"+activityId+".png";
+			Path a = new File(filePath).toPath();
+			MatrixToImageWriter.writeToPath(bitMatrix, format, a);
+
+
+			response.setContentType("application/vnd.ms-excel;charset=utf-8");
+			response.addHeader("Content-Disposition",
+					"attachment;filename=" + new String((activityId + ".png").getBytes(), "iso-8859-1"));
+			ServletOutputStream outputStream = response.getOutputStream();
+			FileInputStream in = new FileInputStream(filePath);
+			byte[] b = new byte[1024];
+			int i = 0;
+			while ((i = in.read(b)) > 0) {
+				outputStream.write(b, 0, i);
+			}
+			// 文件流刷新到客户端
+			outputStream.flush();
+		}catch (Exception e){
+			LOGGER.error("下载失败!",e);
+			return Response.fail("下载失败!");
+		}
+
+		return Response.success("下载成功");
+	}
 }
