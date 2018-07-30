@@ -416,7 +416,7 @@ $(function(){
         textField: 'name',
         multiple:true,
         queryParams: {
-            "extendType" : "FYDYHZX",
+            "extendType" : "FYDYHZX|SMYHZX",
         },
         onShowPanel : function(){
             $(this).combobox('options').url= ctx + "/application/coupon/management/loadp";

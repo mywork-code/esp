@@ -136,7 +136,7 @@ $(function(){
             return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField]
         },
         queryParams: {
-            "extendType" : "FYDYHZX",
+            "extendType" : "FYDYHZX|SMYHZX",
             "activityId":  $("#paramMapActivityId").val()
         },
         onLoadSuccess: function () {  //下拉框数据加载成功调用

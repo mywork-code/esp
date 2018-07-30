@@ -127,9 +127,13 @@ public class ProCouponBaseInfoController {
             }
 
         }
-
-
-        List<ProCoupon> coupons = proCouponService.getProCouponList(proCoupon);
+        List<ProCoupon> coupons = new ArrayList<>();
+        String[] extendTypeArray = StringUtils.split(proCoupon.getExtendType(),"|");
+        for(int i=0;i < extendTypeArray.length;i++){
+            //专属活动下，查询FYDYHZX,SMYHZX类型优惠券
+            proCoupon.setExtendType(extendTypeArray[i]);
+            coupons.addAll(proCouponService.getProCouponList(proCoupon));
+        }
         Iterator<ProCoupon> it = coupons.iterator();
         outter:
         while (it.hasNext()) {
@@ -174,8 +178,14 @@ public class ProCouponBaseInfoController {
     @ResponseBody
     public List<ProCoupon> loadCouponPTFF2(String extendType,String activityId) {
         ProCoupon proCoupon = new ProCoupon();
-        proCoupon.setExtendType(extendType);
-        List<ProCoupon> result = proCouponService.getProCouponList(proCoupon);
+        String[] extendTypeList = StringUtils.split(extendType,"|");
+        List<ProCoupon> result = new ArrayList<>();
+        for(int i=0;i < extendTypeList.length;i++){
+            //专属活动下，查询FYDYHZX,SMYHZX类型优惠券
+            proCoupon.setExtendType(extendTypeList[i]);
+            result.addAll(proCouponService.getProCouponList(proCoupon));
+        }
+
         Iterator<ProCoupon> it = result.iterator();
         outter: while (it.hasNext()) {
             ProCoupon c = it.next();
