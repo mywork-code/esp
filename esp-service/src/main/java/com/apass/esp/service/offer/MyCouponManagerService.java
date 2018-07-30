@@ -580,14 +580,14 @@ public class MyCouponManagerService {
 		couponRel.setActivityId(activityId);
 		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityIdOrCouponId(couponRel);
 
-		if (CollectionUtils.isNotEmpty(relList)) {
+		if (CollectionUtils.isEmpty(relList)) {
 			throw new BusinessException("该活动下无可领取优惠券");
 		}
 		for (ProCouponRel rel : relList) {
 			//获取优惠券信息
 			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
 			//如果是扫码类型优惠券才可领取
-			if (!StringUtils.equals(proCoupon.getType(), CouponExtendType.COUPON_SMYHZX.getCode())) {
+			if (!StringUtils.equals(proCoupon.getExtendType(), CouponExtendType.COUPON_SMYHZX.getCode())) {
 				continue;
 			}
 
@@ -606,12 +606,13 @@ public class MyCouponManagerService {
 				myCoupon.setEndDate(activityCfg.getEndTime());
 				myCoupon.setCreatedTime(new Date());
 				myCoupon.setUpdatedTime(new Date());
+				myCoupon.setRemarks("");
 
 				return myCouponMapper.insert(myCoupon);
 			}
 
 		}
 
-		return 0;
+		throw new BusinessException("该活动下无扫码优惠券");
 	}
 }
