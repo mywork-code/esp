@@ -2669,6 +2669,7 @@ function initGoodsInfo(){
 }
 //编辑商品初始化商品信息
 function initEditGoodsInfo(row){
+	console.log("initEditGoodsInfo",row);
 	var unSupportPrivinces = row.unSupportProvince;//省份汉字
 	var unSupportPrivincesCodes;//省份编码 
 	$.ajax({
