@@ -282,16 +282,23 @@ public class ActivityCfgService {
 			return;
 		}
 		BigDecimal oldFydActPer = pac.getFydActPer();
+		BigDecimal oldFydActPer100 = oldFydActPer.multiply(new BigDecimal(100));
+		BigDecimal oldFydDownPer = pac.getFydDownPer();
+		BigDecimal oldFydDownPer100 = oldFydDownPer.multiply(new BigDecimal(100));
 
-		ProActivityCfg updateEntity = new ProActivityCfg();
-		updateEntity.setId(activityId);
-		BigDecimal b100 = new BigDecimal(100);
-		updateEntity.setFydDownPer(fydDownPer.divide(b100));
-		updateEntity.setFydActPer(fydActPer.divide(b100));
-		updateEntity.setCoupon(cateCoupon);
-		activityCfgMapper.updateByPrimaryKeySelective(updateEntity);
+		if(oldFydActPer100.compareTo(fydActPer) != 0 ||
+				oldFydDownPer100.compareTo(fydDownPer) != 0){
+			ProActivityCfg updateEntity = new ProActivityCfg();
+			updateEntity.setId(activityId);
+			BigDecimal b100 = new BigDecimal(100);
+			updateEntity.setFydDownPer(fydDownPer.divide(b100));
+			updateEntity.setFydActPer(fydActPer.divide(b100));
+			updateEntity.setCoupon(cateCoupon);
+			activityCfgMapper.updateByPrimaryKeySelective(updateEntity);
+		}
 
-		if(oldFydActPer.compareTo(fydActPer) != 0){
+
+		if(oldFydActPer100.compareTo(fydActPer) != 0){
 			//更新活动下商品的活动价
 			List<ProGroupGoods> goodsList = groupGoodsMapper.selectByActivityId(activityId,"1");
 			if(CollectionUtils.isNotEmpty(goodsList)){
@@ -314,7 +321,7 @@ public class ActivityCfgService {
 						continue;
 					}
 					BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
-					BigDecimal	activityPrice  = jdPrice.multiply(updateEntity.getFydActPer()).setScale(0, BigDecimal.ROUND_HALF_UP);
+					BigDecimal	activityPrice  = jdPrice.multiply(fydActPer.divide( new BigDecimal(100))).setScale(0, BigDecimal.ROUND_HALF_UP);
 					ProGroupGoods updateG = new ProGroupGoods();
 					updateG.setId(g.getId());
 					updateG.setActivityPrice(activityPrice);
@@ -325,25 +332,46 @@ public class ActivityCfgService {
 		}
 
 		if(StringUtils.equals(cateCoupon,ActivityCfgCoupon.COUPON_Y.getCode())){
-			couponRelService.delCouponRel(activityId);
-			for(String fydCouponId : fydCouponIdList){
-				if(StringUtils.isBlank(fydCouponId)){
-					continue;
-				}
-				ProCouponRel proCouponRel = new ProCouponRel();
-				proCouponRel.setCouponId(Long.valueOf(fydCouponId));
-				proCouponRel.setProActivityId(activityId);
-				proCouponRel.setLimitNum(-1);
-				proCouponRel.setTotalNum(-1);
-				proCouponRel.setRemainNum(-1);
-				proCouponRel.setDelFlag(Byte.valueOf("1"));
-				proCouponRel.setCreatedTime(new Date());
-				proCouponRel.setUpdatedTime(new Date());
-				Integer relId = couponRelService.addProCouponRel(proCouponRel);
-				if(relId == 0){
-					throw new BusinessException("添加活动配置信息失败");
+			List<ProCouponRel> oldList = couponRelService.getCouponRelList(activityId.toString());
+			boolean flag = false;
+			if(CollectionUtils.isEmpty(oldList)){
+				flag = true;
+			}else{
+				if(oldList.size() != fydCouponIdList.size()){
+					flag = true;
+				}else{
+				outer:	for(ProCouponRel pc : oldList){
+						for(String fydCouponId : fydCouponIdList){
+							if(!fydCouponId.equals(pc.getCouponId().toString())){
+								flag = true;
+								break outer;
+							}
+						}
+					}
 				}
 			}
+			if(flag){
+				couponRelService.delCouponRel(activityId);
+				for(String fydCouponId : fydCouponIdList){
+					if(StringUtils.isBlank(fydCouponId)){
+						continue;
+					}
+					ProCouponRel proCouponRel = new ProCouponRel();
+					proCouponRel.setCouponId(Long.valueOf(fydCouponId));
+					proCouponRel.setProActivityId(activityId);
+					proCouponRel.setLimitNum(-1);
+					proCouponRel.setTotalNum(-1);
+					proCouponRel.setRemainNum(-1);
+					proCouponRel.setDelFlag(Byte.valueOf("1"));
+					proCouponRel.setCreatedTime(new Date());
+					proCouponRel.setUpdatedTime(new Date());
+					Integer relId = couponRelService.addProCouponRel(proCouponRel);
+					if(relId == 0){
+						throw new BusinessException("添加活动配置信息失败");
+					}
+				}
+			}
+
 		}
 	}
 }
