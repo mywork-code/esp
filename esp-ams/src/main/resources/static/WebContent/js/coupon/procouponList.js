@@ -435,7 +435,19 @@ $(function(){
 				$("#addType2").combobox('setValue','HDSP')
 				type = $("#addType2").combobox('getValue');
 				$("#addType2").combobox({ disabled: true });
-			}else{
+			}else if(param == 'SMYHZX'){
+                $("#goodsCodeTr").css("display","none");
+                $("#goosCategoryTr").css("display","none");
+                $(".rangeTr").css("display","none");
+                $("#typeTd1").css("display","none");
+                $("#effectiveTimeTr").css("display","none");
+                $("#skuId").textbox("setValue","");
+                $("#typeTd2").show();
+                $("#addType2").combobox('setValue','HDSP')
+                type = $("#addType2").combobox('getValue');
+                $("#addType2").combobox({ disabled: true });
+			}
+			else{
 				$(".rangeTr").css("display","none");
 				
 				$("#goodsCodeTr").css("display","none");
