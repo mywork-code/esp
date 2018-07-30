@@ -36,7 +36,6 @@ import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Service
-@Transactional(rollbackFor = { Exception.class })
 public class ActivityCfgService {
 	private static final Logger LOG = LoggerFactory.getLogger(ActivityCfgService.class);
 
@@ -302,7 +301,15 @@ public class ActivityCfgService {
 					List<String> wzGoodsIdList = new ArrayList<>();
 					wzGoodsIdList.add(g.getSkuId());
 					LOG.info("wzGoodsIdList:{}", GsonUtils.toJson(wzGoodsIdList));
-					List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
+					List<JdSellPrice> jdSellPrices = new ArrayList<>();
+						for(int j = 0;j<3;j++){
+							try {
+							 	jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
+
+							}catch (Exception e){
+								LOG.error("----error :getJdSellPriceBySku sku ={}",g.getSkuId(),e);
+							}
+						}
 					if(CollectionUtils.isEmpty(jdSellPrices)){
 						continue;
 					}
