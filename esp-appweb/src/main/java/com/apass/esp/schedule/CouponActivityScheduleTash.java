@@ -27,7 +27,7 @@ public class CouponActivityScheduleTash {
     /**
      * 每1小时执行下架操作
      */
-    @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0 0/45 * * * ?")
     @RequestMapping("/test1")
     public void downProductOfFyd() {
         try {
