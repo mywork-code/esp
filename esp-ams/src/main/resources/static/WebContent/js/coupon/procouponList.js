@@ -436,6 +436,7 @@ $(function(){
 				type = $("#addType2").combobox('getValue');
 				$("#addType2").combobox({ disabled: true });
 			}else if(param == 'SMYHZX'){
+                $(".grantClass").hide();
                 $("#goodsCodeTr").css("display","none");
                 $("#goosCategoryTr").css("display","none");
                 $(".rangeTr").css("display","none");

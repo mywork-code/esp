@@ -377,7 +377,8 @@ public class ProCouponBaseInfoController {
          * 如果是活动商品的优惠券,则要判断优惠范围，根据优惠范围，判断是否需要传值
          */
         if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_HDSP.getCode())
-                && !StringUtils.equals(proCoupon.getExtendType(), CouponExtendType.COUPON_FYDYHZX.getCode())) {
+                && !StringUtils.equals(proCoupon.getExtendType(), CouponExtendType.COUPON_FYDYHZX.getCode())
+                && !StringUtils.equals(proCoupon.getExtendType(),CouponExtendType.COUPON_SMYHZX.getCode())) {
             if (proCoupon.getOfferRange() == null) {
                 throw new RuntimeException("优惠范围不能为空!");
             }
