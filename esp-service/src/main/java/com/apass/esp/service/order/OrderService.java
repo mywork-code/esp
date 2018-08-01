@@ -806,7 +806,7 @@ public class OrderService {
 	/**
 	 * 商品可售验证接口（单个商品验证）
 	 * 
-	 * @return
+	 * @return flag:true可售
 	 * @throws Exception
 	 */
 	public Boolean checkGoodsSalesOrNot(String skuId) {

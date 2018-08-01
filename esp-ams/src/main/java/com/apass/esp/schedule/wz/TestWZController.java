@@ -49,11 +49,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -1431,6 +1429,15 @@ public class TestWZController {
             return Response.fail("skuIds2.txt中商品操作异常", revealSkuList);
         }
         return Response.success("上架成功", revealSkuList);
+    }
+
+    @ResponseBody
+    @RequestMapping("/validateGoodOnShelf")
+    public Response validateGoodOnShelf(Map<String,String> map){
+        String goodIdP = map.get("goodId");
+        String goodId = "287278";
+        goodsService.validateGoodOnShelf(Long.valueOf(goodId));
+        return null;
     }
 
 }

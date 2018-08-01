@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import com.apass.esp.search.dao.GoodsEsDao;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -134,6 +135,8 @@ public class GoodsService {
     private JdGoodsService jdGoodsService;
     @Autowired
     private GoodsEsDao goodsEsDao;
+    @Autowired
+    private CacheManager cacheManager;
     /**
      * READ
      * @param goodsId
@@ -363,7 +366,8 @@ public class GoodsService {
           //下架
          return false;
       }
-         
+
+      //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
       if(StringUtils.isEmpty(goodsBasicInfo.getSource())){
           List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodId);
              for (GoodsStockInfoEntity goodsStock : goodsList) {
@@ -372,10 +376,16 @@ public class GoodsService {
                  }
              }
       }else{
-          String externalId = goodsBasicInfo.getExternalId();// 外部商品id
-          //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-          if(orderService.checkGoodsSalesOrNot(externalId)){
-             return true;//商品可售
+          // 外部商品id
+          String externalId = goodsBasicInfo.getExternalId();
+
+          String boolCa = cacheManager.get(externalId);
+          if(StringUtils.isEmpty(boolCa)){
+              Boolean aBoolean = orderService.checkGoodsSalesOrNot(externalId);
+              cacheManager.set(externalId,aBoolean+"",1800);
+              return aBoolean;
+          }else{
+              return StringUtils.equals("true",boolCa);
           }
       }
       return false;
