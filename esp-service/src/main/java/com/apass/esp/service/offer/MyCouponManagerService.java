@@ -1,41 +1,15 @@
 package com.apass.esp.service.offer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import com.apass.esp.domain.enums.*;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.apass.esp.domain.entity.CashRefund;
-import com.apass.esp.domain.entity.Category;
-import com.apass.esp.domain.entity.ProActivityCfg;
-import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.domain.entity.ProCouponRel;
-import com.apass.esp.domain.entity.ProMyCoupon;
+import com.apass.esp.domain.entity.*;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.FydActivity;
 import com.apass.esp.domain.vo.MyCouponVo;
 import com.apass.esp.domain.vo.ProMyCouponVo;
-import com.apass.esp.mapper.CashRefundMapper;
-import com.apass.esp.mapper.CategoryMapper;
-import com.apass.esp.mapper.ProActivityCfgMapper;
-import com.apass.esp.mapper.ProCouponMapper;
-import com.apass.esp.mapper.ProCouponRelMapper;
-import com.apass.esp.mapper.ProMyCouponMapper;
+import com.apass.esp.mapper.*;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
@@ -45,6 +19,16 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 /**
  * 
@@ -579,10 +563,12 @@ public class MyCouponManagerService {
 		ProCouponRelQuery couponRel = new ProCouponRelQuery();
 		couponRel.setActivityId(activityId);
 		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityIdOrCouponId(couponRel);
+		logger.info("可领取优惠券,relList:{}", GsonUtils.toJson(relList));
 
 		if (CollectionUtils.isEmpty(relList)) {
 			throw new BusinessException("该活动下无可领取优惠券");
 		}
+		int count = 0;
 		for (ProCouponRel rel : relList) {
 			//获取优惠券信息
 			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
@@ -608,11 +594,14 @@ public class MyCouponManagerService {
 				myCoupon.setUpdatedTime(new Date());
 				myCoupon.setRemarks("");
 
-				return myCouponMapper.insert(myCoupon);
+				myCouponMapper.insert(myCoupon);
+				count++;
 			}
 
 		}
-
+		if(count>0){
+			return count;
+		}
 		throw new BusinessException("该活动下无扫码优惠券");
 	}
 }
