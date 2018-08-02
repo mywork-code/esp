@@ -43,6 +43,20 @@ public class ActivityCfgVo extends ProCouponRelVo {
     private Long fydCouponId;
     private List<String> fydCouponIdList;
 
+    /**
+     * 未结束活动是否关联扫码专享优惠券:1-关联,0-未关联
+     * 已结束：-1
+     */
+    private Integer ifExistSMZX;
+
+    public Integer getIfExistSMZX() {
+        return ifExistSMZX;
+    }
+
+    public void setIfExistSMZX(Integer ifExistSMZX) {
+        this.ifExistSMZX = ifExistSMZX;
+    }
+
     public List<String> getFydCouponIdList() {
         return fydCouponIdList;
     }

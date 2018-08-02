@@ -60,9 +60,11 @@ $(function(){
 					if(row.status != '已结束'){
 						content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGroup('"
 	                        + encodeURI(JSON.stringify(row)) +"');\">编辑</a>";
-						content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.downloadMatrixCode('"
-	                        + row.id +"');\">下载二维码</a>";
 					}
+                    if(row.status != '已结束' && row.ifExistSMZX == '1'){
+                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.downloadMatrixCode('"
+                            + row.id +"');\">下载二维码</a>";
+                    }
 
 				 return content;
 			}}]],
