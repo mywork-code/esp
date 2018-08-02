@@ -134,7 +134,7 @@ public class JDTaskListener implements MessageListener {
           messageListenerMapper.insertSelective(ml);
         }
 
-      List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getGoodId());
+      List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getId());
       if (CollectionUtils.isEmpty(goodsStockInfoEntityList)) {
         ml.setStatus("0");
         ml.setResult("更新商品价格失败，未查询到相应商品库存，wzPrice=" + wzPrice + ";jdPrice=" +jdPrice);
@@ -148,6 +148,7 @@ public class JDTaskListener implements MessageListener {
         GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoEntityList.get(0);
         goodsStockInfoEntity.setGoodsCostPrice(wzPrice);
         goodsStockInfoEntity.setGoodsPrice(jdPrice);
+        goodsStockInfoEntity.setMarketPrice(jdPrice);
         goodsStockInfoService.update(goodsStockInfoEntity);
         ml.setStatus("1");
         ml.setResult("调用批量查询京东商品价格接口成功，京东最新价格：wzPrice=" + wzPrice + ";jdPrice=" +jdPrice);
@@ -160,9 +161,12 @@ public class JDTaskListener implements MessageListener {
         if (jdGoods == null) {
           return;
         }
-        jdGoods.setPrice(wzPrice);
-        jdGoods.setJdPrice(jdPrice);
-          jdGoodsMapper.updateByPrimaryKeySelective(jdGoods);
+        JdGoods updateJdGoods = new JdGoods();
+        updateJdGoods.setId(jdGoods.getId());
+        updateJdGoods.setUpdateDate(new Date());
+        updateJdGoods.setPrice(wzPrice);
+        updateJdGoods.setJdPrice(jdPrice);
+        jdGoodsMapper.updateByPrimaryKeySelective(updateJdGoods);
       } catch (Exception e) {
         LOGGER.error("message skuId {} update price error ");
         ml.setStatus("0");
