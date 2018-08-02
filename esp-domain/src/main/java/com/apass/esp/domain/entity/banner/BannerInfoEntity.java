@@ -24,14 +24,6 @@ public class BannerInfoEntity {
 
     private String bannerImgUrlNew;
 
-    public String getBannerImgUrlNew() {
-        return bannerImgUrlNew;
-    }
-
-    public void setBannerImgUrlNew(String bannerImgUrlNew) {
-        this.bannerImgUrlNew = bannerImgUrlNew;
-    }
-
     private String bannerCategory;
     
     private String bannerType;
@@ -154,5 +146,12 @@ public class BannerInfoEntity {
 
     public void setAttrVal(String attrVal) {
         this.attrVal = attrVal;
+    }
+    public String getBannerImgUrlNew() {
+        return bannerImgUrlNew;
+    }
+
+    public void setBannerImgUrlNew(String bannerImgUrlNew) {
+        this.bannerImgUrlNew = bannerImgUrlNew;
     }
 }

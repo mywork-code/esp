@@ -106,7 +106,7 @@ public class BannerInfoService {
     
     /**
      * 通过activityId查询banner信息
-     * @param id
+     * @param activityId
      * @return
      */
     public List<BannerInfoEntity> getActivityUrlLikeActivityId(String activityId) {
@@ -114,7 +114,10 @@ public class BannerInfoService {
     }
     
     public BannerVo getBannerVoLikeActivityId(String activityId){
-    	List<BannerInfoEntity> bannerList = getActivityUrlLikeActivityId("%?activityId="+activityId);
+    	List<BannerInfoEntity> bannerList = getActivityUrlLikeActivityId("%"+activityId+"%");
+        if(bannerList.size()>1){
+    	    bannerList = getActivityUrlLikeActivityId("%?activityId="+activityId);
+        }
     	BannerInfoEntity banner = null;
     	if(CollectionUtils.isNotEmpty(bannerList)){
     		banner = bannerList.get(0);
