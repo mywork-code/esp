@@ -3057,7 +3057,8 @@ public class OrderService {
     			BigDecimal total = 	activityDecimal.get(p.getProActivityId()).add(goodsSum);
     			activityDecimal.put(p.getProActivityId(), total);
     		}
-    		totalSum = totalSum.add(goodsSum);//获取商品的总金额
+            //获取商品的总金额
+    		totalSum = totalSum.add(goodsSum);
 		}
     	
     	for (String activityId : activityDecimal.keySet()) {
@@ -3065,7 +3066,8 @@ public class OrderService {
 			if(StringUtils.isNotBlank(activityId)){
 				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(Long.parseLong(activityId));
 			    discount = getDisCount(cfg, activityDecimal.get(activityId));
-			    discountSum = discountSum.add(BigDecimal.valueOf(discount)); //根据计算的同一个活动下的总金额，计算应该优惠多少钱
+                //根据计算的同一个活动下的总金额，计算应该优惠多少钱
+			    discountSum = discountSum.add(BigDecimal.valueOf(discount));
 			}
 			discountPayment.put(activityId, BigDecimal.valueOf(discount));
 		}
@@ -3082,7 +3084,8 @@ public class OrderService {
             	discount = discountTotal.multiply(goodsSum).divide(total,2,BigDecimal.ROUND_HALF_UP);
             	purchase.setDisCount(discount);
     		}
-    		purchase.setPayMoney(goodsSum.subtract(discount));//商品价格 * 数量 - 活动优惠金额
+            //商品价格 * 数量 - 活动优惠金额
+    		purchase.setPayMoney(goodsSum.subtract(discount));
     	}
     	/**
     	 * 根据用户的Id,获取该用户下所有未使用的券
@@ -3131,24 +3134,32 @@ public class OrderService {
 		    					goodslist.add(purchase.getGoodsStockId()+"");
 		    				}
 							break;
-						case COUPON_HDSP ://活动商品
-							if(StringUtils.equals(coupon.getActivityId()+"", purchase.getProActivityId())){//如果商品参加的活动等于券所属的活动，才能进行计算
-								if(StringUtils.equals(goods.getBrandId(), coupon.getBrandId())){//品牌
+                        //活动商品
+						case COUPON_HDSP :
+                            //如果商品参加的活动等于券所属的活动，才能进行计算
+							if(StringUtils.equals(coupon.getActivityId()+"", purchase.getProActivityId())){
+                                //品牌
+								if(StringUtils.equals(goods.getBrandId(), coupon.getBrandId())){
 		    						total = total.add(purchase.getPayMoney());
 			    					goodslist.add(purchase.getGoodsStockId()+"");
+                                //类目
 		    					}else if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"") ||
 		    	    					 StringUtils.equals(coupon.getCategoryId2(), goods.getCategoryId2()+"") ||
-		    	    					 StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){//类目
+		    	    					 StringUtils.equals(coupon.getCategoryId3(), goods.getCategoryId3()+"")){
 				    						total = total.add(purchase.getPayMoney());
 					    					goodslist.add(purchase.getGoodsStockId()+"");
+                                //skuid
 		    	    			}else if(StringUtils.isNotBlank(coupon.getSkuId()) && (StringUtils.equals(goods.getExternalId(),coupon.getSkuId()) || 
-		    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId()))){//skuid
+		    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId()))){
 		    						total = total.add(purchase.getPayMoney());
 			    					goodslist.add(purchase.getGoodsStockId()+"");
 		    					}else if(StringUtils.equals(coupon.getExtendType(), CouponExtendType.COUPON_FYDYHZX.getCode())){
 		    						total = total.add(purchase.getPayMoney());
 			    					goodslist.add(purchase.getGoodsStockId()+"");
-		    					}
+		    					}else if(StringUtils.equals(coupon.getExtendType(), CouponExtendType.COUPON_SMYHZX.getCode())){
+                                    total = total.add(purchase.getPayMoney());
+                                    goodslist.add(purchase.getGoodsStockId()+"");
+                                }
 							}
 							break;
 						case COUPON_QPL ://全品类

@@ -424,7 +424,7 @@ public class JdGoodsInfoService {
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
 
 		cacheManager.set(cacheKey,JSONObject.toJSONString(map),1200);
-		return map; 
+		return map;
 	}
 
 	// 查询商品规格（包括不包括库存）

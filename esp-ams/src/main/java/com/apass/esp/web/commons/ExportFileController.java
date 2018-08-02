@@ -217,7 +217,8 @@ public class ExportFileController {
                     }
                     BigDecimal canUserAmt = awardDetailService.getCanUserAmt(awDetail.getUserId(),
                             awDetail.getCreateDate());
-                    if (StringUtils.isBlank(awardBindRelIntroVo.getMobile())//判断导入手机号与数据库中手机号是否相同
+                    //判断导入手机号与数据库中手机号是否相同
+                    if (StringUtils.isBlank(awardBindRelIntroVo.getMobile())
                             || !awDetail.getMobile().equals(awardBindRelIntroVo.getMobile())) {
                         LOG.info("导入手机号{}与数据库中手机号{}不同",awardBindRelIntroVo.getMobile(),awDetail.getMobile());
                         countFail++;
