@@ -373,7 +373,6 @@ $(function () {
     });
     // 批量商品添加至
     $("#addGoods").click(function () {
-        debugger;
         var selRow = $('#importFileList').datagrid('getChecked');
         if (selRow.length == 0) {
             $.messager.alert("<span style='color:#000;'>提示</span>", "至少要勾选一件商品！", "info");

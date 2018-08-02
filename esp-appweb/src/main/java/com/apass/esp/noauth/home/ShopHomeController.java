@@ -952,7 +952,8 @@ public class ShopHomeController {
                 LOGGER.error("商品号不能为空!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            Region region = null;// app端传过来的地址
+            // app端传过来的地址
+            Region region = null;
             if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
                 region = new Region();
                 List<DictDTO> result = nationService.queryDistrictJd(districtCode);
@@ -1065,7 +1066,7 @@ public class ShopHomeController {
                 List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
-              //根据skuId查询该规格是否参加了限时购活动
+                //根据skuId查询该规格是否参加了限时购活动
 				LimitGoodsSkuVo limitGS;
                 String source =(String) returnMap.get("source");
                 if(StringUtils.equals(SourceType.JD.getCode(), source)){
@@ -1081,7 +1082,8 @@ public class ShopHomeController {
 				if(null !=limitGS){
 				BigDecimal limitActivityPrice=limitGS.getActivityPrice();
 				limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
-				jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());//限时购活动价
+                //限时购活动价
+				jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
 				jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
 				jdSimilarSkuVo.setLimitActivityPrice(limitActivityPrice);
 				jdSimilarSkuVo.setLimitActivityPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
