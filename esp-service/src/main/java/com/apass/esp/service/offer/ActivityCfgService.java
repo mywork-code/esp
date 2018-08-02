@@ -6,10 +6,12 @@ import java.util.*;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProcouponRelVoList;
 import com.apass.esp.domain.dto.offo.ActivityfgDto;
+import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.enums.ActivityCfgCoupon;
+import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.vo.ActivityCfgQuery;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.service.jd.JdGoodsInfoService;
@@ -48,6 +50,8 @@ public class ActivityCfgService {
 	private ProGroupGoodsMapper groupGoodsMapper;
 	@Autowired
 	private JdGoodsInfoService jdGoodsInfoService;
+	@Autowired
+	private CouponManagerService couponService;
 
 	public ProActivityCfg getById(Long activityId){
 		return activityCfgMapper.selectByPrimaryKey(activityId);
@@ -63,9 +67,45 @@ public class ActivityCfgService {
 	public ResponsePageBody<ActivityCfgVo> getActivityCfgListPage(ActivityfgDto activityfgDto) throws BusinessException{
 		ResponsePageBody<ActivityCfgVo> pageBody = new ResponsePageBody<ActivityCfgVo>();
 		List<ProActivityCfg> configList = activityCfgMapper.getActivityCfgListPage(activityfgDto);
+
 		Integer count = activityCfgMapper.getActivityCfgListPageCount(activityfgDto);
 		
 		List<ActivityCfgVo> configVoList = getPoToVoList(configList);
+
+		if(!CollectionUtils.isEmpty(configVoList)){
+			out:for(ActivityCfgVo activityCfgVo: configVoList){
+				//如果活动已结束直接设为-1
+				Date endTime = DateFormatUtil.string2date(activityCfgVo.getEndTime(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
+				Date now = new Date();
+				if(now.getTime() > endTime.getTime()){
+					activityCfgVo.setIfExistSMZX(-1);
+					continue;
+				}
+
+				Long activityId = activityCfgVo.getId();
+				List<ProCouponRel> rel = couponRelService.getCouponRelList(String.valueOf(activityId));
+				LOG.info("activityId：{}，关联的优惠券数据:{}",activityId.toString(),GsonUtils.toJson(rel));
+				//没有关联优惠券，设为0
+				if(CollectionUtils.isEmpty(rel)){
+					activityCfgVo.setIfExistSMZX(0);
+					continue;
+				}
+				for(ProCouponRel proCouponRel: rel){
+					ProCoupon coupon = couponService.getById(proCouponRel.getCouponId());
+					if(coupon == null ||StringUtils.isEmpty(coupon.getExtendType())){
+						continue;
+					}
+					if(StringUtils.equals(CouponExtendType.COUPON_SMYHZX.getCode(),coupon.getExtendType())){
+						activityCfgVo.setIfExistSMZX(1);
+						continue out;
+					}
+				}
+
+				activityCfgVo.setIfExistSMZX(0);
+
+			}
+
+		}
 
 		pageBody.setTotal(count);
 		pageBody.setRows(configVoList);
