@@ -12,7 +12,10 @@ import java.util.regex.Pattern;
 
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.jd.JdSellPrice;
+import com.apass.esp.mapper.JdGoodsMapper;
+import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.offer.ActivityCfgService;
+import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -87,6 +90,11 @@ public class ProGroupGoodsExportFikeController {
 
     @Autowired
 	private ActivityCfgService activityCfgService;
+
+	@Autowired
+	private GoodsStockInfoService goodsStockInfoService;
+	@Autowired
+	private JdGoodsMapper jdGoodsMapper;
 
 	/**
      * 商品池分页json
@@ -382,8 +390,27 @@ public class ProGroupGoodsExportFikeController {
 								continue;
 							}
 							BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
+							BigDecimal wzPrice = jdSellPrices.get(0).getPrice();
 							activityPrice  = jdPrice.multiply(activityCfg.getFydActPer()).setScale(0, BigDecimal.ROUND_HALF_UP);
 							marketPrice = jdPrice;
+
+							//顺便更新下数据库里goods_stock 表价格字段
+							//更新价格
+							GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(id));
+							List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getGoodId());
+							GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoEntityList.get(0);
+							goodsStockInfoEntity.setGoodsCostPrice(wzPrice);
+							goodsStockInfoEntity.setGoodsPrice(jdPrice);
+							goodsStockInfoService.update(goodsStockInfoEntity);
+
+
+							//更新京东表
+							JdGoods jdGoods = jdGoodsMapper.queryGoodsBySkuId(Long.valueOf(id));
+							if (jdGoods != null) {
+								jdGoods.setPrice(wzPrice);
+								jdGoods.setJdPrice(jdPrice);
+								jdGoodsMapper.updateByPrimaryKeySelective(jdGoods);
+							}
 						}else{
 
 							if(list.get(i).getActivityPrice() != null){
@@ -418,6 +445,7 @@ public class ProGroupGoodsExportFikeController {
 							pggds.setActivityId(Long.parseLong(activityId));
 							proGroupGoodsService.insertSelective(pggds);
 						    countSuccess++;
+
 						}else{//该商品在其他有效活动中，导入失败
 							pggds.setGoodsId(gbity.getGoodId());
 							pggds.setSkuId(id);
