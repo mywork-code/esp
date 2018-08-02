@@ -579,7 +579,8 @@ public class JdGoodsInfoService {
 	    		List<ProCoupon> proCoupons=couponManagerService.getCouponListsByActivityId(proGroupGoodsBo.getActivityId().toString());
     			for (ProCoupon proCoupon : proCoupons) {
     				//房易贷用户专享过滤不展示在商品详情页
-    				if(CouponExtendType.COUPON_FYDYHZX.getCode().equals(proCoupon.getExtendType())){
+    				if(CouponExtendType.COUPON_FYDYHZX.getCode().equals(proCoupon.getExtendType())
+						|| CouponExtendType.COUPON_SMYHZX.getCode().equals(proCoupon.getExtendType())){
 						continue;
 					}
     				ProCouponGoodsDetailVo proCouponGoodsDetailVo=new ProCouponGoodsDetailVo();
