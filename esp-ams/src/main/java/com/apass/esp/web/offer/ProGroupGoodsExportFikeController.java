@@ -353,11 +353,9 @@ public class ProGroupGoodsExportFikeController {
 					pggds.setCreatedTime(new Date());
 					pggds.setUpdatedTime(new Date());
 					BigDecimal zero=BigDecimal.ZERO;
-					BigDecimal marketPrice=list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+					BigDecimal marketPrice= BigDecimal.ZERO;
 					BigDecimal activityPrice = BigDecimal.ZERO;
-					if(list.get(i).getActivityPrice() != null){
-						activityPrice=list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
-					}
+
 
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
@@ -367,7 +365,7 @@ public class ProGroupGoodsExportFikeController {
 					if(null !=id && isNum.matches()){
 						gbity=goodsService.getByGoodsBySkuId(id);
 					}
-					if (null !=id && null != gbity && null != marketPrice && marketPrice.compareTo(zero)>0) {
+					if (null !=id && null != gbity ) {
 						//判断该商品是否存在其他有效的活动中
 
 						Boolean result=proGroupGoodsService.selectEffectiveGoodsBySkuId(id);
@@ -385,8 +383,15 @@ public class ProGroupGoodsExportFikeController {
 							}
 							BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
 							activityPrice  = jdPrice.multiply(activityCfg.getFydActPer()).setScale(0, BigDecimal.ROUND_HALF_UP);
-
+							marketPrice = jdPrice;
 						}else{
+
+							if(list.get(i).getActivityPrice() != null){
+								activityPrice=list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+							}
+							if(list.get(i).getMarketPrice() != null){
+								marketPrice=list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+							}
 							if( null == activityPrice || activityPrice.compareTo(zero)<=0){
 								GoodsInfoEntity goods = goodsService.getGoodsInfo(id);
 								pggds.setGoodsId(null != goods ? goods.getId() : -1L );
@@ -419,8 +424,8 @@ public class ProGroupGoodsExportFikeController {
 							if(gbity.getGoodsCode() != null){
 								pggds.setGoodsCode(gbity.getGoodsCode().toString());
 							}
-							pggds.setMarketPrice(list.get(i).getMarketPrice());
-							pggds.setActivityPrice(list.get(i).getActivityPrice());
+							pggds.setMarketPrice(marketPrice);
+							pggds.setActivityPrice(activityPrice);
 							pggds.setDetailDesc("0");//0表示导入失败
 							pggds.setActivityId(Long.parseLong(activityId));
 							proGroupGoodsService.insertSelective(pggds);
