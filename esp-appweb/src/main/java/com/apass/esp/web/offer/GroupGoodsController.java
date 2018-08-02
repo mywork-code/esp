@@ -58,7 +58,7 @@ public class GroupGoodsController {
 	@ResponseBody
 	public Response getActivityUrlLikeActivityId(@RequestBody Map<String, Object> paramMap){
 		String activityId = CommonUtils.getValue(paramMap, "activityId");
-		logger.info("getGroupAndGoodsByGroupId---------------------->{}",JsonUtil.toJsonString(paramMap));
+		logger.info("getActivityUrlLikeActivityId---------------------->{}",JsonUtil.toJsonString(paramMap));
 		if(StringUtils.isEmpty(activityId)){
 			return Response.fail("参数传递有误!");
 		}
