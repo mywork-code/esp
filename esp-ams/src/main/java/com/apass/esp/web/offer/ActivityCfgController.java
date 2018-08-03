@@ -297,12 +297,12 @@ public class ActivityCfgController {
  		
  		String activityName = vo.getActivityName();
  		ValidateUtils.isNotBlank(activityName, "请填写活动名称！");
- 		if(!ListeningRegExpUtils.isChineseOrLetterOrMath(activityName)){
- 			throw new BusinessException("活动名称格式不正确，只能输入汉字、字母和数字,请重新输入");
- 		}
- 		if (!ListeningRegExpUtils.lengthValue(activityName, 1, 12)) {
-            throw new BusinessException("活动名称格式不正确，最多只能输入6个汉字,请重新输入");
-        }
+// 		if(!ListeningRegExpUtils.isChineseOrLetterOrMath(activityName)){
+// 			throw new BusinessException("活动名称格式不正确，只能输入汉字、字母和数字,请重新输入");
+// 		}
+// 		if (!ListeningRegExpUtils.lengthValue(activityName, 1, 12)) {
+//            throw new BusinessException("活动名称格式不正确，最多只能输入6个汉字,请重新输入");
+//        }
  		
  		String startTime = vo.getStartTime();
  		ValidateUtils.isNotBlank(startTime, "请填写开始时间！");
