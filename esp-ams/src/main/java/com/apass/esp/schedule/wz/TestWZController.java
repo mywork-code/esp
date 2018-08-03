@@ -9,9 +9,11 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.enums.*;
+import com.apass.esp.domain.vo.AwardBindRelIntroVo;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.sap.SAPConstants;
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.service.activity.AwardBindRelService;
@@ -41,6 +43,7 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
+import com.csvreader.CsvWriter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections.CollectionUtils;
@@ -51,9 +54,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1053,9 +1059,9 @@ public class TestWZController {
             jdCategory.setFlag(false);
             jdCategory.setCatId(Long.valueOf(catId));
             jdCategory.setStatus(category.getState() == 1 ? true : false);
-            jdCategory.setCategoryId1(0l);
-            jdCategory.setCategoryId2(0l);
-            jdCategory.setCategoryId3(0l);
+            jdCategory.setCategoryId1(0L);
+            jdCategory.setCategoryId2(0L);
+            jdCategory.setCategoryId3(0L);
             jdCategory.setCreateDate(new Date());
             jdCategory.setUpdateDate(new Date());
 
@@ -1439,5 +1445,91 @@ public class TestWZController {
         goodsService.validateGoodOnShelf(Long.valueOf(goodId));
         return null;
     }
+
+
+    @ResponseBody
+    @RequestMapping("/exportJdPrice")
+    public Response validateGoodOnShelf(HttpServletRequest request, HttpServletResponse response){
+        String path = "/sku_jdprice2.csv";
+        ServletOutputStream outp = null;
+        FileInputStream in = null;
+        BufferedReader br = null;
+        try{
+            ClassLoader classLoader = TestWZController.class.getClassLoader();
+            InputStream is = classLoader.getResourceAsStream("file/sku_jdprice2.txt");
+            br = new BufferedReader(new InputStreamReader(is));
+
+            List<String> list = Lists.newArrayList();
+            String line = null;
+            while((line = br.readLine()) != null){
+                list.add(line);
+            }
+
+
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            //设置文件名
+            response.addHeader("Content-Disposition",
+                    "attachment;filename=" + new String(("sku_jdprice2.csv").getBytes(), "iso-8859-1"));
+            export(path,list);
+
+            outp = response.getOutputStream();
+            in = new FileInputStream(new File(path));
+
+            byte[] b = new byte[1024];
+            int i = 0;
+            while ((i = in.read(b)) > 0) {
+                outp.write(b, 0, i);
+            }
+            // 文件流刷新到客户端
+            outp.flush();
+        }catch (Exception e){
+            LOGGER.error("导出失败",e);
+            return Response.fail("导出失败");
+        }finally {
+            if(in!=null){
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            if(outp!=null){
+                try {
+                    outp.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(br!=null){
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private void export(String path, List<String> list) throws Exception {
+        CsvWriter csvWriter = new CsvWriter(path, ',', Charset.forName("gbk"));
+        //表头
+        String[] headers = {"skuId","京东价"};
+        csvWriter.writeRecord(headers);
+
+        for(String sku : list){
+            WZPriceResponse res = weiZhiPriceApiClient.getWzSinglePrice(sku);
+            List<String> contentList = new ArrayList<String>();
+
+            contentList.add(res.getSkuId());
+            contentList.add(res.getJDPrice());
+
+            csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+        }
+        csvWriter.close();
+    }
+
 
 }

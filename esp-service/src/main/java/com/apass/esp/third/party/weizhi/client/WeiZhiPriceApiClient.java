@@ -93,5 +93,17 @@ public class WeiZhiPriceApiClient {
 		}
 	    return priceList;
 	}
+
+	public WZPriceResponse getWzSinglePrice(String skuId) throws Exception {
+		List<String> list = Lists.newArrayList();
+		list.add(skuId);
+
+		List<WZPriceResponse> wzPrice = getWzPrice(list);
+		if(wzPrice.size() != 1){
+			throw new RuntimeException("数据有误");
+		}
+
+		return wzPrice.get(0);
+	}
 	
 }
