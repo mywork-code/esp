@@ -2059,7 +2059,7 @@ public class GoodsService {
         return goodsDao.getGoodsListBySkuIds(skuIdList);
     }
     
-    public GoodsInfoEntity seletGoodsInfoBySkuId(String skuId){
+    public List<GoodsInfoEntity> seletGoodsInfoBySkuId(String skuId){
     	return goodsDao.seletGoodsInfoBySkuId(skuId);
     }
     
@@ -2069,13 +2069,12 @@ public class GoodsService {
      * @return
      */
     public GoodsInfoEntity getGoodsInfo(String skuId){
-    	GoodsInfoEntity goods = seletGoodsInfoBySkuId(skuId);
-    	if(null == goods){
-    		GoodsStockInfoEntity stock = goodsStockDao.getStockInfoEntityBySkuId(skuId);
-    		if(null != stock){
-    			goods = goodsDao.selectGoodsByGoodsId(stock.getGoodsId()+"");
-    		}
-    	}
+        GoodsInfoEntity goods = null;
+        List<GoodsStockInfoEntity> stockList = goodsStockDao.getStockInfoEntityBySkuIdList(skuId);
+        if(CollectionUtils.isNotEmpty(stockList)){
+            goods = goodsDao.selectGoodsByGoodsId(stockList.get(0).getGoodsId()+"");
+        }
+
     	return goods;
     }
 

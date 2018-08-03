@@ -113,4 +113,7 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
     public GoodsStockInfoEntity getStockInfoEntityBySkuId(String skuId) {
         return this.getSqlSession().selectOne("getStockInfoEntityBySkuId", skuId);
     }
+    public List<GoodsStockInfoEntity> getStockInfoEntityBySkuIdList(String skuId) {
+        return this.getSqlSession().selectOne("getStockInfoEntityBySkuIdList", skuId);
+    }
 }
