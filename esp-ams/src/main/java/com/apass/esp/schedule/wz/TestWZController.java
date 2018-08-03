@@ -1530,6 +1530,16 @@ public class TestWZController {
         }
         csvWriter.close();
     }
+    @ResponseBody
+    @RequestMapping("/test")
+    public Response test(HttpServletRequest request, HttpServletResponse response){
+        try {
+            goodsService.getGoodsInfo("1017376");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
 }
