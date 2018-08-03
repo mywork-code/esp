@@ -24,7 +24,8 @@ public interface ProCouponRelMapper extends GenericMapper<ProCouponRel, Long> {
 	 * @return
 	 */
 	List<ProCouponRel> getCouponByActivityIdOrCouponId(ProCouponRelQuery couponRel);
-	
+	List<ProCouponRel> getCouponByActivityIdOrCouponId2(ProCouponRelQuery couponRel);
+
 	/**
 	 * 获取优惠券剩余数量大于0的优惠券列表
 	 * @return

@@ -26,6 +26,16 @@
         <include refid="paramSql" />
         order by updated_time desc
     </select>
+    <select id="getCouponByActivityIdOrCouponId2" parameterType="com.apass.esp.domain.query.ProCouponRelQuery" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from t_esp_pro_coupon_rel
+        <where>
+            <if test="activityId != null">
+                and  pro_activity_id = #{activityId}
+            </if>
+        </where>
+        order by updated_time desc
+    </select>
     <!-- 获取优惠券剩余数量大于0的优惠券列表 -->
     <select id="getCouponList"  resultMap="BaseResultMap">
         select <include refid="Base_Column_List" />

@@ -562,7 +562,7 @@ public class MyCouponManagerService {
 		//查询所有可领取优惠券
 		ProCouponRelQuery couponRel = new ProCouponRelQuery();
 		couponRel.setActivityId(activityId);
-		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityIdOrCouponId(couponRel);
+		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityIdOrCouponId2(couponRel);
 		logger.info("可领取优惠券,relList:{}", GsonUtils.toJson(relList));
 
 		if (CollectionUtils.isEmpty(relList)) {
