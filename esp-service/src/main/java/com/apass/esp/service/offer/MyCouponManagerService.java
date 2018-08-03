@@ -582,6 +582,9 @@ public class MyCouponManagerService {
 			if (null != myCouponList && myCouponList.size() > 0) {
 				throw new BusinessException("每个用户仅限领一次!");
 			} else {
+				if(rel.getDelFlag() == 0){
+					continue;
+				}
 				ProMyCoupon myCoupon = new ProMyCoupon();
 				myCoupon.setUserId(userId);
 				myCoupon.setCouponId(proCoupon.getId());
