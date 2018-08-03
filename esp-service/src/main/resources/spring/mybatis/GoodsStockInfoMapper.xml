@@ -257,6 +257,17 @@
 			<if test="stockLogo != null and stockLogo != ''">
 				stock_logo = #{stockLogo},
 			</if>
+
+			<if test="marketPrice != null and marketPrice != ''">
+				market_price = #{marketPrice},
+			</if>
+			<if test="goodsPrice != null and goodsPrice != ''">
+				goods_price = #{goodsPrice},
+			</if>
+			<if test="goodsCostPrice != null and goodsCostPrice != ''">
+				goods_cost_price = #{goodsCostPrice},
+			</if>
+
 		</set>
 	<![CDATA[
 		WHERE ID =  #{id, jdbcType=BIGINT}

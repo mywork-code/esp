@@ -397,19 +397,26 @@ public class ProGroupGoodsExportFikeController {
 							//顺便更新下数据库里goods_stock 表价格字段
 							//更新价格
 							GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(id));
-							List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getGoodId());
-							GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoEntityList.get(0);
-							goodsStockInfoEntity.setGoodsCostPrice(wzPrice);
-							goodsStockInfoEntity.setGoodsPrice(jdPrice);
-							goodsStockInfoService.update(goodsStockInfoEntity);
+							List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getId());
+							if(CollectionUtils.isNotEmpty(goodsStockInfoEntityList)){
+								GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoEntityList.get(0);
+								goodsStockInfoEntity.setGoodsCostPrice(wzPrice);
+								goodsStockInfoEntity.setGoodsPrice(jdPrice);
+								goodsStockInfoEntity.setMarketPrice(jdPrice);
+								goodsStockInfoService.update(goodsStockInfoEntity);
+							}
+
 
 
 							//更新京东表
 							JdGoods jdGoods = jdGoodsMapper.queryGoodsBySkuId(Long.valueOf(id));
 							if (jdGoods != null) {
-								jdGoods.setPrice(wzPrice);
-								jdGoods.setJdPrice(jdPrice);
-								jdGoodsMapper.updateByPrimaryKeySelective(jdGoods);
+								JdGoods updateJdGoods = new JdGoods();
+								updateJdGoods.setId(jdGoods.getId());
+								updateJdGoods.setUpdateDate(new Date());
+								updateJdGoods.setPrice(wzPrice);
+								updateJdGoods.setJdPrice(jdPrice);
+								jdGoodsMapper.updateByPrimaryKeySelective(updateJdGoods);
 							}
 						}else{
 
