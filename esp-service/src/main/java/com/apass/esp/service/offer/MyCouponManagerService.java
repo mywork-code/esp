@@ -647,7 +647,7 @@ public class MyCouponManagerService {
 			if(couponIds.contains(String.valueOf(rel.getCouponId()))){
 				//根据relId和userId查询是否已经领取，只有未领取才插入数据
 				List<ProMyCoupon> list = getCouponByUserIdAndRelCouponId(userId, rel.getId());
-				if(CollectionUtils.isEmpty(list)){
+				if(!CollectionUtils.isEmpty(list)){
 					logger.info("{}优惠券已经被领取,不可重复领取",rel.getCouponId());
 					continue;
 				}
