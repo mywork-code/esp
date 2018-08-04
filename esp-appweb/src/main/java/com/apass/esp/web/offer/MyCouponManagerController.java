@@ -146,4 +146,45 @@ public class MyCouponManagerController {
 		return Response.fail("服务器忙，请稍后再试！");
 	}
 
+
+	/**
+	 * 扫码领优惠券接口：扫再次对应不同优惠券
+	 * @param paramMap
+	 * @return
+     */
+	@ResponseBody
+	@RequestMapping("/saveTwoCouponFromScan")
+	public Response saveTwoCouponFromScan(@RequestBody Map<String, Object> paramMap){
+		try {
+			String userId = CommonUtils.getValue(paramMap, "userId");
+			String activityId = CommonUtils.getValue(paramMap, "activityId");
+			String telephone = CommonUtils.getValue(paramMap, "telephone");
+			//多个优惠券id拼接成字符串，用逗号隔开222,334,225
+			String couponIds = CommonUtils.getValue(paramMap, "couponIds");
+			int count = 0;
+			if(StringUtils.isBlank(activityId)){
+				logger.error("活动编号不能为空!");
+				return Response.fail("活动编号不能为空!");
+			}
+			logger.info("saveCouponFromScan:--------->参数：{}",GsonUtils.toJson(paramMap));
+			if(StringUtils.isEmpty(couponIds)){
+				//领所有优惠券
+				count = myCouponManagerService.saveCouponToUserFromScan(Long.parseLong(userId),Long.parseLong(activityId),telephone);
+			}else{
+				count = myCouponManagerService.saveCouponToUserFromScan(Long.parseLong(userId),Long.parseLong(activityId),telephone,couponIds);
+			}
+
+			if(count > 0){
+				return Response.success("领取成功!");
+			}
+		} catch(BusinessException e){
+			logger.error("business saveCouponFromScan :{}",e);
+			return Response.fail(e.getErrorDesc());
+		} catch (Exception e) {
+			logger.error("exception saveCouponFromScan :{}",e);
+		}
+
+		return Response.fail("服务器忙，请稍后再试！");
+	}
+
 }

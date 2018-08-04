@@ -16,6 +16,7 @@ import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
@@ -562,11 +563,12 @@ public class MyCouponManagerService {
 		//查询所有可领取优惠券
 		ProCouponRelQuery couponRel = new ProCouponRelQuery();
 		couponRel.setActivityId(activityId);
+		//查询结果包含已删除优惠券
 		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityIdOrCouponId2(couponRel);
-		logger.info("可领取优惠券,relList:{}", GsonUtils.toJson(relList));
+		logger.info("{}活动下所有优惠券,包括已删除relList:{}",activityId, GsonUtils.toJson(relList));
 
 		if (CollectionUtils.isEmpty(relList)) {
-			throw new BusinessException("该活动下无可领取优惠券");
+			throw new BusinessException("该活动下无可领取优惠券,也无已删除优惠券");
 		}
 		int count = 0;
 		for (ProCouponRel rel : relList) {
@@ -606,5 +608,67 @@ public class MyCouponManagerService {
 			return count;
 		}
 		throw new BusinessException("该活动下无扫码优惠券");
+	}
+
+	public int saveCouponToUserFromScan(long userId, long activityId,String telephone,String couponIds) throws BusinessException {
+		//把couponIds中对应的优惠券插入mycoupon表中
+		ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+		if(activityCfg == null){
+			throw new BusinessException("活动不存在，数据有误!");
+		}
+		//判断活动是否正在进行中
+		if (ActivityStatus.NO == activityCfgService.getActivityStatus(activityCfg)) {
+			throw new BusinessException("活动未开始!");
+		}
+		if (ActivityStatus.END == activityCfgService.getActivityStatus(activityCfg)) {
+			throw new BusinessException("活动已结束!");
+		}
+
+		//查询所有可领取优惠券
+		ProCouponRelQuery couponRel = new ProCouponRelQuery();
+		couponRel.setActivityId(activityId);
+		//查询当前活动下有效优惠券
+		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityIdOrCouponId(couponRel);
+		logger.info("可领取优惠券,relList:{}", GsonUtils.toJson(relList));
+
+		if (CollectionUtils.isEmpty(relList)) {
+			throw new BusinessException("该活动下无可领取优惠券");
+		}
+
+		int count = 0;
+		for(ProCouponRel rel: relList){
+			//获取优惠券信息
+			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
+			//如果是扫码类型优惠券才可领取
+			if (!StringUtils.equals(proCoupon.getExtendType(), CouponExtendType.COUPON_SMYHZX.getCode())) {
+				continue;
+			}
+
+			if(couponIds.contains(String.valueOf(rel.getCouponId()))){
+				//根据relId和userId查询是否已经领取，只有未领取才插入数据
+				List<ProMyCoupon> list = getCouponByUserIdAndRelCouponId(userId, rel.getId());
+				if(CollectionUtils.isEmpty(list)){
+					logger.info("{}优惠券已经被领取,不可重复领取",rel.getCouponId());
+					continue;
+				}
+				ProMyCoupon myCoupon = new ProMyCoupon();
+				myCoupon.setUserId(userId);
+				myCoupon.setCouponId(proCoupon.getId());
+				myCoupon.setCouponRelId(rel.getId());
+				myCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+				myCoupon.setTelephone(telephone);
+				myCoupon.setStartDate(activityCfg.getStartTime());
+				myCoupon.setEndDate(activityCfg.getEndTime());
+				myCoupon.setCreatedTime(new Date());
+				myCoupon.setUpdatedTime(new Date());
+				myCoupon.setRemarks("");
+
+				myCouponMapper.insert(myCoupon);
+				logger.info("插入优惠券成功，插入内容{}",GsonUtils.toJson(myCoupon));
+				count++;
+			}
+		}
+
+		return count;
 	}
 }

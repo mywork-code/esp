@@ -104,6 +104,12 @@ public class JdGoodsService {
      */
     @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
     public void insertToGoosbaseAndGoodsstock(Map<String, String> paramMap, String username, JdGoods jdGoods) throws ParseException {
+        GoodsInfoEntity en = goodsService.selectGoodsByExternalId(String.valueOf(jdGoods.getSkuId()));
+        GoodsStockInfoEntity sto = goodsStockInfoService.getStockInfoEntityBySkuId(String.valueOf(jdGoods.getSkuId()));
+        if(en != null && sto !=null){
+            return;
+        }
+
         // 封闭数据,往t_esp_goods_base_info表插入数据
         GoodsInfoEntity entity = new GoodsInfoEntity();
         entity.setGoodsTitle("品牌直供正品保证，支持7天退货");

@@ -1388,6 +1388,7 @@ public class TestWZController {
 
     /**
      * 手动插入已关联的微知数据
+     * 类目已关联，但商品不在base_goods表中
      * 思路：先插入base表和stock表中，再上架
      */
     @ResponseBody
