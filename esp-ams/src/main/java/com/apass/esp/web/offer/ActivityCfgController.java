@@ -73,6 +73,8 @@ public class ActivityCfgController {
 
 	@Autowired
 	private CouponManagerService couponManagerService;
+	@Autowired
+	private SystemEnvConfig systemEnvConfig;
     /**
      * 活动配置
      * @return
@@ -362,8 +364,7 @@ public class ActivityCfgController {
 		String url = null;
 		try{
 			String activityId = request.getParameter("id");
-			LOGGER.info("downloadMatrixCode方法activityId:{}",activityId);
-			SystemEnvConfig systemEnvConfig = new SystemEnvConfig();
+			LOGGER.info("downloadMatrixCode方法activityId:{},运行环境:{}",activityId,systemEnvConfig.isPROD()+"");
 			if(systemEnvConfig.isPROD()){
 				url = "http://espapp.apass.cn/#/scanReceiveCoupon?activityId="+activityId;
 			}else{
