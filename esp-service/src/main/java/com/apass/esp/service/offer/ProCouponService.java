@@ -167,8 +167,8 @@ public class ProCouponService {
             List<ProActivityCfg> proActivityCfgList = activityCfgService.selectProActivityCfgByEntity(proCoupon.getId());
             if(CollectionUtils.isNotEmpty(proActivityCfgList)){
                 for (ProActivityCfg proActivityCfg:proActivityCfgList) {
-                    if(!(proActivityCfg.getStartTime().getTime()> new Date().getTime() ||
-                            proActivityCfg.getEndTime().getTime()<new Date().getTime())){
+                    if(!(proActivityCfg.getStartTime().getTime()> System.currentTimeMillis() ||
+                            proActivityCfg.getEndTime().getTime()<System.currentTimeMillis())){
                         throw new RuntimeException("该优惠券正在参与活动!");
                     }
                 }
