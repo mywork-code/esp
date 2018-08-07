@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import com.apass.gfb.framework.logstash.LOG;
+import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -60,7 +62,7 @@ public class ProCouponService {
 
     /**
      * 分页查询优惠券列表
-     * @param paramMap
+     * @param query
      * @return
      */
     public Pagination<ProCoupon> pageList(ProCouponQuery query) {
@@ -162,11 +164,14 @@ public class ProCouponService {
             throw new RuntimeException("优惠券id不存在！");
         }
         if(StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_YHLQ.getCode(),proCoupon.getExtendType()) ||
-        		StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_FYDYHZX.getCode(),proCoupon.getExtendType())){
+        		StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_FYDYHZX.getCode(),proCoupon.getExtendType())||
+                StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_SMYHZX.getCode(),proCoupon.getExtendType())){
             //根据优惠券id关联查询 t_esp_pro_coupon_rel和t_esp_pro_activity_cfg,再判断当前是否在有效期内
-            List<ProActivityCfg> proActivityCfgList = activityCfgService.selectProActivityCfgByEntity(proCoupon.getId());
-            if(CollectionUtils.isNotEmpty(proActivityCfgList)){
-                for (ProActivityCfg proActivityCfg:proActivityCfgList) {
+            List<ProCouponRel> proCouponRels = couponRelMapper.selectByCouponId(proCoupon.getId());
+            LOG.info("{}参与的活动有：{}",proCoupon.getId()+"", GsonUtils.toJson(proCouponRels));
+            if(CollectionUtils.isNotEmpty(proCouponRels)){
+                for (ProCouponRel couponRel:proCouponRels) {
+                    ProActivityCfg proActivityCfg = activityCfgService.getById(couponRel.getProActivityId());
                     if(!(proActivityCfg.getStartTime().getTime()> System.currentTimeMillis() ||
                             proActivityCfg.getEndTime().getTime()<System.currentTimeMillis())){
                         throw new RuntimeException("该优惠券正在参与活动!");

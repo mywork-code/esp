@@ -313,7 +313,9 @@ $(function(){
 			extendType = "XYH"
 		}else if(extendType == "房易贷用户专享"){
 			extendType = "FYDYHZX"
-		}else{
+		}else if(extendType == "扫码用户专享"){
+			extendType = "SMYHZX"
+		}else {
 			$.messager.alert('<span style="color: black">提示</span>',"推广方式数据有误？");
 			return;
 		}
