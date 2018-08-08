@@ -1,9 +1,11 @@
 package com.apass.esp.web.commons;
 
+import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.*;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
 import com.apass.esp.domain.enums.PaymentStatusEnum;
+import com.apass.esp.domain.kvattr.JdDownSystemParamVo;
 import com.apass.esp.domain.kvattr.JdSystemParamVo;
 import com.apass.esp.domain.kvattr.PaymentVo;
 import com.apass.esp.service.common.BsdiffinfoService;
@@ -159,9 +161,26 @@ public class SystemParamController {
         ResponsePageBody<JdSystemParamVo> respBody = new ResponsePageBody<>();
         try{
             JdSystemParamVo jdSystemParamVo = kvattrService.get(new JdSystemParamVo());
+            JdDownSystemParamVo jdDownSystemParamVo = kvattrService.get(new JdDownSystemParamVo());
             LOG.info("respBody：{}", GsonUtils.toJson(jdSystemParamVo));
-            List<JdSystemParamVo> list = new ArrayList();
-            list.add(jdSystemParamVo);
+            Map<String,Object> map1 = new HashMap<>();
+            Map<String,Object> map2 = new HashMap<>();
+            List list = new ArrayList();
+            if(jdSystemParamVo != null){
+                map1.put("protocolPrice1",jdSystemParamVo.getProtocolPrice1());
+                map1.put("protocolPrice2",jdSystemParamVo.getProtocolPrice2());
+                map1.put("protocolPrice3",jdSystemParamVo.getProtocolPrice3());
+                map1.put("flag","1");
+                list.add(map1);
+            }
+
+            if(jdDownSystemParamVo != null){
+                map2.put("protocolPrice1",jdDownSystemParamVo.getProtocolPrice1());
+                map2.put("protocolPrice2",jdDownSystemParamVo.getProtocolPrice2());
+                map2.put("protocolPrice3",jdDownSystemParamVo.getProtocolPrice3());
+                map2.put("flag","2");
+                list.add(map2);
+            }
             respBody.setMsg("京东商品售价系统参数查询成功");
             respBody.setStatus("1");
             respBody.setRows(list);

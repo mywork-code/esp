@@ -26,23 +26,37 @@ $ (function ()
 		                align : 'center',
 						hidden: true
 		            },
-		            
+					{
+						title : '',
+						field : 'flag',
+						width : 150,
+						align : 'center',
+						hidden: true,
+                        formatter:function(value,row,index){
+							if(value == "1"){
+                                return "商品定价系数";
+							}else{
+                                return "商品下架系数";
+							}
+                        }
+					},
+
 		            {
-		                title : '协议价(99-500)比例系数',
+		                title : '京东价(99-500)比例系数',
 		                field : 'protocolPrice1',
 		                width : 200,
 		                align : 'center'
 		            },
 		            
 		            {
-		            	title : '协议价(500-2000)比例系数',//保留两位小数，四舍五入
+		            	title : '京东价(500-2000)比例系数',//保留两位小数，四舍五入
 		            	field : 'protocolPrice2',
 		            	width : 250,
 		            	align : 'center'
 		            },
 		            
 		            {
-		                title : '协议价(2000及以上)比例系数',
+		                title : '京东价(2000及以上)比例系数',
 		                field : 'protocolPrice3',
 		                width : 200,
 		                align : 'center'
@@ -83,6 +97,7 @@ $ (function ()
 	    }
 	});
 
+
 	$.editJDSystemParamInfo = function (data)
 	{
 		debugger;
@@ -91,6 +106,7 @@ $ (function ()
 		$ ("#protocolPrice1").val (data.protocolPrice1);
 		$ ("#protocolPrice2").val (data.protocolPrice2);
 		$ ("#protocolPrice3").val (data.protocolPrice3);
+		$('#id_flag').val(data.flag);
 	}
 
 	$.querySystemParamInfo = function (data)
@@ -134,10 +150,12 @@ function confirmBtn ()
 			var protocolPrice1 = $ ("#protocolPrice1").val ();
 			var protocolPrice2 = $ ("#protocolPrice2").val ();
 			var protocolPrice3 = $ ("#protocolPrice3").val ();
+			var flag = $('#id_flag').val();
 			var param =  {
 				protocolPrice1 : protocolPrice1,
 				protocolPrice2 : protocolPrice2,
-				protocolPrice3 : protocolPrice3
+				protocolPrice3 : protocolPrice3,
+				flag:flag
 			}
 			// 验证参数
 			if (protocolPrice1 <= 0 || protocolPrice2<= 0 ||protocolPrice3 <= 0)
