@@ -121,31 +121,30 @@ public class MyCouponManagerController {
 	}
 
 
-	@ResponseBody
-	@RequestMapping("/saveCouponFromScan")
-	public Response saveCouponFromScan(@RequestBody Map<String, Object> paramMap){
-		String userId = CommonUtils.getValue(paramMap, "userId");
-		String activityId = CommonUtils.getValue(paramMap, "activityId");
-		String telephone = CommonUtils.getValue(paramMap, "telephone");
-		if(StringUtils.isBlank(activityId)){
-			logger.error("活动编号不能为空!");
-			return Response.fail("活动编号不能为空!");
-		}
-		logger.info("saveCouponFromScan:--------->参数：{}",GsonUtils.toJson(paramMap));
-		try {
-			int count = myCouponManagerService.saveCouponToUserFromScan(Long.parseLong(userId),Long.parseLong(activityId),telephone);
-			if(count > 0){
-				return Response.success("领取成功!");
-			}
-		} catch(BusinessException e){
-			logger.error("business saveCouponFromScan :{}",e);
-			return Response.fail(e.getErrorDesc());
-		} catch (Exception e) {
-			logger.error("exception saveCouponFromScan :{}",e);
-		}
-		return Response.fail("服务器忙，请稍后再试！");
-	}
-
+//	@ResponseBody
+//	@RequestMapping("/saveCouponFromScan")
+//	public Response saveCouponFromScan(@RequestBody Map<String, Object> paramMap){
+//		String userId = CommonUtils.getValue(paramMap, "userId");
+//		String activityId = CommonUtils.getValue(paramMap, "activityId");
+//		String telephone = CommonUtils.getValue(paramMap, "telephone");
+//		if(StringUtils.isBlank(activityId)){
+//			logger.error("活动编号不能为空!");
+//			return Response.fail("活动编号不能为空!");
+//		}
+//		logger.info("saveCouponFromScan:--------->参数：{}",GsonUtils.toJson(paramMap));
+//		try {
+//			int count = myCouponManagerService.saveCouponToUserFromScan(Long.parseLong(userId),Long.parseLong(activityId),telephone);
+//			if(count > 0){
+//				return Response.success("领取成功!");
+//			}
+//		} catch(BusinessException e){
+//			logger.error("business saveCouponFromScan :{}",e);
+//			return Response.fail(e.getErrorDesc());
+//		} catch (Exception e) {
+//			logger.error("exception saveCouponFromScan :{}",e);
+//		}
+//		return Response.fail("服务器忙，请稍后再试！");
+//	}
 
 	/**
 	 * 扫码领优惠券接口：扫再次对应不同优惠券
@@ -153,7 +152,7 @@ public class MyCouponManagerController {
 	 * @return
      */
 	@ResponseBody
-	@RequestMapping("/saveTwoCouponFromScan")
+	@RequestMapping("/saveCouponFromScan")
 	public Response saveTwoCouponFromScan(@RequestBody Map<String, Object> paramMap){
 		try {
 			String userId = CommonUtils.getValue(paramMap, "userId");
