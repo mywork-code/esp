@@ -86,7 +86,7 @@ public class ProCouponTaskService {
 
 
         //发送邮件:传递发送的数据和接收人"maoyanping@apass.cn","yangxiaoqing@apass.cn","huangbeifang@apass.cn",
-        String[] reciveArr = {"sunchaohai@apass.cn"};
+        String[] reciveArr = {"xujie@apass.cn","sunchaohai@apass.cn","maoyanping@apass.cn","yangxiaoqing@apass.cn","huangbeifang@apass.cn"};
         messageService.sentMail(taskEntityList,reciveArr);
     }
 
@@ -167,8 +167,12 @@ public class ProCouponTaskService {
 
         // 邮件主题
         mailDataDto.setSender(new MailPersonalInfo(mailAddress, mailName, mailPassword));
-        // 收件人
+        // 收件人"maoyanping@apass.cn","yangxiaoqing@apass.cn","huangbeifang@apass.cn",
         mailDataDto.addToMails(new MailPersonalInfo("sunchaohai@apass.cn"));
+        mailDataDto.addToMails(new MailPersonalInfo("maoyanping@apass.cn"));
+        mailDataDto.addToMails(new MailPersonalInfo("yangxiaoqing@apass.cn"));
+        mailDataDto.addToMails(new MailPersonalInfo("huangbeifang@apass.cn"));
+        mailDataDto.addToMails(new MailPersonalInfo("xujie@apass.cn"));
 
         // 邮件正文
         mailDataDto.setContent("你好：<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;此报表每天早上8:00发出;"
