@@ -19,8 +19,6 @@ public class JdSystemParamVo {
      */
     private String protocolPrice3;
 
-    private String flag; //1-商品定价系数；2-商品下架系数
-
     public String getProtocolPrice1() {
         return protocolPrice1;
     }
