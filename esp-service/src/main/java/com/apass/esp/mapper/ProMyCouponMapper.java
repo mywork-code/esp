@@ -36,4 +36,9 @@ public interface ProMyCouponMapper extends GenericMapper<ProMyCoupon, Long> {
 
 	Integer insertProMyCoupoBach(Map<String, Object> paramMap);
 
+	List<ProMyCoupon> selectMycouponCountByDate(Map<String,Object> paramMap);
+
+	List<ProMyCoupon> selectMycouponCountByDateGroupByCouponId(Map<String, Object> paramMap);
+
+	List<ProMyCoupon> selectMycouponCountByDateHasUsed(Map<String, Object> paramMap);
 }

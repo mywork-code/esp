@@ -19,6 +19,7 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -670,5 +671,103 @@ public class MyCouponManagerService {
 		}
 
 		return count;
+	}
+
+	/**
+	 * 思路：
+	 * 1,先查询当天所有领取优惠券彷
+	 * 2,判断哪些是扫码领优惠券用户，并计数
+	 * 		a,根据coupon_id查询pro_cou_pon表
+	 * 		b,同一个用户领取多个节点优惠券算作一个人，用map记录相关数据，telephone作为key
+	 *
+	 * 3,判断哪些是各节点领优惠券用户，并计数
+	 * 		同上
+	 * @return
+     */
+	public ProCouponTaskEntity selectMycouponCountByDate(String startDate, String endDate)throws Exception {
+		ProCouponTaskEntity taskEntity = new ProCouponTaskEntity();
+		taskEntity.setDate(startDate.substring(0,startDate.length()-9));
+
+		//总人数,身份证认证数，银行卡认证数，放款成功认证数
+		Map<String,Object> countMap=Maps.newHashMap(),
+				sfzrzCountMap=Maps.newConcurrentMap(),yhkrzCountMap=Maps.newHashMap(),fkcgCountMap=Maps.newHashMap();
+
+		LOG.info("ProCouponTask-->senProcouponEmai-->selectMycouponCountByDate下查询用户领取优惠券开始时间:{},结束时间:{}",startDate,endDate);
+		Map<String,Object> paramMap = Maps.newHashMap();
+		paramMap.put("startDate",startDate);
+		paramMap.put("endDate",endDate);
+
+		//查询所有领取优惠券用户
+		List<ProMyCoupon> myCoupons = this.selectMycouponCountByDate(paramMap);
+		//如果数据主空说明当天无用户领取优惠券，直接返回null
+		if(CollectionUtils.isEmpty(myCoupons)){
+			return null;
+		}
+
+		for(ProMyCoupon myCoupon : myCoupons){
+			//key作为键,若同一个人领多个优惠券，视为一个人
+			String key = myCoupon.getTelephone();
+			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(myCoupon.getCouponId());
+			if(StringUtils.equals(CouponExtendType.COUPON_SMYHZX.getCode(),proCoupon.getExtendType())){
+				countMap.put(key,proCoupon);
+			}else if(StringUtils.equals(CouponExtendType.COUPON_FYDYHZX.getCode(),proCoupon.getExtendType())){
+				if(StringUtils.equals(GrantNode.NODE_SFZRZTG.getCode(),proCoupon.getExtendType())){
+					sfzrzCountMap.put(key,proCoupon);
+				}else if(StringUtils.equals(GrantNode.NODE_YHKRZTG.getCode(),proCoupon.getExtendType())){
+					yhkrzCountMap.put(key,proCoupon);
+				}else if(StringUtils.equals(GrantNode.NODE_FKCG.getCode(),proCoupon.getExtendType())){
+					fkcgCountMap.put(key,proCoupon);
+				}
+			}
+		}
+
+		taskEntity.setClickCount(0);
+		taskEntity.setCount(countMap.keySet().size());
+		taskEntity.setSfzrzCount(sfzrzCountMap.keySet().size());
+		taskEntity.setYhkrzCount(yhkrzCountMap.keySet().size());
+		taskEntity.setFkcgCount(fkcgCountMap.keySet().size());
+
+		return taskEntity;
+	}
+
+	List<ProMyCoupon> selectMycouponCountByDate(Map<String, Object> paramMap){
+		return myCouponMapper.selectMycouponCountByDate(paramMap);
+	}
+
+	/**
+	 * @param paramMap
+	 * @return list
+     */
+	public List<ProCoupon> getTodayAllCouponTitle(Map<String, Object> paramMap) {
+		//已使用优惠券种类
+		List<ProMyCoupon> myCoupons = this.selectMycouponCountByDateGroupByCouponId(paramMap);
+		List<ProCoupon> couponList = Lists.newArrayList();
+
+		if(CollectionUtils.isEmpty(myCoupons)){
+			return null;
+		}
+		for(ProMyCoupon myCoupon : myCoupons){
+			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(myCoupon.getCouponId());
+			if(proCoupon == null){
+				throw new RuntimeException("数据有误,mycoupon中的couponId对应的coupon表中无数据");
+			}
+
+			couponList.add(proCoupon);
+		}
+
+		return couponList;
+	}
+
+	private List<ProMyCoupon> selectMycouponCountByDateGroupByCouponId(Map<String, Object> paramMap) {
+		return myCouponMapper.selectMycouponCountByDateGroupByCouponId(paramMap);
+	}
+
+	/**
+	 * 忆领取优惠券用户 记录
+	 * @param paramMap
+	 * @return
+     */
+	public List<ProMyCoupon> selectMycouponCountByDateHasUsed(Map<String, Object> paramMap) {
+		return myCouponMapper.selectMycouponCountByDateHasUsed(paramMap);
 	}
 }

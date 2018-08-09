@@ -42,6 +42,47 @@
         <include refid="paramSql" />
    </select>
 
+   <select id="selectMycouponCountByDate" resultMap="BaseResultMap">
+       select <include refid="Base_Column_List" />
+        from t_esp_pro_mycoupon
+        <where>
+            <if test="startDate != null and startDate != ''">
+                and created_time > #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and #{endDate} > created_time
+            </if>
+        </where>
+   </select>
+   <select id="selectMycouponCountByDateHasUsed" resultMap="BaseResultMap">
+       select <include refid="Base_Column_List" />
+        from t_esp_pro_mycoupon
+        <where>
+            and status = 'Y'
+            <if test="startDate != null and startDate != ''">
+                and created_time > #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and #{endDate} > created_time
+            </if>
+        </where>
+   </select>
+   <select id="selectMycouponCountByDateGroupByCouponId" resultMap="BaseResultMap">
+       select <include refid="Base_Column_List" />
+        from t_esp_pro_mycoupon
+        <where>
+            and status = 'Y'
+            <if test="startDate != null and startDate != ''">
+                and created_time > #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and #{endDate} > created_time
+            </if>
+        </where>
+       group by coupon_id
+
+   </select>
+
     <!--批量插入-->
     <insert id="insertProMyCoupoBach" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id" >
         insert into t_esp_pro_mycoupon (user_id, coupon_rel_id, status,
