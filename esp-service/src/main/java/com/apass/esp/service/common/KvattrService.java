@@ -59,7 +59,17 @@ public class KvattrService {
         return list;
     }
     public Kvattr getKvattrByKeyList(String key) {
-    	return kvattrMapper.getByKey(key);
+        List<Kvattr> kvattrs = kvattrMapper.getByKey(key);
+        if(CollectionUtils.isNotEmpty(kvattrs) && kvattrs.size()>1){
+            Kvattr k = new Kvattr();
+            for(Kvattr kvattr : kvattrs){
+                if(StringUtils.equals("com.apass.esp.domain.kvattr.JdSystemParamVo",kvattr.getSource())){
+                    k = kvattr;
+                }
+            }
+            return k;
+        }
+    	return kvattrs.get(0);
     }
     /**
      * 修改t_esp_kvattr中的值
