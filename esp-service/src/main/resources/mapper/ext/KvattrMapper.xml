@@ -9,6 +9,6 @@
     SELECT 
     *
     from t_esp_kvattr
-    WHERE  `key`=#{key}
+    WHERE  `key`=#{key} and source = #{source}
   </select>
 </mapper>

@@ -1,9 +1,10 @@
 package com.apass.esp.domain.kvattr;
 
 /**
- * Created by xiaohai on 2017/8/28.
+ * Created by DELL on 2018/8/8.
+ * 京东商品下架系数
  */
-public class JdSystemParamVo {
+public class JdDownSystemParamVo {
     /**
      * 京东价(99-500)比例系数
      */
@@ -42,13 +43,4 @@ public class JdSystemParamVo {
     public void setProtocolPrice3(String protocolPrice3) {
         this.protocolPrice3 = protocolPrice3;
     }
-
-
-    @Override
-	public String toString() {
-		return "JdSystemParamVo [protocolPrice1=" + protocolPrice1
-				+ ", protocolPrice2=" + protocolPrice2 + ", protocolPrice3="
-				+ protocolPrice3 + "]";
-	}
-    
 }

@@ -58,18 +58,8 @@ public class KvattrService {
         List<Kvattr> list = kvattrMapper.getBySource(clazz.getTypeName());
         return list;
     }
-    public Kvattr getKvattrByKeyList(String key) {
-        List<Kvattr> kvattrs = kvattrMapper.getByKey(key);
-        if(CollectionUtils.isNotEmpty(kvattrs) && kvattrs.size()>1){
-            Kvattr k = new Kvattr();
-            for(Kvattr kvattr : kvattrs){
-                if(StringUtils.equals("com.apass.esp.domain.kvattr.JdSystemParamVo",kvattr.getSource())){
-                    k = kvattr;
-                }
-            }
-            return k;
-        }
-    	return kvattrs.get(0);
+    public Kvattr getKvattrByKeyList(String key,String source) {
+        return  kvattrMapper.getByKey(key,source);
     }
     /**
      * 修改t_esp_kvattr中的值

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.apass.esp.domain.kvattr.JdSystemParamVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,6 @@ public class CommonService {
     private ActivityInfoRepository actityInfoDao;
     @Autowired
     private GoodsStockInfoRepository goodsStockDao;
-    @Autowired
-    private SequenceRepository sequenceDao;
     @Autowired
     private KvattrService kvattrService;
     @Autowired
@@ -102,38 +101,40 @@ public class CommonService {
 		} else {
 			GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 			if (SourceType.JD.getCode().equals(goodsBasicInfo.getSource())) {
-				BigDecimal goodsCostPrice = goodsStock.getGoodsCostPrice();
+                BigDecimal goodsPrice = goodsStock.getGoodsPrice();
+                String kvSource = JdSystemParamVo.class.getTypeName();
 				Kvattr kvattr = new Kvattr();
-				if (goodsCostPrice.compareTo(new BigDecimal(99)) >= 0
-						&& goodsCostPrice.compareTo(new BigDecimal(500)) <= 0) {
-					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE1.getCode());
-				} else if (goodsCostPrice.compareTo(new BigDecimal(500)) > 0
-						&& goodsCostPrice.compareTo(new BigDecimal(2000)) <= 0) {
-					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE2.getCode());
-				} else if (goodsCostPrice.compareTo(new BigDecimal(2000)) > 0) {
-					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE3.getCode());
+				if (goodsPrice.compareTo(new BigDecimal(99)) >= 0
+						&& goodsPrice.compareTo(new BigDecimal(500)) <= 0) {
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE1.getCode(),kvSource);
+				} else if (goodsPrice.compareTo(new BigDecimal(500)) > 0
+						&& goodsPrice.compareTo(new BigDecimal(2000)) <= 0) {
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE2.getCode(),kvSource);
+				} else if (goodsPrice.compareTo(new BigDecimal(2000)) > 0) {
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE3.getCode(),kvSource);
 				}
 				if(null !=kvattr.getValue()){
-					price = goodsCostPrice.multiply(new BigDecimal(kvattr.getValue()));
+					price = goodsPrice.multiply(new BigDecimal(kvattr.getValue()));
 					return price.setScale(0, BigDecimal.ROUND_HALF_UP);
 				}else{
 					price = goodsStock.getGoodsPrice();
 					return price.setScale(2, BigDecimal.ROUND_FLOOR);
 				}
 			} else if (SourceType.WZ.getCode().equals(goodsBasicInfo.getSource())) {
-				BigDecimal goodsCostPrice = goodsStock.getGoodsCostPrice();
+				BigDecimal goodsPrice = goodsStock.getGoodsPrice();
+				String kvSource = JdSystemParamVo.class.getTypeName();
 				Kvattr kvattr = new Kvattr();
-				if (goodsCostPrice.compareTo(new BigDecimal(99)) >= 0
-						&& goodsCostPrice.compareTo(new BigDecimal(500)) <= 0) {
-					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE1.getCode());
-				} else if (goodsCostPrice.compareTo(new BigDecimal(500)) > 0
-						&& goodsCostPrice.compareTo(new BigDecimal(2000)) <= 0) {
-					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE2.getCode());
-				} else if (goodsCostPrice.compareTo(new BigDecimal(2000)) > 0) {
-					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE3.getCode());
+				if (goodsPrice.compareTo(new BigDecimal(99)) >= 0
+						&& goodsPrice.compareTo(new BigDecimal(500)) <= 0) {
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE1.getCode(),kvSource );
+				} else if (goodsPrice.compareTo(new BigDecimal(500)) > 0
+						&& goodsPrice.compareTo(new BigDecimal(2000)) <= 0) {
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE2.getCode(),kvSource);
+				} else if (goodsPrice.compareTo(new BigDecimal(2000)) > 0) {
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE3.getCode(),kvSource);
 				}
 				if(null !=kvattr.getValue()){
-					price = goodsCostPrice.multiply(new BigDecimal(kvattr.getValue()));
+					price = goodsPrice.multiply(new BigDecimal(kvattr.getValue()));
 					return price.setScale(0, BigDecimal.ROUND_HALF_UP);
 				}else{
 					price = goodsStock.getGoodsPrice();
@@ -148,61 +149,7 @@ public class CommonService {
 
 	}
 
-    /**
-     * 生成订单号
-     * <p>
-     * 规格: 四位随机数+八位年月日+四位自增主键+四位用户名后四位
-     *
-     * @param userId
-     * @return
-     */
-    public String createOrderId(Long userId) {
 
-        StringBuffer strBuff = new StringBuffer();
-
-        //PartOne:四位随机数
-//        Random random = new Random();
-//        String partOne = String.valueOf(random.nextInt(9999));
-//        int partOneRes = 4 - partOne.length();
-//        for (int i = partOneRes; i > 0; i--) {
-//            partOne = "0"+partOne;
-//        }
-//        strBuff.append(partOne);
-
-        //PartTwo:八位时间
-        Date date = new Date();
-        String partTwo = DateFormatUtil.dateToString(date, "yyyyMMdd");
-        strBuff.append(partTwo);
-
-        //PartThree:四位主键
-        SequenceEntity sequence = new SequenceEntity();
-        sequence.setUserId(userId);
-        sequenceDao.insert(sequence);
-
-        String partThree = String.valueOf(sequence.getId());
-        if (partThree.length() > 4) {
-            partThree = partThree.substring(partThree.length() - 4, partThree.length());
-        } else {
-            int partThreeRes = 4 - partThree.length();
-            for (int i = partThreeRes; i > 0; i--) {
-                partThree = "0" + partThree;
-            }
-        }
-        strBuff.append(partThree);
-
-        //PartFour:userId后四位
-        String partFour = String.valueOf(userId);
-        if (partFour.length() > 4) {
-            partFour = partFour.substring(partFour.length() - 4, partFour.length());
-        } else {
-            int partFourRes = 4 - partFour.length();
-            for (int i = partFourRes; i > 0; i--) {
-                partFour = "0" + partFour;
-            }
-        }
-        strBuff.append(partFour);
-        return strBuff.toString();
-    }
 
     /**
      * 生成订单号（新）
@@ -239,7 +186,6 @@ public class CommonService {
     /**
      * 生成主订单的Id
      * @param deviceType
-     * @param merchantId
      * @return
      */
     public String createParentOrderIdNew(String deviceType) {
