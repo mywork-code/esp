@@ -195,7 +195,7 @@ public class SystemParamController {
     @RequestMapping("/jd/update")
     @ResponseBody
     @LogAnnotion(operationType = "京东售价系数编辑", valueType = LogValueTypeEnum.VALUE_DTO)
-    public Response updateJdSystemParam(Map<String,String> params){
+    public Response updateJdSystemParam(@RequestBody Map<String,String> params){
         try{
             String price1 = params.get("protocolPrice1");
             String price2 = params.get("protocolPrice2");

@@ -27,11 +27,10 @@ $ (function ()
 						hidden: true
 		            },
 					{
-						title : '',
+						title : '名称',
 						field : 'flag',
 						width : 150,
 						align : 'center',
-						hidden: true,
                         formatter:function(value,row,index){
 							if(value == "1"){
                                 return "商品定价系数";
