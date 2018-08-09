@@ -18,17 +18,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Configurable
 @EnableScheduling
 @Profile("Schedule")
-@RequestMapping("/test")
-public class CouponActivityScheduleTash {
-    private static final Logger logger = LoggerFactory.getLogger(CouponActivityScheduleTash.class);
+public class GoodsHandlerScheduleTask {
+    private static final Logger logger = LoggerFactory.getLogger(GoodsHandlerScheduleTask.class);
     @Autowired
     private ProGroupGoodsService proGroupGoodsService;
 
     /**
      * 每1小时执行下架操作
+     * 下架不符合下架系数的房易贷活动商品
      */
     @Scheduled(cron = "0 0/45 * * * ?")
-    @RequestMapping("/test1")
     public void downProductOfFyd() {
         try {
             logger.info("-----开始下架房易贷专属活动下的商品");
@@ -37,4 +36,5 @@ public class CouponActivityScheduleTash {
             logger.error("---------下架房易贷专属活动下的商品异常", e);
         }
     }
+
 }
