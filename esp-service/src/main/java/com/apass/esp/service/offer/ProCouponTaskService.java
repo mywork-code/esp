@@ -130,7 +130,7 @@ public class ProCouponTaskService {
                 //已被领取优惠券数据
                 List<ProMyCoupon> myCoupons = myCouponService.selectMycouponCountByDateHasUsed(paramMap2);
                 if(CollectionUtils.isEmpty(myCoupons)){
-                    throw new RuntimeException("数据有误");
+                    continue;
                 }
 
                 Map<Long,Object> contentMap = Maps.newHashMap();
