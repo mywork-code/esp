@@ -711,11 +711,11 @@ public class MyCouponManagerService {
 			if(StringUtils.equals(CouponExtendType.COUPON_SMYHZX.getCode(),proCoupon.getExtendType())){
 				countMap.put(key,proCoupon);
 			}else if(StringUtils.equals(CouponExtendType.COUPON_FYDYHZX.getCode(),proCoupon.getExtendType())){
-				if(StringUtils.equals(GrantNode.NODE_SFZRZTG.getCode(),proCoupon.getExtendType())){
+				if(StringUtils.equals(GrantNode.NODE_SFZRZTG.getCode(),proCoupon.getGrantNode())){
 					sfzrzCountMap.put(key,proCoupon);
-				}else if(StringUtils.equals(GrantNode.NODE_YHKRZTG.getCode(),proCoupon.getExtendType())){
+				}else if(StringUtils.equals(GrantNode.NODE_YHKRZTG.getCode(),proCoupon.getGrantNode())){
 					yhkrzCountMap.put(key,proCoupon);
-				}else if(StringUtils.equals(GrantNode.NODE_FKCG.getCode(),proCoupon.getExtendType())){
+				}else if(StringUtils.equals(GrantNode.NODE_FKCG.getCode(),proCoupon.getGrantNode())){
 					fkcgCountMap.put(key,proCoupon);
 				}
 			}
