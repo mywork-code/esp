@@ -1950,7 +1950,7 @@ public class GoodsService {
 
                 GoodsStockInfoEntity goodsStock = goodsStockInfoRepository.getStockInfoEntityBySkuId(g.getExternalId());
                 BigDecimal goodsPrice = goodsStock.getGoodsPrice();
-                BigDecimal wzPrice = goodsStock.getGoodsPrice();
+                BigDecimal wzPrice = goodsStock.getGoodsCostPrice();
                 String kvSource = JdSystemParamVo.class.getTypeName();
                 String jdDownSystemSource = JdDownSystemParamVo.class.getTypeName();
                 Kvattr kvattr = null;
