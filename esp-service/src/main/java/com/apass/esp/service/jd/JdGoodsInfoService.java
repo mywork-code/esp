@@ -245,12 +245,6 @@ public class JdGoodsInfoService {
 	}
 	// 查询商品规格（包括库存），先从缓存中获取
 	public Map<String,Object> getJdSimilarSkuInfoList(String goodsIdStr,Long sku,Region region,String userId,Map<String,Object> checkMap) throws BusinessException {
-		String cacheKey = "similarSku_goods_id_" + goodsIdStr;
-		String resultStr = cacheManager.get(cacheKey);
-		if(StringUtils.isNotEmpty(resultStr)){
-			return JSONObject.parseObject(resultStr);
-		}
-
 		Map<String, Object> map = Maps.newHashMap();
 		TreeSet<String> skusSet = new TreeSet<String>();
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
@@ -259,7 +253,6 @@ public class JdGoodsInfoService {
 			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
 			List<JdSaleAttr> saleAttrList2 = new ArrayList<>();
 			for (JdSaleAttr jdsa : saleAttrList) {
-				jdsa.setImagePath(jdsa.getImagePath());
 				List<String> skuIds = jdsa.getSkuIds();
 				List<String> skuIds2 = new ArrayList<>();
 				for (String skuId : skuIds) {
@@ -411,6 +404,7 @@ public class JdGoodsInfoService {
 				for (JdSaleAttr jdSaleAttr : jdSaleAttrList) {
 					if (jdSaleAttr.getSaleValueId().equals(key)) {
 						jdSaleAttr.setIsSelect("true");
+						break;
 					}
 				}
 			}
@@ -423,7 +417,6 @@ public class JdGoodsInfoService {
 		map.put("jdSimilarSkuList", jdSimilarSkuList2);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
 
-		cacheManager.set(cacheKey,JSONObject.toJSONString(map),1200);
 		return map;
 	}
 
@@ -1334,19 +1327,7 @@ public class JdGoodsInfoService {
 		}
 		return JdSimilarSkuList;
 	}
-//	public List<JdSimilarSku> getJdSimilarSkuList(Long sku) {
-//		JdApiResponse<JSONArray> jdSimilarResponse = jdProductApiClient.getSimilarSku(sku);
-//		List<JdSimilarSku> JdSimilarSkuList = new ArrayList<>();
-//		if(jdSimilarResponse.getResult() == null){
-//			return Collections.emptyList();
-//		}
-//		for (int i = 0; i < jdSimilarResponse.getResult().size(); i++) {
-//			JdSimilarSku jp = JSONObject.parseObject(jdSimilarResponse.getResult().getString(i),  new TypeReference<JdSimilarSku>(){});
-//			jp.update(jp.getSaleAttrList());
-//			JdSimilarSkuList.add(jp);
-//		}
-//		return JdSimilarSkuList;
-//	}
+
 
 	/**
 	 * 京东商品：根据skuId返回相似skuId
