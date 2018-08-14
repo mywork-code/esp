@@ -175,6 +175,8 @@ public class MyCouponManagerController {
 
 			if(count > 0){
 				return Response.success("领取成功!");
+			}else {
+				return Response.fail("不可重复领取!!");
 			}
 		} catch(BusinessException e){
 			logger.error("business saveCouponFromScan :{}",e);
