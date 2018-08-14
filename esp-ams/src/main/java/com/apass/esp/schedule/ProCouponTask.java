@@ -7,9 +7,12 @@ import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.mail.FileBodyInfo;
 import com.apass.esp.domain.entity.mail.MailDataInfo;
 import com.apass.esp.domain.entity.mail.MailPersonalInfo;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.SendMailClient;
 import com.apass.esp.service.message.MessageListenerService;
 import com.apass.esp.service.offer.MyCouponManagerService;
+import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.ExcelUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -108,6 +111,9 @@ public class ProCouponTask {
     private MessageListenerService messageService;
     @Autowired
     private SendMailClient sendMailClient;
+
+    @Autowired
+    private OrderInfoRepository orderInfoRepository;
     /**
      * 定时发送优惠券使用情况_领取数量
      */
@@ -144,7 +150,7 @@ public class ProCouponTask {
      * 定时发送优惠券使用情况_使用数量
      * 思路：
      * 1，查询当日所有领取优惠券用户
-     * 2,获取当天所有用户领取的优惠券名称:作为表头
+     * 2,获取当月所有用户领取的优惠券名称:作为表头
      * 3,遍历1结果,根据优惠券名称计算各自使用数量
      */
     public void senProcouponEmai_2() throws Exception {
@@ -192,6 +198,11 @@ public class ProCouponTask {
                     //如果优惠券名称与与表头相同，则对应数据+1
                     int count = 0;
                     for(ProMyCoupon myCoupon : myCoupons){
+                        //判断是否已经付款,如果结果为空说明未付款，不发送邮件。
+                        List<OrderInfoEntity> orderInfoEntities = orderInfoRepository.selectByCouponId(myCoupon.getCouponId());
+                        if(CollectionUtils.isEmpty(orderInfoEntities)){
+                            continue;
+                        }
                         if(myCoupon.getCouponId().equals(couponId)){
                             count++;
                         }
