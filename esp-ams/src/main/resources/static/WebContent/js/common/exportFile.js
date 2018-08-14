@@ -5,7 +5,6 @@
 // id：dataGrid对应id , fileName: 文件名称 , params:要查询的参数
 function exportFile (id, fileName, params)
 {
-	debugger;
 	var busCode = params.busCode;
 	params = JSON.stringify (params);
 	

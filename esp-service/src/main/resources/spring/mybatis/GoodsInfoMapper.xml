@@ -158,6 +158,7 @@
                 t3.goods_price  goodsPrice,
                 t3.market_price  marketPrice,
                 t3.goods_cost_price goodsCostPrice,
+                t.brand_id brandId,
                 t3.id stockId
             FROM
                 t_esp_goods_base_info t
