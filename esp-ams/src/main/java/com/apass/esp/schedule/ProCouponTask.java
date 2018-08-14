@@ -52,7 +52,8 @@ public class ProCouponTask {
      *      3，发送邮件
      *
      */
-    @Scheduled(cron = "0 0 8 * * ?")
+//    @Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(cron = "0 0 8,17 * * ?")
     public void sendEamil_1() {
         try {
             senProcouponEmai();
@@ -61,7 +62,8 @@ public class ProCouponTask {
         }
     }
 
-    @Scheduled(cron = "0 0 8 * * ?")
+//    @Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(cron = "0 0 8,17 * * ?")
     public void sendEamil_2() {
         try {
             senProcouponEmai_2();
@@ -143,7 +145,7 @@ public class ProCouponTask {
 
         //发送邮件:传递发送的数据和接收人"maoyanping@apass.cn","yangxiaoqing@apass.cn","huangbeifang@apass.cn",
         String[] reciveArr = {"yangzhenli@apass.cn","xujie@apass.cn","sunchaohai@apass.cn","maoyanping@apass.cn","yangxiaoqing@apass.cn","huangbeifang@apass.cn"};
-        messageService.sentMail(taskEntityList,reciveArr);
+        messageService.sentMail(taskEntityList,reciveArr,mailAddress,mailName,mailPassword);
     }
 
     /**

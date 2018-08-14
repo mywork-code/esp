@@ -30,14 +30,6 @@ import static org.terracotta.modules.ehcache.ToolkitInstanceFactoryImpl.LOGGER;
 
 @Service
 public class MessageListenerService {
-	@Value("${email.address}")
-	private String mailAddress;
-
-	@Value("${email.name}")
-	private String mailName;
-
-	@Value("${email.password}")
-	private String mailPassword;
 	@Autowired
 	private MessageListenerMapper messageListenerMapper;
 	@Autowired
@@ -63,7 +55,7 @@ public class MessageListenerService {
 	}
 
 
-	public void sentMail(List<ProCouponTaskEntity> taskEntityList, String[] reciveArr) throws BusinessException {
+	public void sentMail(List<ProCouponTaskEntity> taskEntityList, String[] reciveArr,String mailAddress,String mailName,String mailPassword) throws BusinessException {
 		//获取要发送数据的io流
 		InputStream in = this.getInputStreamFromList(taskEntityList);
 		//发送邮件
