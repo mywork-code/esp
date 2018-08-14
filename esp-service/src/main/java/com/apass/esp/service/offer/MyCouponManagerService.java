@@ -579,6 +579,9 @@ public class MyCouponManagerService {
 			if (!StringUtils.equals(proCoupon.getExtendType(), CouponExtendType.COUPON_SMYHZX.getCode())) {
 				continue;
 			}
+			if(rel.getCouponId().intValue()==72){
+				continue;
+			}
 
 			//判断是否是第一次领取，插入mycoupon表中
 			List<ProMyCoupon> myCouponList = getCouponByUserIdAndRelCouponId(userId, rel.getId());
