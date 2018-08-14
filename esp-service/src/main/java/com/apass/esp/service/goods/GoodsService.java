@@ -2001,4 +2001,7 @@ public class GoodsService {
     }
 
 
+    public List<GoodsInfoEntity> pageListForExportGoods(GoodsInfoEntity goodsInfoEntity) {
+        return goodsDao.pageListForExportGoods(goodsInfoEntity);
+    }
 }

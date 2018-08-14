@@ -343,4 +343,8 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
     public List<GoodsInfoEntity> selectAllGoodsNotinStock() {
         return getSqlSession().selectList("selectAllGoodsNotinStock");
     }
+
+    public List<GoodsInfoEntity> pageListForExportGoods(GoodsInfoEntity goodsInfoEntity) {
+        return getSqlSession().selectList("pageListForExportGoods");
+    }
 }

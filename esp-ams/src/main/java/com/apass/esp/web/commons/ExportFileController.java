@@ -913,71 +913,86 @@ public class ExportFileController {
     @ResponseBody
     @RequestMapping("/specialGoods")
     public void exportSpecialGoodsFile(HttpServletRequest request, HttpServletResponse response) {
+        OutputStream outp = null;
+        InputStream in = null;
         try {
             //获取微知、已上架，协议价99-300的商品，导出
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             goodsInfoEntity.setStatus(GoodStatus.GOOD_UP.getCode());
             //微知商户
             goodsInfoEntity.setMainGoodsCode("05103");
+            List<GoodsInfoEntity> goods = null;
 
+            int rows = 100000;
+            int page = 1;
+            goodsInfoEntity.setRows(rows);
+            do{
+                goodsInfoEntity.setPage(page);
+                goods = goodsService.pageListForExportGoods(goodsInfoEntity);
 
-            List<GoodsInfoEntity> goods = goodsService.pageListForExport(goodsInfoEntity);
-            List<GoodsInfoEntity> list = Lists.newArrayList();
-            for (GoodsInfoEntity entity : goods) {
-                if (entity.getGoodsCostPrice().compareTo(new BigDecimal(98)) > 0
-                        && entity.getGoodsCostPrice().compareTo(new BigDecimal(301)) < 0) {
-                    list.add(entity);
+                //导出
+                CsvWriter csvWriter = new CsvWriter("/已上架300（包含）元以下99（不包含）以上微知商品("+page+").csv",',', Charset.forName("gbk"));
+                //表头
+                String[] headers = {"sku","商品名称","京东价","协议价","品牌","一级分类","二级分类","三级分类"};
+
+                csvWriter.writeRecord(headers);
+                for(GoodsInfoEntity entity: goods){
+                    LOG.info("当前商品，GoodsInfoEntity:{}", GsonUtils.toJson(entity));
+                    List<String> contentList = new ArrayList<String>();
+                    contentList.add(entity.getExternalId());
+                    contentList.add(entity.getGoodsName());
+                    contentList.add(entity.getGoodsPrice()+"");
+                    contentList.add(entity.getGoodsCostPrice()+"");
+                    JdGoods jd = jdGoodsService.queryGoodsBySkuId(Long.parseLong(entity.getExternalId()));
+                    if(jd!=null&&StringUtils.isNotBlank(jd.getBrandName())){
+                        contentList.add(jd.getBrandName());
+                    }else {
+                        throw new RuntimeException("数据有误！！");
+                    }
+                    CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId1());
+                    contentList.add(cate.getCategoryName()+"("+entity.getCategoryId1()+")");
+                    cate = categoryInfoService.getCategoryById(entity.getCategoryId2());
+                    contentList.add(cate.getCategoryName()+"("+entity.getCategoryId2()+")");
+                    cate = categoryInfoService.getCategoryById(entity.getCategoryId3());
+                    contentList.add(cate.getCategoryName()+"("+entity.getCategoryId3()+")");
+
+                    csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
                 }
-            }
+                csvWriter.close();
 
-            //导出
-            CsvWriter csvWriter = new CsvWriter("/已上架300（包含）元以下99（不包含）以上微知商品.csv",',', Charset.forName("gbk"));
-            //表头
-            String[] headers = {"sku","商品名称","京东价","协议价","品牌","一级分类","二级分类","三级分类"};
+                response.setContentType("application/vnd.ms-excel;charset=utf-8");
+                //设置文件名
+                response.addHeader("Content-Disposition",
+                        "attachment;filename=" + new String(("已上架300（包含）元以下99（不包含）以上微知商品.csv").getBytes(), "iso-8859-1"));
 
-            csvWriter.writeRecord(headers);
-            for(GoodsInfoEntity entity: list){
-                LOG.info("当前商品，GoodsInfoEntity:{}", GsonUtils.toJson(entity));
-                List<String> contentList = new ArrayList<String>();
-                contentList.add(entity.getExternalId());
-                contentList.add(entity.getGoodsName());
-                contentList.add(entity.getGoodsPrice()+"");
-                contentList.add(entity.getGoodsCostPrice()+"");
-                JdGoods jd = jdGoodsService.queryGoodsBySkuId(Long.parseLong(entity.getExternalId()));
-                if(jd!=null&&StringUtils.isNotBlank(jd.getBrandName())){
-                    contentList.add(jd.getBrandName());
-                }else {
-                   throw new RuntimeException("数据有误！！");
+                outp = response.getOutputStream();
+                in = new FileInputStream(new File("/已上架300（包含）元以下99（不包含）以上微知商品.csv"));
+
+                byte[] b = new byte[1024];
+                int i = 0;
+                while ((i = in.read(b)) > 0) {
+                    outp.write(b, 0, i);
                 }
-                CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId1());
-                contentList.add(cate.getCategoryName()+"("+entity.getCategoryId1()+")");
-                cate = categoryInfoService.getCategoryById(entity.getCategoryId2());
-                contentList.add(cate.getCategoryName()+"("+entity.getCategoryId2()+")");
-                cate = categoryInfoService.getCategoryById(entity.getCategoryId3());
-                contentList.add(cate.getCategoryName()+"("+entity.getCategoryId3()+")");
+                // 文件流刷新到客户端
+                outp.flush();
 
-                csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
-            }
-            csvWriter.close();
+                page++;
+            }while (CollectionUtils.isNotEmpty(goods));
 
-            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            //设置文件名
-            response.addHeader("Content-Disposition",
-                    "attachment;filename=" + new String(("已上架300（包含）元以下99（不包含）以上微知商品.csv").getBytes(), "iso-8859-1"));
-
-            OutputStream outp = response.getOutputStream();
-            InputStream in = new FileInputStream(new File("/已上架300（包含）元以下99（不包含）以上微知商品.csv"));
-
-            byte[] b = new byte[1024];
-            int i = 0;
-            while ((i = in.read(b)) > 0) {
-                outp.write(b, 0, i);
-            }
-            // 文件流刷新到客户端
-            outp.flush();
 
         }catch (Exception e){
             LOG.error("------Exception------",e);
+        }finally {
+            try {
+                if(in!=null){
+                    in.close();
+                }
+                if(outp != null){
+                    outp.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

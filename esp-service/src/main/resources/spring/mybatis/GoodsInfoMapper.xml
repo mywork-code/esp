@@ -230,6 +230,123 @@
     ]]>
     </select>
 
+    <select id="pageListForExportGoods" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
+
+        <![CDATA[
+         SELECT
+                t.category_id1 categoryId1,
+                t.category_id2 categoryId2,
+                t.category_id3 categoryId3,
+                t.ID id,
+                t.category_code categoryCode,
+                t.goods_name goodsName,
+                t.goods_title goodsTitle,
+                t.goods_sell_pt goodsSellPt,
+                t.goods_type goodsType,
+                t.goods_type goodsTypeDesc,
+                t.goods_logo_url goodsLogoUrl,
+                t.list_time listTime,
+                t.delist_time delistTime,
+                t.pro_date proDate,
+                t.keep_date keepDate,
+                t.sup_no supNo,
+                t.create_user createUser,
+                t.update_user updateUser,
+                t.create_date createDate,
+                t.update_date updateDate,
+                t.merchant_code merchantCode,
+                t2.merchant_name merchantName,
+                t2.merchant_type  merchantType,
+                t.status status,
+                t.status statusDesc,
+                t.goods_Sku_Type goodsSkuType,
+                t.goods_Model goodsModel,
+                t.goods_sift_url goodsSiftUrl,
+                t.sord_no sordNo,
+                t.un_support_province unSupportProvince,
+                t.source source,
+                t.external_id externalId,
+                t.goods_code goodsCode,
+                t.main_goods_code mainGoodsCode,
+                t.newCreat_date newCreatDate,
+                t3.goods_sku_attr goodsSkuAttr,
+                t3.goods_price  goodsPrice,
+                t3.market_price  marketPrice,
+                t3.goods_cost_price goodsCostPrice,
+                t.brand_id brandId,
+                t3.id stockId
+            FROM
+                t_esp_goods_base_info t
+            LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code
+            LEFT JOIN t_esp_goods_stock_info t3 ON t3.goods_id =t.id
+    ]]>
+        <where>
+            and t3.delete_flag = 'N'
+            <if test="categoryId1 != null and categoryId1 != ''">
+                AND t.category_id1 = #{categoryId1, jdbcType=BIGINT}
+            </if>
+            <if test="categoryId2 != null and categoryId2 != ''">
+                AND t.category_id2 = #{categoryId2, jdbcType=BIGINT}
+            </if>
+            <if test="categoryId3 != null and categoryId3 != ''">
+                AND t.category_id3 = #{categoryId3, jdbcType=BIGINT}
+            </if>
+            <if test="id != null and id != ''">
+                AND t.id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="merchantCode != null and merchantCode != ''">
+                AND t.merchant_code = #{merchantCode}
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                AND t.goods_name LIKE concat("%" #{goodsName} "%")
+            </if>
+            <if test="goodsTitle != null and goodsTitle != ''">
+                AND t.goods_title = #{goodsTitle}
+            </if>
+            <if test="goodsType != null and goodsType != ''">
+                AND t.goods_type = #{goodsType}
+            </if>
+            <if test="status != null and status != ''">
+                AND t.status = #{status}
+            </if>
+            <if test="statuList != null and statuList != ''">
+                AND t.status in
+                <foreach collection="statuList" item="statu" separator="," open="(" close=")">
+                    #{statu}
+                </foreach>
+            </if>
+            <if test="listTime != null and listTime != ''">
+                AND t.list_time &gt;= #{listTime, jdbcType=DATE}
+            </if>
+            <if test="delistTime != null and delistTime != ''">
+                AND t.EXPIRE_DATE &lt;= #{delistTime, jdbcType=DATE}
+            </if>
+            <if test="isDelete != null and isDelete != ''">
+                AND t.is_delete = #{isDelete}
+            </if>
+            <if test="merchantName != null and merchantName != ''">
+                AND t2.merchant_name LIKE '%${merchantName}%'
+            </if>
+            <if test="merchantType != null and merchantType != ''">
+                AND t2.merchant_type = #{merchantType}
+            </if>
+            <if test="source != null and source != ''">
+                AND t.source = #{source}
+            </if>
+            <if test="goodsCode != null and goodsCode != ''">
+                AND (t.goods_code = #{goodsCode} OR t.external_id = #{goodsCode})
+            </if>
+            <if test="sordNo != null">
+                AND t.sord_no >= #{sordNo}
+            </if>
+            <if test="startRecordIndex != null">
+               AND <include refid="PAGINATION.MYSQL_PAGINATION" />
+            </if>
+        </where>
+        <![CDATA[
+        ORDER BY t.update_date DESC
+    ]]>
+    </select>
     <!-- 查询非京东的商品 -->
     <select id="getNotJDgoodsList" resultType="GoodsInfoEntity">
 		SELECT

@@ -1,4 +1,5 @@
 package com.apass.esp.domain.entity.goods;
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsType;
 import com.apass.gfb.framework.annotation.MyBatisEntity;
@@ -18,7 +19,7 @@ import java.util.List;
  * 20171027 ht 新增精选商品排序字段sift_sort
  */
 @MyBatisEntity
-public class GoodsInfoEntity {
+public class GoodsInfoEntity extends QueryParams {
     private Long id;
     // 等同id避免IOS关键字
     private Long goodId;
