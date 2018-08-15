@@ -36,6 +36,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.csvreader.CsvWriter;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import org.apache.commons.beanutils.BeanUtils;
@@ -915,18 +916,21 @@ public class ExportFileController {
     public void exportSpecialGoodsFile(HttpServletRequest request, HttpServletResponse response) {
         OutputStream outp = null;
         InputStream in = null;
-        CsvWriter csvWriter = null;
+        FileOutputStream out = null;
+
         try {
             //获取微知、已上架，协议价99-300的商品，导出
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             goodsInfoEntity.setStatus(GoodStatus.GOOD_UP.getCode());
             //微知商户
             goodsInfoEntity.setMainGoodsCode("05103");
-            List<GoodsInfoEntity> goods = null;
+            List<GoodsInfoEntity> goods;
 
-            int rows = 2;
+            int rows = 10000;
             int page = 1;
             goodsInfoEntity.setRows(rows);
+            // 第一步：声明一个工作薄
+            SXSSFWorkbook wb = new SXSSFWorkbook();
             do{
                 goodsInfoEntity.setPage(page);
                 if(page>1){
@@ -935,61 +939,92 @@ public class ExportFileController {
                     goodsInfoEntity.setStartRecordIndex((page-1)*rows);
                 }
                 goods = goodsService.pageListForExportGoods(goodsInfoEntity);
-
                 if(CollectionUtils.isEmpty(goods)){
                     break;
                 }
-                //导出
-                csvWriter = new CsvWriter("/已上架300（包含）元以下99（不包含）以上微知商品("+page+").csv",',', Charset.forName("gbk"));
+
+                // 第二步：声明一个单子并命名
+                Sheet sheet = wb.createSheet("sheet"+page);
                 //表头
                 String[] headers = {"sku","商品名称","京东价","协议价","品牌","一级分类","二级分类","三级分类"};
+                // 获取标题行内容
+                Row row = sheet.createRow(0);
+                // 第三步：创建第一行（也可以称为表头）
+                for (int i = 0; i < headers.length; i++) {
+                    Cell cell = row.createCell(i);
+                    String cellValue = headers[i];
+                    sheet.autoSizeColumn(i, true);
+                    cell.setCellValue(cellValue);
+                }
 
-                csvWriter.writeRecord(headers);
+                int rowNum = 1;
+                //第四步：生成内容
                 for(GoodsInfoEntity entity: goods){
                     LOG.info("当前商品，GoodsInfoEntity:{}", GsonUtils.toJson(entity));
-                    List<String> contentList = new ArrayList<>();
-                    contentList.add(entity.getExternalId());
-                    contentList.add(entity.getGoodsName());
-                    contentList.add(entity.getGoodsPrice()+"");
-                    contentList.add(entity.getGoodsCostPrice()+"");
-                    JdGoods jd = jdGoodsService.queryGoodsBySkuId(Long.parseLong(entity.getExternalId()));
-                    if(jd!=null&&StringUtils.isNotBlank(jd.getBrandName())){
-                        contentList.add(jd.getBrandName());
-                    }else {
-                        throw new RuntimeException("数据有误！！");
+
+                    row = sheet.createRow(rowNum);
+                    rowNum++;
+                    for (int j = 0; j < headers.length; j++) {
+                        Cell cellContent = row.createCell(j);
+                        if(j == 0){
+                            cellContent.setCellValue(entity.getExternalId());
+                        }else if(j == 1){
+                            cellContent.setCellValue(entity.getGoodsName());
+
+                        }else if(j == 2){
+                            cellContent.setCellValue(entity.getGoodsPrice()+"");
+
+                        }else if(j == 3){
+                            cellContent.setCellValue(entity.getGoodsCostPrice()+"");
+
+                        }else if(j == 4){
+                            JdGoods jd = jdGoodsService.queryGoodsBySkuId(Long.parseLong(entity.getExternalId()));
+                            if(jd!=null&&StringUtils.isNotBlank(jd.getBrandName())){
+                                cellContent.setCellValue(jd.getBrandName());
+                            }else {
+                                throw new RuntimeException("数据有误！！");
+                            }
+
+                        }else if(j == 5){
+                            CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId1());
+                            cellContent.setCellValue(cate.getCategoryName()+"("+entity.getCategoryId1()+")");
+
+                        }else if(j == 6){
+                            CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId2());
+                            cellContent.setCellValue(cate.getCategoryName()+"("+entity.getCategoryId2()+")");
+
+                        }else if(j == 7){
+                            CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId3());
+                            cellContent.setCellValue(cate.getCategoryName()+"("+entity.getCategoryId3()+")");
+                        }
                     }
-                    CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId1());
-                    contentList.add(cate.getCategoryName()+"("+entity.getCategoryId1()+")");
-                    cate = categoryInfoService.getCategoryById(entity.getCategoryId2());
-                    contentList.add(cate.getCategoryName()+"("+entity.getCategoryId2()+")");
-                    cate = categoryInfoService.getCategoryById(entity.getCategoryId3());
-                    contentList.add(cate.getCategoryName()+"("+entity.getCategoryId3()+")");
 
-                    csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
                 }
-
-                response.setContentType("application/vnd.ms-excel;charset=utf-8");
-                //设置文件名
-                response.addHeader("Content-Disposition",
-                        "attachment;filename=" + new String(("已上架300（包含）元以下99（不包含）以上微知商品("+page+").csv").getBytes(), "iso-8859-1"));
-
-                outp = response.getOutputStream();
-                in = new FileInputStream(new File("/已上架300（包含）元以下99（不包含）以上微知商品("+page+").csv"));
-
-                byte[] b = new byte[1024];
-                int i = 0;
-                while ((i = in.read(b)) > 0) {
-                    outp.write(b, 0, i);
-                }
-                // 文件流刷新到客户端
-                outp.flush();
 
                 page++;
-
-                //新建表单
-
             }while (CollectionUtils.isNotEmpty(goods));
 
+
+            // 判断文件是否存在 ,没有创建文件
+            out = new FileOutputStream("/已上架300（包含）元以下99（不包含）以上微知商品.xlsx");
+            wb.write(out);
+            out.flush();
+
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            //设置文件名
+            response.addHeader("Content-Disposition",
+                    "attachment;filename=" + new String(("已上架300（包含）元以下99（不包含）以上微知商品.xlsx").getBytes(), "iso-8859-1"));
+
+            outp = response.getOutputStream();
+            in = new FileInputStream(new File("/已上架300（包含）元以下99（不包含）以上微知商品.xlsx"));
+
+            byte[] b = new byte[1024];
+            int i;
+            while ((i = in.read(b)) > 0) {
+                outp.write(b, 0, i);
+            }
+            // 文件流刷新到客户端
+            outp.flush();
 
         }catch (Exception e){
             LOG.error("------Exception------",e);
@@ -1001,8 +1036,8 @@ public class ExportFileController {
                 if(outp != null){
                     outp.close();
                 }
-                if(csvWriter != null){
-                    csvWriter.close();
+                if(out != null){
+                    out.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
