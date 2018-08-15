@@ -4,23 +4,19 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponTaskEntity;
 import com.apass.esp.domain.entity.ProMyCoupon;
-import com.apass.esp.domain.entity.mail.FileBodyInfo;
-import com.apass.esp.domain.entity.mail.MailDataInfo;
-import com.apass.esp.domain.entity.mail.MailPersonalInfo;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.repository.order.OrderInfoRepository;
-import com.apass.esp.service.SendMailClient;
-import com.apass.esp.service.message.MessageListenerService;
 import com.apass.esp.service.offer.MyCouponManagerService;
-import com.apass.esp.service.order.OrderService;
+import com.apass.esp.utils.mailUtils.MailSenderInfo;
+import com.apass.esp.utils.mailUtils.MailUtil;
+import com.apass.esp.web.commons.JsonDateValueProcessor;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.ExcelUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.sf.json.JsonConfig;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +25,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by xiaohai on 2018/8/9.
@@ -94,25 +92,20 @@ public class ProCouponTask {
         return Response.success("邮件发送成功!");
     }
 
-    @Value("${email.address}")
-    private String mailAddress;
+    @Value("${monitor.send.address}")
+    public String sendAddress;
 
-    @Value("${email.name}")
-    private String mailName;
+    @Value("${monitor.send.password}")
+    public String sendPassword;
 
-    @Value("${email.password}")
-    private String mailPassword;
+    @Value("${monitor.env}")
+    public String env;
     /**
      * 一共查询的天数
      */
     private static final Integer NUM = 30;
     @Autowired
     private MyCouponManagerService myCouponService;
-
-    @Autowired
-    private MessageListenerService messageService;
-    @Autowired
-    private SendMailClient sendMailClient;
 
     @Autowired
     private OrderInfoRepository orderInfoRepository;
@@ -128,7 +121,7 @@ public class ProCouponTask {
             String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin,i))+" 23:59:59";
             //领优惠券总人数
             ProCouponTaskEntity taskEntity = myCouponService.selectMycouponCountByDate(startDate,endDate);
-            LOGGER.info("{}房易贷优惠券使用情况{}", startDate, GsonUtils.toJson(taskEntity));
+            LOGGER.info("{}房易贷优惠券领取情况{}", startDate, GsonUtils.toJson(taskEntity));
             if(taskEntity == null){
                 taskEntity = new ProCouponTaskEntity();
                 taskEntity.setDate(startDate.substring(0,startDate.length()-9));
@@ -142,11 +135,136 @@ public class ProCouponTask {
             taskEntityList.add(taskEntity);
         }
 
+        try {
+            generateFile(taskEntityList);
+        } catch (Exception e) {
+            LOGGER.error("senProcouponEmai generateFile error .... ", e);
+        }
 
-        //发送邮件:传递发送的数据和接收人"maoyanping@apass.cn","yangxiaoqing@apass.cn","huangbeifang@apass.cn",
-        String[] reciveArr = {"yangzhenli@apass.cn","xujie@apass.cn","sunchaohai@apass.cn","maoyanping@apass.cn","yangxiaoqing@apass.cn","huangbeifang@apass.cn"};
-        messageService.sentMail(taskEntityList,reciveArr,mailAddress,mailName,mailPassword);
+        String dateString = DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
+        MailSenderInfo mailSenderInfo = new MailSenderInfo();
+        mailSenderInfo.setMailServerHost("SMTP.263.net");
+        mailSenderInfo.setMailServerPort("25");
+        mailSenderInfo.setValidate(true);
+        mailSenderInfo.setUserName(sendAddress);
+        // 您的邮箱密码
+        mailSenderInfo.setPassword(sendPassword);
+        mailSenderInfo.setFromAddress(sendAddress);
+        mailSenderInfo.setSubject(dateString+"_房易贷券使用领取情况统计_领取数量");
+        mailSenderInfo.setContent("请查收房易 贷券使用领取情况统计_领取数量 报表..");
+        mailSenderInfo.setToAddress("sunchaohai@apass.cn");
+        if ("prod".equals(env)) {
+            mailSenderInfo.setToAddress("sunchaohai@apass.cn,maoyanping@apass.cn" +
+                    ",yangxiaoqing@apass.cn,huangbeifang@apass.cn,xujie@apass.cn,yangzhenli@apass.cn");
+        }
+
+        Multipart msgPart = new MimeMultipart();
+        //正文
+        MimeBodyPart body = new MimeBodyPart();
+        //附件
+        MimeBodyPart attach = new MimeBodyPart();
+        try {
+            attach.setDataHandler(new DataHandler(new FileDataSource("/fangyidaiquan_lingqushuliang.xls")));
+
+            attach.setFileName(dateString + "fangyidaiquan_lingqushuliang.xls");
+            msgPart.addBodyPart(attach);
+            body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
+            msgPart.addBodyPart(body);
+        } catch (MessagingException e) {
+            LOGGER.error("mailStatisSchedule msgPart   body error.... ", e);
+        }
+
+        mailSenderInfo.setMultipart(msgPart);
+        MailUtil mailUtil = new MailUtil();
+        mailUtil.sendTextMail(mailSenderInfo);
+
     }
+
+    private void generateFile(List<ProCouponTaskEntity> taskEntityList) throws IOException {
+        // 第一步：声明一个工作薄
+        HSSFWorkbook wb = new HSSFWorkbook();
+        // 第二步：声明一个单子并命名
+        HSSFSheet sheet = wb.createSheet("sheet");
+        // 获取标题样式，内容样式
+        List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
+        HSSFRow createRow = sheet.createRow(0);
+
+        String[] rowHeadArr = {"日期","扫码下载APP点击次数","扫码领券人数","身份认证券发放人数","银行卡认证券发放人数","放款成功券发放人数"};
+
+        String[] headKeyArr = {"date", "clickCount", "count", "sfzrzCount", "yhkrzCount","fkcgCount"};
+        for (int i = 0; i < rowHeadArr.length; i++) {
+            HSSFCell cell = createRow.createCell(i);
+            sheet.autoSizeColumn(i, true);
+            cell.setCellStyle(hssfCellStyle.get(0));
+            cell.setCellValue(rowHeadArr[i]);
+        }
+
+        for (int i = 0; i < taskEntityList.size(); i++) {
+            HSSFRow createRowContent = sheet.createRow(i + 1);
+            Object object = taskEntityList.get(i);
+            // json日期转换配置类
+            JsonConfig jsonConfig = new JsonConfig();
+            jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor());
+            net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(object, jsonConfig);
+            for (int j = 0; j < rowHeadArr.length; j++) {
+                HSSFCell cellContent = createRowContent.createCell(j);
+                cellContent.setCellStyle(hssfCellStyle.get(1));
+                if (i == 1) {
+                    sheet.autoSizeColumn(j, true);
+                }
+                cellContent.setCellValue(jsonObject.get(headKeyArr[j]) + "");
+            }
+        }
+
+        FileOutputStream fileOutputStream = new FileOutputStream("/fangyidaiquan_lingqushuliang.xls");
+        wb.write(fileOutputStream);
+        fileOutputStream.flush();
+        fileOutputStream.close();
+
+    }
+
+    private List<HSSFCellStyle> getHSSFCellStyle(HSSFWorkbook workbook) {
+        List<HSSFCellStyle> styleList = new ArrayList<>();
+        // 生成一个标题样式
+        HSSFCellStyle headStyle = workbook.createCellStyle();
+        // 居中
+        headStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        // 设置表头标题样式:宋体，大小11，粗体显示，
+        HSSFFont headfont = workbook.createFont();
+        headfont.setFontName("微软雅黑");
+        headfont.setFontHeightInPoints((short) 11);// 字体大小
+        headfont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);// 粗体显示
+        /**
+         * 边框
+         */
+        headStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN); // 下边框
+        headStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);// 左边框
+        headStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);// 上边框
+        headStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);// 右边框
+        headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);// 垂直居中
+        headStyle.setFont(headfont);// 字体样式
+        styleList.add(headStyle);
+        // 生成一个内容样式
+        HSSFCellStyle contentStyle = workbook.createCellStyle();
+        contentStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 居中
+        contentStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);// 垂直居中
+        /**
+         * 边框
+         */
+        contentStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);// 下边框
+        contentStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);// 左边框
+        contentStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);// 上边框
+        contentStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);// 右边框
+
+        HSSFFont contentFont = workbook.createFont();
+        contentFont.setFontName("微软雅黑");
+        contentFont.setFontHeightInPoints((short) 11);// 字体大小
+        contentStyle.setFont(contentFont);// 字体样式
+        styleList.add(contentStyle);
+
+        return styleList;
+    }
+
 
     /**
      * 定时发送优惠券使用情况_使用数量
@@ -216,93 +334,94 @@ public class ProCouponTask {
             }
         }
 
-
-
-        //获取发送邮件的内容
-        InputStream in = this.getHaveUseInputStream(contentList, titleMap);
-
-        //发送邮件:传递发送的数据和接收人"maoyanping@apass.cn","yangxiaoqing@apass.cn","huangbeifang@apass.cn",
-        //发送邮件
-        String dateString = DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
-
-        MailDataInfo mailDataDto = new MailDataInfo();
-        mailDataDto.setSubject(dateString + "_房易贷券使用领取情况统计_使用数量");
-
-        // 邮件主题
-        mailDataDto.setSender(new MailPersonalInfo(mailAddress, mailName, mailPassword));
-        // 收件人"maoyanping@apass.cn","yangxiaoqing@apass.cn","huangbeifang@apass.cn",
-        mailDataDto.addToMails(new MailPersonalInfo("sunchaohai@apass.cn"));
-        mailDataDto.addToMails(new MailPersonalInfo("maoyanping@apass.cn"));
-        mailDataDto.addToMails(new MailPersonalInfo("yangxiaoqing@apass.cn"));
-        mailDataDto.addToMails(new MailPersonalInfo("huangbeifang@apass.cn"));
-        mailDataDto.addToMails(new MailPersonalInfo("xujie@apass.cn"));
-        mailDataDto.addToMails(new MailPersonalInfo("yangzhenli@apass.cn"));
-
-        // 邮件正文
-        mailDataDto.setContent("你好：<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;此报表每天早上8:00发出;"
-                + "<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;初次发送时请抽查数据验证;"
-                + "<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数据详情见附件。");
-
-        // 附件1
-        FileBodyInfo filebody = new FileBodyInfo();
-        filebody.setFileName(dateString + "_房易贷券使用领取情况统计_使用数量.xls");
-        filebody.setIs(in);
-
-
-        mailDataDto.addFileBody(filebody);
-
-        sendMailClient.sendMail(mailDataDto);
-
-
-    }
-
-    private InputStream getHaveUseInputStream(List<Map<Long,Object>> contentList,  Map<Long,String> titleMap) {
-        // 建立新HSSFWorkbook对象
-        XSSFWorkbook wb = new XSSFWorkbook();
-
-        // 建立新的sheet对象
-        Sheet sheet = wb.createSheet("sheet2");
-        // 封装sheet 数据
-
-        buildSheet(sheet, contentList,titleMap);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        InputStream is = null;
         try {
-            wb.write(baos);
-            baos.flush();
-            byte[] bt = baos.toByteArray();
-            is = new ByteArrayInputStream(bt, 0, bt.length);
-
-        } catch (Exception e1) {
-            LOGGER.error("Excetion.....", e1);
-        } finally {
-            try {
-                baos.close();
-            } catch (IOException e) {
-                LOGGER.error("Excetion.....", e);
-            }
+            generateFile(contentList,titleMap);
+        } catch (Exception e) {
+            LOGGER.error("senProcouponEmai_2 generateFile error .... ", e);
         }
-        return is;
+
+        String dateString = DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
+        MailSenderInfo mailSenderInfo = new MailSenderInfo();
+        mailSenderInfo.setMailServerHost("SMTP.263.net");
+        mailSenderInfo.setMailServerPort("25");
+        mailSenderInfo.setValidate(true);
+        mailSenderInfo.setUserName(sendAddress);
+        // 您的邮箱密码
+        mailSenderInfo.setPassword(sendPassword);
+        mailSenderInfo.setFromAddress(sendAddress);
+        mailSenderInfo.setSubject(dateString+"_房易贷券使用领取情况统计_使用数量");
+        mailSenderInfo.setContent("请查收房易 贷券使用领取情况统计_使用数量 报表..");
+        mailSenderInfo.setToAddress("sunchaohai@apass.cn");
+        if ("prod".equals(env)) {
+            mailSenderInfo.setToAddress("sunchaohai@apass.cn,maoyanping@apass.cn" +
+                    ",yangxiaoqing@apass.cn,huangbeifang@apass.cn,xujie@apass.cn,yangzhenli@apass.cn");
+        }
+
+        Multipart msgPart = new MimeMultipart();
+        //正文
+        MimeBodyPart body = new MimeBodyPart();
+        //附件
+        MimeBodyPart attach = new MimeBodyPart();
+        try {
+            attach.setDataHandler(new DataHandler(new FileDataSource("/fangyidaiquan_shiyongshuliang.xls")));
+
+            attach.setFileName(dateString + "fangyidaiquan_shiyongshuliang.xls");
+            msgPart.addBodyPart(attach);
+            body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
+            msgPart.addBodyPart(body);
+        } catch (MessagingException e) {
+            LOGGER.error("senProcouponEmai_2 msgPart   body error.... ", e);
+        }
+
+        mailSenderInfo.setMultipart(msgPart);
+        MailUtil mailUtil = new MailUtil();
+        mailUtil.sendTextMail(mailSenderInfo);
+
     }
 
-    private void buildSheet(Sheet sheet,List<Map<Long,Object>> contentList,  Map<Long,String> titleMap) {
+    private void generateFile(List<Map<Long, Object>> contentList, Map<Long, String> titleMap) throws IOException {
+        // 第一步：声明一个工作薄
+        HSSFWorkbook wb = new HSSFWorkbook();
+        // 第二步：声明一个单子并命名
+        HSSFSheet sheet = wb.createSheet("sheet");
+        // 获取标题样式，内容样式
+        List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
+        HSSFRow createRow = sheet.createRow(0);
+
+
+        Set<Long> keySet = titleMap.keySet();
+        Long[] keys = new Long[keySet.toArray().length];
+        for (int y=0; y<keySet.toArray().length; y++){
+            Long temp = (Long)keySet.toArray()[y];
+            keys[y] = temp;
+        }
+
         //表头
         int x = 0;
-        for(Long key : titleMap.keySet()){
-            ExcelUtils.setCellValue(sheet, 0, x, titleMap.get(key));
+        for(Long key : keySet){
+            HSSFCell cell = createRow.createCell(x);
+            sheet.autoSizeColumn(x, true);
+            cell.setCellStyle(hssfCellStyle.get(0));
+            cell.setCellValue(titleMap.get(key));
             x++;
         }
 
+        //内容
         for (int i = 0; i < contentList.size(); i++) {
-            Map<Long,Object> dataDto = contentList.get(i);
-            int y = 0;
-            //行
-            for(Long key : titleMap.keySet()){
-                //列
-                ExcelUtils.setCellValue(sheet, i + 1, y, dataDto.get(key)+"");
-                y++;
+            HSSFRow createRowContent = sheet.createRow(i + 1);
+            for (int j = 0; j < keySet.size(); j++) {
+                HSSFCell cellContent = createRowContent.createCell(j);
+                cellContent.setCellStyle(hssfCellStyle.get(1));
+                if (i == 1) {
+                    sheet.autoSizeColumn(j, true);
+                }
+                cellContent.setCellValue(contentList.get(i).get(keys[j]) + "");
             }
         }
+
+        FileOutputStream fileOutputStream = new FileOutputStream("/fangyidaiquan_shiyongshuliang.xls");
+        wb.write(fileOutputStream);
+        fileOutputStream.flush();
+        fileOutputStream.close();
     }
 }
