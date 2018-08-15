@@ -915,6 +915,7 @@ public class ExportFileController {
     public void exportSpecialGoodsFile(HttpServletRequest request, HttpServletResponse response) {
         OutputStream outp = null;
         InputStream in = null;
+        CsvWriter csvWriter = null;
         try {
             //获取微知、已上架，协议价99-300的商品，导出
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
@@ -923,22 +924,30 @@ public class ExportFileController {
             goodsInfoEntity.setMainGoodsCode("05103");
             List<GoodsInfoEntity> goods = null;
 
-            int rows = 100000;
+            int rows = 2;
             int page = 1;
             goodsInfoEntity.setRows(rows);
             do{
                 goodsInfoEntity.setPage(page);
+                if(page>1){
+                    goodsInfoEntity.setStartRecordIndex((page-1)*rows);
+                }else {
+                    goodsInfoEntity.setStartRecordIndex((page-1)*rows);
+                }
                 goods = goodsService.pageListForExportGoods(goodsInfoEntity);
 
+                if(CollectionUtils.isEmpty(goods)){
+                    break;
+                }
                 //导出
-                CsvWriter csvWriter = new CsvWriter("/已上架300（包含）元以下99（不包含）以上微知商品("+page+").csv",',', Charset.forName("gbk"));
+                csvWriter = new CsvWriter("/已上架300（包含）元以下99（不包含）以上微知商品("+page+").csv",',', Charset.forName("gbk"));
                 //表头
                 String[] headers = {"sku","商品名称","京东价","协议价","品牌","一级分类","二级分类","三级分类"};
 
                 csvWriter.writeRecord(headers);
                 for(GoodsInfoEntity entity: goods){
                     LOG.info("当前商品，GoodsInfoEntity:{}", GsonUtils.toJson(entity));
-                    List<String> contentList = new ArrayList<String>();
+                    List<String> contentList = new ArrayList<>();
                     contentList.add(entity.getExternalId());
                     contentList.add(entity.getGoodsName());
                     contentList.add(entity.getGoodsPrice()+"");
@@ -958,15 +967,14 @@ public class ExportFileController {
 
                     csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
                 }
-                csvWriter.close();
 
                 response.setContentType("application/vnd.ms-excel;charset=utf-8");
                 //设置文件名
                 response.addHeader("Content-Disposition",
-                        "attachment;filename=" + new String(("已上架300（包含）元以下99（不包含）以上微知商品.csv").getBytes(), "iso-8859-1"));
+                        "attachment;filename=" + new String(("已上架300（包含）元以下99（不包含）以上微知商品("+page+").csv").getBytes(), "iso-8859-1"));
 
                 outp = response.getOutputStream();
-                in = new FileInputStream(new File("/已上架300（包含）元以下99（不包含）以上微知商品.csv"));
+                in = new FileInputStream(new File("/已上架300（包含）元以下99（不包含）以上微知商品("+page+").csv"));
 
                 byte[] b = new byte[1024];
                 int i = 0;
@@ -977,6 +985,9 @@ public class ExportFileController {
                 outp.flush();
 
                 page++;
+
+                //新建表单
+
             }while (CollectionUtils.isNotEmpty(goods));
 
 
@@ -989,6 +1000,9 @@ public class ExportFileController {
                 }
                 if(outp != null){
                     outp.close();
+                }
+                if(csvWriter != null){
+                    csvWriter.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();

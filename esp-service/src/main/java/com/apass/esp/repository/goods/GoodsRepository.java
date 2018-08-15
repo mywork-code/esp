@@ -345,6 +345,6 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
     }
 
     public List<GoodsInfoEntity> pageListForExportGoods(GoodsInfoEntity goodsInfoEntity) {
-        return getSqlSession().selectList("pageListForExportGoods");
+        return getSqlSession().selectList("pageListForExportGoods",goodsInfoEntity);
     }
 }
