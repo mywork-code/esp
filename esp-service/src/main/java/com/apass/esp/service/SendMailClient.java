@@ -38,7 +38,7 @@ public class SendMailClient {
 			Properties props = new Properties();
 			props.put("mail.smtp.host", HOST);
 			props.put("mail.smtp.auth", "true");
-			Session session = Session.getDefaultInstance(props);
+			Session session = Session.getInstance(props);
 			session.setDebug(false);
 
 			MimeMessage message = new MimeMessage(session);
