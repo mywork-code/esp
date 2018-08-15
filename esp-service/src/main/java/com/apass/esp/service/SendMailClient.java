@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 public class SendMailClient {
     
 	private static final int PORT = 25; // 端口号
-	private static final String HOST = "smtp.263.net"; // 服务器地址
+	private static final String HOST = "SMTP.263.net"; // 服务器地址
 
 	public boolean sendMail(MailDataInfo mailDataEntity) throws BusinessException {
 		boolean isFlag = false;
