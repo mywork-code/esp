@@ -9,7 +9,9 @@ public enum  CouponExtendType {
     COUPON_PTFF("PTFF","平台发放"),
     COUPON_XYH("XYH","新用户专享"),
     COUPON_FYDYHZX("FYDYHZX","房易贷用户专享"),
-    COUPON_SMYHZX("SMYHZX","扫码用户专享");
+    COUPON_SMYHZX("SMYHZX","扫码用户专享"),
+    COUPON_LKHYWY("LKHYWY","老客户/业务员使用"),
+    ;
 
     private String code;
     private String message;
