@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.apass.esp.domain.entity.*;
+import com.apass.esp.domain.entity.jd.*;
 import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.kvattr.JdDownSystemParamVo;
 import com.apass.esp.domain.kvattr.JdSystemParamVo;
@@ -35,10 +36,6 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
-import com.apass.esp.domain.entity.jd.JdSaleAttr;
-import com.apass.esp.domain.entity.jd.JdSimilarSku;
-import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
-import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.JdCategoryMapper;
@@ -1414,7 +1411,6 @@ public class GoodsService {
     }
     /**
      * 精选商品列表
-     * @param goodsInfoEntity
      * @return
      */
     public List<GoodsInfoEntity> goodsSiftList(GoodsInfoEntity entity) {
@@ -2004,4 +2000,48 @@ public class GoodsService {
     public List<GoodsInfoEntity> pageListForExportGoods(GoodsInfoEntity goodsInfoEntity) {
         return goodsDao.pageListForExportGoods(goodsInfoEntity);
     }
+
+    /**
+     * 更新所有wz商品价格
+     */
+   public void  updateUpWzGoodsPrice(){
+       List<GoodsInfoEntity> goodsList = goodsDao.selectUpWzGoods();
+       for(GoodsInfoEntity g : goodsList){
+           try {
+               String skuId = g.getExternalId();
+               List<String> wzGoodsIdList = new ArrayList<>();
+               wzGoodsIdList.add(skuId);
+
+               List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
+               BigDecimal jdPrice = jdSellPrices.get(0).getJdPrice();
+               BigDecimal wzPrice = jdSellPrices.get(0).getPrice();
+               LOGGER.info("-----------downProductOfFyd skuid:{}, jdprice {},wzprice {}",skuId,jdPrice,wzPrice);
+
+               GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoRepository.getStockInfoEntityBySkuId(skuId);
+               if(goodsStockInfoEntity != null){
+                   GoodsStockInfoEntity updateStock = new GoodsStockInfoEntity();
+                   updateStock.setId(goodsStockInfoEntity.getId());
+                   updateStock.setUpdateUser(goodsStockInfoEntity.getUpdateUser());
+                   updateStock.setGoodsCostPrice(wzPrice);
+                   updateStock.setGoodsPrice(jdPrice);
+                   updateStock.setMarketPrice(jdPrice);
+                   goodsStockInfoRepository.update(updateStock);
+               }
+
+               //更新京东表
+               JdGoods jdGoods = jdGoodsMapper.queryGoodsBySkuId(Long.valueOf(skuId));
+               if (jdGoods != null) {
+                   JdGoods updateJdGoods = new JdGoods();
+                   updateJdGoods.setId(jdGoods.getId());
+                   updateJdGoods.setUpdateDate(new Date());
+                   updateJdGoods.setPrice(wzPrice);
+                   updateJdGoods.setJdPrice(jdPrice);
+                   jdGoodsMapper.updateByPrimaryKeySelective(updateJdGoods);
+               }
+
+           }catch (Exception e){
+               LOGGER.error("-----updateUpWzGoodsPrice error : goodsId=" + g.getId(),e);
+           }
+       }
+   }
 }

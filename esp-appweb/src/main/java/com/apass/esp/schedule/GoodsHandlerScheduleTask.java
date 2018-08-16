@@ -27,7 +27,7 @@ public class GoodsHandlerScheduleTask {
      * 每1小时执行下架操作
      * 下架不符合下架系数的房易贷活动商品
      */
-    @Scheduled(cron = "0 0/45 * * * ?")
+    @Scheduled(cron = "0 0 0/1 * * *")
     public void downProductOfFyd() {
         try {
             logger.info("-----开始下架房易贷专属活动下的商品");
