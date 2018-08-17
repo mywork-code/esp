@@ -91,17 +91,17 @@ public class PAUserColler {
      */
     @ResponseBody
     @RequestMapping("/save")
-    public Response savePAUser(HttpServletRequest request){
+    public Response savePAUser(HttpServletRequest request,@RequestBody Map<String, Object> paramMap){
         try {
-            String username = HttpWebUtils.getValue(request, "username");
-            String identity = HttpWebUtils.getValue(request, "identity");
-            String mobile = HttpWebUtils.getValue(request, "mobile");
-            String userId = HttpWebUtils.getValue(request, "userId");
-            String sex = HttpWebUtils.getValue(request, "sex");
-            String ip = request.getRemoteHost();
+            String username = CommonUtils.getValue(paramMap,"usrename");
+            String identity = CommonUtils.getValue(paramMap, "identity");
+            String mobile = CommonUtils.getValue(paramMap, "mobile");
+            String userId = CommonUtils.getValue(paramMap, "userId");
+            String sex = CommonUtils.getValue(paramMap, "sex");
+            String ip = HttpWebUtils.getRequestIP(request);
             String userAgent = request.getHeader("User-Agent");
-            String authCode = HttpWebUtils.getValue(request,"authCode");
-            String smsType = HttpWebUtils.getValue(request, "smsType");// 验证码短信类型
+            String authCode = CommonUtils.getValue(paramMap,"authCode");
+            String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码短信类型
 
             LOGGER.info("保存用户信息savePAUser()参数，username:{}," +
                     "birthday:{},mobile:{},userId:{},sex:{},ip:{}," +
