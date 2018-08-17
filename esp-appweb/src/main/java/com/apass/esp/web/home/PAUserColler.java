@@ -137,9 +137,7 @@ public class PAUserColler {
             dto.setUserAgeng(userAgent);
             dto.setSign(sign);
             dto.setPolicyHolderSex("1".equals(sex)?"MALE":"FEMALE");
-            String birthday = identity.substring(6, identity.length() - 4);
-            birthday = DateFormatUtil.dateToString(DateFormatUtil.string2date(birthday,"yyyyMMdd"),DateFormatUtil.YYYY_MM_DD);
-            dto.setPolicyHolderBirth(birthday);
+            dto.setPolicyHolderIdCard(identity);
 
             boolean bool = paUserService.saveToPAInterface(dto,url);
             if(!bool){

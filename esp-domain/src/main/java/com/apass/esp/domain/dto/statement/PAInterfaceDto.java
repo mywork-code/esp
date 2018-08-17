@@ -13,6 +13,7 @@ public class PAInterfaceDto {
     private String fromIp;
     private String userAgeng;
     private String sign;
+    private String policyHolderIdCard;
 
     public String getAdCode() {
         return adCode;
@@ -84,5 +85,13 @@ public class PAInterfaceDto {
 
     public void setPolicyHolderBirth(String policyHolderBirth) {
         this.policyHolderBirth = policyHolderBirth;
+    }
+
+    public String getPolicyHolderIdCard() {
+        return policyHolderIdCard;
+    }
+
+    public void setPolicyHolderIdCard(String policyHolderIdCard) {
+        this.policyHolderIdCard = policyHolderIdCard;
     }
 }
