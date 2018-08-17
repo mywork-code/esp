@@ -926,83 +926,76 @@ public class ExportFileController {
             goodsInfoEntity.setMainGoodsCode("05103");
             List<GoodsInfoEntity> goods;
 
-            int rows = 10000;
-            int page = 1;
-            goodsInfoEntity.setRows(rows);
+//            int rows = 10000;
+//            int page = 1;
+//            goodsInfoEntity.setRows(rows);
             // 第一步：声明一个工作薄
             SXSSFWorkbook wb = new SXSSFWorkbook();
-            do{
-                goodsInfoEntity.setPage(page);
-                if(page>1){
-                    goodsInfoEntity.setStartRecordIndex((page-1)*rows);
-                }else {
-                    goodsInfoEntity.setStartRecordIndex((page-1)*rows);
-                }
-                goods = goodsService.pageListForExportGoods(goodsInfoEntity);
-                if(CollectionUtils.isEmpty(goods)){
-                    break;
-                }
+//            goodsInfoEntity.setPage(page);
+//            if(page>1){
+//                goodsInfoEntity.setStartRecordIndex((page-1)*rows);
+//            }else {
+//                goodsInfoEntity.setStartRecordIndex((page-1)*rows);
+//            }
+            goods = goodsService.pageListForExportGoods(goodsInfoEntity);
 
-                // 第二步：声明一个单子并命名
-                Sheet sheet = wb.createSheet("sheet"+page);
-                //表头
-                String[] headers = {"sku","商品名称","京东价","协议价","品牌","一级分类","二级分类","三级分类"};
-                // 获取标题行内容
-                Row row = sheet.createRow(0);
-                // 第三步：创建第一行（也可以称为表头）
-                for (int i = 0; i < headers.length; i++) {
-                    Cell cell = row.createCell(i);
-                    String cellValue = headers[i];
-                    sheet.autoSizeColumn(i, true);
-                    cell.setCellValue(cellValue);
-                }
+            // 第二步：声明一个单子并命名
+            Sheet sheet = wb.createSheet("sheet");
+            //表头
+            String[] headers = {"sku","商品名称","京东价","协议价","品牌","一级分类","二级分类","三级分类"};
+            // 获取标题行内容
+            Row row = sheet.createRow(0);
+            // 第三步：创建第一行（也可以称为表头）
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = row.createCell(i);
+                String cellValue = headers[i];
+                sheet.autoSizeColumn(i, true);
+                cell.setCellValue(cellValue);
+            }
 
-                int rowNum = 1;
-                //第四步：生成内容
-                for(GoodsInfoEntity entity: goods){
-                    LOG.info("当前商品，GoodsInfoEntity:{}", GsonUtils.toJson(entity));
+            int rowNum = 1;
+            //第四步：生成内容
+            for(GoodsInfoEntity entity: goods){
+                LOG.info("当前商品，GoodsInfoEntity:{}", GsonUtils.toJson(entity));
 
-                    row = sheet.createRow(rowNum);
-                    rowNum++;
-                    for (int j = 0; j < headers.length; j++) {
-                        Cell cellContent = row.createCell(j);
-                        if(j == 0){
-                            cellContent.setCellValue(entity.getExternalId());
-                        }else if(j == 1){
-                            cellContent.setCellValue(entity.getGoodsName());
+                row = sheet.createRow(rowNum);
+                rowNum++;
+                for (int j = 0; j < headers.length; j++) {
+                    Cell cellContent = row.createCell(j);
+                    if(j == 0){
+                        cellContent.setCellValue(entity.getExternalId());
+                    }else if(j == 1){
+                        cellContent.setCellValue(entity.getGoodsName());
 
-                        }else if(j == 2){
-                            cellContent.setCellValue(entity.getGoodsPrice()+"");
+                    }else if(j == 2){
+                        cellContent.setCellValue(entity.getGoodsPrice()+"");
 
-                        }else if(j == 3){
-                            cellContent.setCellValue(entity.getGoodsCostPrice()+"");
+                    }else if(j == 3){
+                        cellContent.setCellValue(entity.getGoodsCostPrice()+"");
 
-                        }else if(j == 4){
-                            JdGoods jd = jdGoodsService.queryGoodsBySkuId(Long.parseLong(entity.getExternalId()));
-                            if(jd!=null&&StringUtils.isNotBlank(jd.getBrandName())){
-                                cellContent.setCellValue(jd.getBrandName());
-                            }else {
-                                throw new RuntimeException("数据有误！！");
-                            }
-
-                        }else if(j == 5){
-                            CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId1());
-                            cellContent.setCellValue(cate.getCategoryName()+"("+entity.getCategoryId1()+")");
-
-                        }else if(j == 6){
-                            CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId2());
-                            cellContent.setCellValue(cate.getCategoryName()+"("+entity.getCategoryId2()+")");
-
-                        }else if(j == 7){
-                            CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId3());
-                            cellContent.setCellValue(cate.getCategoryName()+"("+entity.getCategoryId3()+")");
+                    }else if(j == 4){
+                        JdGoods jd = jdGoodsService.queryGoodsBySkuId(Long.parseLong(entity.getExternalId()));
+                        if(jd!=null&&StringUtils.isNotBlank(jd.getBrandName())){
+                            cellContent.setCellValue(jd.getBrandName());
+                        }else {
+                            throw new RuntimeException("数据有误！！");
                         }
-                    }
 
+                    }else if(j == 5){
+                        CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId1());
+                        cellContent.setCellValue(cate.getCategoryName()+"("+entity.getCategoryId1()+")");
+
+                    }else if(j == 6){
+                        CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId2());
+                        cellContent.setCellValue(cate.getCategoryName()+"("+entity.getCategoryId2()+")");
+
+                    }else if(j == 7){
+                        CategoryVo cate = categoryInfoService.getCategoryById(entity.getCategoryId3());
+                        cellContent.setCellValue(cate.getCategoryName()+"("+entity.getCategoryId3()+")");
+                    }
                 }
 
-                page++;
-            }while (CollectionUtils.isNotEmpty(goods));
+            }
 
 
             // 判断文件是否存在 ,没有创建文件
@@ -1045,3 +1038,4 @@ public class ExportFileController {
         }
     }
 }
+

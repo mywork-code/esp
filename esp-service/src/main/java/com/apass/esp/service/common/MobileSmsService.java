@@ -126,7 +126,7 @@ public class MobileSmsService {
 			logger.info("Mobile:[{}],Type:[{}],Code:[{}].", mobile, type, code);
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("code", code);
-			map.put("currDate", String.valueOf(new Date().getTime() / 1000));
+			map.put("currDate", String.valueOf(System.currentTimeMillis() / 1000));
 
 			cacheManager.set(type + "_" + mobile, GsonUtils.toJson(map), 120);
 			String msg = "【安家趣花】您的验证码是:" + code + "(该验证码2分钟内有效)，如非本人操作，请忽略本短信。";

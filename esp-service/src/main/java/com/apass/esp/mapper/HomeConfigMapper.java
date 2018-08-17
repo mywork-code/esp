@@ -24,7 +24,6 @@ public interface HomeConfigMapper extends GenericMapper<HomeConfig, Long> {
 	
 	/**
 	 * 判断开始时间是否在数据库中已存在的时间区间内
-	 * @param startTime
 	 * @return
 	 */
 	List<HomeConfig> getContainsTimesList(@Param("time") String time,@Param("id") Long id);

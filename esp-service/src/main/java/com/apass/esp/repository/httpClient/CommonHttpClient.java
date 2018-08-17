@@ -2,6 +2,7 @@ package com.apass.esp.repository.httpClient;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.statement.PAInterfaceDto;
 import com.apass.esp.domain.dto.statement.TalkingDataDto;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.repository.payment.PaymentHttpClient;
@@ -231,4 +232,5 @@ public class CommonHttpClient {
             return null;
         }
     }
+
 }
