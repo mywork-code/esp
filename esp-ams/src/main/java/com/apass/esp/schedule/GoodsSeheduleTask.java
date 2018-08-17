@@ -38,4 +38,18 @@ public class GoodsSeheduleTask {
             logger.error("---------downGoods error", e);
         }
     }
+
+    /**
+     * 全量更新所有上架的微知的商品价格
+     */
+    @Scheduled(cron = "0 0 2 * * 1")
+    @RequestMapping("test2")
+    public void updateUpWzGoodsPrice(){
+        try {
+            logger.info("-----开始更新微知商品价格");
+            goodsService.updateUpWzGoodsPrice();
+        } catch (Exception e) {
+            logger.error("---------updateWzGoodsPrice error", e);
+        }
+    }
 }

@@ -750,6 +750,8 @@ public class JdGoodsInfoService {
 						if (StringUtils.equals(proGroupGoodsBo.getSkuId(), proCoupon.getSkuId())) {
 							falge = true;
 						}
+					} else if(StringUtils.equals(proCoupon.getOfferRange() + "", OfferRangeType.RANGE_ALL.getCode())){
+						falge = true;
 					}
 					if (falge) {
 						ProCouponVo proCouponVo = new ProCouponVo();

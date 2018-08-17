@@ -120,8 +120,6 @@ public class TestWZController {
     private SystemParamService systemParamService;
     @Autowired
     private GoodsEsDao goodsEsDao;
-    @Autowired
-    private GoodsRepository goodsDao;
 
     @ResponseBody
     @RequestMapping(value = "/getToken", method = RequestMethod.GET)
@@ -276,9 +274,46 @@ public class TestWZController {
     @ResponseBody
     public Response getWzPrice() throws Exception {
         List<String> skuList = Lists.newArrayList();
-        skuList.add("5496076");
-        skuList.add("4918116");
+        skuList.add("7064548");
+        skuList.add("26251857832");
+        skuList.add("1184931");
+        skuList.add("530150");
+        skuList.add("1995604333");
+        skuList.add("29776603221");
+        skuList.add("7343325");
+        skuList.add("16228334522");
         List<WZPriceResponse> priceList = price.getWzPrice(skuList);
+
+        //更新商品数据库里的价格
+        for(WZPriceResponse wzPriceResponse : priceList){
+            String skuId = wzPriceResponse.getSkuId();
+            BigDecimal wzPrice = new BigDecimal(wzPriceResponse.getWzPrice());
+            BigDecimal jdPrice = new BigDecimal(wzPriceResponse.getJDPrice());
+
+            GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
+            if(goodsStockInfoEntity != null){
+                GoodsStockInfoEntity updateStock = new GoodsStockInfoEntity();
+                updateStock.setId(goodsStockInfoEntity.getId());
+                updateStock.setUpdateUser(goodsStockInfoEntity.getUpdateUser());
+                updateStock.setGoodsCostPrice(wzPrice);
+                updateStock.setGoodsPrice(jdPrice);
+                updateStock.setMarketPrice(jdPrice);
+                goodsStockInfoService.update(updateStock);
+            }
+
+
+
+            //更新京东表
+            JdGoods jdGoods = jdGoodsMapper.queryGoodsBySkuId(Long.valueOf(skuId));
+            if (jdGoods != null) {
+                JdGoods updateJdGoods = new JdGoods();
+                updateJdGoods.setId(jdGoods.getId());
+                updateJdGoods.setUpdateDate(new Date());
+                updateJdGoods.setPrice(wzPrice);
+                updateJdGoods.setJdPrice(jdPrice);
+                jdGoodsMapper.updateByPrimaryKeySelective(updateJdGoods);
+            }
+        }
         return Response.successResponse(priceList);
     }
 
