@@ -40,12 +40,9 @@ public class HomeConfigController {
 	public Response getActiveConfig(Map<String,Object> paramMap) {
 		try {
 			String userId = (String)paramMap.get("userId");
-			if(StringUtils.isEmpty(userId)){
-				return Response.fail("用户id为空");
-			}
 			//去平安保险用户表查询，是否已经领取
 			PAUser paUser = paUserService.selectUserByUserId(userId);
-			if(paUser != null){
+			if(!StringUtils.isEmpty(userId)&&paUser != null){
 				return Response.fail("用户已提交保险信息");
 			}
 
