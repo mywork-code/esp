@@ -112,10 +112,10 @@ public class PAUserColler {
                 return Response.fail("验证码不正确");
             }
             //必须是安家趣花用户
-            UsersDO usersDO = userService.selectByPrimaryId(userId);
-            if(usersDO == null){
-                return Response.fail("不是安家趣花用户");
-            }
+//            UsersDO usersDO = userService.selectByPrimaryId(userId);
+//            if(usersDO == null){
+//                return Response.fail("不是安家趣花用户");
+//            }
 
             //调用平安接口:如果成功保存用户信息，如果失败返回失败信息
             if(config.isPROD()){
