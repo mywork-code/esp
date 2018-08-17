@@ -437,7 +437,7 @@ $(function(){
 				$("#addType2").combobox('setValue','HDSP')
 				type = $("#addType2").combobox('getValue');
 				$("#addType2").combobox({ disabled: true });
-			}else if(param == 'SMYHZX'){
+			}else if(param == 'SMYHZX' || param == 'LKHYWY'){
                 $(".grantClass").hide();
                 $("#goodsCodeTr").css("display","none");
                 $("#goosCategoryTr").css("display","none");
