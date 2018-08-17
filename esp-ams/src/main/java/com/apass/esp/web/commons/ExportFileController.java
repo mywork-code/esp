@@ -18,6 +18,7 @@ import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.service.activity.ActivityInfoService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.service.category.CategoryInfoService;
+import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.jd.JdGoodsService;
@@ -112,6 +113,8 @@ public class ExportFileController {
     private GoodsStockInfoService goodsStockInfoService;
     @Autowired
     private JdGoodsService jdGoodsService;
+    @Autowired
+    private CommonService commonService;
 
     /**
      * 导出文件
@@ -810,7 +813,8 @@ public class ExportFileController {
                 int i = 1;
                 for (Object g : list) {
                     GoodsInfoEntity b = (GoodsInfoEntity) g;
-                    
+                    BigDecimal goodsPrice = commonService.calculateGoodsPrice(b.getId(), b.getStockId());
+                    b.setGoodsPrice(goodsPrice);
                     if (StringUtils.equals(b.getSource(), SourceType.JD.getCode())) {
                         b.setMerchantName(SourceType.JD.getMessage());
                     }else if(StringUtils.equals(b.getSource(), SourceType.WZ.getCode())){
