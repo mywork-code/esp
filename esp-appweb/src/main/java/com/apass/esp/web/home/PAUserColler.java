@@ -167,9 +167,6 @@ public class PAUserColler {
             return Response.fail("服务器忙，请稍后再试!!");
         }
 
-
-
-
         return Response.success("一键领取平安保险成功");
     }
 }
