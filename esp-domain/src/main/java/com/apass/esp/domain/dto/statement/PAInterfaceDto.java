@@ -7,6 +7,8 @@ public class PAInterfaceDto {
     private String adCode;
     private String policyHolderName;
     private String mobile;
+    private String policyHolderSex;
+    private String policyHolderBirth;
     private String activityConfigNum;
     private String fromIp;
     private String userAgeng;
@@ -66,5 +68,21 @@ public class PAInterfaceDto {
 
     public void setSign(String sign) {
         this.sign = sign;
+    }
+
+    public String getPolicyHolderSex() {
+        return policyHolderSex;
+    }
+
+    public void setPolicyHolderSex(String policyHolderSex) {
+        this.policyHolderSex = policyHolderSex;
+    }
+
+    public String getPolicyHolderBirth() {
+        return policyHolderBirth;
+    }
+
+    public void setPolicyHolderBirth(String policyHolderBirth) {
+        this.policyHolderBirth = policyHolderBirth;
     }
 }

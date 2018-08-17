@@ -3,9 +3,11 @@ package com.apass.esp.web.home;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.statement.PAInterfaceDto;
 import com.apass.esp.domain.entity.PAUser;
+import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.home.PAUserService;
+import com.apass.esp.service.rbac.UserService;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.utils.*;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +41,8 @@ public class PAUserColler {
     private PAUserService paUserService;
     @Autowired
     private SystemEnvConfig config;
+    @Autowired
+    private UserService userService;
     /**
      * 验证码工具
      */
@@ -78,7 +82,7 @@ public class PAUserColler {
             LOGGER.error("发送验证码异常,getMessageCode------:{}",e);
         }
 
-        return Response.success("验证码成功");
+        return Response.fail("验证码发送失败");
     }
     /**
      * 保存用户信息
@@ -107,12 +111,17 @@ public class PAUserColler {
             if(!flag){
                 return Response.fail("验证码不正确");
             }
+            //必须是安家趣花用户
+            UsersDO usersDO = userService.selectByPrimaryId(userId);
+            if(usersDO == null){
+                return Response.fail("不是安家趣花用户");
+            }
 
             //调用平安接口:如果成功保存用户信息，如果失败返回失败信息
-            if(config.isPROD()){//TODO
-                adCode = "";
+            if(config.isPROD()){
+                adCode = "0f8f560b";
                 url = "http://xbbapi.data88.cn/insurance/doInsure";
-                qianMing = "";
+                qianMing = "bc57981d0419c8a70f554db7c268c1a8";
             }else if (config.isUAT()){
                 adCode = "1ae265f6";
                 url = "http://xbbstagingapi.data88.cn/insurance/doInsure";
@@ -127,6 +136,10 @@ public class PAUserColler {
             dto.setFromIp(ip);
             dto.setUserAgeng(userAgent);
             dto.setSign(sign);
+            dto.setPolicyHolderSex("1".equals(sex)?"MALE":"FEMALE");
+            String birthday = identity.substring(6, identity.length() - 4);
+            birthday = DateFormatUtil.dateToString(DateFormatUtil.string2date(birthday,"yyyyMMdd"),DateFormatUtil.YYYY_MM_DD);
+            dto.setPolicyHolderBirth(birthday);
 
             boolean bool = paUserService.saveToPAInterface(dto,url);
             if(!bool){
@@ -159,6 +172,6 @@ public class PAUserColler {
 
 
 
-        return null;
+        return Response.success("一键领取平安保险成功");
     }
 }

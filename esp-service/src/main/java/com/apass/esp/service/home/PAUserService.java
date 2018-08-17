@@ -40,7 +40,7 @@ public class PAUserService {
 			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
 			LOGGER.info("平安投保返回数据:{}",responseJson);
 			PAInterfaceResponse response = GsonUtils.convertObj(responseJson, PAInterfaceResponse.class);
-			if(StringUtils.equalsIgnoreCase(response.getStatus(),"success")){
+			if(StringUtils.equalsIgnoreCase(response.getStatus(),"SUCCEEDED")){
 				return true;
 			}
 

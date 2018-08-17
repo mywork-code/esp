@@ -37,4 +37,9 @@ public class UserService {
 	public List<RolesDO> loadAssignedRoles(String userId) {
 	   return usersRepository.loadAssignedRoles(userId);
 	}
+
+	public UsersDO selectByPrimaryId(String userId) {
+		return usersRepository.select(userId);
+	}
+
 }
