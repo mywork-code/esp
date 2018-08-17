@@ -93,7 +93,7 @@ public class PAUserColler {
     @RequestMapping("/save")
     public Response savePAUser(HttpServletRequest request,@RequestBody Map<String, Object> paramMap){
         try {
-            String username = CommonUtils.getValue(paramMap,"usrename");
+            String username = CommonUtils.getValue(paramMap,"username");
             String identity = CommonUtils.getValue(paramMap, "identity");
             String mobile = CommonUtils.getValue(paramMap, "mobile");
             String userId = CommonUtils.getValue(paramMap, "userId");
