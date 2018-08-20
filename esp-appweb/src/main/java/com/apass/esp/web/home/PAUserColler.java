@@ -1,15 +1,11 @@
 package com.apass.esp.web.home;
 
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.statement.PAInterfaceDto;
-import com.apass.esp.domain.entity.PAUser;
-import com.apass.esp.domain.entity.rbac.UsersDO;
-import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.home.PAUserService;
-import com.apass.esp.service.rbac.UserService;
-import com.apass.gfb.framework.environment.SystemEnvConfig;
-import com.apass.gfb.framework.utils.*;
+import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.HttpWebUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,16 +27,9 @@ import java.util.regex.Pattern;
 @RequestMapping("/paUser/click")
 public class PAUserColler {
     private static final Logger LOGGER = LoggerFactory.getLogger(PAUserColler.class);
-    private static String adCode = null;
-    private static String qianMing = null;
-    private static String url = null;
 
     @Autowired
     private PAUserService paUserService;
-    @Autowired
-    private SystemEnvConfig config;
-    @Autowired
-    private UserService userService;
     /**
      * 验证码工具
      */
@@ -93,78 +80,20 @@ public class PAUserColler {
     @RequestMapping("/save")
     public Response savePAUser(HttpServletRequest request,@RequestBody Map<String, Object> paramMap){
         try {
-            String username = CommonUtils.getValue(paramMap,"username");
-            String identity = CommonUtils.getValue(paramMap, "identity");
-            String mobile = CommonUtils.getValue(paramMap, "mobile");
-            String userId = CommonUtils.getValue(paramMap, "userId");
-            String sex = CommonUtils.getValue(paramMap, "sex");
             String ip = HttpWebUtils.getRequestIP(request);
             String userAgent = request.getHeader("User-Agent");
-            String authCode = CommonUtils.getValue(paramMap,"authCode");
-            String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码短信类型
-
-            LOGGER.info("保存用户信息savePAUser()参数，username:{}," +
-                    "birthday:{},mobile:{},userId:{},sex:{},ip:{}," +
-                    "userAgent:{},authCode:{},smsType:{}",userAgent,mobile,userId,sex,ip,userAgent,authCode,smsType);
-            //判断验证码是否正确
-            boolean flag = mobileRandomService.mobileCodeValidate(smsType, mobile, authCode);
-            if(!flag){
-                return Response.fail("验证码不正确");
-            }
-            //必须是安家趣花用户
-//            UsersDO usersDO = userService.selectByPrimaryId(userId);
-//            if(usersDO == null){
-//                return Response.fail("不是安家趣花用户");
-//            }
-
-            //调用平安接口:如果成功保存用户信息，如果失败返回失败信息
-            if(config.isPROD()){
-                adCode = "0f8f560b";
-                url = "http://xbbapi.data88.cn/insurance/doInsure";
-                qianMing = "bc57981d0419c8a70f554db7c268c1a8";
-            }else if (config.isUAT()){
-                adCode = "1ae265f6";
-                url = "http://xbbstagingapi.data88.cn/insurance/doInsure";
-                qianMing = "f82caa903a85b858278a9da5f3fc528a";
-            }
-            String sign = MD5Utils.getStingMD5(adCode+qianMing+mobile);
-            PAInterfaceDto dto = new PAInterfaceDto();
-            dto.setPolicyHolderName(username);
-            dto.setAdCode(adCode);
-            dto.setMobile(mobile);
-            dto.setActivityConfigNum("0");
-            dto.setFromIp(ip);
-            dto.setUserAgeng(userAgent);
-            dto.setSign(sign);
-            dto.setPolicyHolderSex("1".equals(sex)?"MALE":"FEMALE");
-            dto.setPolicyHolderIdCard(identity);
-
-            boolean bool = paUserService.saveToPAInterface(dto,url);
-            if(!bool){
-                return Response.fail("请勿重复提交信息.");
-            }
-
-            PAUser paUser = new PAUser();
-            paUser.setUsername(username);
-            paUser.setTelephone(mobile);
-            paUser.setBirthday(DateFormatUtil.string2date("1900-01-01"));
-            paUser.setUserId(Long.valueOf(userId));
-            paUser.setSex(Byte.valueOf(sex));
-            paUser.setFromIp(ip);
-            paUser.setUpdatedTime(new Date());
-            paUser.setCreatedTime(new Date());
-            paUser.setIsDelete(CouponIsDelete.COUPON_N.getCode());
-            paUser.setIdentity(identity);
+            paramMap.put("ip",ip);
+            paramMap.put("userAgent",userAgent);
 
             //保存信息
-            int count = paUserService.savePAUser(paUser);
+            int count = paUserService.savePAUser(paramMap);
             if(count != 1){
                 return Response.fail("数据插入失败！！");
             }
 
         }catch (Exception e){
             LOGGER.error("一键领取平安保险savePAUser异常,Exception:{}",e);
-            return Response.fail("服务器忙，请稍后再试!!");
+            return Response.fail(e.getMessage());
         }
 
         return Response.success("一键领取平安保险成功");
