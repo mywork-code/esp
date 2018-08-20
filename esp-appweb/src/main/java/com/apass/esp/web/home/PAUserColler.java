@@ -141,7 +141,7 @@ public class PAUserColler {
 
             boolean bool = paUserService.saveToPAInterface(dto,url);
             if(!bool){
-                return Response.fail("平安投保失败！！");
+                return Response.fail("请勿重复提交信息.");
             }
 
             PAUser paUser = new PAUser();

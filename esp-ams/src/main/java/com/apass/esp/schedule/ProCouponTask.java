@@ -42,6 +42,23 @@ import java.util.*;
 @RequestMapping("/noauth/coupon")
 public class ProCouponTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProCouponTask.class);
+    @Value("${monitor.send.address}")
+    public String sendAddress;
+
+    @Value("${monitor.send.password}")
+    public String sendPassword;
+
+    @Value("${monitor.env}")
+    public String env;
+    /**
+     * 一共查询的天数
+     */
+    private static final Integer NUM = 30;
+    @Autowired
+    private MyCouponManagerService myCouponService;
+
+    @Autowired
+    private OrderInfoRepository orderInfoRepository;
 
     /**
      * 定时发送房易贷券使用情况报表
@@ -92,23 +109,6 @@ public class ProCouponTask {
         return Response.success("邮件发送成功!");
     }
 
-    @Value("${monitor.send.address}")
-    public String sendAddress;
-
-    @Value("${monitor.send.password}")
-    public String sendPassword;
-
-    @Value("${monitor.env}")
-    public String env;
-    /**
-     * 一共查询的天数
-     */
-    private static final Integer NUM = 30;
-    @Autowired
-    private MyCouponManagerService myCouponService;
-
-    @Autowired
-    private OrderInfoRepository orderInfoRepository;
     /**
      * 定时发送优惠券使用情况_领取数量
      */
