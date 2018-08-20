@@ -55,8 +55,20 @@ public class PAUserService {
 		String userAgent = CommonUtils.getValue(paramMap,"userAgent");
 		String authCode = CommonUtils.getValue(paramMap,"authCode");
 		String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码短信类型
-		if(StringUtils.isAnyBlank(username,identity,mobile,userId,sex)){
-			throw new RuntimeException("姓名，身份证，手机号，用户id,性别不可为空");
+		if(StringUtils.isEmpty(username)&&isChineseStr(username)){
+			throw new RuntimeException("姓名不可为空且必须为汉字");
+		}
+		if(StringUtils.isAnyBlank(identity)){
+			throw new RuntimeException("身份证不可为空");
+		}
+		if(StringUtils.isAnyBlank(mobile)){
+			throw new RuntimeException("手机号不可为空");
+		}
+		if(StringUtils.isAnyBlank(userId)){
+			throw new RuntimeException("用户id不可为空");
+		}
+		if(StringUtils.isAnyBlank(sex)){
+			throw new RuntimeException("性别不可为空");
 		}
 		//姓名汉语校验
 		boolean ifChinese = isChineseStr(username);
