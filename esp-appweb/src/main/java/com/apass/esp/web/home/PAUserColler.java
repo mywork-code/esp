@@ -96,6 +96,6 @@ public class PAUserColler {
             return Response.fail(e.getMessage());
         }
 
-        return Response.success("一键领取平安保险成功");
+        return Response.success("领取成功，请耐心等待保险专员回复！");
     }
 }
