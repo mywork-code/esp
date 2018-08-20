@@ -64,9 +64,9 @@ public class PAUserService {
 		if(StringUtils.isAnyBlank(mobile)){
 			throw new RuntimeException("手机号不可为空");
 		}
-		if(StringUtils.isAnyBlank(userId)){
-			throw new RuntimeException("用户id不可为空");
-		}
+//		if(StringUtils.isAnyBlank(userId)){
+//			throw new RuntimeException("用户id不可为空");
+//		}
 		if(StringUtils.isAnyBlank(sex)){
 			throw new RuntimeException("性别不可为空");
 		}

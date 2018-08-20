@@ -42,7 +42,7 @@
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.PAUser" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_pa_user
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="identity != null" >
+      <if test="userId != null" >
         user_id,
       </if>
       <if test="username != null" >
