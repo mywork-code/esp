@@ -1,31 +1,30 @@
 package com.apass.esp.web.home;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.PAUser;
+import com.apass.esp.domain.vo.HomeConfigVo;
+import com.apass.esp.service.home.HomeConfigService;
+import com.apass.esp.service.home.PAUserService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.GsonUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import com.apass.esp.domain.entity.PAUser;
-import com.apass.esp.service.home.PAUserService;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.HomeConfig;
-import com.apass.esp.domain.vo.HomeConfigVo;
-import com.apass.esp.service.home.HomeConfigService;
-import com.apass.gfb.framework.utils.DateFormatUtil;
+import java.util.Date;
+import java.util.Map;
 
 @Path("/home/config")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class HomeConfigController {
+	private static final Logger LOGGER = LoggerFactory.getLogger(HomeConfigController.class);
 
 	@Autowired
 	private HomeConfigService homeConfigService;
@@ -39,6 +38,7 @@ public class HomeConfigController {
     @Path("/active")
 	public Response getActiveConfig(Map<String,Object> paramMap) {
 		try {
+			LOGGER.info("获取活动的配置项参数：{}", GsonUtils.toJson(paramMap));
 			String userId = (String)paramMap.get("userId");
 			//去平安保险用户表查询，是否已经领取
 			PAUser paUser = paUserService.selectUserByUserId(userId);
