@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import com.apass.esp.domain.enums.*;
+import com.apass.esp.service.zhongyuan.ZYPriceCollecService;
 import com.apass.esp.third.party.weizhi.client.WeiZhiConstants;
 import com.apass.gfb.framework.cache.CacheManager;
 import org.apache.commons.collections.CollectionUtils;
@@ -140,7 +141,8 @@ public class JdGoodsInfoService {
 	private LimitCommonService limitCommonService;
 
 	@Autowired
-	private CacheManager cacheManager;
+	private ZYPriceCollecService zyPriceCollecService;
+
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -569,17 +571,20 @@ public class JdGoodsInfoService {
 		if(null !=goodsId && StringUtils.isNotBlank(skuId)){
 	    	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getBySkuId(goodsId,skuId);
 	    	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-	    		List<ProCoupon> proCoupons=couponManagerService.getCouponListsByActivityId(proGroupGoodsBo.getActivityId().toString());
-    			for (ProCoupon proCoupon : proCoupons) {
-    				//房易贷用户专享过滤不展示在商品详情页
-    				if(CouponExtendType.COUPON_FYDYHZX.getCode().equals(proCoupon.getExtendType())
-						|| CouponExtendType.COUPON_SMYHZX.getCode().equals(proCoupon.getExtendType())){
-						continue;
+	    		//排除中原活动id
+				if(!hasIncludeZYCouponActivityId(proGroupGoodsBo.getActivityId())){
+					List<ProCoupon> proCoupons=couponManagerService.getCouponListsByActivityId(proGroupGoodsBo.getActivityId().toString());
+					for (ProCoupon proCoupon : proCoupons) {
+						//房易贷用户专享过滤不展示在商品详情页
+						if(CouponExtendType.COUPON_FYDYHZX.getCode().equals(proCoupon.getExtendType())
+								|| CouponExtendType.COUPON_SMYHZX.getCode().equals(proCoupon.getExtendType())){
+							continue;
+						}
+						ProCouponGoodsDetailVo proCouponGoodsDetailVo=new ProCouponGoodsDetailVo();
+						proCouponGoodsDetailVo.setCouponSill(proCoupon.getCouponSill());
+						proCouponGoodsDetailVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
+						proCouponGoodsDetailVos.add(proCouponGoodsDetailVo);
 					}
-    				ProCouponGoodsDetailVo proCouponGoodsDetailVo=new ProCouponGoodsDetailVo();
-    				proCouponGoodsDetailVo.setCouponSill(proCoupon.getCouponSill());
-    				proCouponGoodsDetailVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
-    				proCouponGoodsDetailVos.add(proCouponGoodsDetailVo);
 				}
 	    	}
 		}
@@ -608,6 +613,14 @@ public class JdGoodsInfoService {
 			}
 		}
 		return proCouponStringList;
+	}
+
+	private boolean hasIncludeZYCouponActivityId(Long existActivityId){
+		if(existActivityId.longValue() == zyPriceCollecService.getZyActicityCollecId()){
+			return true;
+		}else {
+			return false;
+		}
 	}
 	/**
 	 * 获取商品详情中的的优惠券并按优惠力度从大到小排序（原来的方法：根据goodsId查询）

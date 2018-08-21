@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.ZYPriceCollecEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.ZYPriceCollecEntity" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+    <result column="is_delete" property="isDelete" jdbcType="VARCHAR" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+    <result column="emp_name" property="empName" jdbcType="VARCHAR" />
+    <result column="emp_tel" property="empTel" jdbcType="VARCHAR" />
+    <result column="consignee_name" property="consigneeName" jdbcType="VARCHAR" />
+    <result column="consignee_tel" property="consigneeTel" jdbcType="VARCHAR" />
+    <result column="consignee_addr" property="consigneeAddr" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, created_time, updated_time, is_delete, company_name, goods_name, emp_name, emp_tel, 
+    consignee_name, consignee_tel, consignee_addr, user_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_zy_prize_collec
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_zy_prize_collec
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.ZYPriceCollecEntity" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_zy_prize_collec (created_time, updated_time, is_delete, 
+      company_name, goods_name, emp_name, 
+      emp_tel, consignee_name, consignee_tel, 
+      consignee_addr, user_id)
+    values (#{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR}, 
+      #{companyName,jdbcType=VARCHAR}, #{goodsName,jdbcType=VARCHAR}, #{empName,jdbcType=VARCHAR}, 
+      #{empTel,jdbcType=VARCHAR}, #{consigneeName,jdbcType=VARCHAR}, #{consigneeTel,jdbcType=VARCHAR}, 
+      #{consigneeAddr,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ZYPriceCollecEntity" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_zy_prize_collec
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+      <if test="isDelete != null" >
+        is_delete,
+      </if>
+      <if test="companyName != null" >
+        company_name,
+      </if>
+      <if test="goodsName != null" >
+        goods_name,
+      </if>
+      <if test="empName != null" >
+        emp_name,
+      </if>
+      <if test="empTel != null" >
+        emp_tel,
+      </if>
+      <if test="consigneeName != null" >
+        consignee_name,
+      </if>
+      <if test="consigneeTel != null" >
+        consignee_tel,
+      </if>
+      <if test="consigneeAddr != null" >
+        consignee_addr,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null" >
+        #{isDelete,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null" >
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsName != null" >
+        #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="empName != null" >
+        #{empName,jdbcType=VARCHAR},
+      </if>
+      <if test="empTel != null" >
+        #{empTel,jdbcType=VARCHAR},
+      </if>
+      <if test="consigneeName != null" >
+        #{consigneeName,jdbcType=VARCHAR},
+      </if>
+      <if test="consigneeTel != null" >
+        #{consigneeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="consigneeAddr != null" >
+        #{consigneeAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.ZYPriceCollecEntity" >
+    update t_esp_zy_prize_collec
+    <set >
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null" >
+        is_delete = #{isDelete,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null" >
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsName != null" >
+        goods_name = #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="empName != null" >
+        emp_name = #{empName,jdbcType=VARCHAR},
+      </if>
+      <if test="empTel != null" >
+        emp_tel = #{empTel,jdbcType=VARCHAR},
+      </if>
+      <if test="consigneeName != null" >
+        consignee_name = #{consigneeName,jdbcType=VARCHAR},
+      </if>
+      <if test="consigneeTel != null" >
+        consignee_tel = #{consigneeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="consigneeAddr != null" >
+        consignee_addr = #{consigneeAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.ZYPriceCollecEntity" >
+    update t_esp_zy_prize_collec
+    set created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=VARCHAR},
+      company_name = #{companyName,jdbcType=VARCHAR},
+      goods_name = #{goodsName,jdbcType=VARCHAR},
+      emp_name = #{empName,jdbcType=VARCHAR},
+      emp_tel = #{empTel,jdbcType=VARCHAR},
+      consignee_name = #{consigneeName,jdbcType=VARCHAR},
+      consignee_tel = #{consigneeTel,jdbcType=VARCHAR},
+      consignee_addr = #{consigneeAddr,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

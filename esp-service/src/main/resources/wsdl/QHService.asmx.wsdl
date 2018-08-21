@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://tempuri.org/">
+    <wsdl:types>
+        <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+            <s:element name="GetQH">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="mobile" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetQHResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetQHResult" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:schema>
+    </wsdl:types>
+    <wsdl:message name="GetQHSoapIn">
+        <wsdl:part name="parameters" element="tns:GetQH"/>
+    </wsdl:message>
+    <wsdl:message name="GetQHSoapOut">
+        <wsdl:part name="parameters" element="tns:GetQHResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="QHServiceSoap">
+        <wsdl:operation name="GetQH">
+            <wsdl:input message="tns:GetQHSoapIn"/>
+            <wsdl:output message="tns:GetQHSoapOut"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="QHServiceSoap" type="tns:QHServiceSoap">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="GetQH">
+            <soap:operation soapAction="http://tempuri.org/GetQH" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="QHServiceSoap12" type="tns:QHServiceSoap">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="GetQH">
+            <soap12:operation soapAction="http://tempuri.org/GetQH" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="QHService">
+        <wsdl:port name="QHServiceSoap" binding="tns:QHServiceSoap">
+            <soap:address location="http://zcbi.centaline.com.cn/WebServices/QHService.asmx"/>
+        </wsdl:port>
+        <wsdl:port name="QHServiceSoap12" binding="tns:QHServiceSoap12">
+            <soap12:address location="http://zcbi.centaline.com.cn/WebServices/QHService.asmx"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
