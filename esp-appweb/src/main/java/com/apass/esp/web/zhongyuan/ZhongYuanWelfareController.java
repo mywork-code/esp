@@ -1,28 +1,17 @@
 package com.apass.esp.web.zhongyuan;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
-<<<<<<< HEAD
 import com.apass.esp.domain.entity.ZYPriceCollecEntity;
 import com.apass.esp.domain.vo.zhongyuan.ZYEmpInfoVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYResponseVo;
 import com.apass.esp.service.zhongyuan.ZYPriceCollecService;
-import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.lang3.StringUtils;
-=======
 import com.apass.esp.domain.enums.SmsTypeEnums;
 import com.apass.esp.service.common.MobileSmsService;
-import com.apass.esp.service.zhongyuan.ZYPriceCollecService;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
->>>>>>> 2fbae8af0f0fd97e502df5b02194fad1b21bac6b
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,12 +20,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.tempuri.QHService;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
