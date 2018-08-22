@@ -13,6 +13,7 @@ CREATE TABLE `t_esp_zy_prize_collec` (
   `consignee_addr` varchar(32) NOT NULL DEFAULT '' COMMENT '收货人地址',
   `user_id` varchar(16) NOT NULL DEFAULT '' COMMENT '登入用户的id',
   qh_reward_type varchar(16) not null default '' comment '几等奖',
+  activity_id varchar(16) not null default '' comment '活动id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='中原领奖记录表';
 

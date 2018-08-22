@@ -79,6 +79,7 @@ public class ZhongYuanWelfareController {
             zyPriceCollecEntity.setQhRewardType(empInfoVo.getQHRewardType());
             zyPriceCollecEntity.setGoodsName("小米包包");
             zyPriceCollecEntity.setUserId(userId);
+            zyPriceCollecEntity.setActivityId(zyPriceCollecService.getZyActicityCollecId() + "");
             zyPriceCollecService.addPriceCollec(zyPriceCollecEntity);
 
             return  Response.success("领取成功！");

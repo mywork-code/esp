@@ -10,5 +10,6 @@ import org.apache.ibatis.annotations.Param;
 public interface ZYPriceCollecEntityMapper   extends GenericMapper<ZYPriceCollecEntity,Long>{
 
     Integer countByQHRewardType(@Param("qhRewardType") String qhRewardType,
-                                @Param("companyName") String companyName);
+                                @Param("companyName") String companyName,
+                                @Param("activityId") String activityId);
 }

@@ -4,6 +4,7 @@
   <select id="countByQHRewardType" resultType="java.lang.Integer">
   select count(*) from t_esp_zy_prize_collec
   where qh_reward_type = #{qhRewardType} and company_name = #{companyName}
+  and activity_id = #{activityId}
   and is_delete = 'N'
   </select>
 </mapper>

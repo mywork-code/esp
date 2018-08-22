@@ -30,7 +30,7 @@ public class ZYPriceCollecService {
 
     public void addPriceCollec(ZYPriceCollecEntity zyPriceCollecEntity) throws BusinessException{
        Integer count = zyPriceCollecEntityMapper.countByQHRewardType(zyPriceCollecEntity.getQhRewardType(),
-                zyPriceCollecEntity.getCompanyName());
+                zyPriceCollecEntity.getCompanyName(),String.valueOf(getZyActicityCollecId()));
        if(count > 100){
            throw new BusinessException("奖品领取已达到上限！");
        }
