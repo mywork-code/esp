@@ -5,12 +5,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.apass.esp.domain.vo.zhongyuan.ZYResponseVo;
+import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.tempuri.QHService;
 import org.tempuri.SendMessageService;
 import org.tempuri.SendMessageServiceSoap;
 import org.tempuri.SmsMessageData;
@@ -216,7 +219,7 @@ public class MobileSmsService {
 	 * 发送短信-创蓝短信发送接口 {SmsTypeName/SignStr} --
 	 * {25/创蓝短信验证码}、{205/逐鹿验证码短信}、{206/逐鹿通知类短信}
 	 * 
-	 * @param request
+	 * @param mobile,msg,smsTyename,signStr
 	 * @return
 	 * @throws Exception
 	 */
@@ -236,4 +239,12 @@ public class MobileSmsService {
 		return result;
 	}
 
+	public static void main(String[] args) {
+		QHService qhService = new QHService();
+		String response = qhService.getQHServiceSoap().getQH("13128761728");
+
+		ZYResponseVo zyResponseVo = GsonUtils.convertObj(response, ZYResponseVo.class);
+
+		System.out.println(response);
+	}
 }
