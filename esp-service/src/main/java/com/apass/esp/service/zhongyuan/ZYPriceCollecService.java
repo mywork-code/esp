@@ -46,7 +46,7 @@ public class ZYPriceCollecService {
      * @return true--已达上限，false--未达上限
      */
     public boolean ifUpflag(String qhRewardType,String companyName){
-        Integer count = zyPriceCollecEntityMapper.countByQHRewardType(qhRewardType, companyName);
+        Integer count = zyPriceCollecEntityMapper.countByQHRewardType(qhRewardType, companyName,String.valueOf(getZyActicityCollecId()));
         if(count>100){
             return true;
         }
