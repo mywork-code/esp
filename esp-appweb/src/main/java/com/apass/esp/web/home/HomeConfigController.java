@@ -40,7 +40,7 @@ public class HomeConfigController {
 		try {
 			LOGGER.info("获取活动的配置项参数：{}", GsonUtils.toJson(paramMap));
 //			String userId = (String)paramMap.get("userId");
-			//去平安保险用户表查询，是否已经领取
+//			//去平安保险用户表查询，是否已经领取
 //			PAUser paUser = paUserService.selectUserByUserId(userId);
 //			if(!StringUtils.isEmpty(userId)&&paUser != null){
 //				return Response.fail("用户已提交保险信息");
