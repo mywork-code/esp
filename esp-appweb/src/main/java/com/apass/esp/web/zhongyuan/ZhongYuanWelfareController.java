@@ -2,14 +2,18 @@ package com.apass.esp.web.zhongyuan;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ZYPriceCollecEntity;
+import com.apass.esp.domain.enums.QHRewardTypeEnums;
+import com.apass.esp.domain.enums.SmsTypeEnums;
 import com.apass.esp.domain.vo.zhongyuan.ZYEmpInfoVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYResponseVo;
+import com.apass.esp.service.common.MobileSmsService;
+import com.apass.esp.service.common.ZhongYuanQHService;
 import com.apass.esp.service.zhongyuan.ZYPriceCollecService;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
-import com.apass.esp.domain.enums.SmsTypeEnums;
-import com.apass.esp.service.common.MobileSmsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +26,6 @@ import org.tempuri.QHService;
 
 import java.util.Date;
 import java.util.Map;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +41,8 @@ public class ZhongYuanWelfareController {
     @Autowired
     private ZYPriceCollecService zyPriceCollecService;
 
+    @Autowired
+    private ZhongYuanQHService zhongYuanQHService;
     //领取活动商品接口
     @RequestMapping(value = "/addAwardGoods",method = RequestMethod.POST)
     @ResponseBody
@@ -123,10 +128,12 @@ public class ZhongYuanWelfareController {
     @RequestMapping("/checkMessage")
     @ResponseBody
     public Response checkUser(@RequestBody Map<String,Object> paramMap){
+        LOGGER.info("ZhongYuanWelfareController-->checkUser方法接收参数:{}", GsonUtils.toJson(paramMap));
         try{
             //获取参数
             String mobile = CommonUtils.getValue(paramMap,"mobile");
             String authCode = CommonUtils.getValue(paramMap,"authCode");
+            String userId = CommonUtils.getValue(paramMap,"userId");
             if(StringUtils.isEmpty(mobile)){
                 throw new RuntimeException("手机号码不能为空");
             }
@@ -139,16 +146,33 @@ public class ZhongYuanWelfareController {
                 throw new RuntimeException("验证码不正确!");
             }
             //2,校验员工是否是否是中原员工
-
-
+            ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
+            if(!zyqh.isSuccess()){
+                throw new RuntimeException("您不是中原员工，还能参与该活动");
+            }
 
             //3,校验该员工所属分公司领取免费礼品是否已达上限
+            //如果没有userId就不校验此步骤
+            if(!StringUtils.isEmpty(userId)){
+                ZYEmpInfoVo zyEmpInfoVo = zyqh.getResult().get(0);
+                //如果是一重奖直接领取优惠券，不发放货物
+                if (!StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
+                        QHRewardTypeEnums.ZHONGYUAN_YI.getMessage())){
+                    boolean flag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName());
 
+                }
+
+
+            }
+
+        }catch (BusinessException be){
+            LOGGER.error("校验未通过,--Exception---:{}",be);
+            return Response.fail("校验未通过"+be.getMessage());
         }catch (Exception e){
             LOGGER.error("校验未通过,--Exception---:{}",e);
-            return Response.fail(e.getMessage());
+            return Response.fail("校验未通过"+e.getMessage());
         }
 
-        return null;
+        return Response.success("校验通过，请继续下一步操作");
     }
 }

@@ -28,6 +28,7 @@ public class ZYPriceCollecService {
         }
     }
 
+
     public void addPriceCollec(ZYPriceCollecEntity zyPriceCollecEntity) throws BusinessException{
        Integer count = zyPriceCollecEntityMapper.countByQHRewardType(zyPriceCollecEntity.getQhRewardType(),
                 zyPriceCollecEntity.getCompanyName(),String.valueOf(getZyActicityCollecId()));
@@ -36,6 +37,20 @@ public class ZYPriceCollecService {
        }
         zyPriceCollecEntityMapper.insertSelective(zyPriceCollecEntity);
 
+    }
+
+    /**
+     * 校验奖励盗取是否已达上限：根据qhRewardType字段和companyName判断
+     * @param qhRewardType
+     * @param companyName
+     * @return true--已达上限，false--未达上限
+     */
+    public boolean ifUpflag(String qhRewardType,String companyName){
+        Integer count = zyPriceCollecEntityMapper.countByQHRewardType(qhRewardType, companyName);
+        if(count>100){
+            return true;
+        }
+        return false;
     }
 
 }
