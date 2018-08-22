@@ -27,6 +27,8 @@ public class ZYPriceCollecEntity {
 
     private String userId;
 
+    private String qhRewardType;
+
     public Long getId() {
         return id;
     }
@@ -121,5 +123,13 @@ public class ZYPriceCollecEntity {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getQhRewardType() {
+        return qhRewardType;
+    }
+
+    public void setQhRewardType(String qhRewardType) {
+        this.qhRewardType = qhRewardType;
     }
 }
