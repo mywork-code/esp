@@ -486,7 +486,11 @@ $(function(){
 				$("#externalIdTr_range").css("display","none");
 
 				goodsCategoryComboFun2("goodsCategoryCombo_range");//加载类目树
-			}else{
+			}else if(param == '4'){
+                $("#brandTr").css("display","none");
+                $("#goosCategoryTr_range").css("display","none");
+			}
+			else{
 				$("#brandTr").css("display","none");
 				$("#goosCategoryTr_range").css("display","none");
 				$("#externalIdTr_range").show();
