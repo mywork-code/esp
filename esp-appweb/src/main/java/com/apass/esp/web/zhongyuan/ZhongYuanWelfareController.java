@@ -4,6 +4,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ZYPriceCollecEntity;
 import com.apass.esp.domain.enums.QHRewardTypeEnums;
 import com.apass.esp.domain.enums.SmsTypeEnums;
+import com.apass.esp.domain.vo.zhongyuan.ZYCompanyCityAwardsVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYEmpInfoVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYResponseVo;
 import com.apass.esp.service.common.MobileSmsService;
@@ -13,7 +14,8 @@ import com.apass.esp.service.zhongyuan.ZYPriceCollecService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
-import com.google.gson.Gson;
+import com.google.common.collect.Maps;
+import com.sun.javafx.fxml.builder.JavaFXFontBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.tempuri.QHService;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,7 +90,7 @@ public class ZhongYuanWelfareController {
             zyPriceCollecEntity.setEmpTel(empTel);
             zyPriceCollecEntity.setEmpName(empInfoVo.getEmpName());
             zyPriceCollecEntity.setQhRewardType(empInfoVo.getQHRewardType());
-            zyPriceCollecEntity.setGoodsName("小米包包");
+            zyPriceCollecEntity.setGoodsName("小米背包");
             zyPriceCollecEntity.setUserId(userId);
             zyPriceCollecEntity.setActivityId(zyPriceCollecService.getZyActicityCollecId() + "");
             zyPriceCollecService.addPriceCollec(zyPriceCollecEntity);
@@ -198,4 +202,15 @@ public class ZhongYuanWelfareController {
 
         return Response.success("校验通过，请继续下一步操作");
     }
+
+    @RequestMapping("/listCompanyAwards")
+    @ResponseBody
+    public Response listCompanyAwards(){
+        ZYCompanyCityAwardsVo v1 = new ZYCompanyCityAwardsVo("济南","三重奖","1000元代金券");
+        List<ZYCompanyCityAwardsVo> result = new ArrayList<>();
+        result.add(v1);
+        return Response.success("ok",result);
+
+    }
+
 }
