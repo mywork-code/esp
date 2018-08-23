@@ -32,6 +32,7 @@ import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
+import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
@@ -52,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -921,6 +923,12 @@ public class ExportFileController {
         OutputStream outp = null;
         InputStream in = null;
         FileOutputStream out = null;
+        //页码
+        String page = CommonUtils.getValue(request, "page");
+        //每页数量
+        String rows = CommonUtils.getValue(request, "rows");
+
+        int startIndex = (Integer.valueOf(page) - 1) * Integer.valueOf(rows);
 
         try {
             //获取微知、已上架，协议价99-300的商品，导出
@@ -928,19 +936,13 @@ public class ExportFileController {
             goodsInfoEntity.setStatus(GoodStatus.GOOD_UP.getCode());
             //微知商户
             goodsInfoEntity.setMainGoodsCode("05103");
-            List<GoodsInfoEntity> goods;
+            goodsInfoEntity.setPage(Integer.valueOf(page));
+            goodsInfoEntity.setRows(Integer.valueOf(rows));
+            goodsInfoEntity.setStartRecordIndex(Integer.valueOf(startIndex));
 
-//            int rows = 10000;
-//            int page = 1;
-//            goodsInfoEntity.setRows(rows);
+            List<GoodsInfoEntity> goods;
             // 第一步：声明一个工作薄
             SXSSFWorkbook wb = new SXSSFWorkbook();
-//            goodsInfoEntity.setPage(page);
-//            if(page>1){
-//                goodsInfoEntity.setStartRecordIndex((page-1)*rows);
-//            }else {
-//                goodsInfoEntity.setStartRecordIndex((page-1)*rows);
-//            }
             goods = goodsService.pageListForExportGoods(goodsInfoEntity);
 
             // 第二步：声明一个单子并命名
