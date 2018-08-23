@@ -7,4 +7,18 @@
   and activity_id = #{activityId}
   and is_delete = 'N'
   </select>
+
+  <select id="selectAllCollec" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from t_esp_zy_prize_collec
+    <where>
+      AND is_delete = 'N'
+      <if test="startDate != null and startDate != ''">
+        and created_time > #{startDate}
+      </if>
+      <if test="endDate != null and endDate != ''">
+        and #{endDate} > created_time
+      </if>
+    </where>
+  </select>
 </mapper>

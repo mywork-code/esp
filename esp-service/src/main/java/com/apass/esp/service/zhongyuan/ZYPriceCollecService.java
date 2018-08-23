@@ -4,8 +4,14 @@ import com.apass.esp.domain.entity.ZYPriceCollecEntity;
 import com.apass.esp.mapper.ZYPriceCollecEntityMapper;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by DELL on 2018/8/21.
@@ -53,4 +59,11 @@ public class ZYPriceCollecService {
         return false;
     }
 
+
+    public List<ZYPriceCollecEntity> getAllZYCollecByStartandEndTime( String startDate, String endDate) {
+        Map<String,Object> paramMap1 = Maps.newHashMap();
+        paramMap1.put("startDate",startDate);
+        paramMap1.put("endDate",endDate);
+        return zyPriceCollecEntityMapper.selectAllCollec(paramMap1);
+    }
 }

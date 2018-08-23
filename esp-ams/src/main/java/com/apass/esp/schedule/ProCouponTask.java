@@ -4,9 +4,11 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponTaskEntity;
 import com.apass.esp.domain.entity.ProMyCoupon;
+import com.apass.esp.domain.entity.ZYPriceCollecEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.offer.MyCouponManagerService;
+import com.apass.esp.service.zhongyuan.ZYPriceCollecService;
 import com.apass.esp.utils.mailUtils.MailSenderInfo;
 import com.apass.esp.utils.mailUtils.MailUtil;
 import com.apass.esp.web.commons.JsonDateValueProcessor;
@@ -31,6 +33,7 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -59,6 +62,9 @@ public class ProCouponTask {
 
     @Autowired
     private OrderInfoRepository orderInfoRepository;
+
+    @Autowired
+    private ZYPriceCollecService zyService;
 
     /**
      * 定时发送房易贷券使用情况报表
@@ -95,13 +101,6 @@ public class ProCouponTask {
         }
     }
 
-    private void sendEamilExcel_zhongyuan() {
-        //生成Excel
-
-        //发送邮件
-
-    }
-
     @RequestMapping("test1")
     public Response sendEmailTest(){
         try {
@@ -122,6 +121,111 @@ public class ProCouponTask {
             return Response.fail("邮件发送失败！");
         }
         return Response.success("邮件发送成功!");
+    }
+    @RequestMapping("test3")
+    public Response sendEamil_test(){
+        try {
+            sendEamilExcel_zhongyuan();
+        }catch (Exception e){
+            LOGGER.error("-----Exception------",e);
+            return Response.fail("邮件发送失败！");
+        }
+        return Response.success("邮件发送成功!");
+    }
+
+    private void sendEamilExcel_zhongyuan() {
+        try{
+            //获取数据
+            String startDate = DateFormatUtil.dateToString(new Date())+" 00:00:00";
+            String endDate = DateFormatUtil.dateToString(new Date())+" 23:59:59";
+            List<ZYPriceCollecEntity> list = zyService.getAllZYCollecByStartandEndTime(startDate,endDate);
+            //生成Excel
+            generateFile_zhongyuan(list);
+
+            //发送邮件
+            String dateString = DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
+            MailSenderInfo mailSenderInfo = new MailSenderInfo();
+            mailSenderInfo.setMailServerHost("SMTP.263.net");
+            mailSenderInfo.setMailServerPort("25");
+            mailSenderInfo.setValidate(true);
+            mailSenderInfo.setUserName(sendAddress);
+            // 您的邮箱密码
+            mailSenderInfo.setPassword(sendPassword);
+            mailSenderInfo.setFromAddress(sendAddress);
+            mailSenderInfo.setSubject(dateString+"_房易贷券使用领取情况统计_领取数量");
+            mailSenderInfo.setContent("请查收房易 贷券使用领取情况统计_领取数量 报表..");
+            mailSenderInfo.setToAddress("sunchaohai@apass.cn");
+            if ("prod".equals(env)) {
+                mailSenderInfo.setToAddress("sunchaohai@apass.cn,maoyanping@apass.cn" +
+                        ",yangxiaoqing@apass.cn,huangbeifang@apass.cn,xujie@apass.cn,yangzhenli@apass.cn");
+            }
+
+            Multipart msgPart = new MimeMultipart();
+            //正文
+            MimeBodyPart body = new MimeBodyPart();
+            //附件
+            MimeBodyPart attach = new MimeBodyPart();
+            try {
+                attach.setDataHandler(new DataHandler(new FileDataSource("/zongcaibanyuangongfuli-lingqu.xls")));
+
+                attach.setFileName(dateString + "zongcaibanyuangongfuli-lingqu.xls");
+                msgPart.addBodyPart(attach);
+                body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
+                msgPart.addBodyPart(body);
+            } catch (MessagingException e) {
+                LOGGER.error("sendEamilExcel_zhongyuan msgPart   body error.... ", e);
+            }
+
+            mailSenderInfo.setMultipart(msgPart);
+            MailUtil mailUtil = new MailUtil();
+            mailUtil.sendTextMail(mailSenderInfo);
+        }catch (Exception e){
+
+        }
+
+
+    }
+
+    private void generateFile_zhongyuan(List<ZYPriceCollecEntity> list) throws Exception {
+        // 第一步：声明一个工作薄
+        HSSFWorkbook wb = new HSSFWorkbook();
+        // 第二步：声明一个单子并命名
+        HSSFSheet sheet = wb.createSheet("sheet");
+        // 获取标题样式，内容样式
+        List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
+        HSSFRow createRow = sheet.createRow(0);
+
+        String[] rowHeadArr = {"所在分公司","商品信息","员工手机号","收货人姓名","收货人地址"};
+
+        String[] headKeyArr = {"companyName", "goodsName", "empTel", "consigneeName", "consigneeAddr"};
+        for (int i = 0; i < rowHeadArr.length; i++) {
+            HSSFCell cell = createRow.createCell(i);
+            sheet.autoSizeColumn(i, true);
+            cell.setCellStyle(hssfCellStyle.get(0));
+            cell.setCellValue(rowHeadArr[i]);
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            HSSFRow createRowContent = sheet.createRow(i + 1);
+            Object object = list.get(i);
+            // json日期转换配置类
+            JsonConfig jsonConfig = new JsonConfig();
+            jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor());
+            net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(object, jsonConfig);
+            for (int j = 0; j < rowHeadArr.length; j++) {
+                HSSFCell cellContent = createRowContent.createCell(j);
+                cellContent.setCellStyle(hssfCellStyle.get(1));
+                if (i == 1) {
+                    sheet.autoSizeColumn(j, true);
+                }
+                cellContent.setCellValue(jsonObject.get(headKeyArr[j]) + "");
+            }
+        }
+
+        FileOutputStream fileOutputStream = new FileOutputStream("/zongcaibanyuangongfuli-lingqu.xls");
+        wb.write(fileOutputStream);
+        fileOutputStream.flush();
+        fileOutputStream.close();
     }
 
     /**
