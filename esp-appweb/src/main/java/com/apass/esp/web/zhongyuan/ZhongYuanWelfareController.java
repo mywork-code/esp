@@ -77,6 +77,10 @@ public class ZhongYuanWelfareController {
             QHService qhService = new QHService();
             String response = qhService.getQHServiceSoap().getQH(empTel);
             ZYResponseVo responseVo = GsonUtils.convertObj(response, ZYResponseVo.class);
+
+            if(!responseVo.isSuccess()){
+                return Response.fail("该手机号未中奖，无法领取奖品");
+            }
             ZYEmpInfoVo empInfoVo = responseVo.getResult().get(0);
             ZYPriceCollecEntity zyPriceCollecEntity = new ZYPriceCollecEntity();
             zyPriceCollecEntity.setCompanyName(empInfoVo.getCompanyName());
