@@ -30,7 +30,7 @@ public class ZYPriceCollecService {
         if(systemEnvConfig.isPROD()){
             return 0l;
         }else{
-            return 0l;
+            return 315L;
         }
     }
 
