@@ -404,6 +404,8 @@ public class ProCouponBaseInfoController {
                         throw new RuntimeException("商品skuId不能大于20字符!");
                     }
                     break;
+                case 4:
+                    break;
                 default:
                     throw new RuntimeException("优惠范围传入值不合法!");
             }

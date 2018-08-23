@@ -598,7 +598,10 @@ $(function(){
 					$.messager.alert('<span style="color: black">提示</span>','请选择品类');
 					return false;
 				}
-			}else{
+			}else if ($("#offerRange").combobox("getValue")=="4"){
+
+			}
+			else{
 				if($("#skuId").textbox("getValue")=="" || $("#skuId").textbox("getValue")==null){
 					$.messager.alert('<span style="color: black">提示</span>','请输入商品skuId');
 					return false;
