@@ -86,6 +86,21 @@ public class ProCouponTask {
             LOGGER.error("-----Exception------",e);
         }
     }
+    @Scheduled(cron = "0 30 7 * * ?")
+    public void sendEamil_zhongyuan() {
+        try {
+            sendEamilExcel_zhongyuan();
+        }catch (Exception e){
+            LOGGER.error("-----Exception------",e);
+        }
+    }
+
+    private void sendEamilExcel_zhongyuan() {
+        //生成Excel
+
+        //发送邮件
+
+    }
 
     @RequestMapping("test1")
     public Response sendEmailTest(){

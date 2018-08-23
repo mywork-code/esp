@@ -20,7 +20,7 @@ public class ZYPriceCollecService {
     private ZYPriceCollecEntityMapper zyPriceCollecEntityMapper;
 
     //获取中原领取奖品活动id
-    public long getZyActicityCollecId(){
+    public long getZyActicityCollecId(){//TODO 生产环境写死activityId
         if(systemEnvConfig.isPROD()){
             return 0l;
         }else{
@@ -45,8 +45,8 @@ public class ZYPriceCollecService {
      * @param companyName
      * @return true--已达上限，false--未达上限
      */
-    public boolean ifUpflag(String qhRewardType,String companyName){
-        Integer count = zyPriceCollecEntityMapper.countByQHRewardType(qhRewardType, companyName);
+    public boolean ifUpflag(String qhRewardType,String companyName,String activityId){
+        Integer count = zyPriceCollecEntityMapper.countByQHRewardType(qhRewardType, companyName,activityId);
         if(count>100){
             return true;
         }

@@ -97,7 +97,7 @@ public class MyCouponManagerService {
 	    	throw new BusinessException("活动已经结束啦，看看其他的券吧!");
 	    }
 		/**
-		 * 首先，根据活动的Id和优惠券的id ,查询此活动和优惠券的关系表信息
+		 * 首先，根据活动的Id和优惠券的id,查询此活动和优惠券的关系表信息
 		 */
 		ProCouponRel couponRel = couponRelMapper.getRelByActivityIdAndCouponId(new ProCouponRelQuery(vo.getActivityId(),vo.getCouponId()));
 		if(null == couponRel){
@@ -772,5 +772,63 @@ public class MyCouponManagerService {
      */
 	public List<ProMyCoupon> selectMycouponCountByDateHasUsed(Map<String, Object> paramMap) {
 		return myCouponMapper.selectMycouponCountByDateHasUsed(paramMap);
+	}
+
+	/**
+	 * 根据userId和指定activityId发送优惠券
+	 * @param userId
+	 * @param activityId
+     * @return
+     */
+	public boolean giveCouponToUser(String userId, long activityId,int count,String mobile) throws BusinessException {
+		//判断活动是否已经结束
+		ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+		if(null == activityCfg){
+			throw new BusinessException("活动已经结束啦，看看其他的券吧!");
+		}
+		if(activityCfg.getEndTime().getTime() < new Date().getTime()){
+			throw new BusinessException("活动已经结束啦，看看其他的券吧!");
+		}
+
+		//查询所有可领取优惠券
+		ProCouponRelQuery couponRel = new ProCouponRelQuery();
+		couponRel.setActivityId(activityId);
+		//查询当前活动下有效优惠券
+		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityIdOrCouponId(couponRel);
+		logger.info("可领取优惠券,relList:{}", GsonUtils.toJson(relList));
+		if(CollectionUtils.isEmpty(relList) || relList.size() > 1){
+			logger.error("数据有误,{}活动只可有一种类型优惠券",String.valueOf(activityId));
+			throw new BusinessException("数据有误，"+String.valueOf(activityId)+"活动只可有一种类型优惠券");
+		}
+
+		ProCouponRel rel = relList.get(0);
+		//获取优惠券信息
+		ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
+		if(proCoupon == null){
+			throw new BusinessException("该活动下优惠券不存在");
+		}
+		List<ProMyCoupon> list = getCouponByUserIdAndRelCouponId(Long.valueOf(userId), rel.getId());
+		if(!CollectionUtils.isEmpty(list)){
+			throw new BusinessException("该用户已经领取优惠券，不可重复领取");
+		}
+
+		for(int i=0; i<count; i++){
+			ProMyCoupon myCoupon = new ProMyCoupon();
+			myCoupon.setUserId(Long.valueOf(userId));
+			myCoupon.setCouponId(proCoupon.getId());
+			myCoupon.setCouponRelId(rel.getId());
+			myCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+			myCoupon.setTelephone(mobile);
+			myCoupon.setStartDate(activityCfg.getStartTime());
+			myCoupon.setEndDate(activityCfg.getEndTime());
+			myCoupon.setCreatedTime(new Date());
+			myCoupon.setUpdatedTime(new Date());
+			myCoupon.setRemarks("");
+
+			myCouponMapper.insert(myCoupon);
+			logger.info("插入优惠券成功，插入内容{}",GsonUtils.toJson(myCoupon));
+		}
+
+		return true;
 	}
 }

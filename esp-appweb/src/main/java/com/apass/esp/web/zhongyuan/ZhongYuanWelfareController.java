@@ -8,6 +8,7 @@ import com.apass.esp.domain.vo.zhongyuan.ZYEmpInfoVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYResponseVo;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.common.ZhongYuanQHService;
+import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.zhongyuan.ZYPriceCollecService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -43,6 +44,9 @@ public class ZhongYuanWelfareController {
 
     @Autowired
     private ZhongYuanQHService zhongYuanQHService;
+
+    @Autowired
+    private MyCouponManagerService myCouponManagerService;
     //领取活动商品接口
     @RequestMapping(value = "/addAwardGoods",method = RequestMethod.POST)
     @ResponseBody
@@ -125,6 +129,11 @@ public class ZhongYuanWelfareController {
         return Response.fail("服务器忙，请稍后再试");
     }
 
+    /**
+     * 校验手机号
+     * @param paramMap
+     * @return
+     */
     @RequestMapping("/checkMessage")
     @ResponseBody
     public Response checkUser(@RequestBody Map<String,Object> paramMap){
@@ -148,21 +157,35 @@ public class ZhongYuanWelfareController {
             //2,校验员工是否是否是中原员工
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
-                throw new RuntimeException("您不是中原员工，还能参与该活动");
+                throw new RuntimeException("您不是中原员工，不能参与该活动");
             }
 
             //3,校验该员工所属分公司领取免费礼品是否已达上限
+            //判断是否进入领取奖励页面
             //如果没有userId就不校验此步骤
             if(!StringUtils.isEmpty(userId)){
                 ZYEmpInfoVo zyEmpInfoVo = zyqh.getResult().get(0);
-                //如果是一重奖直接领取优惠券，不发放货物
-                if (!StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
+                //发优惠券,先获取活动id,根据活动id，找对应优惠券（该活动下只配一张优惠券）分发给用户
+                long activityId = zyPriceCollecService.getZyActicityCollecId();
+                if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
                         QHRewardTypeEnums.ZHONGYUAN_YI.getMessage())){
-                    boolean flag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName());
-
+                    myCouponManagerService.giveCouponToUser(userId,activityId,2,mobile);
+                    return Response.fail("领取成功，优惠券已发放到你的帐户");
+                }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
+                        QHRewardTypeEnums.ZHONGYUAN_ER.getMessage())){
+                    myCouponManagerService.giveCouponToUser(userId,activityId,5,mobile);
+                    boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
+                    if(upflag){
+                        return Response.fail("领取成功,优惠券已发放到你的帐户");
+                    }
+                }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
+                        QHRewardTypeEnums.ZHONGYUAN_SAN.getMessage())){
+                    myCouponManagerService.giveCouponToUser(userId,activityId,10,mobile);
+                    boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
+                    if(upflag){
+                        return Response.fail("领取成功，优惠券已发放到你的帐户");
+                    }
                 }
-
-
             }
 
         }catch (BusinessException be){
