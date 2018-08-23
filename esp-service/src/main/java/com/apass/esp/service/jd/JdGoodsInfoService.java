@@ -615,7 +615,7 @@ public class JdGoodsInfoService {
 		return proCouponStringList;
 	}
 
-	private boolean hasIncludeZYCouponActivityId(Long existActivityId){
+	public boolean hasIncludeZYCouponActivityId(Long existActivityId){
 		if(existActivityId.longValue() == zyPriceCollecService.getZyActicityCollecId()){
 			return true;
 		}else {

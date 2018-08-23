@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.service.jd.JdGoodsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,8 +57,8 @@ public class CouponManagerService {
 	private MyCouponManagerService myCouponManagerService;
 	
 	@Autowired
-	private CategoryMapper categoryMapper;
-	
+	private JdGoodsInfoService jdGoodsInfoService;
+
 	/**
 	 * 根据活动的Id，获取优惠券
 	 * @param activityId
@@ -109,6 +111,9 @@ public class CouponManagerService {
 		List<ProCouponVo> proCouponList = new ArrayList<ProCouponVo>();//可以领取的优惠券列表
 		List<ProCouponRel> relList = couponRelService.getCouponList();
 		for (ProCouponRel rel : relList) {
+			if(jdGoodsInfoService.hasIncludeZYCouponActivityId(rel.getProActivityId())){
+				continue;
+			}
 		   ProActivityCfg activityCfg = activityCfgService.getById(rel.getProActivityId());
 		   //判断活动是否有效（正在进行中）
 		   if(null !=activityCfg && ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg)){
