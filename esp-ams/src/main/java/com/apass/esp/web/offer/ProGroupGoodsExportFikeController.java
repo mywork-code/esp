@@ -327,6 +327,8 @@ public class ProGroupGoodsExportFikeController {
 	}
 	/**
 	 * 导入文件
+	 * 表有三列：商品编号/skuid,市场价,活动价
+	 * 导入条件：不存在存在其他有效的活动中
 	 * @param file
 	 * @return
 	 */

@@ -160,11 +160,11 @@ public class ZhongYuanWelfareController {
             if(StringUtils.isEmpty(authCode)){
                 throw new RuntimeException("验证码不能为空");
             }
-            //1,校验验证码是否正确
-            boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
-            if(!codeFlage){
-                throw new RuntimeException("验证码不正确!");
-            }
+            //1,校验验证码是否正确 TODO
+//            boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
+//            if(!codeFlage){
+//                throw new RuntimeException("验证码不正确!");
+//            }
             //2,校验员工是否是否是中原员工
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
