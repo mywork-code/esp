@@ -935,12 +935,12 @@ public class ExportFileController {
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             goodsInfoEntity.setStatus(GoodStatus.GOOD_UP.getCode());
             //微知商户
-            goodsInfoEntity.setMainGoodsCode("05103");
+            goodsInfoEntity.setMerchantCode("05103");
             goodsInfoEntity.setPage(Integer.valueOf(page));
             goodsInfoEntity.setRows(Integer.valueOf(rows));
             goodsInfoEntity.setStartRecordIndex(Integer.valueOf(startIndex));
-
             List<GoodsInfoEntity> goods;
+
             // 第一步：声明一个工作薄
             SXSSFWorkbook wb = new SXSSFWorkbook();
             goods = goodsService.pageListForExportGoods(goodsInfoEntity);
@@ -961,8 +961,11 @@ public class ExportFileController {
 
             int rowNum = 1;
             //第四步：生成内容
+            int x=0;
             for(GoodsInfoEntity entity: goods){
-                LOG.info("当前商品，GoodsInfoEntity:{}", GsonUtils.toJson(entity));
+//                LOG.info("当前商品，GoodsInfoEntity:{}", GsonUtils.toJson(entity));
+                x++;
+                LOG.info("第{}条商品,商品id:{}", x,entity.getId());
 
                 row = sheet.createRow(rowNum);
                 rowNum++;
@@ -1009,21 +1012,21 @@ public class ExportFileController {
             wb.write(out);
             out.flush();
 
-            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            //设置文件名
-            response.addHeader("Content-Disposition",
-                    "attachment;filename=" + new String(("已上架300（包含）元以下99（不包含）以上微知商品.xlsx").getBytes(), "iso-8859-1"));
+//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+//            //设置文件名
+//            response.addHeader("Content-Disposition",
+//                    "attachment;filename=" + new String(("已上架300（包含）元以下99（不包含）以上微知商品.xlsx").getBytes(), "iso-8859-1"));
 
-            outp = response.getOutputStream();
-            in = new FileInputStream(new File("/已上架300（包含）元以下99（不包含）以上微知商品.xlsx"));
-
-            byte[] b = new byte[1024];
-            int i;
-            while ((i = in.read(b)) > 0) {
-                outp.write(b, 0, i);
-            }
-            // 文件流刷新到客户端
-            outp.flush();
+//            outp = response.getOutputStream();
+//            in = new FileInputStream(new File("/已上架300（包含）元以下99（不包含）以上微知商品.xlsx"));
+//
+//            byte[] b = new byte[1024];
+//            int i;
+//            while ((i = in.read(b)) > 0) {
+//                outp.write(b, 0, i);
+//            }
+//            // 文件流刷新到客户端
+//            outp.flush();
 
         }catch (Exception e){
             LOG.error("------Exception------",e);
