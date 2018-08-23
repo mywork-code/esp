@@ -31,6 +31,7 @@ import java.util.Map;
  */
 @Component
 public class ZhongYuanQHService {
+	public static   URL qhServiceWsdl = ZhongYuanQHService.class.getResource("/wsdl/QHService.asmx.wsdl");
 
 	/**
 	 * 日志
@@ -43,7 +44,7 @@ public class ZhongYuanQHService {
 			throw new RuntimeException("请传入手机号");
 		}
 
-		QHService qhService = new QHService();
+		QHService qhService = new QHService(qhServiceWsdl);
 		String response = qhService.getQHServiceSoap().getQH(mobile);
 
 		if(StringUtils.isEmpty(response)){

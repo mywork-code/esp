@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.tempuri.QHService;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,8 @@ public class ZhongYuanWelfareController {
 
     @Autowired
     private MyCouponManagerService myCouponManagerService;
+
+
     //领取活动商品接口
     @RequestMapping(value = "/addAwardGoods",method = RequestMethod.POST)
     @ResponseBody
@@ -74,7 +77,7 @@ public class ZhongYuanWelfareController {
             if(consigneeTel.length() > 11){
                 return Response.fail("收货手机号不合法！");
             }
-            QHService qhService = new QHService();
+            QHService qhService = new QHService(ZhongYuanQHService.qhServiceWsdl);
             String response = qhService.getQHServiceSoap().getQH(empTel);
             ZYResponseVo responseVo = GsonUtils.convertObj(response, ZYResponseVo.class);
 
