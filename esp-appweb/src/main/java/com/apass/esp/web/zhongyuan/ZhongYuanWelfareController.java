@@ -196,6 +196,8 @@ public class ZhongYuanWelfareController {
                     if(upflag){
                         return Response.fail("领取成功，优惠券已发放到你的帐户");
                     }
+                }else {
+                    throw new RuntimeException("请告知该员工是几重奖");
                 }
             }
 
