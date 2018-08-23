@@ -914,7 +914,7 @@ public class ExportFileController {
     }
 
     /**
-     * 导出指定要求单品
+     * 导出指定要求商品
      * @return
      */
     @ResponseBody
