@@ -161,6 +161,7 @@ public class ZhongYuanWelfareController {
 //                throw new RuntimeException("您不是中原员工，不能参与该活动");
 //            }
 
+
             // 判断短信验证码是否在有效期内，不在发送
             Boolean Flage = mobileRandomService.getCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
             if (Flage) {
@@ -188,7 +189,7 @@ public class ZhongYuanWelfareController {
             //获取参数
             String mobile = CommonUtils.getValue(paramMap,"mobile");
             String authCode = CommonUtils.getValue(paramMap,"authCode");
-//            String userId = CommonUtils.getValue(paramMap,"userId");
+            String userId = CommonUtils.getValue(paramMap,"userId");
             if(StringUtils.isEmpty(mobile)){
                 throw new BusinessException("手机号码不能为空");
             }
@@ -204,6 +205,24 @@ public class ZhongYuanWelfareController {
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
                 throw new BusinessException("您不是中原员工，不能参与该活动");
+            }
+
+            //已达到上限在此处领优惠券,不进入领取货物界面
+            if(!StringUtils.isEmpty(userId)){
+                ZYEmpInfoVo zyEmpInfoVo = zyqh.getResult().get(0);
+                //发优惠券,先获取活动id,根据活动id，找对应优惠券（该活动下只配一张优惠券）分发给用户
+                long activityId = zyPriceCollecService.getZyActicityCollecId();
+                if(!StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
+                        QHRewardTypeEnums.ZHONGYUAN_YI.getMessage())){
+                    boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
+
+                    if(upflag){
+                        myCouponManagerService.giveCouponToUser(userId,activityId,2,mobile);
+                        return Response.fail("领取成功，优惠券已发放到你的帐户");
+                    }
+                }else {
+                    throw new BusinessException("请告知该员工是几重奖");
+                }
             }
 
         }catch (BusinessException be){
