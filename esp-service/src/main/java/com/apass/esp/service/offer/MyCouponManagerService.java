@@ -520,6 +520,7 @@ public class MyCouponManagerService {
 			proMyCoupon.setCreatedTime(now);
 			proMyCoupon.setUpdatedTime(now);
 			myCouponMapper.insertSelective(proMyCoupon);
+			logger.info("addFYDYHZY success ----------> userId:{},couponId:{},grant_node {}",customer.getAppId(),coupon.getId(),coupon.getGrantNode());
 			sendMessage = true;
 		}
 		/**
