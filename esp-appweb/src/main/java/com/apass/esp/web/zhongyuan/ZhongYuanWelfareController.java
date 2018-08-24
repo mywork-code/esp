@@ -140,11 +140,6 @@ public class ZhongYuanWelfareController {
             String mobile = CommonUtils.getValue(paramMap, "mobile");
             LOGGER.info("sendAuthCode, 发送验证码入参:{}", GsonUtils.toJson(paramMap));
             mobile = mobile.replace(" ", "");
-            //2,校验员工是否是否是中原员工
-            ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
-            if(!zyqh.isSuccess()){
-                throw new RuntimeException("您不是中原员工，不能参与该活动");
-            }
 
             Pattern p = Pattern.compile("^1[0-9]{10}$");
             Matcher m = p.matcher(mobile);
@@ -164,7 +159,6 @@ public class ZhongYuanWelfareController {
         }catch (Exception e){
             LOGGER.error("获取验证码失败,------Exception-----");
         }
-
 
         return Response.fail("服务器忙，请稍后再试");
     }
@@ -201,10 +195,12 @@ public class ZhongYuanWelfareController {
             }
 
         }catch (BusinessException be){
-            LOGGER.error("校验未通过,--Exception---:{}",be);
-            return Response.fail("校验未通过"+be.getMessage());
+            LOGGER.error("校验未通过,--Exception---",be);
+            System.out.println("校验未通过"+be.getMessage());
+            return Response.fail("校验未通过"+be.getErrorDesc());
         }catch (Exception e){
             LOGGER.error("校验未通过,--Exception---:{}",e);
+            System.out.println("校验未通过"+e.getMessage());
             return Response.fail("校验未通过"+e.getMessage());
         }
 
