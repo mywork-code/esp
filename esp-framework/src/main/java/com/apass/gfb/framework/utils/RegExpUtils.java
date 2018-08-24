@@ -1,5 +1,6 @@
 package com.apass.gfb.framework.utils;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -8,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
  * 验证工具
  */
 public class RegExpUtils {
+	public static final String DEFAULT_QUERY_REGEX = "[!$^&*+=|{}';'\",<>/?~！#￥%……&*——|{}【】‘；：”“'。，、？]";
+
 
 	/**
 	 * 
@@ -75,6 +78,24 @@ public class RegExpUtils {
 	public static boolean isDateYMD(String value) {
 		return isDate(value, "");
 	}
+
+	/**
+	 * 是否含特殊字符
+	 */
+	public static boolean specialSymbols(String value){
+		if (StringUtils.isBlank(value)) {
+			return false;
+		}
+		Pattern pattern = Pattern.compile(getQueryRegex());
+		Matcher matcher = pattern.matcher(value);
+
+		return matcher.matches();
+	}
+
+	private static String getQueryRegex() {
+		return DEFAULT_QUERY_REGEX;
+	}
+
 
 	/**
 	 * 输入正则表达式 和需要判断的值，返回判断结果

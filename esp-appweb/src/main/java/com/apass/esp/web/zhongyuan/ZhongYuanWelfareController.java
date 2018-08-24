@@ -14,9 +14,11 @@ import com.apass.esp.service.zhongyuan.ZYPriceCollecService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.RegExpUtils;
 import com.google.common.collect.Maps;
 import com.sun.javafx.fxml.builder.JavaFXFontBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.net.bsd.RExecClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +73,11 @@ public class ZhongYuanWelfareController {
             }
             if(consigneeName.length() > 5){
                 return Response.fail("收货人姓名不合法！");
+            }
+            //校验地址是否含特殊字符
+            boolean spcialFlag = RegExpUtils.specialSymbols(consigneeAddr);
+            if(spcialFlag){
+                return Response.fail("收货地址不含特殊字符！");
             }
             if(consigneeAddr.length() > 40){
                 return Response.fail("收货地址不合法！");
@@ -128,6 +135,9 @@ public class ZhongYuanWelfareController {
             zyPriceCollecService.addPriceCollec(zyPriceCollecEntity);
 
             return  Response.success("领取成功！");
+        }catch (BusinessException be){
+            LOGGER.error("领取活动商品接口异常啦----Exception----",be);
+            return Response.fail(be.getErrorDesc());
         }catch (Exception e) {
             LOGGER.error("领取活动商品接口异常啦----Exception----",e);
             return Response.fail(e.getMessage());
