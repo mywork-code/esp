@@ -77,6 +77,36 @@ public class ZhongYuanWelfareController {
             if(consigneeTel.length() > 11){
                 return Response.fail("收货手机号不合法！");
             }
+            //3,校验该员工所属分公司领取免费礼品是否已达上限
+            //判断是否进入领取奖励页面
+            //如果没有userId就不校验此步骤
+            ZYResponseVo zyqh = zhongYuanQHService.getZYQH(empTel);
+            if(!StringUtils.isEmpty(userId)){
+                ZYEmpInfoVo zyEmpInfoVo = zyqh.getResult().get(0);
+                //发优惠券,先获取活动id,根据活动id，找对应优惠券（该活动下只配一张优惠券）分发给用户
+                long activityId = zyPriceCollecService.getZyActicityCollecId();
+                if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
+                        QHRewardTypeEnums.ZHONGYUAN_YI.getMessage())){
+                    myCouponManagerService.giveCouponToUser(userId,activityId,2,empTel);
+                    return Response.fail("领取成功，优惠券已发放到你的帐户");
+                }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
+                        QHRewardTypeEnums.ZHONGYUAN_ER.getMessage())){
+                    myCouponManagerService.giveCouponToUser(userId,activityId,5,empTel);
+                    boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
+                    if(upflag){
+                        return Response.fail("领取成功,优惠券已发放到你的帐户");
+                    }
+                }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
+                        QHRewardTypeEnums.ZHONGYUAN_SAN.getMessage())){
+                    myCouponManagerService.giveCouponToUser(userId,activityId,10,empTel);
+                    boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
+                    if(upflag){
+                        return Response.fail("领取成功，优惠券已发放到你的帐户");
+                    }
+                }else {
+                    throw new RuntimeException("请告知该员工是几重奖");
+                }
+            }
             QHService qhService = new QHService(ZhongYuanQHService.qhServiceWsdl);
             String response = qhService.getQHServiceSoap().getQH(empTel);
             ZYResponseVo responseVo = GsonUtils.convertObj(response, ZYResponseVo.class);
@@ -169,36 +199,6 @@ public class ZhongYuanWelfareController {
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
                 throw new RuntimeException("您不是中原员工，不能参与该活动");
-            }
-
-            //3,校验该员工所属分公司领取免费礼品是否已达上限
-            //判断是否进入领取奖励页面
-            //如果没有userId就不校验此步骤
-            if(!StringUtils.isEmpty(userId)){
-                ZYEmpInfoVo zyEmpInfoVo = zyqh.getResult().get(0);
-                //发优惠券,先获取活动id,根据活动id，找对应优惠券（该活动下只配一张优惠券）分发给用户
-                long activityId = zyPriceCollecService.getZyActicityCollecId();
-                if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
-                        QHRewardTypeEnums.ZHONGYUAN_YI.getMessage())){
-                    myCouponManagerService.giveCouponToUser(userId,activityId,2,mobile);
-                    return Response.fail("领取成功，优惠券已发放到你的帐户");
-                }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
-                        QHRewardTypeEnums.ZHONGYUAN_ER.getMessage())){
-                    myCouponManagerService.giveCouponToUser(userId,activityId,5,mobile);
-                    boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
-                    if(upflag){
-                        return Response.fail("领取成功,优惠券已发放到你的帐户");
-                    }
-                }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
-                        QHRewardTypeEnums.ZHONGYUAN_SAN.getMessage())){
-                    myCouponManagerService.giveCouponToUser(userId,activityId,10,mobile);
-                    boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
-                    if(upflag){
-                        return Response.fail("领取成功，优惠券已发放到你的帐户");
-                    }
-                }else {
-                    throw new RuntimeException("请告知该员工是几重奖");
-                }
             }
 
         }catch (BusinessException be){
