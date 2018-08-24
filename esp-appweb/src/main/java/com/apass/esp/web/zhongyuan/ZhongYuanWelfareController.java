@@ -58,6 +58,7 @@ public class ZhongYuanWelfareController {
     @RequestMapping(value = "/addAwardGoods",method = RequestMethod.POST)
     @ResponseBody
     public Response addAwardGoods(@RequestBody Map<String, Object> paramMap){
+        LOGGER.info("领取活动商品接口接收的参数:{}",GsonUtils.toJson(paramMap));
         try {
             String consigneeName = CommonUtils.getValue(paramMap, "consigneeName");
             String consigneeTel = CommonUtils.getValue(paramMap, "consigneeTel");
@@ -128,6 +129,7 @@ public class ZhongYuanWelfareController {
 
             return  Response.success("领取成功！");
         }catch (Exception e) {
+            LOGGER.error("领取活动商品接口异常啦----Exception----",e);
             return Response.fail(e.getMessage());
         }
 
