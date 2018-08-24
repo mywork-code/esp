@@ -69,20 +69,20 @@ public class ZhongYuanWelfareController {
             String empTel =  CommonUtils.getValue(paramMap, "empTel");
             if(StringUtils.isEmpty(consigneeTel) || StringUtils.isEmpty(consigneeAddr)
                     || StringUtils.isEmpty(consigneeName) || StringUtils.isEmpty(empTel)){
-                return Response.fail("请完整输入信息！");
+                throw new BusinessException("请完整输入信息！");
             }
             if(consigneeName.length() > 5){
-                return Response.fail("收货人姓名不合法！");
+                throw new BusinessException("收货人姓名不合法！");
             }
             //校验地址是否含特殊字符
             boolean spcialFlag = RegExpUtils.specialSymbols(consigneeAddr);
             if(spcialFlag){
-                return Response.fail("收货地址不含特殊字符！");
+                throw new BusinessException("收货地址不可含特殊字符！");
             }
             if(consigneeAddr.length() > 40){
-                return Response.fail("收货地址不合法！");
+                throw new BusinessException("收货地址不合法！");
             }
-            if(consigneeTel.length() > 11){
+            if(!RegExpUtils.mobiles(empTel)){
                 return Response.fail("收货手机号不合法！");
             }
             //3,校验该员工所属分公司领取免费礼品是否已达上限
@@ -112,7 +112,7 @@ public class ZhongYuanWelfareController {
                         return Response.fail("领取成功，优惠券已发放到你的帐户");
                     }
                 }else {
-                    throw new RuntimeException("请告知该员工是几重奖");
+                    throw new BusinessException("请告知该员工是几重奖");
                 }
             }
 
@@ -140,7 +140,7 @@ public class ZhongYuanWelfareController {
             return Response.fail(be.getErrorDesc());
         }catch (Exception e) {
             LOGGER.error("领取活动商品接口异常啦----Exception----",e);
-            return Response.fail(e.getMessage());
+            return Response.fail("服务器忙，请稍后再试!");
         }
 
     }
@@ -153,11 +153,9 @@ public class ZhongYuanWelfareController {
             LOGGER.info("sendAuthCode, 发送验证码入参:{}", GsonUtils.toJson(paramMap));
             mobile = mobile.replace(" ", "");
 
-            Pattern p = Pattern.compile("^1[0-9]{10}$");
-            Matcher m = p.matcher(mobile);
             if (StringUtils.isAnyBlank(mobile)) {
                 return Response.fail("验证码接收手机号不能为空");
-            }else if (!m.matches()) {
+            }else if (!RegExpUtils.mobiles(mobile)) {
                 LOGGER.error("手机号格式不正确,请重新输入！");
                 return Response.fail("手机号格式不正确,请重新输入！");
             }
@@ -195,22 +193,22 @@ public class ZhongYuanWelfareController {
             //获取参数
             String mobile = CommonUtils.getValue(paramMap,"mobile");
             String authCode = CommonUtils.getValue(paramMap,"authCode");
-            String userId = CommonUtils.getValue(paramMap,"userId");
+//            String userId = CommonUtils.getValue(paramMap,"userId");
             if(StringUtils.isEmpty(mobile)){
-                throw new RuntimeException("手机号码不能为空");
+                throw new BusinessException("手机号码不能为空");
             }
             if(StringUtils.isEmpty(authCode)){
-                throw new RuntimeException("验证码不能为空");
+                throw new BusinessException("验证码不能为空");
             }
             //1,校验验证码是否正确 TODO
             boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
             if(!codeFlage){
-                throw new RuntimeException("验证码不正确!");
+                throw new BusinessException("验证码不正确!");
             }
             //2,校验员工是否是否是中原员工
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
-                throw new RuntimeException("您不是中原员工，不能参与该活动");
+                throw new BusinessException("您不是中原员工，不能参与该活动");
             }
 
         }catch (BusinessException be){
@@ -218,7 +216,7 @@ public class ZhongYuanWelfareController {
             return Response.fail(be.getErrorDesc());
         }catch (Exception e){
             LOGGER.error("校验未通过,--Exception---:{}",e);
-            return Response.fail(e.getMessage());
+            return Response.fail("服务器忙请稍后再试");
         }
 
         return Response.success("校验通过，请继续下一步操作");
