@@ -129,7 +129,7 @@ public class ZhongYuanWelfareController {
             zyPriceCollecEntity.setActivityId(zyPriceCollecService.getZyActicityCollecId() + "");
             zyPriceCollecService.addPriceCollec(zyPriceCollecEntity);
 
-            return  Response.success("领取成功！");
+            return  Response.success("领取成功，优惠券已发送致您的帐户且注意接收线下邮寄奖励！");
         }catch (BusinessException be){
             LOGGER.error("领取活动商品接口异常啦----Exception----",be);
             return Response.fail(be.getErrorDesc());
@@ -196,10 +196,10 @@ public class ZhongYuanWelfareController {
                 throw new BusinessException("验证码不能为空");
             }
             //1,校验验证码是否正确 TODO
-            boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
-            if(!codeFlage){
-                throw new BusinessException("验证码不正确!");
-            }
+//            boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
+//            if(!codeFlage){
+//                throw new BusinessException("验证码不正确!");
+//            }
             //2,校验员工是否是否是中原员工
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
