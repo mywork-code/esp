@@ -38,7 +38,13 @@ public class ZYPriceCollecService {
     public void addPriceCollec(ZYPriceCollecEntity zyPriceCollecEntity) throws BusinessException{
        Integer count = zyPriceCollecEntityMapper.countByQHRewardType(zyPriceCollecEntity.getQhRewardType(),
                 zyPriceCollecEntity.getCompanyName(),String.valueOf(getZyActicityCollecId()));
-       if(count > 100){
+        int max;
+        if(systemEnvConfig.isPROD()){
+            max = 100;
+        }else {
+            max = 5;
+        }
+       if(count > max){
            throw new BusinessException("奖品领取已达到上限！");
        }
         zyPriceCollecEntityMapper.insertSelective(zyPriceCollecEntity);
@@ -53,7 +59,13 @@ public class ZYPriceCollecService {
      */
     public boolean ifUpflag(String qhRewardType,String companyName,String activityId){
         Integer count = zyPriceCollecEntityMapper.countByQHRewardType(qhRewardType, companyName,activityId);
-        if(count>100){
+        int max;
+        if(systemEnvConfig.isPROD()){
+            max = 100;
+        }else {
+            max = 5;
+        }
+        if(count>max){//TODO
             return true;
         }
         return false;
