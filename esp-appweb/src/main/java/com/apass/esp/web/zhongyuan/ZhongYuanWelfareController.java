@@ -156,10 +156,10 @@ public class ZhongYuanWelfareController {
             }
 
             //2,校验员工是否是否是中原员工 TODO
-//            ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
-//            if(!zyqh.isSuccess()){
-//                throw new RuntimeException("您不是中原员工，不能参与该活动");
-//            }
+            ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
+            if(!zyqh.isSuccess()){
+                throw new RuntimeException("您不是中原员工，不能参与该活动");
+            }
 
 
             // 判断短信验证码是否在有效期内，不在发送
@@ -197,10 +197,10 @@ public class ZhongYuanWelfareController {
                 throw new BusinessException("验证码不能为空");
             }
             //1,校验验证码是否正确 TODO
-//            boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
-//            if(!codeFlage){
-//                throw new BusinessException("验证码不正确!");
-//            }
+            boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
+            if(!codeFlage){
+                throw new BusinessException("验证码不正确!");
+            }
             //2,校验员工是否是否是中原员工
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
