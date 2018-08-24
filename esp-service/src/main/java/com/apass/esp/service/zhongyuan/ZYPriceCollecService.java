@@ -47,7 +47,12 @@ public class ZYPriceCollecService {
        if(count > max){
            throw new BusinessException("奖品领取已达到上限！");
        }
-        zyPriceCollecEntityMapper.insertSelective(zyPriceCollecEntity);
+       //检查是否重复领取
+        ZYPriceCollecEntity t = zyPriceCollecEntityMapper.selectByEmpTel(zyPriceCollecEntity.getEmpTel(),zyPriceCollecEntity.getActivityId());
+       if(t != null ){
+           throw new BusinessException("您已领取过该奖品！");
+       }
+       zyPriceCollecEntityMapper.insertSelective(zyPriceCollecEntity);
 
     }
 

@@ -378,7 +378,9 @@ public class ProCouponBaseInfoController {
          */
         if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_HDSP.getCode())
                 && !StringUtils.equals(proCoupon.getExtendType(), CouponExtendType.COUPON_FYDYHZX.getCode())
-                && !StringUtils.equals(proCoupon.getExtendType(),CouponExtendType.COUPON_SMYHZX.getCode())) {
+                && !StringUtils.equals(proCoupon.getExtendType(),CouponExtendType.COUPON_SMYHZX.getCode())
+                && !StringUtils.equals(proCoupon.getExtendType(),CouponExtendType.COUPON_LKHYWY.getCode()) ) {
+
             if (proCoupon.getOfferRange() == null) {
                 throw new RuntimeException("优惠范围不能为空!");
             }

@@ -21,4 +21,12 @@
       </if>
     </where>
   </select>
+
+  <select id="selectByEmpTel" resultMap="BaseResultMap">
+
+    select <include refid="Base_Column_List" /> from t_esp_zy_prize_collec
+    where emp_tel = #{empTel}
+    and activity_id = #{activityId}
+    and is_delete = 'N'
+  </select>
 </mapper>
