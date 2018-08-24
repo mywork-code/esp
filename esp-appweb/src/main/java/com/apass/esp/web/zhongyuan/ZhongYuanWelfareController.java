@@ -107,14 +107,8 @@ public class ZhongYuanWelfareController {
                     throw new RuntimeException("请告知该员工是几重奖");
                 }
             }
-            QHService qhService = new QHService(ZhongYuanQHService.qhServiceWsdl);
-            String response = qhService.getQHServiceSoap().getQH(empTel);
-            ZYResponseVo responseVo = GsonUtils.convertObj(response, ZYResponseVo.class);
 
-            if(!responseVo.isSuccess()){
-                return Response.fail("该手机号未中奖，无法领取奖品");
-            }
-            ZYEmpInfoVo empInfoVo = responseVo.getResult().get(0);
+            ZYEmpInfoVo empInfoVo = zyqh.getResult().get(0);
             ZYPriceCollecEntity zyPriceCollecEntity = new ZYPriceCollecEntity();
             zyPriceCollecEntity.setCompanyName(empInfoVo.getCompanyName());
             zyPriceCollecEntity.setConsigneeAddr(consigneeAddr);

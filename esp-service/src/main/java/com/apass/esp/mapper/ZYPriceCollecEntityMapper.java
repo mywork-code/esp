@@ -17,4 +17,7 @@ public interface ZYPriceCollecEntityMapper extends GenericMapper<ZYPriceCollecEn
                                 @Param("activityId") String activityId);
 
     List<ZYPriceCollecEntity> selectAllCollec(Map<String,Object> paramMap);
+
+    ZYPriceCollecEntity selectByEmpTel(@Param("empTel")String empTel,
+                                       @Param("activityId")String activityId);
 }
