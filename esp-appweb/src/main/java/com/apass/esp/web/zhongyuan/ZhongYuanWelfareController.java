@@ -146,6 +146,11 @@ public class ZhongYuanWelfareController {
             String mobile = CommonUtils.getValue(paramMap, "mobile");
             LOGGER.info("sendAuthCode, 发送验证码入参:{}", GsonUtils.toJson(paramMap));
             mobile = mobile.replace(" ", "");
+            //2,校验员工是否是否是中原员工
+            ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
+            if(!zyqh.isSuccess()){
+                throw new RuntimeException("您不是中原员工，不能参与该活动");
+            }
 
             Pattern p = Pattern.compile("^1[0-9]{10}$");
             Matcher m = p.matcher(mobile);
