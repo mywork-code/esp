@@ -53,9 +53,7 @@ public class ZhongYuanQHService {
 		}
 		ZYResponseVo zyResponseVo = GsonUtils.convertObj(response, ZYResponseVo.class);
 		LOGGER.info("根据手机号码mobile:{},查询中原接口返回数据：{}",mobile, GsonUtils.toJson(zyResponseVo));
-		if(!zyResponseVo.isSuccess()){
-			throw new BusinessException("该手机号未中奖，无法领取奖品");
-		}
+
 		return zyResponseVo;
 	}
 

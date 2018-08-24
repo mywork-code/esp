@@ -157,7 +157,7 @@ public class ZhongYuanWelfareController {
                 return Response.success("验证码发送成功,请注意查收");
             }
         }catch (Exception e){
-            LOGGER.error("获取验证码失败,------Exception-----");
+            LOGGER.error("获取验证码失败,------Exception-----",e);
         }
 
         return Response.fail("服务器忙，请稍后再试");
@@ -184,10 +184,10 @@ public class ZhongYuanWelfareController {
                 throw new RuntimeException("验证码不能为空");
             }
             //1,校验验证码是否正确 TODO
-//            boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
-//            if(!codeFlage){
-//                throw new RuntimeException("验证码不正确!");
-//            }
+            boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
+            if(!codeFlage){
+                throw new RuntimeException("验证码不正确!");
+            }
             //2,校验员工是否是否是中原员工
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
@@ -196,12 +196,10 @@ public class ZhongYuanWelfareController {
 
         }catch (BusinessException be){
             LOGGER.error("校验未通过,--Exception---",be);
-            System.out.println("校验未通过"+be.getMessage());
-            return Response.fail("校验未通过"+be.getErrorDesc());
+            return Response.fail(be.getErrorDesc());
         }catch (Exception e){
             LOGGER.error("校验未通过,--Exception---:{}",e);
-            System.out.println("校验未通过"+e.getMessage());
-            return Response.fail("校验未通过"+e.getMessage());
+            return Response.fail(e.getMessage());
         }
 
         return Response.success("校验通过，请继续下一步操作");
