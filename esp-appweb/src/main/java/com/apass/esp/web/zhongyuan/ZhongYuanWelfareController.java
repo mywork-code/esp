@@ -150,6 +150,12 @@ public class ZhongYuanWelfareController {
                 return Response.fail("手机号格式不正确,请重新输入！");
             }
 
+            //2,校验员工是否是否是中原员工
+            ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
+            if(!zyqh.isSuccess()){
+                throw new RuntimeException("您不是中原员工，不能参与该活动");
+            }
+
             // 判断短信验证码是否在有效期内，不在发送
             Boolean Flage = mobileRandomService.getCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
             if (Flage) {
@@ -158,6 +164,7 @@ public class ZhongYuanWelfareController {
             }
         }catch (Exception e){
             LOGGER.error("获取验证码失败,------Exception-----",e);
+            return Response.fail(e.getMessage());
         }
 
         return Response.fail("服务器忙，请稍后再试");
