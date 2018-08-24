@@ -3153,13 +3153,15 @@ public class OrderService {
 		    							StringUtils.equals(stocks.getSkuId(), coupon.getSkuId()))){
 		    						total = total.add(purchase.getPayMoney());
 			    					goodslist.add(purchase.getGoodsStockId()+"");
-		    					}else if(StringUtils.equals(coupon.getExtendType(), CouponExtendType.COUPON_FYDYHZX.getCode())){
+		    					}
+		    					//全部活动商品
+		    					else if(StringUtils.equals(coupon.getExtendType(), CouponExtendType.COUPON_FYDYHZX.getCode())
+                                        || StringUtils.equals(coupon.getExtendType(), CouponExtendType.COUPON_SMYHZX.getCode())
+                                        || StringUtils.equals(coupon.getExtendType(), CouponExtendType.COUPON_YHLQ.getCode())
+                                        || StringUtils.equals(coupon.getExtendType(), CouponExtendType.COUPON_LKHYWY.getCode())){
 		    						total = total.add(purchase.getPayMoney());
 			    					goodslist.add(purchase.getGoodsStockId()+"");
-		    					}else if(StringUtils.equals(coupon.getExtendType(), CouponExtendType.COUPON_SMYHZX.getCode())){
-                                    total = total.add(purchase.getPayMoney());
-                                    goodslist.add(purchase.getGoodsStockId()+"");
-                                }
+		    					}
 							}
 							break;
 						case COUPON_QPL ://全品类
