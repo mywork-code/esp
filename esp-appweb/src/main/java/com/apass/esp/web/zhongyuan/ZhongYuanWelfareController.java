@@ -74,11 +74,6 @@ public class ZhongYuanWelfareController {
             if(consigneeName.length() > 5){
                 throw new BusinessException("收货人姓名不合法！");
             }
-            //校验地址是否含特殊字符
-            boolean spcialFlag = RegExpUtils.specialSymbols(consigneeAddr);
-            if(spcialFlag){
-                throw new BusinessException("收货地址不可含特殊字符！");
-            }
             if(consigneeAddr.length() > 40){
                 throw new BusinessException("收货地址不合法！");
             }
