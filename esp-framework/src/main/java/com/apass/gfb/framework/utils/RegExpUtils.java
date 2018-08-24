@@ -44,6 +44,11 @@ public class RegExpUtils {
 		return Pattern.matches("^1[0-9]{10}$", value);
 	}
 
+	/**
+	 * 验证手机号是否合法
+	 * @param value
+	 * @return
+     */
 	public static boolean mobiles(String value){
 		return Pattern.matches("^((13[0-9])|(14[5|7])|(15[0-9])|(17[0-9])|(18[0-9]))\\d{8}$", value);
 	}
@@ -89,7 +94,7 @@ public class RegExpUtils {
 		Pattern pattern = Pattern.compile(getQueryRegex());
 		Matcher matcher = pattern.matcher(value);
 
-		return matcher.matches();
+		return matcher.find();
 	}
 
 	private static String getQueryRegex() {
