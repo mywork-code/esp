@@ -172,7 +172,7 @@ public class ZhongYuanWelfareController {
                 mobileRandomService.sendMobileVerificationCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
                 return Response.success("验证码发送成功,请注意查收");
             }else{
-                return Response.fail("验证码仍有效，请两分钟后再发");
+                return Response.fail("验证码仍有效，请两分钟后 再次获取");
             }
         }catch (Exception e){
             LOGGER.error("获取验证码失败,------Exception-----",e);
