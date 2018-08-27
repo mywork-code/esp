@@ -242,12 +242,19 @@ public class ZhongYuanWelfareController {
                         myCouponManagerService.giveCouponToUser(userId,activityId,2,mobile);
                         return Response.fail("领取成功，优惠券已发放到你的帐户");
                 }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
-                        QHRewardTypeEnums.ZHONGYUAN_ER.getMessage())||StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
+                        QHRewardTypeEnums.ZHONGYUAN_ER.getMessage())){
+                    boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
+
+                    if(upflag){
+                        myCouponManagerService.giveCouponToUser(userId,activityId,5,mobile);
+                        return Response.fail("领取成功，优惠券已发放到你的帐户");
+                    }
+                }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
                         QHRewardTypeEnums.ZHONGYUAN_SAN.getMessage())){
                     boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
 
                     if(upflag){
-                        myCouponManagerService.giveCouponToUser(userId,activityId,2,mobile);
+                        myCouponManagerService.giveCouponToUser(userId,activityId,10,mobile);
                         return Response.fail("领取成功，优惠券已发放到你的帐户");
                     }
                 }else {
