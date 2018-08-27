@@ -171,7 +171,7 @@ public class ZhongYuanWelfareController {
             //根据手机号校验是否已领取优惠券
             CustomerBasicInfo customerInfo = commonHttpClient.getCustomerInfo("获取验证码-->getAuthCode", mobile);
             if(customerInfo==null || !userId.equals(customerInfo.getAppId())){
-                return Response.fail("手机号和帐号不匹配，请用当前帐号注册手机号领取");
+                return Response.fail("该员工奖励已被其他账号领取");
             }
 
 
