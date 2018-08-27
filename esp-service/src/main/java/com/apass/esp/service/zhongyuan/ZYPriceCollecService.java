@@ -28,7 +28,7 @@ public class ZYPriceCollecService {
     //获取中原领取奖品活动id
     public long getZyActicityCollecId(){//TODO 生产环境写死activityId
         if(systemEnvConfig.isPROD()){
-            return 0l;
+            return 39l;
         }else{
             return 315L;
         }
