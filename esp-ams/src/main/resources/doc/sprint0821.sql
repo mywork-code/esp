@@ -17,3 +17,4 @@ CREATE TABLE `t_esp_zy_prize_collec` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='中原领奖记录表';
 
+alter table t_esp_pro_mycoupon add column relate_tel varchar(32) not null default '' comment '关联手机号';
