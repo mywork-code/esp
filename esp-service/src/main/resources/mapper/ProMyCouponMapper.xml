@@ -72,9 +72,6 @@
       <if test="updatedTime != null" >
         updated_time,
       </if>
-      <if test="updatedTime != null" >
-        updated_time,
-      </if>
       <if test="relate_tel != null" >
         relate_tel,
       </if>
@@ -106,6 +103,9 @@
       </if>
       <if test="createdTime != null" >
         #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
       </if>
       <if test="relateTel != null" >
         #{relateTel,jdbcType=VARCHAR},
