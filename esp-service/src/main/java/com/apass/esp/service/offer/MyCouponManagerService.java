@@ -878,7 +878,7 @@ public class MyCouponManagerService {
 		if(null !=mobile && null !=relId){
 			query.setRelateTel(mobile);
 			query.setCouponRelId(relId);
-			return couponMapper.selectMycouponCountByRelateTelAndRelCouponId(mobile,relId);
+			return myCouponMapper.selectMycouponCountByRelateTelAndRelCouponId(query);
 		}
 
 		return null;

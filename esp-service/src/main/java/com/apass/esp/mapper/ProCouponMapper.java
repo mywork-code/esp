@@ -27,6 +27,6 @@ public interface ProCouponMapper extends GenericMapper<ProCoupon, Long> {
 
     List<ProCoupon> selectProCouponByIds(Map<String, Object> paramMap);
 
-    List<ProMyCoupon> selectMycouponCountByRelateTelAndRelCouponId(String mobile, Long relId);
+
 }
 

@@ -32,7 +32,7 @@
         <include refid="paramSql" />
    </select>
 
-   <select id="selectMycouponCountByRelateTelAndRelCouponId"  resultMap="BaseResultMap">
+   <select id="selectMycouponCountByRelateTelAndRelCouponId" parameterType="com.apass.esp.domain.query.ProMyCouponQuery" resultMap="BaseResultMap">
        select <include refid="Base_Column_List" />
         from t_esp_pro_mycoupon
         <include refid="paramSql" />
