@@ -1,5 +1,6 @@
 package com.apass.esp.service.offer;
 
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.*;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
@@ -604,7 +605,7 @@ public class MyCouponManagerService {
 				myCoupon.setUpdatedTime(new Date());
 				myCoupon.setRemarks("");
 
-				myCouponMapper.insert(myCoupon);
+				myCouponMapper.insertSelective(myCoupon);
 				count++;
 			}
 
@@ -668,7 +669,7 @@ public class MyCouponManagerService {
 				myCoupon.setUpdatedTime(new Date());
 				myCoupon.setRemarks("");
 
-				myCouponMapper.insert(myCoupon);
+				myCouponMapper.insertSelective(myCoupon);
 				logger.info("插入优惠券成功，插入内容{}",GsonUtils.toJson(myCoupon));
 				count++;
 			}
@@ -779,6 +780,7 @@ public class MyCouponManagerService {
 	 * 根据userId和指定activityId发送优惠券
 	 * @param userId
 	 * @param activityId
+	 * @param mobile:中原手机号
      * @return
      */
 	public boolean giveCouponToUser(String userId, long activityId,int count,String mobile) throws BusinessException {
@@ -813,23 +815,34 @@ public class MyCouponManagerService {
 			throw new BusinessException("该用户已经领取优惠券，不可重复领取");
 		}
 
+		//调供房帮接口获取用户信息
+		CustomerBasicInfo customer = commonHttpClient.getCustomerInfo(userId);
+
 		for(int i=0; i<count; i++){
 			ProMyCoupon myCoupon = new ProMyCoupon();
 			myCoupon.setUserId(Long.valueOf(userId));
 			myCoupon.setCouponId(proCoupon.getId());
 			myCoupon.setCouponRelId(rel.getId());
 			myCoupon.setStatus(CouponStatus.COUPON_N.getCode());
-			myCoupon.setTelephone(mobile);
+			myCoupon.setTelephone(customer.getMobile());
 			myCoupon.setStartDate(activityCfg.getStartTime());
 			myCoupon.setEndDate(activityCfg.getEndTime());
 			myCoupon.setCreatedTime(new Date());
 			myCoupon.setUpdatedTime(new Date());
 			myCoupon.setRemarks("");
+			myCoupon.setRelateTel(mobile);
 
-			myCouponMapper.insert(myCoupon);
+			myCouponMapper.insertSelective(myCoupon);
 			logger.info("插入优惠券成功，插入内容{}",GsonUtils.toJson(myCoupon));
 		}
 
 		return true;
+	}
+
+	public ProMyCoupon selectMycouponCountByRelateTel(String mobile) {
+
+
+
+		return null;
 	}
 }

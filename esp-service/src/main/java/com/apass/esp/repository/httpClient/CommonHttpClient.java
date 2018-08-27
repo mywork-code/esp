@@ -121,6 +121,16 @@ public class CommonHttpClient {
         return customerBasicInfo;
     }
 
+    public CustomerBasicInfo getCustomerInfo(String userId){
+    	Response response = this.getCustomerBasicInfo("", Long.valueOf(userId));
+        if(response==null||!response.statusResult()){
+        	LOGGER.error("user is not exist=====>>>>telephone is {}",userId);
+            return null;
+        }
+        CustomerBasicInfo customerBasicInfo = Response.resolveResult(response, CustomerBasicInfo.class);
+        return customerBasicInfo;
+    }
+
 
 
 

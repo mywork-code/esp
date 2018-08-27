@@ -13,10 +13,11 @@
     <result column="remarks" property="remarks" jdbcType="VARCHAR" />
     <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
     <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+    <result column="relate_tel" property="relateTel" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, user_id, coupon_rel_id, status, coupon_id, telephone, start_date, end_date, remarks, 
-    created_time, updated_time
+    created_time, updated_time,relate_tel
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -32,11 +33,11 @@
     insert into t_esp_pro_mycoupon (user_id, coupon_rel_id, status, 
       coupon_id, telephone, start_date, 
       end_date, remarks, created_time, 
-      updated_time)
+      updated_time,relate_tel)
     values (#{userId,jdbcType=BIGINT}, #{couponRelId,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, 
       #{couponId,jdbcType=BIGINT}, #{telephone,jdbcType=VARCHAR}, #{startDate,jdbcType=TIMESTAMP}, 
       #{endDate,jdbcType=TIMESTAMP}, #{remarks,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, 
-      #{updatedTime,jdbcType=TIMESTAMP})
+      #{updatedTime,jdbcType=TIMESTAMP},#{relateTel,jdbcType=VARCHAR},)
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProMyCoupon" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_pro_mycoupon
@@ -71,6 +72,12 @@
       <if test="updatedTime != null" >
         updated_time,
       </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+      <if test="relate_tel != null" >
+        relate_tel,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="userId != null" >
@@ -100,8 +107,8 @@
       <if test="createdTime != null" >
         #{createdTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updatedTime != null" >
-        #{updatedTime,jdbcType=TIMESTAMP},
+      <if test="relateTel != null" >
+        #{relateTel,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -138,6 +145,9 @@
       <if test="updatedTime != null" >
         updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="relateTel != null" >
+        relate_tel = #{relateTel,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -153,6 +163,7 @@
       remarks = #{remarks,jdbcType=VARCHAR},
       created_time = #{createdTime,jdbcType=TIMESTAMP},
       updated_time = #{updatedTime,jdbcType=TIMESTAMP}
+      relate_tel = #{relateTel,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

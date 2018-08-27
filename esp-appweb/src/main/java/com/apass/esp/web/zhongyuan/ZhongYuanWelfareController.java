@@ -1,13 +1,17 @@
 package com.apass.esp.web.zhongyuan;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.ProCouponRel;
+import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.ZYPriceCollecEntity;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.QHRewardTypeEnums;
 import com.apass.esp.domain.enums.SmsTypeEnums;
+import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.vo.zhongyuan.ZYCompanyCityAwardsVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYEmpInfoVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYResponseVo;
+import com.apass.esp.mapper.ProCouponRelMapper;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.service.common.MobileSmsService;
@@ -20,6 +24,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RegExpUtils;
 import com.google.common.collect.Maps;
 import com.sun.javafx.fxml.builder.JavaFXFontBuilder;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.bsd.RExecClient;
 import org.slf4j.Logger;
@@ -60,6 +65,8 @@ public class ZhongYuanWelfareController {
 
     @Autowired
     private CommonHttpClient commonHttpClient;
+    @Autowired
+    private ProCouponRelMapper couponRelMapper;
 
 
     //领取活动商品接口
@@ -151,7 +158,6 @@ public class ZhongYuanWelfareController {
     public Response getAuthCode(@RequestBody Map<String,Object> paramMap){
         try{
             String mobile = CommonUtils.getValue(paramMap, "mobile");
-            String userId = CommonUtils.getValue(paramMap, "userId");
             LOGGER.info("sendAuthCode, 发送验证码入参:{}", GsonUtils.toJson(paramMap));
             mobile = mobile.replace(" ", "");
 
@@ -167,13 +173,6 @@ public class ZhongYuanWelfareController {
             if(!zyqh.isSuccess()){
                 throw new RuntimeException("您不是中原员工，不能参与该活动");
             }
-
-            //根据手机号校验是否已领取优惠券
-            CustomerBasicInfo customerInfo = commonHttpClient.getCustomerInfo("获取验证码-->getAuthCode", mobile);
-            if(customerInfo==null || !userId.equals(customerInfo.getAppId())){
-                return Response.fail("该员工奖励已被其他账号领取");
-            }
-
 
             // 判断短信验证码是否在有效期内，不在发送
             Boolean flage = mobileRandomService.getCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
@@ -231,6 +230,9 @@ public class ZhongYuanWelfareController {
                 ZYEmpInfoVo zyEmpInfoVo = zyqh.getResult().get(0);
                 //发优惠券,先获取活动id,根据活动id，找对应优惠券（该活动下只配一张优惠券）分发给用户
                 long activityId = zyPriceCollecService.getZyActicityCollecId();
+                //校验手机号是否已领取优惠券
+                ProMyCoupon myCoupon = myCouponManagerService.selectMycouponCountByRelateTel(mobile);
+
 
                 //如果是一重奖直接发优惠券，不进入领取奖品页
                 if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),

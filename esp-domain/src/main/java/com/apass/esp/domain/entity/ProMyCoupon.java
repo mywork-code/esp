@@ -27,6 +27,8 @@ public class ProMyCoupon {
     
     private Boolean activityFalge;
 
+    private String relateTel;
+
     public Long getId() {
         return id;
     }
@@ -122,5 +124,12 @@ public class ProMyCoupon {
 	public void setActivityFalge(Boolean activityFalge) {
 		this.activityFalge = activityFalge;
 	}
-    
+
+    public String getRelateTel() {
+        return relateTel;
+    }
+
+    public void setRelateTel(String relateTel) {
+        this.relateTel = relateTel;
+    }
 }
