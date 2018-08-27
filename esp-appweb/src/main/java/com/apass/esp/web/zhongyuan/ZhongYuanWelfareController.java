@@ -1,32 +1,26 @@
 package com.apass.esp.web.zhongyuan;
 
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.ZYPriceCollecEntity;
-import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.QHRewardTypeEnums;
 import com.apass.esp.domain.enums.SmsTypeEnums;
-import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.vo.zhongyuan.ZYCompanyCityAwardsVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYEmpInfoVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYResponseVo;
 import com.apass.esp.mapper.ProCouponRelMapper;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
-import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.common.ZhongYuanQHService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.zhongyuan.ZYPriceCollecService;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RegExpUtils;
-import com.google.common.collect.Maps;
-import com.sun.javafx.fxml.builder.JavaFXFontBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.net.bsd.RExecClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +29,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.tempuri.QHService;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by DELL on 2018/8/21.
@@ -68,6 +58,8 @@ public class ZhongYuanWelfareController {
     @Autowired
     private ProCouponRelMapper couponRelMapper;
 
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
 
     //领取活动商品接口
     @RequestMapping(value = "/addAwardGoods",method = RequestMethod.POST)
@@ -179,13 +171,14 @@ public class ZhongYuanWelfareController {
             if (flage) {
                 mobileRandomService.sendMobileVerificationCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
                 return Response.success("验证码发送成功,请注意查收");
+            }else{
+                return Response.fail("验证码仍有效，请两分钟后再发");
             }
         }catch (Exception e){
             LOGGER.error("获取验证码失败,------Exception-----",e);
             return Response.fail(e.getMessage());
         }
 
-        return Response.fail("服务器忙，请稍后再试");
     }
 
     /**
@@ -205,20 +198,30 @@ public class ZhongYuanWelfareController {
             if(StringUtils.isEmpty(mobile)){
                 throw new BusinessException("手机号码不能为空");
             }
-            if(StringUtils.isEmpty(authCode)){
-                throw new BusinessException("验证码不能为空");
+
+
+            if(systemEnvConfig.isPROD()){
+                if(StringUtils.isEmpty(authCode)){
+                    throw new BusinessException("验证码不能为空");
+                }
+                //校验验证码是否过期
+                boolean expireFlag = mobileRandomService.getCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
+                if(expireFlag){
+                    throw new BusinessException("验证码已失效，请重新获取!");
+                }
+                //1,校验验证码是否正确 TODO
+                boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
+                if(!codeFlage){
+                    throw new BusinessException("验证码不正确!");
+                }
+            }else{
+                //测试环境不校验验证码
+                if(!"123456".equals(authCode)){
+                    throw new BusinessException("测试环境验证码为123465!");
+                }
             }
 
-            //校验验证码是否过期
-            boolean expireFlag = mobileRandomService.getCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
-            if(expireFlag){
-                throw new BusinessException("验证码已失效，请重新获取!");
-            }
-            //1,校验验证码是否正确 TODO
-            boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
-            if(!codeFlage){
-                throw new BusinessException("验证码不正确!");
-            }
+
             //2,校验员工是否是否是中原员工
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
