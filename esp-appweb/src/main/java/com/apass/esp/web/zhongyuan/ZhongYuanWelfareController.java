@@ -2,11 +2,14 @@ package com.apass.esp.web.zhongyuan;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ZYPriceCollecEntity;
+import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.QHRewardTypeEnums;
 import com.apass.esp.domain.enums.SmsTypeEnums;
 import com.apass.esp.domain.vo.zhongyuan.ZYCompanyCityAwardsVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYEmpInfoVo;
 import com.apass.esp.domain.vo.zhongyuan.ZYResponseVo;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.common.ZhongYuanQHService;
 import com.apass.esp.service.offer.MyCouponManagerService;
@@ -54,6 +57,9 @@ public class ZhongYuanWelfareController {
 
     @Autowired
     private MyCouponManagerService myCouponManagerService;
+
+    @Autowired
+    private CommonHttpClient commonHttpClient;
 
 
     //领取活动商品接口
@@ -218,6 +224,14 @@ public class ZhongYuanWelfareController {
                 ZYEmpInfoVo zyEmpInfoVo = zyqh.getResult().get(0);
                 //发优惠券,先获取活动id,根据活动id，找对应优惠券（该活动下只配一张优惠券）分发给用户
                 long activityId = zyPriceCollecService.getZyActicityCollecId();
+
+                //根据手机号校验是否已领取优惠券
+                CustomerBasicInfo customerInfo = commonHttpClient.getCustomerInfo("校验号码-->/checkMessage", mobile);
+                if(customerInfo!=null && !userId.equals(customerInfo.getAppId())){
+                    myCouponManagerService.giveCouponToUser(String.valueOf(customerInfo.getAppId()),activityId,2,mobile);
+                    return Response.fail("领取成功，优惠券已发放到你的帐户");
+                }
+
                 //如果是一重奖直接发优惠券，不进入领取奖品页
                 if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
                         QHRewardTypeEnums.ZHONGYUAN_YI.getMessage())){
