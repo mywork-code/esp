@@ -217,7 +217,7 @@ public class ZhongYuanWelfareController {
             }else{
                 //测试环境不校验验证码
                 if(!"123456".equals(authCode)){
-                    throw new BusinessException("测试环境验证码为123465!");
+                    throw new BusinessException("测试环境验证码为123456");
                 }
             }
 

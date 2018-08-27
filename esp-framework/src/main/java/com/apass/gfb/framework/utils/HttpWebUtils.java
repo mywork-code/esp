@@ -187,7 +187,6 @@ public class HttpWebUtils {
 	 * 
 	 * @param response
 	 * @param fileName
-	 * @param fileLength
 	 */
 	public static void setDownloadHeader(HttpServletResponse response,
 			String fileName) {
@@ -229,6 +228,11 @@ public class HttpWebUtils {
 		return String.valueOf(paramValue).trim();
 	}
 
+	/**
+	 * 获取用户ip
+	 * @param request
+	 * @return
+     */
 	public static final String getRequestIP(HttpServletRequest request) {
 		String ip = request.getHeader("x-forwarded-for");
 		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
