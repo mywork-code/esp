@@ -72,7 +72,7 @@
       <if test="updatedTime != null" >
         updated_time,
       </if>
-      <if test="relate_tel != null" >
+      <if test="relateTel != null" >
         relate_tel,
       </if>
     </trim>
