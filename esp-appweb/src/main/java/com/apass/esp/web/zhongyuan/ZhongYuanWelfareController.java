@@ -196,6 +196,12 @@ public class ZhongYuanWelfareController {
             if(StringUtils.isEmpty(authCode)){
                 throw new BusinessException("验证码不能为空");
             }
+
+            //校验验证码是否过期
+            boolean expireFlag = mobileRandomService.getCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
+            if(expireFlag){
+                throw new BusinessException("验证码已失效，请重新获取!");
+            }
             //1,校验验证码是否正确 TODO
             boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
             if(!codeFlage){
