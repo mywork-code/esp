@@ -151,6 +151,7 @@ public class ZhongYuanWelfareController {
     public Response getAuthCode(@RequestBody Map<String,Object> paramMap){
         try{
             String mobile = CommonUtils.getValue(paramMap, "mobile");
+            String userId = CommonUtils.getValue(paramMap, "userId");
             LOGGER.info("sendAuthCode, 发送验证码入参:{}", GsonUtils.toJson(paramMap));
             mobile = mobile.replace(" ", "");
 
@@ -167,10 +168,16 @@ public class ZhongYuanWelfareController {
                 throw new RuntimeException("您不是中原员工，不能参与该活动");
             }
 
+            //根据手机号校验是否已领取优惠券
+            CustomerBasicInfo customerInfo = commonHttpClient.getCustomerInfo("获取验证码-->getAuthCode", mobile);
+            if(customerInfo==null || !userId.equals(customerInfo.getAppId())){
+                return Response.fail("手机号和帐号不匹配，请用当前帐号注册手机号领取");
+            }
+
 
             // 判断短信验证码是否在有效期内，不在发送
-            Boolean Flage = mobileRandomService.getCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
-            if (Flage) {
+            Boolean flage = mobileRandomService.getCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
+            if (flage) {
                 mobileRandomService.sendMobileVerificationCode(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile);
                 return Response.success("验证码发送成功,请注意查收");
             }
@@ -224,13 +231,6 @@ public class ZhongYuanWelfareController {
                 ZYEmpInfoVo zyEmpInfoVo = zyqh.getResult().get(0);
                 //发优惠券,先获取活动id,根据活动id，找对应优惠券（该活动下只配一张优惠券）分发给用户
                 long activityId = zyPriceCollecService.getZyActicityCollecId();
-
-                //根据手机号校验是否已领取优惠券
-                CustomerBasicInfo customerInfo = commonHttpClient.getCustomerInfo("校验号码-->/checkMessage", mobile);
-                if(customerInfo!=null && !userId.equals(customerInfo.getAppId())){
-                    myCouponManagerService.giveCouponToUser(String.valueOf(customerInfo.getAppId()),activityId,2,mobile);
-                    return Response.fail("领取成功，优惠券已发放到你的帐户");
-                }
 
                 //如果是一重奖直接发优惠券，不进入领取奖品页
                 if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
