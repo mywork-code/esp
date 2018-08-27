@@ -160,7 +160,7 @@ public class ZhongYuanWelfareController {
                 return Response.fail("手机号格式不正确,请重新输入！");
             }
 
-            //2,校验员工是否是否是中原员工 TODO
+            //2,校验员工是否是否是中原员工
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
                 throw new RuntimeException("您不是中原员工，不能参与该活动");
@@ -209,7 +209,7 @@ public class ZhongYuanWelfareController {
                 if(expireFlag){
                     throw new BusinessException("验证码已失效，请重新获取!");
                 }
-                //1,校验验证码是否正确 TODO
+                //1,校验验证码是否正确
                 boolean codeFlage = mobileRandomService.mobileCodeValidate(SmsTypeEnums.ZHONGYUAN_LINGQU.getCode(), mobile, authCode);
                 if(!codeFlage){
                     throw new BusinessException("验证码不正确!");
