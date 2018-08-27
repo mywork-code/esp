@@ -21,6 +21,9 @@
             <if test="maxDate !=null and maxDate != ''">
                 and end_date &gt; #{maxDate}
             </if>
+            <if test="relateTel !=null and relateTel != ''">
+                and relate_tel = #{relateTel}
+            </if>
         </where>
     </sql>
    <select id="getCouponByUserIdAndRelId" parameterType="com.apass.esp.domain.query.ProMyCouponQuery" resultMap="BaseResultMap">
@@ -28,7 +31,13 @@
         from t_esp_pro_mycoupon
         <include refid="paramSql" />
    </select>
-   
+
+   <select id="selectMycouponCountByRelateTelAndRelCouponId"  resultMap="BaseResultMap">
+       select <include refid="Base_Column_List" />
+        from t_esp_pro_mycoupon
+        <include refid="paramSql" />
+   </select>
+
    <select id="getCouponByStatusAndDate" parameterType="com.apass.esp.domain.query.ProMyCouponQuery" resultMap="BaseResultMap">
        select <include refid="Base_Column_List" />
         from t_esp_pro_mycoupon

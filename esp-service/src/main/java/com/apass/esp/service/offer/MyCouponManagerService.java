@@ -839,10 +839,50 @@ public class MyCouponManagerService {
 		return true;
 	}
 
-	public ProMyCoupon selectMycouponCountByRelateTel(String mobile) {
+	public List<ProMyCoupon> selectMycouponCountByRelateTel(long activityId,String mobile) throws BusinessException {
+		//判断活动是否已经结束
+		ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+		if(null == activityCfg){
+			throw new BusinessException("活动已经结束啦，看看其他的券吧!");
+		}
+		if(activityCfg.getEndTime().getTime() < new Date().getTime()){
+			throw new BusinessException("活动已经结束啦，看看其他的券吧!");
+		}
+
+		//查询所有可领取优惠券
+		ProCouponRelQuery couponRel = new ProCouponRelQuery();
+		couponRel.setActivityId(activityId);
+		//查询当前活动下有效优惠券
+		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityIdOrCouponId(couponRel);
+		logger.info("可领取优惠券,relList:{}", GsonUtils.toJson(relList));
+		if(CollectionUtils.isEmpty(relList) || relList.size() > 1){
+			logger.error("数据有误,{}活动只可有一种类型优惠券",String.valueOf(activityId));
+			throw new BusinessException("数据有误，"+String.valueOf(activityId)+"活动只可有一种类型优惠券");
+		}
+
+		ProCouponRel rel = relList.get(0);
+		//获取优惠券信息
+		ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
+		if(proCoupon == null){
+			throw new BusinessException("该活动下优惠券不存在");
+		}
+
+		List<ProMyCoupon> list = selectMycouponCountByRelateTelAndRelCouponId(mobile, rel.getId());
 
 
+		return list;
+	}
+
+	private List<ProMyCoupon> selectMycouponCountByRelateTelAndRelCouponId(String mobile, Long relId) {
+		ProMyCouponQuery query=new ProMyCouponQuery();
+		if(null !=mobile && null !=relId){
+			query.setRelateTel(mobile);
+			query.setCouponRelId(relId);
+			return couponMapper.selectMycouponCountByRelateTelAndRelCouponId(mobile,relId);
+		}
 
 		return null;
 	}
+
+
 }

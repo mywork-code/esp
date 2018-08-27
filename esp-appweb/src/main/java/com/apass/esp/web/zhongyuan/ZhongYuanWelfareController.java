@@ -230,9 +230,11 @@ public class ZhongYuanWelfareController {
                 ZYEmpInfoVo zyEmpInfoVo = zyqh.getResult().get(0);
                 //发优惠券,先获取活动id,根据活动id，找对应优惠券（该活动下只配一张优惠券）分发给用户
                 long activityId = zyPriceCollecService.getZyActicityCollecId();
-                //校验手机号是否已领取优惠券
-                ProMyCoupon myCoupon = myCouponManagerService.selectMycouponCountByRelateTel(mobile);
-
+                //校验手机号是否已领取优惠券,如果已领取给出提示,否则发放优惠券
+                List<ProMyCoupon> myCoupons = myCouponManagerService.selectMycouponCountByRelateTel(activityId,mobile);
+                if(!CollectionUtils.isEmpty(myCoupons)){
+                    return Response.fail("该员工奖励已被其他账号领取");
+                }
 
                 //如果是一重奖直接发优惠券，不进入领取奖品页
                 if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),

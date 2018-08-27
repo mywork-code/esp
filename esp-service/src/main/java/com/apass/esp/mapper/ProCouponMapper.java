@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.query.ProCouponQuery;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 
@@ -25,5 +26,7 @@ public interface ProCouponMapper extends GenericMapper<ProCoupon, Long> {
 
 
     List<ProCoupon> selectProCouponByIds(Map<String, Object> paramMap);
+
+    List<ProMyCoupon> selectMycouponCountByRelateTelAndRelCouponId(String mobile, Long relId);
 }
 

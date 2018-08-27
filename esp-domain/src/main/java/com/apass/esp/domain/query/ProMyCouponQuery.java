@@ -33,6 +33,11 @@ public class ProMyCouponQuery {
 	 */
 	private String status;
 
+	/**
+	 * 关联手机号
+	 */
+	private String relateTel;
+
 	public Long getUserId() {
 		return userId;
 	}
@@ -104,5 +109,12 @@ public class ProMyCouponQuery {
 	public void setCouponId(Long couponId) {
 		this.couponId = couponId;
 	}
-	
+
+	public String getRelateTel() {
+		return relateTel;
+	}
+
+	public void setRelateTel(String relateTel) {
+		this.relateTel = relateTel;
+	}
 }
