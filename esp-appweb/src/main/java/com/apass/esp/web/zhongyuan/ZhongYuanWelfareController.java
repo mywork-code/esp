@@ -280,8 +280,10 @@ public class ZhongYuanWelfareController {
     @ResponseBody
     public Response listCompanyAwards(){
         ZYCompanyCityAwardsVo v1 = new ZYCompanyCityAwardsVo("济南","三重奖","1000元代金券");
+        ZYCompanyCityAwardsVo v2 = new ZYCompanyCityAwardsVo("长沙","三重奖","1000元代金券");
         List<ZYCompanyCityAwardsVo> result = new ArrayList<>();
         result.add(v1);
+        result.add(v2);
         return Response.success("ok",result);
 
     }
