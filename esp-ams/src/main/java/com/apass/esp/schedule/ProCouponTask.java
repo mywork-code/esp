@@ -152,8 +152,8 @@ public class ProCouponTask {
             // 您的邮箱密码
             mailSenderInfo.setPassword(sendPassword);
             mailSenderInfo.setFromAddress(sendAddress);
-            mailSenderInfo.setSubject(dateString+"_房易贷券使用领取情况统计_领取数量");
-            mailSenderInfo.setContent("请查收房易 贷券使用领取情况统计_领取数量 报表..");
+            mailSenderInfo.setSubject(dateString+"_总裁办员工福利领取情况");
+            mailSenderInfo.setContent("请查收房易 总裁办员工福利领取情况 报表..");
             mailSenderInfo.setToAddress("sunchaohai@apass.cn");
             if ("prod".equals(env)) {
                 mailSenderInfo.setToAddress("sunchaohai@apass.cn,maoyanping@apass.cn" +
