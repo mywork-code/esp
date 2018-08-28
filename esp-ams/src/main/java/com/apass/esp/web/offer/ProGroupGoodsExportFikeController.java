@@ -351,6 +351,7 @@ public class ProGroupGoodsExportFikeController {
 			}
 
 			List<ProGroupGoodsTo> list = readImportExcel(importFilein);
+			LOG.info("从表中读取的数据:{}",GsonUtils.toJson(list));
 
 			count=list.size();
 			if(null !=list){
@@ -375,19 +376,22 @@ public class ProGroupGoodsExportFikeController {
 					if(null !=id && isNum.matches()){
 						gbity=goodsService.getByGoodsBySkuId(id);
 					}
+					LOG.info("skueId:{}对应商品信息:{}",id,GsonUtils.toJson(gbity));
 					if (null !=id && null != gbity ) {
 						//判断该商品是否存在其他有效的活动中
 
 						Boolean result=proGroupGoodsService.selectEffectiveGoodsBySkuId(id);
 						Boolean limitResult=proGroupGoodsService.getStatusBySkuId(activityId,id);
+						LOG.info("{}商品是否参加有效活动;{}，是否参加限时购活动:{}",id,result?"否":"是",result?"否":"是");
 						if(activityCfg.getActivityCate().intValue() == 1){
 							//房易贷专属用户活动
 							//活动价=京东价*n%
 							List<String> wzGoodsIdList = new ArrayList<>();
 							wzGoodsIdList.add(id);
-							LOG.info("wzGoodsIdList:{}", GsonUtils.toJson(wzGoodsIdList));
 							List<JdSellPrice> jdSellPrices = jdGoodsInfoService.getJdSellPriceBySku(wzGoodsIdList);
+							LOG.info("{}返回的京东价格是:{}",id,GsonUtils.toJson(jdSellPrices.get(0)));
 							if(CollectionUtils.isEmpty(jdSellPrices)){
+								LOG.info("{}商品导入失败，失败原因是返回京东价为空",id);
 								countFail++;
 								continue;
 							}
@@ -428,7 +432,9 @@ public class ProGroupGoodsExportFikeController {
 							if(list.get(i).getMarketPrice() != null){
 								marketPrice=list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
 							}
+							LOG.info("市场价：{},活动价：{}",marketPrice.toString(),activityPrice.toString());
 							if( null == activityPrice || activityPrice.compareTo(zero)<=0){
+								LOG.info("{}商品导入失败，失败原因是活动价为空或活动价小于0",id);
 								GoodsInfoEntity goods = goodsService.getGoodsInfo(id);
 								pggds.setGoodsId(null != goods ? goods.getId() : -1L );
 								pggds.setSkuId(id);
@@ -456,6 +462,7 @@ public class ProGroupGoodsExportFikeController {
 						    countSuccess++;
 
 						}else{//该商品在其他有效活动中，导入失败
+							LOG.info("{}导入失败，失败原因是该商品在其他有效活动中",id);
 							pggds.setGoodsId(gbity.getGoodId());
 							pggds.setSkuId(id);
 							if(gbity.getGoodsCode() != null){
@@ -469,6 +476,7 @@ public class ProGroupGoodsExportFikeController {
 							countExit++;
 						}
 					}else{
+						LOG.info("{}导入失败，失败原因是skuId为空或未查到商品",id);
 						GoodsInfoEntity goods = goodsService.getGoodsInfo(id);
 						pggds.setGoodsId(null != goods ? goods.getId() : -1L );
 						pggds.setSkuId(id);
