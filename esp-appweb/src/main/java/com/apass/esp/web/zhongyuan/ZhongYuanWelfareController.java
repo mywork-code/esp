@@ -94,10 +94,6 @@ public class ZhongYuanWelfareController {
                 //发优惠券,先获取活动id,根据活动id，找对应优惠券（该活动下只配一张优惠券）分发给用户
                 long activityId = zyPriceCollecService.getZyActicityCollecId();
                 if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
-                        QHRewardTypeEnums.ZHONGYUAN_YI.getMessage())){
-                    myCouponManagerService.giveCouponToUser(userId,activityId,2,empTel);
-                    return Response.fail("领取成功，优惠券已发放到你的帐户");
-                }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
                         QHRewardTypeEnums.ZHONGYUAN_ER.getMessage())){
                     myCouponManagerService.giveCouponToUser(userId,activityId,5,empTel);
                     boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));

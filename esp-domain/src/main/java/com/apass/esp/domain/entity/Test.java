@@ -64,12 +64,8 @@ public class Test {
     }
 
     public static void main(String[] args) {
-        String str = "&&哈哈";
-        boolean b = RegExpUtils.specialSymbols(str);
-        System.out.println(b);
-
-        String tel = "138";
-        boolean mobiles = RegExpUtils.mobiles(tel);
-        System.out.println(mobiles);
+       if(10>=10){
+           System.out.println("haha");
+       }
     }
 }

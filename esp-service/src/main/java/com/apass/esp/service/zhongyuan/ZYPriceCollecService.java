@@ -44,7 +44,7 @@ public class ZYPriceCollecService {
         }else {
             max = 5;
         }
-       if(count > max){
+       if(count >= max){
            throw new BusinessException("奖品领取已达到上限！");
        }
        //检查是否重复领取
@@ -80,7 +80,7 @@ public class ZYPriceCollecService {
         }else {
             max = 5;
         }
-        if(count>max){//TODO
+        if(count>=max){//TODO
             return true;
         }
         return false;
