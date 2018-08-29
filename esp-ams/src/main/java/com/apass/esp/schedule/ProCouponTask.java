@@ -157,7 +157,7 @@ public class ProCouponTask {
             mailSenderInfo.setToAddress("sunchaohai@apass.cn");
             if ("prod".equals(env)) {
                 mailSenderInfo.setToAddress("sunchaohai@apass.cn,maoyanping@apass.cn" +
-                        ",yangxiaoqing@apass.cn,huangbeifang@apass.cn,xujie@apass.cn,yangzhenli@apass.cn");
+                        ",yangxiaoqing@apass.cn,huangbeifang@apass.cn,xujie@apass.cn,yangzhenli@apass.cn,liucong@apass.cn");
             }
 
             Multipart msgPart = new MimeMultipart();
@@ -180,7 +180,7 @@ public class ProCouponTask {
             MailUtil mailUtil = new MailUtil();
             mailUtil.sendTextMail(mailSenderInfo);
         }catch (Exception e){
-
+            LOGGER.error("总裁办领取优惠券导出异常,------Exception------",e);
         }
 
 
@@ -195,9 +195,9 @@ public class ProCouponTask {
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
         HSSFRow createRow = sheet.createRow(0);
 
-        String[] rowHeadArr = {"所在分公司","商品信息","员工手机号","收货人姓名","收货人地址"};
+        String[] rowHeadArr = {"所在分公司","商品信息","员工手机号","收货人姓名","收货人手机号","收货人地址"};
 
-        String[] headKeyArr = {"companyName", "goodsName", "empTel", "consigneeName", "consigneeAddr"};
+        String[] headKeyArr = {"companyName", "goodsName", "empTel", "consigneeName","consigneeTel", "consigneeAddr"};
         for (int i = 0; i < rowHeadArr.length; i++) {
             HSSFCell cell = createRow.createCell(i);
             sheet.autoSizeColumn(i, true);
