@@ -136,8 +136,8 @@ public class ProCouponTask {
     private void sendEamilExcel_zhongyuan() {
         try{
             //获取数据
-            String startDate = DateFormatUtil.dateToString(new Date())+" 00:00:00";
-            String endDate = DateFormatUtil.dateToString(new Date())+" 23:59:59";
+            String startDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))+" 00:00:00";
+            String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))+" 23:59:59";
             List<ZYPriceCollecEntity> list = zyService.getAllZYCollecByStartandEndTime(startDate,endDate);
             //生成Excel
             generateFile_zhongyuan(list);
