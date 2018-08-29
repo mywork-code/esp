@@ -130,7 +130,7 @@ public class ZhongYuanWelfareController {
             zyPriceCollecEntity.setActivityId(zyPriceCollecService.getZyActicityCollecId() + "");
             zyPriceCollecService.addPriceCollec(zyPriceCollecEntity);
 
-            return  Response.success("恭喜您成功领取小米背包,请您留意邮寄奖品和账户优惠券。");
+            return  Response.success("恭喜您成功领取小米背包,请您留意邮寄奖品和账户电子优惠券。");
         }catch (BusinessException be){
             LOGGER.error("领取活动商品接口异常啦----Exception----",be);
             return Response.fail(be.getErrorDesc());
