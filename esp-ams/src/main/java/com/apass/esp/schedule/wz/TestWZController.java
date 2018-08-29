@@ -435,8 +435,10 @@ public class TestWZController {
     @RequestMapping(value = "/checkSale", method = RequestMethod.POST)
     @ResponseBody
     public Response getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap) {
+        String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+
         try {
-            Boolean result = weiZhiProductService.getWeiZhiCheckSale("100376");
+            Boolean result = weiZhiProductService.getWeiZhiCheckSale(sku);
             return Response.success("商品可售验证接口成功！", result);
         } catch (Exception e) {
             return Response.fail("商品可售验证接口失败！");

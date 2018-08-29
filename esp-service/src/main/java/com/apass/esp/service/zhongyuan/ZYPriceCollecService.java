@@ -48,12 +48,22 @@ public class ZYPriceCollecService {
            throw new BusinessException("奖品领取已达到上限！");
        }
        //检查是否重复领取
-        ZYPriceCollecEntity t = zyPriceCollecEntityMapper.selectByEmpTel(zyPriceCollecEntity.getEmpTel(),zyPriceCollecEntity.getActivityId());
+        ZYPriceCollecEntity t = selectByEmpTel(zyPriceCollecEntity.getEmpTel(),zyPriceCollecEntity.getActivityId());
        if(t != null ){
            throw new BusinessException("您已领取过该奖品！");
        }
        zyPriceCollecEntityMapper.insertSelective(zyPriceCollecEntity);
 
+    }
+
+    /**
+     * 根据员工手机号和活动id查询员工是否已领取礼包
+     * @param empTel
+     * @param activityId
+     * @return
+     */
+    public ZYPriceCollecEntity selectByEmpTel(String empTel, String activityId) {
+        return zyPriceCollecEntityMapper.selectByEmpTel(empTel,activityId);
     }
 
     /**

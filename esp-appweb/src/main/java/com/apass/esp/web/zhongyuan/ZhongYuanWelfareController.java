@@ -236,7 +236,16 @@ public class ZhongYuanWelfareController {
                 //校验手机号是否已领取优惠券,如果已领取给出提示,否则发放优惠券
                 List<ProMyCoupon> myCoupons = myCouponManagerService.selectMycouponCountByRelateTel(activityId,mobile);
                 if(!CollectionUtils.isEmpty(myCoupons)){
-                    return Response.fail("该员工奖励已被其他账号领取");
+                    if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
+                            QHRewardTypeEnums.ZHONGYUAN_YI.getMessage())){
+                        return Response.fail("该员工奖励已被其他账号领取");
+                    }else{
+                        //判断该中原员工是否领包
+                        ZYPriceCollecEntity zyPriceCollecEntity = zyPriceCollecService.selectByEmpTel(zyEmpInfoVo.getEmpTel(),zyPriceCollecService.getZyActicityCollecId() + "");
+                        if(zyPriceCollecEntity != null){
+                            return Response.fail("该员工奖励已被其他账号领取");
+                        }
+                    }
                 }
 
                 //如果是一重奖直接发优惠券，不进入领取奖品页
