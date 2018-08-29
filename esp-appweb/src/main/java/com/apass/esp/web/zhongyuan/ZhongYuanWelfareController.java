@@ -246,6 +246,9 @@ public class ZhongYuanWelfareController {
                         return Response.fail("领取成功，优惠券已发放到你的帐户");
                 }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
                         QHRewardTypeEnums.ZHONGYUAN_ER.getMessage())){
+                    if(StringUtils.equals("济南",zyEmpInfoVo.getCompanyName())){
+                        return Response.fail("济南地区:奖励已安排线下发放");
+                    }
                     boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
 
                     if(upflag){
@@ -254,8 +257,10 @@ public class ZhongYuanWelfareController {
                     }
                 }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
                         QHRewardTypeEnums.ZHONGYUAN_SAN.getMessage())){
+                    if(StringUtils.equals("济南",zyEmpInfoVo.getCompanyName())){
+                        return Response.fail("济南地区:奖励已安排线下发放");
+                    }
                     boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
-
                     if(upflag){
                         myCouponManagerService.giveCouponToUser(userId,activityId,10,mobile);
                         return Response.fail("领取成功，优惠券已发放到你的帐户");
