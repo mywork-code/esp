@@ -291,9 +291,13 @@ public class ZhongYuanWelfareController {
     public Response listCompanyAwards(){
         ZYCompanyCityAwardsVo v1 = new ZYCompanyCityAwardsVo("济南","三重奖","1000元代金券");
         ZYCompanyCityAwardsVo v2 = new ZYCompanyCityAwardsVo("长沙","三重奖","1000元代金券");
+        ZYCompanyCityAwardsVo v3 = new ZYCompanyCityAwardsVo("佛山","三重奖","1000元代金券");
+        ZYCompanyCityAwardsVo v4 = new ZYCompanyCityAwardsVo("哈尔滨","三重奖","1000元代金券");
         List<ZYCompanyCityAwardsVo> result = new ArrayList<>();
         result.add(v1);
         result.add(v2);
+        result.add(v3);
+        result.add(v4);
         return Response.success("ok",result);
 
     }
