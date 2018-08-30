@@ -1,5 +1,6 @@
 package com.apass.esp.mapper;
 
+import com.apass.esp.domain.dto.PrizeAndCouponDto;
 import com.apass.esp.domain.entity.ZYPriceCollecEntity;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 import org.apache.ibatis.annotations.Param;
@@ -20,4 +21,6 @@ public interface ZYPriceCollecEntityMapper extends GenericMapper<ZYPriceCollecEn
 
     ZYPriceCollecEntity selectByEmpTel(@Param("empTel")String empTel,
                                        @Param("activityId")String activityId);
+
+    Integer getCountByStartandEndTimeAndCompanyname(Map<String, Object> paramMap1);
 }

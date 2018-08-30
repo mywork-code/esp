@@ -1,17 +1,22 @@
 package com.apass.esp.schedule;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.MyCouponAndCountDto;
+import com.apass.esp.domain.dto.PrizeAndCouponDto;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponTaskEntity;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.ZYPriceCollecEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.vo.zhongyuan.ZYResponseVo;
 import com.apass.esp.repository.order.OrderInfoRepository;
+import com.apass.esp.service.common.ZhongYuanQHService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.zhongyuan.ZYPriceCollecService;
 import com.apass.esp.utils.mailUtils.MailSenderInfo;
 import com.apass.esp.utils.mailUtils.MailUtil;
 import com.apass.esp.web.commons.JsonDateValueProcessor;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
@@ -65,15 +70,16 @@ public class ProCouponTask {
 
     @Autowired
     private ZYPriceCollecService zyService;
+    @Autowired
+    private ZhongYuanQHService zhongYuanQHService;
 
     /**
-     * 定时发送房易贷券使用情况报表
+     * 定时发送房易贷券领取情况报表
      * 思路：1，查询要导出的数据
      *      2，导入到服务器中
      *      3，发送邮件
      *
      */
-//    @Scheduled(cron = "0 0 8 * * ?")
     @Scheduled(cron = "0 0 8,17 * * ?")
     public void sendEamil_1() {
         try {
@@ -83,7 +89,9 @@ public class ProCouponTask {
         }
     }
 
-//    @Scheduled(cron = "0 0 8 * * ?")
+    /**
+     * 房易贷券使用数量
+     */
     @Scheduled(cron = "0 0 8,17 * * ?")
     public void sendEamil_2() {
         try {
@@ -92,10 +100,26 @@ public class ProCouponTask {
             LOGGER.error("-----Exception------",e);
         }
     }
+
+    /**
+     * 总裁办活动领取优惠券和小米背包报表
+     */
     @Scheduled(cron = "0 30 7 * * ?")
     public void sendEamil_zhongyuan() {
         try {
             sendEamilExcel_zhongyuan();
+        }catch (Exception e){
+            LOGGER.error("-----Exception------",e);
+        }
+    }
+
+    /**
+     * 总裁办活动领取优惠券数量和小米背包数量报领取清单
+     */
+    @Scheduled(cron = "0 25 7 * * ?")
+    public void sendEamil_4() {
+        try {
+            sendEamilExcel_zhongyuanCount();
         }catch (Exception e){
             LOGGER.error("-----Exception------",e);
         }
@@ -131,6 +155,116 @@ public class ProCouponTask {
             return Response.fail("邮件发送失败！");
         }
         return Response.success("邮件发送成功!");
+    }
+    @RequestMapping("test4")
+    public Response sendEmail_4(){
+        try {
+            sendEamilExcel_zhongyuanCount();
+        }catch (Exception e){
+            LOGGER.error("-----Exception------",e);
+            return Response.fail("邮件发送失败！");
+        }
+        return Response.success("邮件发送成功!");
+    }
+
+    /**
+     * 思路：
+     *  1,查询时间段内所有优惠券领取信息
+     *  2,根据优惠券信息查询所有对应门面，相同门面，优惠券+1
+     *  3,根据门面计算指定时间段内的领包数量
+     */
+    private void sendEamilExcel_zhongyuanCount() throws Exception {
+        //获取数据,先查看指定时间段门店数量，再计算各门店背包领取人数，再根据每个员工的手机号查看优惠券领取数
+        Date begin = DateFormatUtil.addDays(new Date(), -7);
+        List<PrizeAndCouponDto> prizeAndCouponDtos = Lists.newArrayList();
+
+        for(int i=7; i>=0; i--){
+            String startDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin,i))+" 00:00:00";
+            String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin,i))+" 23:59:59";
+            PrizeAndCouponDto dto = new PrizeAndCouponDto();
+
+            //当天中原领取优惠券情况
+            List<MyCouponAndCountDto> couponList = myCouponService.getRelTelAndCount(startDate,endDate);
+            if(CollectionUtils.isEmpty(couponList)){
+                dto.setDate(startDate.substring(0,startDate.length()-9));
+                dto.setCompanyName("今天无人领取优惠券和礼包");
+                dto.setPrizeCount(0);
+                dto.setCouponCount(0);
+                prizeAndCouponDtos.add(dto);
+            }else {
+                //key:公司名称，value：领取优惠券数量
+                Map<String,Integer> prizeMap = Maps.newHashMap();
+                for(MyCouponAndCountDto couponAndCountDto : couponList){
+                    //根据手机号查询公司名称
+                    ZYPriceCollecEntity zyEntity = zyService.selectByEmpTel(couponAndCountDto.getRelateTel(), zyService.getZyActicityCollecId() + "");
+                    if(zyEntity == null){
+                        continue;
+                    }
+
+                    //每次通过key获取对应value，如果存在在原有value的基础上+当前数量;不存在，直接put进去当前数量
+                    Integer value = prizeMap.get(zyEntity.getCompanyName());
+                    if(value != null){
+                        value = value + couponAndCountDto.getCouponCount();
+                        prizeMap.put(zyEntity.getCompanyName(),value);
+                    }else {
+                        prizeMap.put(zyEntity.getCompanyName(),couponAndCountDto.getCouponCount());
+                    }
+                }
+                //遍历prizeMap中的key获取对应包的数量
+                for(String companyName : prizeMap.keySet()){
+                    dto.setDate(startDate.substring(0,startDate.length()-9));
+                    dto.setCompanyName(companyName);
+                    dto.setCouponCount(prizeMap.get(companyName));
+                    //查询领取的包数量
+                    Integer prizeCount = zyService.getCountByStartandEndTimeAndCompanyname(startDate,endDate,companyName);
+                    dto.setPrizeCount(prizeCount);
+
+                    prizeAndCouponDtos.add(dto);
+                }
+            }
+        }
+        //生成Excel
+        generateFile_count4(prizeAndCouponDtos);
+
+        //发送邮件
+        String dateString = DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
+        MailSenderInfo mailSenderInfo = new MailSenderInfo();
+        mailSenderInfo.setMailServerHost("SMTP.263.net");
+        mailSenderInfo.setMailServerPort("25");
+        mailSenderInfo.setValidate(true);
+        mailSenderInfo.setUserName(sendAddress);
+        // 您的邮箱密码
+        mailSenderInfo.setPassword(sendPassword);
+        mailSenderInfo.setFromAddress(sendAddress);
+        mailSenderInfo.setSubject(dateString+"_背包,券领取清单");
+        mailSenderInfo.setContent("请查收总裁办员工福利背包,券领取清单...");
+        mailSenderInfo.setToAddress("sunchaohai@apass.cn");
+        if ("prod".equals(env)) {
+            mailSenderInfo.setToAddress("maoyanping@apass.cn" +
+                    ",yangxiaoqing@apass.cn,xujie@apass.cn,liucong@apass.cn");
+        }
+
+        Multipart msgPart = new MimeMultipart();
+        //正文
+        MimeBodyPart body = new MimeBodyPart();
+        //附件
+        MimeBodyPart attach = new MimeBodyPart();
+        try {
+            attach.setDataHandler(new DataHandler(new FileDataSource("/zongcaibanyuangongfuli-qingdan.xls")));
+
+            attach.setFileName(dateString + "zongcaibanyuangongfuli-qingdan.xls");
+            msgPart.addBodyPart(attach);
+            body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
+            msgPart.addBodyPart(body);
+        } catch (MessagingException e) {
+            LOGGER.error("sendEamilExcel_zhongyuan msgPart   body error.... ", e);
+        }
+
+        mailSenderInfo.setMultipart(msgPart);
+        MailUtil mailUtil = new MailUtil();
+        mailUtil.sendTextMail(mailSenderInfo);
+
+
     }
 
     private void sendEamilExcel_zhongyuan() {
@@ -227,6 +361,51 @@ public class ProCouponTask {
         fileOutputStream.flush();
         fileOutputStream.close();
     }
+
+    private void generateFile_count4(List<PrizeAndCouponDto> prizeAndCouponDtos) throws IOException {
+        // 第一步：声明一个工作薄
+        HSSFWorkbook wb = new HSSFWorkbook();
+        // 第二步：声明一个单子并命名
+        HSSFSheet sheet = wb.createSheet("sheet");
+        // 获取标题样式，内容样式
+        List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
+        HSSFRow createRow = sheet.createRow(0);
+
+        String[] rowHeadArr = {"时间","门店名称","背包领取人数","优惠券领取人数"};
+
+        String[] headKeyArr = {"date", "companyName", "prizeCount", "couponCount"};
+        for (int i = 0; i < rowHeadArr.length; i++) {
+            HSSFCell cell = createRow.createCell(i);
+            sheet.autoSizeColumn(i, true);
+            cell.setCellStyle(hssfCellStyle.get(0));
+            cell.setCellValue(rowHeadArr[i]);
+        }
+
+        for (int i = 0; i < prizeAndCouponDtos.size(); i++) {
+            HSSFRow createRowContent = sheet.createRow(i + 1);
+            Object object = prizeAndCouponDtos.get(i);
+            // json日期转换配置类
+            JsonConfig jsonConfig = new JsonConfig();
+            jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor());
+            net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(object, jsonConfig);
+            for (int j = 0; j < rowHeadArr.length; j++) {
+                HSSFCell cellContent = createRowContent.createCell(j);
+                cellContent.setCellStyle(hssfCellStyle.get(1));
+                if (i == 1) {
+                    sheet.autoSizeColumn(j, true);
+                }
+                cellContent.setCellValue(jsonObject.get(headKeyArr[j]) + "");
+            }
+        }
+
+        FileOutputStream fileOutputStream = new FileOutputStream("/zongcaibanyuangongfuli-qingdan.xls");
+        wb.write(fileOutputStream);
+        fileOutputStream.flush();
+        fileOutputStream.close();
+    }
+
+
+
 
     /**
      * 定时发送优惠券使用情况_领取数量

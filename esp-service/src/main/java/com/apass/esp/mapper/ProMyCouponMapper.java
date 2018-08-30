@@ -1,5 +1,6 @@
 package com.apass.esp.mapper;
 
+import com.apass.esp.domain.dto.MyCouponAndCountDto;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.gfb.framework.mybatis.GenericMapper;
@@ -44,4 +45,5 @@ public interface ProMyCouponMapper extends GenericMapper<ProMyCoupon, Long> {
 
 	List<ProMyCoupon> selectMycouponCountByRelateTelAndRelCouponId(ProMyCouponQuery query);
 
+	List<MyCouponAndCountDto> getRelTelAndCount(Map<String, Object> paramMap);
 }

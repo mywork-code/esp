@@ -2,7 +2,7 @@ package com.apass.esp.domain.entity;
 
 import java.util.Date;
 
-public class    ZYPriceCollecEntity {
+public class ZYPriceCollecEntity {
     private Long id;
 
     private Date createdTime;

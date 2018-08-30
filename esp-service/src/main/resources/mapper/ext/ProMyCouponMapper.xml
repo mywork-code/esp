@@ -91,6 +91,23 @@
        group by coupon_id
 
    </select>
+   <select id="getRelTelAndCount" resultType="com.apass.esp.domain.dto.MyCouponAndCountDto">
+        select
+        user_id userId,
+        relate_tel relateTel,
+        COUNT(*) couponCount
+        from t_esp_pro_mycoupon
+        <where>
+            and relate_tel != ''
+            <if test="startDate != null and startDate != ''">
+                and created_time > #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and #{endDate} > created_time
+            </if>
+        </where>
+       GROUP BY user_id ORDER BY created_time DESC
+   </select>
 
     <!--批量插入-->
     <insert id="insertProMyCoupoBach" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id" >

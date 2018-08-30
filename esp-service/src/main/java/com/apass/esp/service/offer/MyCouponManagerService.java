@@ -1,6 +1,7 @@
 package com.apass.esp.service.offer;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.MyCouponAndCountDto;
 import com.apass.esp.domain.entity.*;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
@@ -885,4 +886,11 @@ public class MyCouponManagerService {
 	}
 
 
+	public List<MyCouponAndCountDto> getRelTelAndCount(String startDate, String endDate) {
+		Map<String,Object> paramMap1 = Maps.newHashMap();
+		paramMap1.put("startDate",startDate);
+		paramMap1.put("endDate",endDate);
+
+		return myCouponMapper.getRelTelAndCount(paramMap1);
+	}
 }

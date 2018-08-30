@@ -1,5 +1,6 @@
 package com.apass.esp.service.zhongyuan;
 
+import com.apass.esp.domain.dto.PrizeAndCouponDto;
 import com.apass.esp.domain.entity.ZYPriceCollecEntity;
 import com.apass.esp.mapper.ZYPriceCollecEntityMapper;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
@@ -92,5 +93,21 @@ public class ZYPriceCollecService {
         paramMap1.put("startDate",startDate);
         paramMap1.put("endDate",endDate);
         return zyPriceCollecEntityMapper.selectAllCollec(paramMap1);
+    }
+
+    /**
+     * 查询指定时间段内门店名称及对应领取背包数量
+     * @param startDate
+     * @param endDate
+     * @param companyName
+     * @return
+     */
+    public Integer getCountByStartandEndTimeAndCompanyname(String startDate, String endDate, String companyName) {
+        Map<String,Object> paramMap1 = Maps.newHashMap();
+        paramMap1.put("startDate",startDate);
+        paramMap1.put("endDate",endDate);
+        paramMap1.put("companyName",companyName);
+
+        return zyPriceCollecEntityMapper.getCountByStartandEndTimeAndCompanyname(paramMap1);
     }
 }
