@@ -159,7 +159,7 @@ public class ZhongYuanWelfareController {
             //2,校验员工是否是否是中原员工
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
-                throw new RuntimeException("您不是中原员工，不能参与该活动");
+                throw new RuntimeException("您未通过中原总裁办认证，请认证后领取");
             }
 
             // 判断短信验证码是否在有效期内，不在发送
@@ -221,7 +221,7 @@ public class ZhongYuanWelfareController {
             //2,校验员工是否是否是中原员工
             ZYResponseVo zyqh = zhongYuanQHService.getZYQH(mobile);
             if(!zyqh.isSuccess()){
-                throw new BusinessException("您不是中原员工，不能参与该活动");
+                throw new BusinessException("您未通过中原总裁办认证，请认证后领取");
             }
 
             //已达到上限在此处领优惠券,不进入领取货物界面
