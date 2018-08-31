@@ -297,11 +297,15 @@ public class ZhongYuanWelfareController {
         ZYCompanyCityAwardsVo v2 = new ZYCompanyCityAwardsVo("长沙","三重奖","1000元代金券");
         ZYCompanyCityAwardsVo v3 = new ZYCompanyCityAwardsVo("佛山","三重奖","1000元代金券");
         ZYCompanyCityAwardsVo v4 = new ZYCompanyCityAwardsVo("哈尔滨","三重奖","1000元代金券");
+        ZYCompanyCityAwardsVo v5 = new ZYCompanyCityAwardsVo("北京中原","三重奖","1000元代金券");
+        ZYCompanyCityAwardsVo v6 = new ZYCompanyCityAwardsVo("惠州中原","三重奖","1000元代金券");
         List<ZYCompanyCityAwardsVo> result = new ArrayList<>();
         result.add(v1);
         result.add(v2);
         result.add(v3);
         result.add(v4);
+        result.add(v5);
+        result.add(v6);
         return Response.success("ok",result);
 
     }
