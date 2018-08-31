@@ -204,10 +204,10 @@ public class ProCouponTask {
                     //每次通过key获取对应value，如果存在在原有value的基础上+当前数量;不存在，直接put进去当前数量
                     Integer value = prizeMap.get(zyEntity.getCompanyName());
                     if(value != null){
-                        value = value + couponAndCountDto.getCouponCount();
+                        value = value + 1;
                         prizeMap.put(zyEntity.getCompanyName(),value);
                     }else {
-                        prizeMap.put(zyEntity.getCompanyName(),couponAndCountDto.getCouponCount());
+                        prizeMap.put(zyEntity.getCompanyName(),1);
                     }
                 }
                 //遍历prizeMap中的key获取对应包的数量
