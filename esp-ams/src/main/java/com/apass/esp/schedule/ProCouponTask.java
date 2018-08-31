@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.sf.json.JsonConfig;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,11 +182,12 @@ public class ProCouponTask {
         for(int i=7; i>=0; i--){
             String startDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin,i))+" 00:00:00";
             String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin,i))+" 23:59:59";
-            PrizeAndCouponDto dto = new PrizeAndCouponDto();
 
             //当天中原领取优惠券情况
             List<MyCouponAndCountDto> couponList = myCouponService.getRelTelAndCount(startDate,endDate);
             if(CollectionUtils.isEmpty(couponList)){
+                PrizeAndCouponDto dto = new PrizeAndCouponDto();
+
                 dto.setDate(startDate.substring(0,startDate.length()-9));
                 dto.setCompanyName("今天无人领取优惠券和礼包");
                 dto.setPrizeCount(0);
@@ -197,21 +199,33 @@ public class ProCouponTask {
                 for(MyCouponAndCountDto couponAndCountDto : couponList){
                     //根据手机号查询公司名称
                     ZYPriceCollecEntity zyEntity = zyService.selectByEmpTel(couponAndCountDto.getRelateTel(), zyService.getZyActicityCollecId() + "");
+
+                    String key;
+                    //领取优惠券未领取包
                     if(zyEntity == null){
-                        continue;
+                        //查询所属公司
+                        ZYResponseVo zyqh = zhongYuanQHService.getZYQH(couponAndCountDto.getRelateTel());
+                        if(zyqh == null || !zyqh.isSuccess()){
+                            continue;
+                        }
+                        key = zyqh.getResult().get(0).getCompanyName();
+                    }else {
+                        key = zyEntity.getCompanyName();
                     }
 
                     //每次通过key获取对应value，如果存在在原有value的基础上+当前数量;不存在，直接put进去当前数量
-                    Integer value = prizeMap.get(zyEntity.getCompanyName());
+                    Integer value = prizeMap.get(key);
                     if(value != null){
                         value = value + 1;
-                        prizeMap.put(zyEntity.getCompanyName(),value);
+                        prizeMap.put(key,value);
                     }else {
-                        prizeMap.put(zyEntity.getCompanyName(),1);
+                        prizeMap.put(key,1);
                     }
                 }
                 //遍历prizeMap中的key获取对应包的数量
                 for(String companyName : prizeMap.keySet()){
+                    PrizeAndCouponDto dto = new PrizeAndCouponDto();
+
                     dto.setDate(startDate.substring(0,startDate.length()-9));
                     dto.setCompanyName(companyName);
                     dto.setCouponCount(prizeMap.get(companyName));

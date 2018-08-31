@@ -59,7 +59,7 @@ public class ZhongYuanQHService {
 
 	public static void main(String[] args) {
 		QHService qhService = new QHService(qhServiceWsdl);
-		String response = qhService.getQHServiceSoap().getQH("13690197096");
+		String response = qhService.getQHServiceSoap().getQH("13603027666");
 		System.out.println(response);
 	}
 }
