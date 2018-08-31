@@ -252,6 +252,9 @@ public class ZhongYuanWelfareController {
                 }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
                         QHRewardTypeEnums.ZHONGYUAN_ER.getMessage())){
                     if(StringUtils.equals("济南",zyEmpInfoVo.getCompanyName())){
+                        //先发优惠券
+                        myCouponManagerService.giveCouponToUser(userId,activityId,5,mobile);
+                        //不领包、返回提示
                         return Response.fail("济南地区:奖励已安排线下发放");
                     }
                     boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
@@ -263,6 +266,7 @@ public class ZhongYuanWelfareController {
                 }else if(StringUtils.equals(zyEmpInfoVo.getQHRewardType(),
                         QHRewardTypeEnums.ZHONGYUAN_SAN.getMessage())){
                     if(StringUtils.equals("济南",zyEmpInfoVo.getCompanyName())){
+                        myCouponManagerService.giveCouponToUser(userId,activityId,10,mobile);
                         return Response.fail("济南地区:奖励已安排线下发放");
                     }
                     boolean upflag = zyPriceCollecService.ifUpflag(zyEmpInfoVo.getQHRewardType(), zyEmpInfoVo.getCompanyName(),String.valueOf(activityId));
