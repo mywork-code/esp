@@ -1,11 +1,14 @@
 package com.apass.esp.repository.goods;
 import java.util.List;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
+import org.apache.commons.collections.CollectionUtils;
+
 @MyBatisRepository
 public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockInfoEntity, Long>{
     /**
@@ -111,7 +114,18 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
 	 * @return
 	 */
     public GoodsStockInfoEntity getStockInfoEntityBySkuId(String skuId) {
-        return this.getSqlSession().selectOne("getStockInfoEntityBySkuId", skuId);
+		List<GoodsStockInfoEntity> list = this.getSqlSession().selectList("getStockInfoEntityBySkuId", skuId);
+		if(CollectionUtils.isEmpty(list)){
+			return null;
+		}
+
+		GoodsStockInfoEntity stockInfoEntity = list.get(0);
+		for(GoodsStockInfoEntity entity : list){
+			if(entity.getCreateDate().after(stockInfoEntity.getCreateDate())){
+				stockInfoEntity = entity;
+			}
+		}
+        return stockInfoEntity;
     }
     public List<GoodsStockInfoEntity> getStockInfoEntityBySkuIdList(String skuId) {
         return this.getSqlSession().selectList("getStockInfoEntityBySkuIdList", skuId);
