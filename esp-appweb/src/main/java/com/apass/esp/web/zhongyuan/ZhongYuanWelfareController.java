@@ -296,9 +296,19 @@ public class ZhongYuanWelfareController {
         ZYCompanyCityAwardsVo v1 = new ZYCompanyCityAwardsVo("济南","三重奖","1000元代金券");
         ZYCompanyCityAwardsVo v2 = new ZYCompanyCityAwardsVo("长沙","三重奖","1000元代金券");
         ZYCompanyCityAwardsVo v3 = new ZYCompanyCityAwardsVo("佛山","三重奖","1000元代金券");
-        ZYCompanyCityAwardsVo v4 = new ZYCompanyCityAwardsVo("哈尔滨","三重奖","1000元代金券");
-        ZYCompanyCityAwardsVo v5 = new ZYCompanyCityAwardsVo("北京中原","三重奖","1000元代金券");
-        ZYCompanyCityAwardsVo v6 = new ZYCompanyCityAwardsVo("惠州中原","三重奖","1000元代金券");
+        ZYCompanyCityAwardsVo v4 = new ZYCompanyCityAwardsVo("北京","三重奖","1000元代金券");
+        ZYCompanyCityAwardsVo v5 = new ZYCompanyCityAwardsVo("惠州","三重奖","1000元代金券");
+        ZYCompanyCityAwardsVo v6 = new ZYCompanyCityAwardsVo("武汉","三重奖","1000元代金券");
+        ZYCompanyCityAwardsVo v7 = new ZYCompanyCityAwardsVo("长春","二重奖","500元代金券");
+        ZYCompanyCityAwardsVo v8 = new ZYCompanyCityAwardsVo("深圳","二重奖","500元代金券");
+        ZYCompanyCityAwardsVo v9 = new ZYCompanyCityAwardsVo("东莞","二重奖","500元代金券");
+        ZYCompanyCityAwardsVo v10 = new ZYCompanyCityAwardsVo("哈尔滨","二重奖","500元代金券");
+        ZYCompanyCityAwardsVo v11 = new ZYCompanyCityAwardsVo("昆明","二重奖","500元代金券");
+        ZYCompanyCityAwardsVo v12 = new ZYCompanyCityAwardsVo("南宁","一重奖","200元代金券");
+        ZYCompanyCityAwardsVo v13 = new ZYCompanyCityAwardsVo("大连","一重奖","200元代金券");
+        ZYCompanyCityAwardsVo v14 = new ZYCompanyCityAwardsVo("重庆","一重奖","200元代金券");
+        ZYCompanyCityAwardsVo v15 = new ZYCompanyCityAwardsVo("沈阳","一重奖","200元代金券");
+        ZYCompanyCityAwardsVo v16 = new ZYCompanyCityAwardsVo("杭州","一重奖","200元代金券");
         List<ZYCompanyCityAwardsVo> result = new ArrayList<>();
         result.add(v1);
         result.add(v2);
@@ -306,6 +316,16 @@ public class ZhongYuanWelfareController {
         result.add(v4);
         result.add(v5);
         result.add(v6);
+        result.add(v7);
+        result.add(v8);
+        result.add(v9);
+        result.add(v10);
+        result.add(v11);
+        result.add(v12);
+        result.add(v13);
+        result.add(v14);
+        result.add(v15);
+        result.add(v16);
         return Response.success("ok",result);
 
     }
