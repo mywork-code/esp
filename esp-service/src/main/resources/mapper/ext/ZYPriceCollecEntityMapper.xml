@@ -3,7 +3,7 @@
 <mapper namespace="com.apass.esp.mapper.ZYPriceCollecEntityMapper" >
   <select id="countByQHRewardType" resultType="java.lang.Integer">
   select count(*) from t_esp_zy_prize_collec
-  where qh_reward_type = #{qhRewardType} and company_name = #{companyName}
+  where qh_reward_type = #{qhRewardType} and company_name  LIKE concat("%" #{companyName} "%")
   and activity_id = #{activityId}
   and is_delete = 'N'
   </select>

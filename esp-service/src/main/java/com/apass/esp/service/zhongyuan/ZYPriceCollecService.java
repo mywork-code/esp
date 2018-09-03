@@ -37,6 +37,9 @@ public class ZYPriceCollecService {
 
 
     public void addPriceCollec(ZYPriceCollecEntity zyPriceCollecEntity) throws BusinessException{
+        if(zyPriceCollecEntity.getCompanyName().indexOf("北京") != -1){
+            zyPriceCollecEntity.setCompanyName("北京");
+        }
        Integer count = zyPriceCollecEntityMapper.countByQHRewardType(zyPriceCollecEntity.getQhRewardType(),
                 zyPriceCollecEntity.getCompanyName(),String.valueOf(getZyActicityCollecId()));
         int max;
@@ -74,6 +77,9 @@ public class ZYPriceCollecService {
      * @return true--已达上限，false--未达上限
      */
     public boolean ifUpflag(String qhRewardType,String companyName,String activityId){
+        if(companyName.indexOf("北京") != -1){
+            companyName = "北京";
+        }
         Integer count = zyPriceCollecEntityMapper.countByQHRewardType(qhRewardType, companyName,activityId);
         int max;
         if(systemEnvConfig.isPROD()){
