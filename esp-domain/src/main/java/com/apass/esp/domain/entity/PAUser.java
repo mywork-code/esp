@@ -24,6 +24,13 @@ public class PAUser {
     private String fromIp;
 
     private String identity;
+
+    private Integer age;
+
+    private String userAgent;
+
+    private Byte agreeFlag;
+
     public Long getId() {
         return id;
     }
@@ -110,5 +117,29 @@ public class PAUser {
 
     public void setIdentity(String identity) {
         this.identity = identity;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public Byte getAgreeFlag() {
+        return agreeFlag;
+    }
+
+    public void setAgreeFlag(Byte agreeFlag) {
+        this.agreeFlag = agreeFlag;
     }
 }
