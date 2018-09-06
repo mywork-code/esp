@@ -49,7 +49,7 @@ public class CustomerServiceClient {
     private static final String SAVEAGREEMENT="/interfaceForOrder/saveContract";
     private static final String USERHEAD="/fileView/query";
 
-    private static final String DOUDOURUL="/channelTrader/getCutsomer";
+    private static final String DOUDOURUL="/channelInfo/getCustomer";
     private static final String FYDURL="/customerinfo/getCustomer";
     /**
      * 获取客户头像
