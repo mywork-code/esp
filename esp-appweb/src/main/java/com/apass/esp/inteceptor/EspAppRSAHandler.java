@@ -71,6 +71,7 @@ public class EspAppRSAHandler {
 			}
 			@SuppressWarnings("unchecked")
 			Map<String, Object> paraMap = (Map<String, Object>) arr[i];
+			LOGGER.info("app端请求参数：{}",GsonUtils.toJson(paraMap));
 			// 加密后的参数的key值为RSAPara
 			String paraValue = (String) paraMap.get("data");
 			if (StringUtils.isBlank(paraValue)) {
@@ -101,6 +102,7 @@ public class EspAppRSAHandler {
 			}
 			@SuppressWarnings("unchecked")
 			Map<String, Object> paraMap = (Map<String, Object>) arr[i];
+			LOGGER.info("app端请求参数：{}",GsonUtils.toJson(paraMap));
 			String paraValue = (String) paraMap.get("h5Data");
 			if (StringUtils.isBlank(paraValue)) {
 				continue;
