@@ -8,4 +8,17 @@
         where user_id = #{userId}
     </select>
 
+    <select id="selectUserByRangeDate" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_pa_user
+        <where>
+            <if test="startDate != null and startDate != ''">
+                and created_time > #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and #{endDate} > created_time
+            </if>
+        </where>
+    </select>
 </mapper>

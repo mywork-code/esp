@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Test;
+import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
+import com.apass.esp.service.bill.CustomerServiceClient;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.*;
@@ -23,6 +25,7 @@ import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.gson.Gson;
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonValueProcessor;
@@ -96,6 +99,9 @@ public class TestController {
     @Autowired
     private JdAfterSaleApiClient jdAfterSaleApiClient;
 
+    @Autowired
+    private CustomerServiceClient customerServiceClient;
+
     @RequestMapping(value = "/test", method = RequestMethod.POST)
     @ResponseBody
     public Response test(@RequestBody Map<String, Object> paramMap) {
@@ -104,6 +110,16 @@ public class TestController {
     	System.out.println(jsonObject); 
         cacheManager.set(JD_TOKEN_REDIS_KEY, jsonObject.toJSONString());
         return Response.success("1", "");
+    }
+    @RequestMapping(value = "/test2", method = RequestMethod.POST)
+    @ResponseBody
+    public Response test2(@RequestBody Map<String, Object> paramMap) throws BusinessException {
+        String mobile = CommonUtils.getValue(paramMap,"mobile");
+        CustomerInfo douDoutCustomerInfo = customerServiceClient.getDouDoutCustomerInfo(mobile);
+        CustomerInfo fydCustomerInfo = customerServiceClient.getFydCustomerInfo(mobile);
+        System.out.println(GsonUtils.toJson(douDoutCustomerInfo));
+        System.out.println(GsonUtils.toJson(fydCustomerInfo));
+        return Response.success("成功",douDoutCustomerInfo);
     }
 
     /**
