@@ -1,18 +1,11 @@
 package com.apass.esp.schedule;
 
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.PAUser;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
-import com.apass.esp.search.entity.Goods;
-import com.apass.esp.search.enums.IndexType;
-import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.bill.CustomerServiceClient;
-import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.home.PAUserService;
-import com.apass.gfb.framework.utils.AESUtils;
-import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,6 +16,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Date;
 import java.util.List;
@@ -39,6 +34,7 @@ import java.util.List;
 @Component
 @Configurable
 @EnableScheduling
+@RequestMapping("/pingan/task")
 @Profile("Schedule")
 public class PingAnTask {
 
@@ -57,41 +53,56 @@ public class PingAnTask {
      * 3，无--调占两个接口获取身份证号--解析调平安接口
      */
     @Scheduled(cron = "0 15 0 * * *")
-    public void esInitScheduleTask() {
-       try{
+    public void putToPAUserSchedule() {
+       putToPAUserMethod();
+    }
 
-           //查询平安表，一个星期内数据
-           Date begin = DateFormatUtil.addDays(new Date(),-7);
-           String startDate = DateFormatUtil.dateToString(begin)+" 00:00:00";
-           String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))+" 23:59:59";
+    @RequestMapping("/test")
+    @ResponseBody
+    public Response test(){
+        putToPAUserMethod();
+        return Response.success("成功");
+    }
 
-           //根据时间区间查询
-           List<PAUser> paUsers = paUserService.selectUserByRangeDate(startDate,endDate);
-           if(CollectionUtils.isEmpty(paUsers)){
-               return;
-           }
 
-           for(PAUser paUser : paUsers){
-               String identity = paUser.getIdentity();
-               if(StringUtils.isEmpty(identity)){
-                   //调远程接口，获取identity
-                   CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(paUser.getTelephone());
-                   if(customerInfo == null){
-                       customerInfo = customerServiceClient.getFydCustomerInfo(paUser.getTelephone());
-                   }
+    private void putToPAUserMethod() {
+        try{
+            //查询平安表，一个星期内数据
+            Date begin = DateFormatUtil.addDays(new Date(),-7);
+            String startDate = DateFormatUtil.dateToString(begin)+" 00:00:00";
+            String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))+" 23:59:59";
 
-                   paUser.setUsername(customerInfo.getRealName());
-                   paUser.setIdentity(customerInfo.getIdentityNo());
-               }
+            //根据时间区间查询
+            List<PAUser> paUsers = paUserService.selectUserByRangeDate(startDate,endDate);
+            if(CollectionUtils.isEmpty(paUsers)){
+                return;
+            }
 
-               paUser.setIdentity(identity);
-               //推送数据至平安
-               paUserService.saveToPAInterface(paUser);
-           }
+            for(PAUser paUser : paUsers){
+                String identity = paUser.getIdentity();
+                if(StringUtils.isEmpty(identity)){
+                    //调远程接口，获取identity
+                    CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(paUser.getTelephone());
+                    if(customerInfo != null){
+                        paUser.setUsername(customerInfo.getRealName());
+                        paUser.setIdentity(customerInfo.getIdentityNo());
+                        //推送数据至平安
+                        paUserService.saveToPAInterface(paUser);
+                    }
+                    CustomerInfo customerInfo2 = customerServiceClient.getFydCustomerInfo(paUser.getTelephone());
+                    if(customerInfo2 != null){
+                        paUser.setUsername(customerInfo.getRealName());
+                        paUser.setIdentity(customerInfo.getIdentityNo());
+                        //推送数据至平安
+                        paUserService.saveToPAInterface(paUser);
+                    }
+                }else {
+                    paUserService.saveToPAInterface(paUser);
+                }
+            }
 
-       }catch (Exception e){
-           LOGGER.error("平安保险零点推送task异常,---Exception---",e);
-       }
-
+        }catch (Exception e){
+            LOGGER.error("平安保险零点推送task异常,---Exception---",e);
+        }
     }
 }
