@@ -7,6 +7,7 @@ import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.mapper.PAUserMapper;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.*;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -163,5 +164,42 @@ public class PAUserService {
 			}
 		}
 		return true;
+	}
+
+	@Transactional(rollbackFor = {Exception.class})
+	public Integer addPaUserV2(Map<String, Object> paramMap) throws BusinessException{
+		String userId = CommonUtils.getValue(paramMap, "userId");
+		String mobile = CommonUtils.getValue(paramMap, "mobile");
+		String ip = CommonUtils.getValue(paramMap,"ip");
+		String userAgent = CommonUtils.getValue(paramMap,"userAgent");
+		String agreeFlag = CommonUtils.getValue(paramMap,"agreeFlag");//0-未同意，1-已同意
+		if(StringUtils.isEmpty(userId) || StringUtils.isEmpty(mobile)
+				|| StringUtils.isEmpty(agreeFlag)){
+			throw new BusinessException("参数不合法！");
+		}
+		PAUser paUser = paUserMapper.selectUserByUserId(userId);
+		if(paUser.getAgreeFlag().intValue() == 1){
+			throw new BusinessException("您已领取过！");
+		}
+
+		//TODO：获取身份号码
+
+		PAUser paUserEntity = new PAUser();
+		paUserEntity.setUsername("");
+		paUserEntity.setSex(Byte.valueOf(""));
+		paUserEntity.setAge(0);
+		paUserEntity.setIdentity("");
+		paUserEntity.setTelephone(mobile);
+		paUserEntity.setBirthday(DateFormatUtil.string2date("1900-01-01"));
+		paUserEntity.setUserId(Long.valueOf(userId));
+
+		paUserEntity.setFromIp(ip);
+		paUserEntity.setUserAgent(userAgent);
+		paUserEntity.setAgreeFlag(Byte.valueOf(agreeFlag));
+		paUserEntity.setUpdatedTime(new Date());
+		paUserEntity.setCreatedTime(new Date());
+		paUserEntity.setIsDelete(CouponIsDelete.COUPON_N.getCode());
+		return paUserMapper.insertSelective(paUserEntity);
+
 	}
 }
