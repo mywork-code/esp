@@ -27,7 +27,7 @@ public class MqConnectionFactoryConfiguration {
       rabbitMqConnFactory.setHost("10.1.12.178");
       rabbitMqConnFactory.setPort(5672);
     }else{
-      rabbitMqConnFactory.setHost("10.254.60.12");
+      rabbitMqConnFactory.setHost("10.141.100.12");
       rabbitMqConnFactory.setPort(5672);
     }
     rabbitMqConnFactory.setVirtualHost("esp");

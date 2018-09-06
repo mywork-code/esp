@@ -108,8 +108,10 @@ public class PAUserColler {
             String userAgent = request.getHeader("User-Agent");
             paramMap.put("ip",ip);
             paramMap.put("userAgent",userAgent);
-
-
+            int count = paUserService.addPaUserV2(paramMap);
+            if(count != 1){
+                return Response.fail("数据插入失败！！");
+            }
         }catch (Exception e){
             LOGGER.error("一键领取平安保险savePAUser异常,Exception:{}",e);
             return Response.fail(e.getMessage());

@@ -76,6 +76,7 @@ public class EspAppRSAHandler {
 			if (StringUtils.isBlank(paraValue)) {
 				continue;
 			}
+			LOGGER.info("app端请求参数：{}",GsonUtils.toJson(paraMap));
 			try {
 				// 私钥解密接受数据
 				String paraStr = RSAUtils.decryptByPrivateKey(paraValue, privateKey);
@@ -105,6 +106,7 @@ public class EspAppRSAHandler {
 			if (StringUtils.isBlank(paraValue)) {
 				continue;
 			}
+			LOGGER.info("app端请求参数：{}",GsonUtils.toJson(paraMap));
 			try {
 				// 私钥解密接受数据
 				String key = new SimpleDateFormat("yyyyMMdd").format(new Date());

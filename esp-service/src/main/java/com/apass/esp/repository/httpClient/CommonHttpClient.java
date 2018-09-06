@@ -131,11 +131,6 @@ public class CommonHttpClient {
         return customerBasicInfo;
     }
 
-
-
-
-
-
     /**
      * 返回用户的费率信息及CustomerId
      *

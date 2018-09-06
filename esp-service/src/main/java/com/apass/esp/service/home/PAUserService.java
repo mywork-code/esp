@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,15 +92,7 @@ public class PAUserService {
 		}
 
 		//调用平安接口:如果成功保存用户信息，如果失败返回失败信息
-		if(config.isPROD()){
-			adCode = "0f8f560b";
-			url = "http://xbbapi.data88.cn/insurance/doInsure";
-			qianMing = "bc57981d0419c8a70f554db7c268c1a8";
-		}else if (config.isUAT()){
-			adCode = "1ae265f6";
-			url = "http://xbbstagingapi.data88.cn/insurance/doInsure";
-			qianMing = "f82caa903a85b858278a9da5f3fc528a";
-		}
+		getAdcodeUrlAndQianMing();
 		String sign = MD5Utils.getStingMD5(adCode+qianMing+mobile);
 		PAInterfaceDto dto = new PAInterfaceDto();
 		dto.setPolicyHolderName(username);
@@ -154,6 +147,11 @@ public class PAUserService {
 		return resultMap;
 	}
 
+	/**
+	 * 是否含中文
+	 * @param str
+	 * @return
+     */
 	public static boolean isChineseStr(String str){
 		Pattern pattern = Pattern.compile("[\u4e00-\u9fa5]");
 		char c[] = str.toCharArray();
@@ -167,18 +165,18 @@ public class PAUserService {
 	}
 
 	@Transactional(rollbackFor = {Exception.class})
-	public Integer addPaUserV2(Map<String, Object> paramMap) throws BusinessException{
+	public Integer addPaUserV2(Map<String, Object> paramMap) throws BusinessException {
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String mobile = CommonUtils.getValue(paramMap, "mobile");
-		String ip = CommonUtils.getValue(paramMap,"ip");
-		String userAgent = CommonUtils.getValue(paramMap,"userAgent");
-		String agreeFlag = CommonUtils.getValue(paramMap,"agreeFlag");//0-未同意，1-已同意
-		if(StringUtils.isEmpty(userId) || StringUtils.isEmpty(mobile)
-				|| StringUtils.isEmpty(agreeFlag)){
+		String ip = CommonUtils.getValue(paramMap, "ip");
+		String userAgent = CommonUtils.getValue(paramMap, "userAgent");
+		String agreeFlag = CommonUtils.getValue(paramMap, "agreeFlag");//0-未同意，1-已同意
+		if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(mobile)
+				|| StringUtils.isEmpty(agreeFlag)) {
 			throw new BusinessException("参数不合法！");
 		}
 		PAUser paUser = paUserMapper.selectUserByUserId(userId);
-		if(paUser.getAgreeFlag().intValue() == 1){
+		if (paUser.getAgreeFlag().intValue() == 1) {
 			throw new BusinessException("您已领取过！");
 		}
 
@@ -200,6 +198,47 @@ public class PAUserService {
 		paUserEntity.setCreatedTime(new Date());
 		paUserEntity.setIsDelete(CouponIsDelete.COUPON_N.getCode());
 		return paUserMapper.insertSelective(paUserEntity);
+	}
 
+	public void saveToPAInterface(PAUser paUser) {
+		String mobile = paUser.getTelephone();
+		getAdcodeUrlAndQianMing();
+		String sign = MD5Utils.getStingMD5(adCode+qianMing+mobile);
+		PAInterfaceDto dto = new PAInterfaceDto();
+		dto.setPolicyHolderName(paUser.getUsername());
+		dto.setAdCode(adCode);
+		dto.setMobile(mobile);
+		dto.setActivityConfigNum("0");
+		dto.setFromIp(paUser.getFromIp());
+		dto.setUserAgeng(paUser.getUserAgent());
+
+		dto.setSign(sign);
+		dto.setPolicyHolderSex("1".equals(paUser.getSex())?"MALE":"FEMALE");
+		dto.setPolicyHolderIdCard(paUser.getIdentity());
+
+		Map<String, String> resultMap = saveToPAInterface(dto, url);
+		if(StringUtils.equalsIgnoreCase(resultMap.get("status"),"FAILED")){
+			throw new RuntimeException(resultMap.get("message"));
+		}
+	}
+
+	private void getAdcodeUrlAndQianMing() {
+		if(config.isPROD()){
+			adCode = "0f8f560b";
+			url = "http://xbbapi.data88.cn/insurance/doInsure";
+			qianMing = "bc57981d0419c8a70f554db7c268c1a8";
+		}else if (config.isUAT()){
+			adCode = "1ae265f6";
+			url = "http://xbbstagingapi.data88.cn/insurance/doInsure";
+			qianMing = "f82caa903a85b858278a9da5f3fc528a";
+		}
+	}
+
+	public List<PAUser> selectUserByRangeDate(String startDate, String endDate) {
+		Map<String,Object> paramMap = Maps.newHashMap();
+		paramMap.put("startDate",startDate);
+		paramMap.put("endDate",endDate);
+
+		return paUserMapper.selectUserByRangeDate(paramMap);
 	}
 }
