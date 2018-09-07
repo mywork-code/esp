@@ -7,6 +7,7 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.extractor.ExcelExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +97,25 @@ public class PAUserColler {
             return Response.fail(e.getMessage());
         }
 
+        return Response.success("领取成功，请耐心等待保险专员回复！");
+    }
+
+    @ResponseBody
+    @RequestMapping("/v2/save")
+    public Response save(HttpServletRequest request,@RequestBody Map<String, Object> paramMap){
+        try {
+            String ip = HttpWebUtils.getRequestIP(request);
+            String userAgent = request.getHeader("User-Agent");
+            paramMap.put("ip",ip);
+            paramMap.put("userAgent",userAgent);
+            int count = paUserService.addPaUserV2(paramMap);
+            if(count != 1){
+                return Response.fail("数据插入失败！！");
+            }
+        }catch (Exception e){
+            LOGGER.error("一键领取平安保险savePAUser异常,Exception:{}",e);
+            return Response.fail(e.getMessage());
+        }
         return Response.success("领取成功，请耐心等待保险专员回复！");
     }
 }
