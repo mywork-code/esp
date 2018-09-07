@@ -73,11 +73,9 @@ public class PingAnTask {
 
     private void putToPAUserMethod(String startDate, String endDate) {
         try{
-
-
             //根据时间区间查询
             List<PAUser> paUsers = paUserService.selectUserByRangeDate(startDate,endDate);
-            LOGGER.info("平安保险推送task putToPAUserMethod()7天内点击领取查询结果:{}", GsonUtils.toJson(paUsers));
+            LOGGER.info("平安保险推送task putToPAUserMethod(){}点击领取查询结果:{}", startDate, GsonUtils.toJson(paUsers));
             if(CollectionUtils.isEmpty(paUsers)){
                 return;
             }

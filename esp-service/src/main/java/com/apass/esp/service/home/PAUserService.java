@@ -140,11 +140,7 @@ public class PAUserService {
 			LOGGER.info("平安投保返回数据:{}",responseJson);
 			PAInterfaceResponse response = GsonUtils.convertObj(responseJson, PAInterfaceResponse.class);
 			resultMap.put("message",response.getMessage());
-			if(StringUtils.equalsIgnoreCase(response.getStatus(),"SUCCEEDED")){
-				resultMap.put("status",response.getStatus());
-			}else {
-				resultMap.put("status",response.getStatus());
-			}
+			resultMap.put("status",response.getStatus());
 		}catch (Exception e){
 			LOGGER.error("请求失败,Exception:{}",e);
 			resultMap.put("status","fail");
@@ -232,9 +228,7 @@ public class PAUserService {
 		dto.setPolicyHolderIdCard(paUser.getIdentity());
 
 		Map<String, String> resultMap = saveToPAInterface(dto, url);
-//		if(StringUtils.equalsIgnoreCase(resultMap.get("status"),"FAILED")){
-//			throw new RuntimeException(resultMap.get("message"));
-//		}
+
 		return "SUCCEEDED".equalsIgnoreCase(resultMap.get("status"))?true:false;
 	}
 
@@ -258,11 +252,7 @@ public class PAUserService {
 		return paUserMapper.selectUserByRangeDate(paramMap);
 	}
 
-	public void saveSelectivePAUser(PAUser paUser) {
-		paUserMapper.insertSelective(paUser);
-	}
 	public void updateSelectivePAUser(PAUser paUser) {
-
 		paUserMapper.updateByPrimaryKeySelective(paUser);
 	}
 }

@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -163,6 +164,84 @@ public class ProCouponTask {
             return Response.fail("邮件发送失败！");
         }
         return Response.success("邮件发送成功!");
+    }
+
+    @RequestMapping("test5")
+    @ResponseBody
+    public Response sendEmail_5(){
+        try {
+            sendEamilExcel_zhongyuanCount5();
+        }catch (Exception e){
+            LOGGER.error("---- ProCouponTasksendEmail_5() Exception------",e);
+            return Response.fail("导出数据失败");
+        }
+        return Response.success("邮件发送成功!");
+    }
+
+    private void sendEamilExcel_zhongyuanCount5() throws Exception {
+        Date begin = DateFormatUtil.addDays(new Date(), -15);
+        List<PrizeAndCouponDto> prizeAndCouponDtos = Lists.newArrayList();
+
+        for(int i=15; i>=0; i--){
+            String startDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin,i))+" 00:00:00";
+            String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin,i))+" 23:59:59";
+
+            //当天中原领取优惠券情况
+            List<MyCouponAndCountDto> couponList = myCouponService.getRelTelAndCount(startDate,endDate);
+            if(CollectionUtils.isEmpty(couponList)){
+                PrizeAndCouponDto dto = new PrizeAndCouponDto();
+
+                dto.setDate(startDate.substring(0,startDate.length()-9));
+                dto.setCompanyName("今天无人领取优惠券和礼包");
+                dto.setPrizeCount(0);
+                dto.setCouponCount(0);
+                prizeAndCouponDtos.add(dto);
+            }else {
+                //key:公司名称，value：领取优惠券数量
+                Map<String,Integer> prizeMap = Maps.newHashMap();
+                for(MyCouponAndCountDto couponAndCountDto : couponList){
+                    //根据手机号查询公司名称
+                    ZYPriceCollecEntity zyEntity = zyService.selectByEmpTel(couponAndCountDto.getRelateTel(), zyService.getZyActicityCollecId() + "");
+
+                    String key;
+                    //领取优惠券未领取包
+                    if(zyEntity == null){
+                        //查询所属公司
+                        ZYResponseVo zyqh = zhongYuanQHService.getZYQH(couponAndCountDto.getRelateTel());
+                        if(zyqh == null || !zyqh.isSuccess()){
+                            continue;
+                        }
+                        key = zyqh.getResult().get(0).getCompanyName();
+                    }else {
+                        key = zyEntity.getCompanyName();
+                    }
+
+                    //每次通过key获取对应value，如果存在在原有value的基础上+当前数量;不存在，直接put进去当前数量
+                    Integer value = prizeMap.get(key);
+                    if(value != null){
+                        value = value + 1;
+                        prizeMap.put(key,value);
+                    }else {
+                        prizeMap.put(key,1);
+                    }
+                }
+                //遍历prizeMap中的key获取对应包的数量
+                for(String companyName : prizeMap.keySet()){
+                    PrizeAndCouponDto dto = new PrizeAndCouponDto();
+
+                    dto.setDate(startDate.substring(0,startDate.length()-9));
+                    dto.setCompanyName(companyName);
+                    dto.setCouponCount(prizeMap.get(companyName));
+                    //查询领取的包数量
+                    Integer prizeCount = zyService.getCountByStartandEndTimeAndCompanyname(startDate,endDate,companyName);
+                    dto.setPrizeCount(prizeCount);
+
+                    prizeAndCouponDtos.add(dto);
+                }
+            }
+        }
+        //生成Excel
+        generateFile_count4(prizeAndCouponDtos);
     }
 
     /**
