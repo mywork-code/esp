@@ -188,7 +188,6 @@ public class PAUserService {
 
 		PAUser paUserEntity = new PAUser();
 		//调远程接口，获取identity
-//		CustomerInfo customerInfo = null;
 		CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(mobile);
 		if(customerInfo == null){
 			customerInfo = customerServiceClient.getFydCustomerInfo(mobile);
