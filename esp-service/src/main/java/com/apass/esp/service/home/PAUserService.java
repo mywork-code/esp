@@ -181,16 +181,17 @@ public class PAUserService {
 			throw new BusinessException("参数不合法！");
 		}
 		PAUser paUser = paUserMapper.selectUserByUserId(userId);
-		if (paUser.getAgreeFlag().intValue() == 1) {
+		if (paUser != null && paUser.getAgreeFlag().intValue() == 1) {
 			throw new BusinessException("您已领取过！");
 		}
 
 		PAUser paUserEntity = new PAUser();
 		//调远程接口，获取identity
-		CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(paUser.getTelephone());
-		if(customerInfo == null){
-			customerInfo = customerServiceClient.getFydCustomerInfo(paUser.getTelephone());
-		}
+		CustomerInfo customerInfo = null;
+//		CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(mobile);
+//		if(customerInfo == null){
+//			customerInfo = customerServiceClient.getFydCustomerInfo(mobile);
+//		}
 		if(customerInfo != null){
 			String identityNo = customerInfo.getIdentityNo();
 			paUserEntity.setUsername(customerInfo.getRealName());
