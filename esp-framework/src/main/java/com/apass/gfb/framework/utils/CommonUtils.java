@@ -3,13 +3,7 @@ package com.apass.gfb.framework.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -138,6 +132,19 @@ public class CommonUtils {
         }
         return identityNo.substring(6, 14);
 //        return DateFormatUtil.string2string(birth, "yyyyMMdd", "yyyy-MM-dd");
+    }
+
+    /**
+     * 根据身份证获得年龄
+     */
+    public static Integer getAge(String identityNo){
+        Date birthDate = DateFormatUtil.string2date(getIdentityBirth(identityNo),"yyyyMMdd");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(birthDate);
+        Integer y1 = cal.get(Calendar.YEAR);
+        cal.setTime(new Date());
+        Integer y2 = cal.get(Calendar.YEAR);
+        return y2 - y1;
     }
 
     /**
