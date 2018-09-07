@@ -3,8 +3,10 @@ package com.apass.esp.service.home;
 import com.apass.esp.domain.dto.statement.PAInterfaceDto;
 import com.apass.esp.domain.dto.statement.PAInterfaceResponse;
 import com.apass.esp.domain.entity.PAUser;
+import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.mapper.PAUserMapper;
+import com.apass.esp.service.bill.CustomerServiceClient;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -41,6 +43,9 @@ public class PAUserService {
 	 */
 	@Autowired
 	private MobileSmsService mobileRandomService;
+
+	@Autowired
+	private CustomerServiceClient customerServiceClient;
 
 	public PAUser selectUserByUserId(String userId) {
 		return paUserMapper.selectUserByUserId(userId);
@@ -180,17 +185,26 @@ public class PAUserService {
 			throw new BusinessException("您已领取过！");
 		}
 
-		//TODO：获取身份号码
-
 		PAUser paUserEntity = new PAUser();
-		paUserEntity.setUsername("");
-		paUserEntity.setSex(Byte.valueOf(""));
-		paUserEntity.setAge(0);
-		paUserEntity.setIdentity("");
-		paUserEntity.setTelephone(mobile);
-		paUserEntity.setBirthday(DateFormatUtil.string2date("1900-01-01"));
-		paUserEntity.setUserId(Long.valueOf(userId));
+		//调远程接口，获取identity
+		CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(paUser.getTelephone());
+		if(customerInfo == null){
+			customerInfo = customerServiceClient.getFydCustomerInfo(paUser.getTelephone());
+		}
+		if(customerInfo != null){
+			String identityNo = customerInfo.getIdentityNo();
+			paUserEntity.setUsername(customerInfo.getRealName());
+			if(StringUtils.isNotEmpty(identityNo)){
+				String sexStr = CommonUtils.getIdentityGender(identityNo);
+				paUserEntity.setSex(sexStr == "女"?Byte.valueOf("0"):Byte.valueOf("1"));
+				paUserEntity.setAge(CommonUtils.getAge(identityNo));
+				paUserEntity.setBirthday(DateFormatUtil.string2date(CommonUtils.getIdentityBirth(identityNo),"yyyyMMdd"));
+				paUserEntity.setIdentity(identityNo);
+			}
+		}
 
+		paUserEntity.setTelephone(mobile);
+		paUserEntity.setUserId(Long.valueOf(userId));
 		paUserEntity.setFromIp(ip);
 		paUserEntity.setUserAgent(userAgent);
 		paUserEntity.setAgreeFlag(Byte.valueOf(agreeFlag));
