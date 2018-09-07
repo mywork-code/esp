@@ -33,7 +33,7 @@ import java.util.Map;
 @Component
 public class ZhongYuanQHService {
 	public static   URL qhServiceWsdl = ZhongYuanQHService.class.getResource("/wsdl/QHService.asmx.wsdl");
-
+	private QHService qhService = new QHService(qhServiceWsdl);
 	/**
 	 * 日志
 	 */
@@ -44,8 +44,6 @@ public class ZhongYuanQHService {
 		if (StringUtils.isEmpty(mobile)) {
 			throw new RuntimeException("请传入手机号");
 		}
-
-		QHService qhService = new QHService(qhServiceWsdl);
 		String response = qhService.getQHServiceSoap().getQH(mobile);
 
 		if(StringUtils.isEmpty(response)){
@@ -57,9 +55,4 @@ public class ZhongYuanQHService {
 		return zyResponseVo;
 	}
 
-	public static void main(String[] args) {
-		QHService qhService = new QHService(qhServiceWsdl);
-		String response = qhService.getQHServiceSoap().getQH("13603027666");
-		System.out.println(response);
-	}
 }
