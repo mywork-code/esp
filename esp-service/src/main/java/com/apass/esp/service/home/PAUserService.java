@@ -255,4 +255,12 @@ public class PAUserService {
 
 		return paUserMapper.selectUserByRangeDate(paramMap);
 	}
+
+	public void saveSelectivePAUser(PAUser paUser) {
+		paUserMapper.insertSelective(paUser);
+	}
+
+	public void updateSelectivePAUser(PAUser paUser) {
+		paUserMapper.updateByPrimaryKeySelective(paUser);
+	}
 }

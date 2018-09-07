@@ -5,7 +5,9 @@ import com.apass.esp.domain.entity.PAUser;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.service.bill.CustomerServiceClient;
 import com.apass.esp.service.home.PAUserService;
+import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -74,6 +76,7 @@ public class PingAnTask {
 
             //根据时间区间查询
             List<PAUser> paUsers = paUserService.selectUserByRangeDate(startDate,endDate);
+            LOGGER.info("平安保险推送task putToPAUserMethod()7天内点击领取查询结果:{}", GsonUtils.toJson(paUsers));
             if(CollectionUtils.isEmpty(paUsers)){
                 return;
             }
@@ -84,17 +87,26 @@ public class PingAnTask {
                     //调远程接口，获取identity
                     CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(paUser.getTelephone());
                     if(customerInfo != null){
-                        paUser.setUsername(customerInfo.getRealName());
-                        paUser.setIdentity(customerInfo.getIdentityNo());
+                        saveToPaUser(paUser, customerInfo);
+
                         //推送数据至平安
                         paUserService.saveToPAInterface(paUser);
+
+                        //保存数据到数据库存
+                        paUserService.updateSelectivePAUser(paUser);
                     }
+
                     CustomerInfo customerInfo2 = customerServiceClient.getFydCustomerInfo(paUser.getTelephone());
                     if(customerInfo2 != null){
+                        saveToPaUser(paUser, customerInfo2);
                         paUser.setUsername(customerInfo.getRealName());
                         paUser.setIdentity(customerInfo.getIdentityNo());
+
                         //推送数据至平安
                         paUserService.saveToPAInterface(paUser);
+
+                        //保存数据到数据库存
+                        paUserService.updateSelectivePAUser(paUser);
                     }
                 }else {
                     paUserService.saveToPAInterface(paUser);
@@ -103,6 +115,19 @@ public class PingAnTask {
 
         }catch (Exception e){
             LOGGER.error("平安保险零点推送task异常,---Exception---",e);
+        }
+    }
+
+    private void saveToPaUser(PAUser paUser, CustomerInfo customerInfo) {
+        String identityNo = customerInfo.getIdentityNo();
+        paUser.setUsername(customerInfo.getRealName());
+        paUser.setIdentity(identityNo);
+        if(StringUtils.isNotEmpty(identityNo)){
+            String sexStr = CommonUtils.getIdentityGender(identityNo);
+            paUser.setSex(sexStr == "女"?Byte.valueOf("0"):Byte.valueOf("1"));
+            paUser.setAge(CommonUtils.getAge(identityNo));
+            paUser.setBirthday(DateFormatUtil.string2date(CommonUtils.getIdentityBirth(identityNo),"yyyyMMdd"));
+            paUser.setIdentity(identityNo);
         }
     }
 }
