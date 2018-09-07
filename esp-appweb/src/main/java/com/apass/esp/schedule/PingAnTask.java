@@ -70,9 +70,9 @@ public class PingAnTask {
     private void putToPAUserMethod() {
         try{
             //查询平安表，一个星期内数据
-            Date begin = DateFormatUtil.addDays(new Date(),-7);
+            Date begin = DateFormatUtil.addDays(new Date(),-1);
             String startDate = DateFormatUtil.dateToString(begin)+" 00:00:00";
-            String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))+" 23:59:59";
+            String endDate = DateFormatUtil.dateToString(begin)+" 23:59:59";
 
             //根据时间区间查询
             List<PAUser> paUsers = paUserService.selectUserByRangeDate(startDate,endDate);
@@ -86,28 +86,16 @@ public class PingAnTask {
                 if(StringUtils.isEmpty(identity)){
                     //调远程接口，获取identity
                     CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(paUser.getTelephone());
-                    if(customerInfo != null){
-                        saveToPaUser(paUser, customerInfo);
-
-                        //推送数据至平安
-                        paUserService.saveToPAInterface(paUser);
-
-                        //保存数据到数据库存
-                        paUserService.updateSelectivePAUser(paUser);
+                    if(customerInfo == null){
+                        customerInfo = customerServiceClient.getFydCustomerInfo(paUser.getTelephone());
                     }
+                    convertToPaUser(paUser, customerInfo);
 
-                    CustomerInfo customerInfo2 = customerServiceClient.getFydCustomerInfo(paUser.getTelephone());
-                    if(customerInfo2 != null){
-                        saveToPaUser(paUser, customerInfo2);
-                        paUser.setUsername(customerInfo.getRealName());
-                        paUser.setIdentity(customerInfo.getIdentityNo());
+                    //推送数据至平安
+                    paUserService.saveToPAInterface(paUser);
 
-                        //推送数据至平安
-                        paUserService.saveToPAInterface(paUser);
-
-                        //保存数据到数据库存
-                        paUserService.updateSelectivePAUser(paUser);
-                    }
+                    //保存数据到数据库存
+                    paUserService.updateSelectivePAUser(paUser);
                 }else {
                     paUserService.saveToPAInterface(paUser);
                 }
@@ -118,7 +106,7 @@ public class PingAnTask {
         }
     }
 
-    private void saveToPaUser(PAUser paUser, CustomerInfo customerInfo) {
+    private void convertToPaUser(PAUser paUser, CustomerInfo customerInfo) {
         String identityNo = customerInfo.getIdentityNo();
         paUser.setUsername(customerInfo.getRealName());
         paUser.setIdentity(identityNo);
