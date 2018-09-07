@@ -83,6 +83,7 @@ public class PingAnTask {
 
             for(PAUser paUser : paUsers){
                 String identity = paUser.getIdentity();
+                paUser.setUpdatedTime(new Date());
                 if(StringUtils.isEmpty(identity)){
                     //调远程接口，获取identity
                     CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(paUser.getTelephone());
@@ -92,12 +93,18 @@ public class PingAnTask {
                     convertToPaUser(paUser, customerInfo);
 
                     //推送数据至平安
-                    paUserService.saveToPAInterface(paUser);
-
+                   boolean flag = paUserService.saveToPAInterface(paUser);
+                    if(!flag)
                     //保存数据到数据库存
+                    //请求平安接口失败 agree_flag = -1
+                        paUser.setAgreeFlag(Byte.valueOf("-1"));
                     paUserService.updateSelectivePAUser(paUser);
                 }else {
-                    paUserService.saveToPAInterface(paUser);
+                    boolean flag = paUserService.saveToPAInterface(paUser);
+                    if(!flag){
+                        paUser.setAgreeFlag(Byte.valueOf("-1"));
+                        paUserService.updateSelectivePAUser(paUser);
+                    }
                 }
             }
 

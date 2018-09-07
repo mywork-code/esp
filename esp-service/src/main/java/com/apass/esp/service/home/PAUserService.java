@@ -147,6 +147,7 @@ public class PAUserService {
 			}
 		}catch (Exception e){
 			LOGGER.error("请求失败,Exception:{}",e);
+			resultMap.put("status","fail");
 		}
 
 		return resultMap;
@@ -175,23 +176,23 @@ public class PAUserService {
 		String mobile = CommonUtils.getValue(paramMap, "mobile");
 		String ip = CommonUtils.getValue(paramMap, "ip");
 		String userAgent = CommonUtils.getValue(paramMap, "userAgent");
-		String agreeFlag = CommonUtils.getValue(paramMap, "agreeFlag");//0-未同意，1-已同意
+		String agreeFlag = CommonUtils.getValue(paramMap, "agreeFlag");//0-未同意，1-已同意，-1：请求平安接口失败
 		if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(mobile)
 				|| StringUtils.isEmpty(agreeFlag)) {
 			throw new BusinessException("参数不合法！");
 		}
 		PAUser paUser = paUserMapper.selectUserByUserId(userId);
 		if (paUser != null && paUser.getAgreeFlag().intValue() == 1) {
-			throw new BusinessException("您已领取过！");
+			throw new BusinessException("赠险每人仅限领取一份，请勿重复领取。");
 		}
 
 		PAUser paUserEntity = new PAUser();
 		//调远程接口，获取identity
-		CustomerInfo customerInfo = null;
-//		CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(mobile);
-//		if(customerInfo == null){
-//			customerInfo = customerServiceClient.getFydCustomerInfo(mobile);
-//		}
+//		CustomerInfo customerInfo = null;
+		CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(mobile);
+		if(customerInfo == null){
+			customerInfo = customerServiceClient.getFydCustomerInfo(mobile);
+		}
 		if(customerInfo != null){
 			String identityNo = customerInfo.getIdentityNo();
 			paUserEntity.setUsername(customerInfo.getRealName());
@@ -215,7 +216,7 @@ public class PAUserService {
 		return paUserMapper.insertSelective(paUserEntity);
 	}
 
-	public void saveToPAInterface(PAUser paUser) {
+	public boolean saveToPAInterface(PAUser paUser) {
 		String mobile = paUser.getTelephone();
 		getAdcodeUrlAndQianMing();
 		String sign = MD5Utils.getStingMD5(adCode+qianMing+mobile);
@@ -232,9 +233,10 @@ public class PAUserService {
 		dto.setPolicyHolderIdCard(paUser.getIdentity());
 
 		Map<String, String> resultMap = saveToPAInterface(dto, url);
-		if(StringUtils.equalsIgnoreCase(resultMap.get("status"),"FAILED")){
-			throw new RuntimeException(resultMap.get("message"));
-		}
+//		if(StringUtils.equalsIgnoreCase(resultMap.get("status"),"FAILED")){
+//			throw new RuntimeException(resultMap.get("message"));
+//		}
+		return "SUCCEEDED".equalsIgnoreCase(resultMap.get("status"))?true:false;
 	}
 
 	private void getAdcodeUrlAndQianMing() {
