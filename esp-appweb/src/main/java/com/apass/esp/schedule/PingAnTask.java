@@ -56,23 +56,24 @@ public class PingAnTask {
      */
     @Scheduled(cron = "0 15 0 * * *")
     public void putToPAUserSchedule() {
-       putToPAUserMethod();
+        //查询平安表，一个星期内数据
+        Date begin = DateFormatUtil.addDays(new Date(),-1);
+        String startDate = DateFormatUtil.dateToString(begin)+" 00:00:00";
+        String endDate = DateFormatUtil.dateToString(begin)+" 23:59:59";
+       putToPAUserMethod(startDate,endDate);
     }
 
     @RequestMapping("/test")
     @ResponseBody
-    public Response test(){
-        putToPAUserMethod();
+    public Response test(String startDate,String endDate){
+        putToPAUserMethod(startDate,endDate);
         return Response.success("成功");
     }
 
 
-    private void putToPAUserMethod() {
+    private void putToPAUserMethod(String startDate, String endDate) {
         try{
-            //查询平安表，一个星期内数据
-            Date begin = DateFormatUtil.addDays(new Date(),-1);
-            String startDate = DateFormatUtil.dateToString(begin)+" 00:00:00";
-            String endDate = DateFormatUtil.dateToString(begin)+" 23:59:59";
+
 
             //根据时间区间查询
             List<PAUser> paUsers = paUserService.selectUserByRangeDate(startDate,endDate);
@@ -96,13 +97,13 @@ public class PingAnTask {
                    boolean flag = paUserService.saveToPAInterface(paUser);
                     if(!flag)
                     //保存数据到数据库存
-                    //请求平安接口失败 agree_flag = -1
-                        paUser.setAgreeFlag(Byte.valueOf("-1"));
+                    //请求平安接口失败 age = -1
+                        paUser.setAge(-1);
                     paUserService.updateSelectivePAUser(paUser);
                 }else {
                     boolean flag = paUserService.saveToPAInterface(paUser);
                     if(!flag){
-                        paUser.setAgreeFlag(Byte.valueOf("-1"));
+                        paUser.setAge(-1);
                         paUserService.updateSelectivePAUser(paUser);
                     }
                 }
