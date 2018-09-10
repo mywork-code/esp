@@ -105,7 +105,7 @@ public class PAUserService {
 		dto.setMobile(mobile);
 		dto.setActivityConfigNum("0");
 		dto.setFromIp(ip);
-		dto.setUserAgeng(userAgent);
+		dto.setUserAgent(userAgent);
 		dto.setSign(sign);
 		dto.setPolicyHolderSex("1".equals(sex)?"MALE":"FEMALE");
 		dto.setPolicyHolderIdCard(identity);
@@ -143,7 +143,7 @@ public class PAUserService {
 			resultMap.put("status",response.getStatus());
 		}catch (Exception e){
 			LOGGER.error("请求失败,Exception:{}",e);
-			resultMap.put("status","fail");
+			resultMap.put("status","FAILED");
 		}
 
 		return resultMap;
@@ -221,7 +221,7 @@ public class PAUserService {
 		dto.setMobile(mobile);
 		dto.setActivityConfigNum("0");
 		dto.setFromIp(paUser.getFromIp());
-		dto.setUserAgeng(paUser.getUserAgent());
+		dto.setUserAgent(paUser.getUserAgent());
 
 		dto.setSign(sign);
 		dto.setPolicyHolderSex("1".equals(paUser.getSex())?"MALE":"FEMALE");

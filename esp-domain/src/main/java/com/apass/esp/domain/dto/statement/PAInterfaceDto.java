@@ -11,7 +11,7 @@ public class PAInterfaceDto {
     private String policyHolderBirth;
     private String activityConfigNum;
     private String fromIp;
-    private String userAgeng;
+    private String userAgent;
     private String sign;
     private String policyHolderIdCard;
 
@@ -55,12 +55,12 @@ public class PAInterfaceDto {
         this.fromIp = fromIp;
     }
 
-    public String getUserAgeng() {
-        return userAgeng;
+    public String getUserAgent() {
+        return userAgent;
     }
 
-    public void setUserAgeng(String userAgeng) {
-        this.userAgeng = userAgeng;
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 
     public String getSign() {
