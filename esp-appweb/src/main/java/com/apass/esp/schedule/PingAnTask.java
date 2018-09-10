@@ -82,6 +82,10 @@ public class PingAnTask {
 
             for(PAUser paUser : paUsers){
                 try {
+                    if(paUser.getAge().intValue() == -2){
+                        //-2是投保成功，不重复请求对方接口
+                        continue;
+                    }
                     String identity = paUser.getIdentity();
                     paUser.setUpdatedTime(new Date());
                     if(StringUtils.isEmpty(identity)){
