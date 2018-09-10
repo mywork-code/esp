@@ -81,29 +81,41 @@ public class PingAnTask {
             }
 
             for(PAUser paUser : paUsers){
-                String identity = paUser.getIdentity();
-                paUser.setUpdatedTime(new Date());
-                if(StringUtils.isEmpty(identity)){
-                    //调远程接口，获取identity
-                    CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(paUser.getTelephone());
-                    if(customerInfo == null){
-                        customerInfo = customerServiceClient.getFydCustomerInfo(paUser.getTelephone());
-                    }
-                    convertToPaUser(paUser, customerInfo);
+                try {
+                    String identity = paUser.getIdentity();
+                    paUser.setUpdatedTime(new Date());
+                    if(StringUtils.isEmpty(identity)){
+                        //调远程接口，获取identity
+                        CustomerInfo customerInfo = customerServiceClient.getDouDoutCustomerInfo(paUser.getTelephone());
+                        if(customerInfo == null){
+                            customerInfo = customerServiceClient.getFydCustomerInfo(paUser.getTelephone());
+                        }
+                        if(customerInfo == null){
+                            continue;
+                        }
+                        convertToPaUser(paUser, customerInfo);
 
-                    //推送数据至平安
-                   boolean flag = paUserService.saveToPAInterface(paUser);
-                    if(!flag)
-                    //保存数据到数据库存
-                    //请求平安接口失败 age = -1
-                        paUser.setAge(-1);
-                    paUserService.updateSelectivePAUser(paUser);
-                }else {
-                    boolean flag = paUserService.saveToPAInterface(paUser);
-                    if(!flag){
-                        paUser.setAge(-1);
+                        //推送数据至平安
+                        boolean flag = paUserService.saveToPAInterface(paUser);
+                        if(!flag) {
+                            //保存数据到数据库存
+                            //请求平安接口失败 age = -1,成功 age=-2
+                            paUser.setAge(-1);
+                        }else{
+                            paUser.setAge(-2);
+                        }
+                        paUserService.updateSelectivePAUser(paUser);
+                    }else {
+                        boolean flag = paUserService.saveToPAInterface(paUser);
+                        if(!flag){
+                            paUser.setAge(-1);
+                        }else{
+                            paUser.setAge(-2);
+                        }
                         paUserService.updateSelectivePAUser(paUser);
                     }
+                }catch (Exception e){
+                    LOGGER.error("单个平安保险零点推送task异常,---Exception---",e);
                 }
             }
 
