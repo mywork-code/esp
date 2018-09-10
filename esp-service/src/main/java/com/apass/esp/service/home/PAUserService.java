@@ -137,7 +137,7 @@ public class PAUserService {
 			String requestJson = GsonUtils.toJson(dto);
 			StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
 			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
-			LOGGER.info("平安投保返回数据:{}",responseJson);
+			LOGGER.info("平安投保返回数据:{},手机号:{}",responseJson,dto.getMobile());
 			PAInterfaceResponse response = GsonUtils.convertObj(responseJson, PAInterfaceResponse.class);
 			resultMap.put("message",response.getMessage());
 			resultMap.put("status",response.getStatus());
