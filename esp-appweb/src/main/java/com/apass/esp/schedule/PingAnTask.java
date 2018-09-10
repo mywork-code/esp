@@ -90,12 +90,12 @@ public class PingAnTask {
                         if(customerInfo == null){
                             customerInfo = customerServiceClient.getFydCustomerInfo(paUser.getTelephone());
                         }
-                        if(customerInfo == null){
+                        if(customerInfo == null||StringUtils.isAnyEmpty(customerInfo.getIdentityNo(),customerInfo.getRealName())){
                             continue;
                         }
                         convertToPaUser(paUser, customerInfo);
 
-                        //推送数据至平安
+                        //推送数据至平安：如果身份证，手机号或银行卡数据任一为空则不推平安
                         boolean flag = paUserService.saveToPAInterface(paUser);
                         if(!flag) {
                             //保存数据到数据库存
@@ -106,6 +106,10 @@ public class PingAnTask {
                         }
                         paUserService.updateSelectivePAUser(paUser);
                     }else {
+                        //用户名为空不推平安接口
+                        if(StringUtils.isAnyEmpty(paUser.getUsername())){
+                            continue;
+                        }
                         boolean flag = paUserService.saveToPAInterface(paUser);
                         if(!flag){
                             paUser.setAge(-1);
