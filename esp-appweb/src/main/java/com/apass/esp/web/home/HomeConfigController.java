@@ -1,11 +1,13 @@
 package com.apass.esp.web.home;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.PAUser;
 import com.apass.esp.domain.vo.HomeConfigVo;
 import com.apass.esp.service.home.HomeConfigService;
 import com.apass.esp.service.home.PAUserService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +39,12 @@ public class HomeConfigController {
 	public Response getActiveConfig(Map<String,Object> paramMap) {
 		try {
 			LOGGER.info("获取活动的配置项参数：{}", GsonUtils.toJson(paramMap));
-//			String userId = (String)paramMap.get("userId");
-//			//去平安保险用户表查询，是否已经领取
-//			PAUser paUser = paUserService.selectUserByUserId(userId);
-//			if(!StringUtils.isEmpty(userId)&&paUser != null){
-//				return Response.fail("用户已提交保险信息");
-//			}
+			String userId = (String)paramMap.get("userId");
+			//去平安保险用户表查询，是否已经领取
+			PAUser paUser = paUserService.selectUserByUserId(userId);
+			if(!StringUtils.isEmpty(userId)&&paUser != null){
+				return Response.fail("用户已提交保险信息");
+			}
 
 			//查询数据
 			HomeConfigVo vo = homeConfigService.getActiveConfig(DateFormatUtil.dateToString(new Date(), ""),null);
