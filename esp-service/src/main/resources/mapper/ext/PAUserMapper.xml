@@ -13,6 +13,7 @@
         <include refid="Base_Column_List" />
         from t_esp_pa_user
         <where>
+            age !=-2
             <if test="startDate != null and startDate != ''">
                 and created_time > #{startDate}
             </if>
