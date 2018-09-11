@@ -135,7 +135,7 @@ public class PingAnAmsTask {
         mailSenderInfo.setToAddress("sunchaohai@apass.cn");
         if ("prod".equals(env)) {
             mailSenderInfo.setToAddress("maoyanping@apass.cn" +
-                    ",yangxiaoqing@apass.cn,xujie@apass.cn,liucong@apass.cn");
+                    ",yangxiaoqing@apass.cn,xujie@apass.cn,liucong@apass.cn,lijun@apass.cn");
         }
 
         Multipart msgPart = new MimeMultipart();
@@ -168,9 +168,11 @@ public class PingAnAmsTask {
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
         HSSFRow createRow = sheet.createRow(0);
 
-        String[] rowHeadArr = {"日期","平安一键领取人数","平安确认领取人数","平安推送注册数","注册成功数"};
+//        String[] rowHeadArr = {"日期","平安一键领取人数","平安确认领取人数","平安推送注册数","注册成功数"};
+//        String[] headKeyArr = {"date","pageCount", "clickCount", "registercount", "registerSuccessCount"};
 
-        String[] headKeyArr = {"date","pageCount", "clickCount", "registercount", "registerSuccessCount"};
+        String[] rowHeadArr = {"日期","平安确认领取人数","平安推送注册数","注册成功数"};
+        String[] headKeyArr = {"date", "clickCount", "registercount", "registerSuccessCount"};
         for (int i = 0; i < rowHeadArr.length; i++) {
             HSSFCell cell = createRow.createCell(i);
             cell.setCellStyle(hssfCellStyle.get(0));
