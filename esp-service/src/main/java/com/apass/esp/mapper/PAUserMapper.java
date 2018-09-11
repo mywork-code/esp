@@ -12,5 +12,11 @@ public interface PAUserMapper extends GenericMapper<PAUser, Long> {
 	PAUser selectUserByUserId(@Param("userId")String userId);
 
 	List<PAUser> selectUserByRangeDate(Map<String, Object> paramMap);
+
+	Integer getCountZYCollecByStartandEndTime(Map<String, Object> paramMap);
+
+	Integer getCountRegisterByStartandEndTime(Map<String, Object> paramMap);
+
+	Integer getCountRegisterSuccessByStartandEndTime(Map<String, Object> paramMap);
 }
 

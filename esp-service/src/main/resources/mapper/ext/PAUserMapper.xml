@@ -22,4 +22,48 @@
             </if>
         </where>
     </select>
+
+    <select id="getCountZYCollecByStartandEndTime" resultType="Integer">
+        select
+          count(*)
+        from t_esp_pa_user
+        <where>
+            <if test="startDate != null and startDate != ''">
+                and created_time > #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and #{endDate} > created_time
+            </if>
+        </where>
+    </select>
+
+    <select id="getCountRegisterByStartandEndTime" resultType="Integer">
+        select
+          count(*)
+        from t_esp_pa_user
+        <where>
+            identity != ''
+            <if test="startDate != null and startDate != ''">
+                and created_time > #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and #{endDate} > created_time
+            </if>
+        </where>
+    </select>
+
+    <select id="getCountRegisterSuccessByStartandEndTime" resultType="Integer">
+        select
+          count(*)
+        from t_esp_pa_user
+        <where>
+            age = -2
+            <if test="startDate != null and startDate != ''">
+                and created_time > #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and #{endDate} > created_time
+            </if>
+        </where>
+    </select>
 </mapper>

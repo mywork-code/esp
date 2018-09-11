@@ -252,10 +252,12 @@ public class ProCouponTask {
      */
     private void sendEamilExcel_zhongyuanCount() throws Exception {
         //获取数据,先查看指定时间段门店数量，再计算各门店背包领取人数，再根据每个员工的手机号查看优惠券领取数
-        Date begin = DateFormatUtil.addDays(new Date(), -7);
+        String begin = "2018-08-26";
+        int num = DateFormatUtil.getBetweenTwoDays(begin, DateFormatUtil.dateToString(new Date()));
+
         List<PrizeAndCouponDto> prizeAndCouponDtos = Lists.newArrayList();
 
-        for(int i=7; i>=0; i--){
+        for(int i=num; i>=0; i--){
             String startDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin,i))+" 00:00:00";
             String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin,i))+" 23:59:59";
 
@@ -360,9 +362,16 @@ public class ProCouponTask {
     private void sendEamilExcel_zhongyuan() {
         try{
             //获取数据
-            String startDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))+" 00:00:00";
+            String startDate ="2018-08-27 00:00:00";
             String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))+" 23:59:59";
             List<ZYPriceCollecEntity> list = zyService.getAllZYCollecByStartandEndTime(startDate,endDate);
+            if(CollectionUtils.isNotEmpty(list)){
+                for (ZYPriceCollecEntity entity : list){
+                    Date createdTime = entity.getCreatedTime();
+                    Date createDate = DateFormatUtil.string2date(DateFormatUtil.dateToString(createdTime));
+                    entity.setCreatedTime(createDate);
+                }
+            }
             //生成Excel
             generateFile_zhongyuan(list);
 
@@ -419,9 +428,9 @@ public class ProCouponTask {
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
         HSSFRow createRow = sheet.createRow(0);
 
-        String[] rowHeadArr = {"所在分公司","商品信息","员工手机号","收货人姓名","收货人手机号","收货人地址"};
+        String[] rowHeadArr = {"时间","所在分公司","商品信息","员工手机号","收货人姓名","收货人手机号","收货人地址"};
 
-        String[] headKeyArr = {"companyName", "goodsName", "empTel", "consigneeName","consigneeTel", "consigneeAddr"};
+        String[] headKeyArr = {"createdTime","companyName", "goodsName", "empTel", "consigneeName","consigneeTel", "consigneeAddr"};
         for (int i = 0; i < rowHeadArr.length; i++) {
             HSSFCell cell = createRow.createCell(i);
             sheet.autoSizeColumn(i, true);
@@ -737,8 +746,8 @@ public class ProCouponTask {
         // 您的邮箱密码
         mailSenderInfo.setPassword(sendPassword);
         mailSenderInfo.setFromAddress(sendAddress);
-        mailSenderInfo.setSubject(dateString+"_房易贷券使用领取情况统计_使用数量");
-        mailSenderInfo.setContent("请查收房易 贷券使用领取情况统计_使用数量 报表..");
+        mailSenderInfo.setSubject(dateString+"_房易贷券使用使情况统计_使用数量");
+        mailSenderInfo.setContent("请查收房易 贷券使用使用情况统计_使用数量 报表..");
         mailSenderInfo.setToAddress("sunchaohai@apass.cn");
         if ("prod".equals(env)) {
             mailSenderInfo.setToAddress("sunchaohai@apass.cn,maoyanping@apass.cn" +

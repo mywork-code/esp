@@ -63,12 +63,16 @@ public class PingAnTask {
        putToPAUserMethod(startDate,endDate);
     }
 
+
+
     @RequestMapping("/test")
     @ResponseBody
     public Response test(String startDate,String endDate){
         putToPAUserMethod(startDate,endDate);
         return Response.success("成功");
     }
+
+
 
 
     private void putToPAUserMethod(String startDate, String endDate) {

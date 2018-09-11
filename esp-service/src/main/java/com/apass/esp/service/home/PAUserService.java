@@ -255,4 +255,40 @@ public class PAUserService {
 	public void updateSelectivePAUser(PAUser paUser) {
 		paUserMapper.updateByPrimaryKeySelective(paUser);
 	}
+
+	public Integer getCountZYCollecByStartandEndTime(String startDate, String endDate) {
+		Map<String,Object> paramMap = Maps.newHashMap();
+		paramMap.put("startDate",startDate);
+		paramMap.put("endDate",endDate);
+
+		return paUserMapper.getCountZYCollecByStartandEndTime(paramMap);
+	}
+
+	/**
+	 * 注册数：identity和username不为空
+	 * @param startDate
+	 * @param endDate
+     * @return
+     */
+	public Integer getCountRegisterByStartandEndTime(String startDate, String endDate) {
+		Map<String,Object> paramMap = Maps.newHashMap();
+		paramMap.put("startDate",startDate);
+		paramMap.put("endDate",endDate);
+
+		return paUserMapper.getCountRegisterByStartandEndTime(paramMap);
+	}
+
+	/**
+	 * 注册成功数 age=-2
+	 * @param startDate
+	 * @param endDate
+     * @return
+     */
+	public Integer getCountRegisterSuccessByStartandEndTime(String startDate, String endDate) {
+		Map<String,Object> paramMap = Maps.newHashMap();
+		paramMap.put("startDate",startDate);
+		paramMap.put("endDate",endDate);
+
+		return paUserMapper.getCountRegisterSuccessByStartandEndTime(paramMap);
+	}
 }
