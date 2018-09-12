@@ -72,6 +72,7 @@ public class PingAnAmsTask {
     /**
      * 平安保险注册数据
      * @param begin
+     * ..huijhkl;kl.kl
      * @return
      */
     @RequestMapping("/test2")
@@ -84,7 +85,7 @@ public class PingAnAmsTask {
         Integer count = DateFormatUtil.getBetweenTwoDays(begin,new Date());
 
         List<Map<String,Object>> list = Lists.newArrayList();
-        for(int i=count; i>=0; i--) {
+        for(int i=count; i>0; i--) {
             Map<String,Object> map = new HashMap<>();
             String startDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin, i)) + " 00:00:00";
             String endDate = DateFormatUtil.dateToString(DateFormatUtil.addDays(begin, i)) + " 23:59:59";
