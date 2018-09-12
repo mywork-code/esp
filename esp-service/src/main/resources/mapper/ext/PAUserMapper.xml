@@ -42,7 +42,7 @@
           count(*)
         from t_esp_pa_user
         <where>
-            identity != ''
+            age in (-1,-2)
             <if test="startDate != null and startDate != ''">
                 and created_time > #{startDate}
             </if>
