@@ -108,6 +108,7 @@ public class PingAnTask {
                         }else{
                             paUser.setAge(-2);
                         }
+                        paUser.setUpdatedTime(new Date());
                         paUserService.updateSelectivePAUser(paUser);
                     }else {
                         //用户名为空不推平安接口
@@ -120,6 +121,7 @@ public class PingAnTask {
                         }else{
                             paUser.setAge(-2);
                         }
+                        paUser.setUpdatedTime(new Date());
                         paUserService.updateSelectivePAUser(paUser);
                     }
                 }catch (Exception e){
