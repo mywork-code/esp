@@ -136,7 +136,7 @@ public class PingAnAmsTask {
         mailSenderInfo.setToAddress("sunchaohai@apass.cn");
         if ("prod".equals(env)) {
             mailSenderInfo.setToAddress("maoyanping@apass.cn" +
-                    ",yangxiaoqing@apass.cn,xujie@apass.cn,liucong@apass.cn,lijun@apass.cn");
+                    ",yangxiaoqing@apass.cn,xujie@apass.cn,liucong@apass.cn,lijun@apass.cn,huangbeifang@apass.cn");
         }
 
         Multipart msgPart = new MimeMultipart();
