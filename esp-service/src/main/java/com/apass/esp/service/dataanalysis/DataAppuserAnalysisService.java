@@ -142,9 +142,6 @@ public class DataAppuserAnalysisService {
 	 * 运营分析数据载入  查询时间区间
 	 * 参数含有
 	 * @param map
-	 * @param dateStart  起止日期
-	 * @param dateEnd  起止日期
-	 * @param platformids  平台类型
 	 * @return
 	 */
 	public List<DataAppuserAnalysis> getAppuserAnalysisList(Map<String, Object> map) {

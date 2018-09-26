@@ -304,8 +304,8 @@ public class OrderExceptionController {
     
     @ResponseBody
     @RequestMapping("/analysis")
-    public Response everyDayScheduleData(){
-    	analysisSchedule.everyDayScheduleData();
+    public Response everyDayScheduleData(String startDate,String endDate){
+    	analysisSchedule.everyDayScheduleData(startDate,endDate);
     	return Response.success("每天插入更新数据成功(t_data_appuser_analysis)!");
     }
     
