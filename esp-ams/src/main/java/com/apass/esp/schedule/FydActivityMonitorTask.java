@@ -85,7 +85,7 @@ public class FydActivityMonitorTask {
         mailSenderInfo.setContent(content);
         mailSenderInfo.setToAddress("xujie@apass.cn");
         if ("prod".equals(env)) {
-            mailSenderInfo.setToAddress("wenlu@apass.cn");
+            mailSenderInfo.setToAddress("maoyanping@apass.cn");
             mailSenderInfo.setCcAddress("liucong@apass.cn,zhangjinfeng@apass.cn");
         }
         MailUtil mailUtil = new MailUtil();

@@ -106,7 +106,7 @@ public class DataAppuserAnalysisSchedule {
 		return Response.success("成功，新增的内容有:{}",list);
 	}
 
-	@Scheduled(cron = "0 0 0 1 * ?")
+	@Scheduled(cron = "0 0 1 * * ?")
 	public void everyDayScheduleDate(){
 		logger.info("DataAppuserAnalysisSchedule---->everyDayScheduleDate()job方法开始执行,执行时间:{}",
 				DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
@@ -120,7 +120,7 @@ public class DataAppuserAnalysisSchedule {
 		}
 
 	}
-	@Scheduled(cron = "0 20 1 * * ?")
+	@Scheduled(cron = "0 10 1 * * ?")
 	public void updateAnalysisRegisterUser(){
 		logger.info("DataAppuserAnalysisSchedule---->updateAnalysisRegisterUser()job方法开始执行,执行时间:{}",
 				DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
