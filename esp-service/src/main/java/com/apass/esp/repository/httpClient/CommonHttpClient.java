@@ -230,7 +230,7 @@ public class CommonHttpClient {
             StringEntity stringEntity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
             LOGGER.info( "talkingData请求数据:requestUrl {} stringEntity {} requestJson {}",requestUrl,stringEntity,requestJson);
             String responseJson = HttpClientUtils.getMethodPostContent(requestUrl, stringEntity, headerparams);
-            LOGGER.info( "talkingData返回数据:requestUrl {} responseJson {}",requestUrl, responseJson);
+            LOGGER.info( "talkingData返回数据:responseUrl {} responseJson {}",requestUrl, responseJson);
             return responseJson;
         } catch (Exception e) {
             LOGGER.error("talkingData--------Exception----------",  e);
