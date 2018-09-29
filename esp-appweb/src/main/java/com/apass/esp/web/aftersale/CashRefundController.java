@@ -243,7 +243,7 @@ public class CashRefundController {
                     if(TxnTypeCode.ALIPAY_CODE.getCode().equals(txnInfo.getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(txnInfo.getTxnType())){
                         Response res = cashRefundService.agreeRefund(userId,orderId);
                         if(!res.statusResult()){
-                            throw new BusinessException("退款申请失败，请重新申请！");
+                            throw new BusinessException("退款申请失败，请联系客服！");
                         }
                         break;
                     }
@@ -258,7 +258,7 @@ public class CashRefundController {
             return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOGGER.error("退款申请失败", e);
-            return Response.fail("退款申请失败");
+            return Response.fail("退款申请失败，请联系客服！");
         }
     }
     /**
