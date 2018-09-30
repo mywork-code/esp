@@ -237,13 +237,22 @@ public class CashRefundController {
             	return Response.success("抱歉，商户已发货暂不支持退款",false);
             }else if(falge){
                 OrderInfoEntity orderInfo = orderService.selectByOrderId(orderId);
-                 cashRefundService.requestRefund(requestId,orderInfo,userId, reason,csom);
+
                 List<TxnInfoEntity> txnInfoEntityList = txnInfoService.getByMainOrderId(orderInfo.getMainOrderId());
+                //如果是支付宝支付，直接拒绝退款，线下联系客服
+                for(TxnInfoEntity txnInfo:txnInfoEntityList){
+                    if(TxnTypeCode.ALIPAY_CODE.getCode().equals(txnInfo.getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(txnInfo.getTxnType())){
+                        throw new BusinessException("退款申请失败，请联系客服！");
+                    }
+                }
+                //
+                cashRefundService.requestRefund(requestId,orderInfo,userId, reason,csom);
+
                 for(TxnInfoEntity txnInfo:txnInfoEntityList){
                     if(TxnTypeCode.ALIPAY_CODE.getCode().equals(txnInfo.getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(txnInfo.getTxnType())){
                         Response res = cashRefundService.agreeRefund(userId,orderId);
                         if(!res.statusResult()){
-                            throw new BusinessException("退款申请失败，请重新申请！");
+                            throw new BusinessException("退款申请失败，请联系客服！");
                         }
                         break;
                     }
@@ -258,7 +267,7 @@ public class CashRefundController {
             return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOGGER.error("退款申请失败", e);
-            return Response.fail("退款申请失败");
+            return Response.fail("退款申请失败，请联系客服！");
         }
     }
     /**
